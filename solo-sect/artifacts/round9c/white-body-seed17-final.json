@@ -849,12 +849,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.971423922397449,
-              "firstHit": 0.971423922397449,
+              "probability": 0.9714304269806366,
+              "firstHit": 0.9714304269806366,
               "proactive": 0,
-              "reactive": 0.971423922397449,
+              "reactive": 0.9714304269806366,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.4718198484969627,
+              "proactiveWind": 0.47179728374418006,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -879,9 +879,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9874163882573824,
-              "actualRead": 0.20776286332911964,
-              "alsoFitsStep": 0.7796535249282628,
+              "probability": 0.9874183046888994,
+              "actualRead": 0.20764003351610794,
+              "alsoFitsStep": 0.7797782711727914,
               "wind": 0.5,
               "sources": [
                 {
@@ -893,8 +893,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9601537759335955,
-              "dodge": 0.9601537759335955,
+              "probability": 0.960164423488408,
+              "dodge": 0.960164423488408,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -952,12 +952,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.9715503015884536,
-              "firstHit": 0.9715503015884536,
+              "probability": 0.971553591545424,
+              "firstHit": 0.971553591545424,
               "proactive": 0,
-              "reactive": 0.9715503015884536,
+              "reactive": 0.971553591545424,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.5684654267546754,
+              "proactiveWind": 0.56845393928494,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -982,9 +982,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9874536611144445,
-              "actualRead": 0.20538602855664068,
-              "alsoFitsStep": 0.7820676325578039,
+              "probability": 0.9874546324899406,
+              "actualRead": 0.20532442530281947,
+              "alsoFitsStep": 0.7821302071871211,
               "wind": 0.5,
               "sources": [
                 {
@@ -996,8 +996,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9603605408727426,
-              "dodge": 0.9603605408727426,
+              "probability": 0.9603659203925173,
+              "dodge": 0.9603659203925173,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -1055,12 +1055,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.9716203157913696,
-              "firstHit": 0.9716203157913696,
+              "probability": 0.9716224915699097,
+              "firstHit": 0.9716224915699097,
               "proactive": 0,
-              "reactive": 0.9716203157913696,
+              "reactive": 0.9716224915699097,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.5682205330167058,
+              "proactiveWind": 0.5682129082634438,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -1085,9 +1085,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9874743449198874,
-              "actualRead": 0.20407800418223088,
-              "alsoFitsStep": 0.7833963407376565,
+              "probability": 0.9874749880912742,
+              "actualRead": 0.2040374553420239,
+              "alsoFitsStep": 0.7834375327492503,
               "wind": 0.5,
               "sources": [
                 {
@@ -1099,8 +1099,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9604749897854636,
-              "dodge": 0.9604749897854636,
+              "probability": 0.9604785452954598,
+              "dodge": 0.9604785452954598,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -1158,12 +1158,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.9944467593428311,
-              "firstHit": 0.9944467593428311,
+              "probability": 0.9944470832210021,
+              "firstHit": 0.9944470832210021,
               "proactive": 0,
-              "reactive": 0.9944467593428311,
+              "reactive": 0.9944470832210021,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.5679978468064213,
+              "proactiveWind": 0.5679921731466696,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -1188,9 +1188,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9975788770659505,
-              "actualRead": 0.04150056799352231,
-              "alsoFitsStep": 0.9560783090724282,
+              "probability": 0.9975789704508081,
+              "actualRead": 0.04149359814010345,
+              "alsoFitsStep": 0.9560853723107047,
               "wind": 0.5,
               "sources": [
                 {
@@ -1202,8 +1202,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9926007497245458,
-              "dodge": 0.9926007497245458,
+              "probability": 0.9926012473896061,
+              "dodge": 0.9926012473896061,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -1261,12 +1261,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.9986672966364365,
-              "firstHit": 0.9986672966364365,
+              "probability": 0.9986673573068247,
+              "firstHit": 0.9986673573068247,
               "proactive": 0,
-              "reactive": 0.9986672966364365,
+              "reactive": 0.9986673573068247,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.5678607166203308,
+              "proactiveWind": 0.5678563036027001,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -1291,9 +1291,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994200707345846,
-              "actualRead": 0.010250741850165945,
-              "alsoFitsStep": 0.9891693288844187,
+              "probability": 0.9994200881569745,
+              "actualRead": 0.01024936046684577,
+              "alsoFitsStep": 0.9891707276901287,
               "wind": 0.5,
               "sources": [
                 {
@@ -1305,8 +1305,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9982221609159121,
-              "dodge": 0.9982221609159121,
+              "probability": 0.9982222543738307,
+              "dodge": 0.9982222543738307,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -1364,12 +1364,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.9986693095856131,
-              "firstHit": 0.9986693095856131,
+              "probability": 0.9986695607818494,
+              "firstHit": 0.9986695607818494,
               "proactive": 0,
-              "reactive": 0.9986693095856131,
+              "reactive": 0.9986695607818494,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6062431541463059,
+              "proactiveWind": 0.606224839315058,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -1394,9 +1394,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994206489983164,
-              "actualRead": 0.009166872166977535,
-              "alsoFitsStep": 0.9902537768313389,
+              "probability": 0.9994207211912048,
+              "actualRead": 0.009232389381022776,
+              "alsoFitsStep": 0.9901883318101821,
               "wind": 0.5,
               "sources": [
                 {
@@ -1408,8 +1408,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9982980126920682,
-              "dodge": 0.9982980126920682,
+              "probability": 0.9982932313100936,
+              "dodge": 0.9982932313100936,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -1467,12 +1467,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.9986709987928691,
-              "firstHit": 0.9986709987928691,
+              "probability": 0.9986711325404775,
+              "firstHit": 0.9986711325404775,
               "proactive": 0,
-              "reactive": 0.9986709987928691,
+              "reactive": 0.9986711325404775,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6401048936862487,
+              "proactiveWind": 0.640095124143625,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -1497,9 +1497,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994211346040573,
-              "actualRead": 0.008111664255195827,
-              "alsoFitsStep": 0.9913094703488615,
+              "probability": 0.9994211730666467,
+              "actualRead": 0.008166599791416873,
+              "alsoFitsStep": 0.9912545732752298,
               "wind": 0.5,
               "sources": [
                 {
@@ -1511,8 +1511,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9983792275587939,
-              "dodge": 0.9983792275587939,
+              "probability": 0.9983748022031022,
+              "dodge": 0.9983748022031022,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -1570,12 +1570,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.9986719421765784,
-              "firstHit": 0.9986719421765784,
+              "probability": 0.9986719449964584,
+              "firstHit": 0.9986719449964584,
               "proactive": 0,
-              "reactive": 0.9986719421765784,
+              "reactive": 0.9986719449964584,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6400359530961046,
+              "proactiveWind": 0.6400357469148735,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -1600,9 +1600,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994214059405706,
-              "actualRead": 0.008096231713380586,
-              "alsoFitsStep": 0.99132517422719,
+              "probability": 0.9994214067517733,
+              "actualRead": 0.008153177529253597,
+              "alsoFitsStep": 0.9912682292225197,
               "wind": 0.5,
               "sources": [
                 {
@@ -1614,8 +1614,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9983804978282994,
-              "dodge": 0.9983804978282994,
+              "probability": 0.9983759008324836,
+              "dodge": 0.9983759008324836,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -1673,12 +1673,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.9986774595118992,
-              "firstHit": 0.9986774595118992,
+              "probability": 0.9986732811555061,
+              "firstHit": 0.9986732811555061,
               "proactive": 0,
-              "reactive": 0.9986774595118992,
+              "reactive": 0.9986732811555061,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6396312818268528,
+              "proactiveWind": 0.6399379770363683,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -1703,9 +1703,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994229948074663,
-              "actualRead": 0.007181404919637258,
-              "alsoFitsStep": 0.9922415898878291,
+              "probability": 0.9994217912269036,
+              "actualRead": 0.007286575702511455,
+              "alsoFitsStep": 0.9921352155243921,
               "wind": 0.5,
               "sources": [
                 {
@@ -1717,8 +1717,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9984582000793198,
-              "dodge": 0.9984582000793198,
+              "probability": 0.9984488000555842,
+              "dodge": 0.9984488000555842,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -1776,12 +1776,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.9986812776445383,
-              "firstHit": 0.9986812776445383,
+              "probability": 0.9986788763594183,
+              "firstHit": 0.9986788763594183,
               "proactive": 0,
-              "reactive": 0.9986812776445383,
+              "reactive": 0.9986788763594183,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.639349754327539,
+              "proactiveWind": 0.639526953867455,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -1806,9 +1806,9 @@
             },
             {
               "level": 3,
-              "probability": 0.999424096316647,
-              "actualRead": 0.007128596435070578,
-              "alsoFitsStep": 0.9922954998815764,
+              "probability": 0.9994234033709758,
+              "actualRead": 0.0060790474703985575,
+              "alsoFitsStep": 0.9933443559005772,
               "wind": 0.5,
               "sources": [
                 {
@@ -1820,8 +1820,8 @@
             },
             {
               "level": 4,
-              "probability": 0.998463004678054,
-              "dodge": 0.998463004678054,
+              "probability": 0.9985624303892345,
+              "dodge": 0.9985624303892345,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -1879,12 +1879,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.9986820329950831,
-              "firstHit": 0.9986820329950831,
+              "probability": 0.9986824455647298,
+              "firstHit": 0.9986824455647298,
               "proactive": 0,
-              "reactive": 0.9986820329950831,
+              "reactive": 0.9986824455647298,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6392939142131845,
+              "proactiveWind": 0.6392633942853343,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -1909,9 +1909,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994243144227981,
-              "actualRead": 0.007118188281609594,
-              "alsoFitsStep": 0.9923061261411885,
+              "probability": 0.9994244335783677,
+              "actualRead": 0.006039926975876964,
+              "alsoFitsStep": 0.9933845066024908,
               "wind": 0.5,
               "sources": [
                 {
@@ -1923,8 +1923,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9984639549874862,
-              "dodge": 0.9984639549874862,
+              "probability": 0.9985664811488019,
+              "dodge": 0.9985664811488019,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -1982,12 +1982,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.9986827386814969,
-              "firstHit": 0.9986827386814969,
+              "probability": 0.9986834554730534,
+              "firstHit": 0.9986834554730534,
               "proactive": 0,
-              "reactive": 0.9986827386814969,
+              "reactive": 0.9986834554730534,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6392417022019753,
+              "proactiveWind": 0.6391886255974869,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -2004,17 +2004,17 @@
               "wind": 1,
               "sources": [
                 {
-                  "uid": "reference-boar-body-0",
-                  "source": "generated reference",
+                  "uid": "raid1537",
+                  "source": "returned survivor",
                   "weapon": null
                 }
               ]
             },
             {
               "level": 3,
-              "probability": 0.9994245182458782,
-              "actualRead": 0.007108476089794813,
-              "alsoFitsStep": 0.9923160421560834,
+              "probability": 0.999424725333213,
+              "actualRead": 0.005204376500832608,
+              "alsoFitsStep": 0.9942203488323804,
               "wind": 0.5,
               "sources": [
                 {
@@ -2026,8 +2026,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9984648427557243,
-              "dodge": 0.9984648427557243,
+              "probability": 0.9986555725017845,
+              "dodge": 0.9986555725017845,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -2085,12 +2085,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.9986834004751717,
-              "firstHit": 0.9986834004751717,
+              "probability": 0.9986841279445763,
+              "firstHit": 0.9986841279445763,
               "proactive": 0,
-              "reactive": 0.9986834004751717,
+              "reactive": 0.9986841279445763,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6391926995862655,
+              "proactiveWind": 0.6391387913729734,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -2115,9 +2115,9 @@
             },
             {
               "level": 3,
-              "probability": 0.999424709441818,
-              "actualRead": 0.007099378177094939,
-              "alsoFitsStep": 0.9923253312647231,
+              "probability": 0.9994249196681448,
+              "actualRead": 0.005198401767400385,
+              "alsoFitsStep": 0.9942265179007445,
               "wind": 0.5,
               "sources": [
                 {
@@ -2129,8 +2129,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9984656752545703,
-              "dodge": 0.9984656752545703,
+              "probability": 0.9986562664368591,
+              "dodge": 0.9986562664368591,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -2188,12 +2188,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.998684064063378,
-              "firstHit": 0.998684064063378,
+              "probability": 0.9986847614379002,
+              "firstHit": 0.9986847614379002,
               "proactive": 0,
-              "reactive": 0.998684064063378,
+              "reactive": 0.9986847614379002,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6391435269990328,
+              "proactiveWind": 0.6390918107284039,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -2218,9 +2218,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994249012051991,
-              "actualRead": 0.0070902654897089246,
-              "alsoFitsStep": 0.9923346357154902,
+              "probability": 0.9994251027850316,
+              "actualRead": 0.005192778088705663,
+              "alsoFitsStep": 0.9942323246963259,
               "wind": 0.5,
               "sources": [
                 {
@@ -2232,8 +2232,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9984665099608635,
-              "dodge": 0.9984665099608635,
+              "probability": 0.9986569201445409,
+              "dodge": 0.9986569201445409,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -2291,12 +2291,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.9986850921199734,
-              "firstHit": 0.9986850921199734,
+              "probability": 0.9986853004385422,
+              "firstHit": 0.9986853004385422,
               "proactive": 0,
-              "reactive": 0.9986850921199734,
+              "reactive": 0.9986853004385422,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6390672734590692,
+              "proactiveWind": 0.639051811055128,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -2321,9 +2321,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994251983894096,
-              "actualRead": 0.005963306397123724,
-              "alsoFitsStep": 0.9934618919922859,
+              "probability": 0.9994252586232115,
+              "actualRead": 0.005187996866008127,
+              "alsoFitsStep": 0.9942372617572034,
               "wind": 0.5,
               "sources": [
                 {
@@ -2335,8 +2335,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9985743440449182,
-              "dodge": 0.9985743440449182,
+              "probability": 0.9986574763404361,
+              "dodge": 0.9986574763404361,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -2394,12 +2394,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.9986856045415153,
-              "firstHit": 0.9986856045415153,
+              "probability": 0.9986860847635974,
+              "firstHit": 0.9986860847635974,
               "proactive": 0,
-              "reactive": 0.9986856045415153,
+              "reactive": 0.9986860847635974,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.639029232476398,
+              "proactiveWind": 0.6389935617173251,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -2424,9 +2424,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994253465610737,
-              "actualRead": 0.005957789971367311,
-              "alsoFitsStep": 0.9934675565897064,
+              "probability": 0.9994254854485565,
+              "actualRead": 0.004783485729108472,
+              "alsoFitsStep": 0.994641999719448,
               "wind": 0.5,
               "sources": [
                 {
@@ -2438,8 +2438,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9985749225100429,
-              "dodge": 0.9985749225100429,
+              "probability": 0.9987043707254193,
+              "dodge": 0.9987043707254193,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -2497,12 +2497,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.9986859305024779,
-              "firstHit": 0.9986859305024779,
+              "probability": 0.9986865315991148,
+              "firstHit": 0.9986865315991148,
               "proactive": 0,
-              "reactive": 0.9986859305024779,
+              "reactive": 0.9986865315991148,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6390050223200135,
+              "proactiveWind": 0.6389603533422145,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -2519,17 +2519,17 @@
               "wind": 1,
               "sources": [
                 {
-                  "uid": "raid1537",
-                  "source": "returned survivor",
+                  "uid": "reference-boar-body-0",
+                  "source": "generated reference",
                   "weapon": null
                 }
               ]
             },
             {
               "level": 3,
-              "probability": 0.9994254408311025,
-              "actualRead": 0.0059542829854934975,
-              "alsoFitsStep": 0.993471157845609,
+              "probability": 0.9994256147032695,
+              "actualRead": 0.004779943787991403,
+              "alsoFitsStep": 0.9946456709152781,
               "wind": 0.5,
               "sources": [
                 {
@@ -2541,8 +2541,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9985752904753267,
-              "dodge": 0.9985752904753267,
+              "probability": 0.9987048082702314,
+              "dodge": 0.9987048082702314,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -2600,12 +2600,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.9986866088780298,
-              "firstHit": 0.9986866088780298,
+              "probability": 0.9986874130435265,
+              "firstHit": 0.9986874130435265,
               "proactive": 0,
-              "reactive": 0.9986866088780298,
+              "reactive": 0.9986874130435265,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6389546083313349,
+              "proactiveWind": 0.6388947955728437,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -2630,9 +2630,9 @@
             },
             {
               "level": 3,
-              "probability": 0.999425637059762,
-              "actualRead": 0.005443766822151197,
-              "alsoFitsStep": 0.9939818702376108,
+              "probability": 0.9994258697413475,
+              "actualRead": 0.004091123938263164,
+              "alsoFitsStep": 0.9953347458030843,
               "wind": 0.5,
               "sources": [
                 {
@@ -2644,8 +2644,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9986291764703907,
-              "dodge": 0.9986291764703907,
+              "probability": 0.9987912469720637,
+              "dodge": 0.9987912469720637,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -2703,12 +2703,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.9986869924535547,
-              "firstHit": 0.9986869924535547,
+              "probability": 0.9986881516529383,
+              "firstHit": 0.9986881516529383,
               "proactive": 0,
-              "reactive": 0.9986869924535547,
+              "reactive": 0.9986881516529383,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6389260853458562,
+              "proactiveWind": 0.6388398103613485,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -2725,17 +2725,17 @@
               "wind": 1,
               "sources": [
                 {
-                  "uid": "raid1537",
-                  "source": "returned survivor",
+                  "uid": "reference-boar-body-0",
+                  "source": "generated reference",
                   "weapon": null
                 }
               ]
             },
             {
               "level": 3,
-              "probability": 0.9994257480365593,
-              "actualRead": 0.005440125313072364,
-              "alsoFitsStep": 0.9939856227234869,
+              "probability": 0.9994260835182822,
+              "actualRead": 0.0038224251679529475,
+              "alsoFitsStep": 0.9956036583503293,
               "wind": 0.5,
               "sources": [
                 {
@@ -2747,8 +2747,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9986295854649766,
-              "dodge": 0.9986295854649766,
+              "probability": 0.9988275466392207,
+              "dodge": 0.9988275466392207,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -2806,12 +2806,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.9986876218328903,
-              "firstHit": 0.9986876218328903,
+              "probability": 0.9986885254441844,
+              "firstHit": 0.9986885254441844,
               "proactive": 0,
-              "reactive": 0.9986876218328903,
+              "reactive": 0.9986885254441844,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6388792571129422,
+              "proactiveWind": 0.6388119660659484,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -2836,9 +2836,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994259301654099,
-              "actualRead": 0.005002359158023162,
-              "alsoFitsStep": 0.9944235710073868,
+              "probability": 0.9994261917285538,
+              "actualRead": 0.003820244132006989,
+              "alsoFitsStep": 0.9956059475965469,
               "wind": 0.5,
               "sources": [
                 {
@@ -2850,8 +2850,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9986787387496379,
-              "dodge": 0.9986787387496379,
+              "probability": 0.9988278624903293,
+              "dodge": 0.9988278624903293,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -2909,12 +2909,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.9986882123032929,
-              "firstHit": 0.9986882123032929,
+              "probability": 0.9986894382530824,
+              "firstHit": 0.9986894382530824,
               "proactive": 0,
-              "reactive": 0.9986882123032929,
+              "reactive": 0.9986894382530824,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6388352932299697,
+              "proactiveWind": 0.6387439194653047,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -2939,9 +2939,9 @@
             },
             {
               "level": 3,
-              "probability": 0.999426101075125,
-              "actualRead": 0.004623240313819887,
-              "alsoFitsStep": 0.9948028607613051,
+              "probability": 0.9994264560468579,
+              "actualRead": 0.0033103358469906974,
+              "alsoFitsStep": 0.9961161201998672,
               "wind": 0.5,
               "sources": [
                 {
@@ -2953,8 +2953,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9987237592852688,
-              "dodge": 0.9987237592852688,
+              "probability": 0.9989013961653191,
+              "dodge": 0.9989013961653191,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -3012,12 +3012,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.998688541218266,
-              "firstHit": 0.998688541218266,
+              "probability": 0.9986900108371082,
+              "firstHit": 0.9986900108371082,
               "proactive": 0,
-              "reactive": 0.998688541218266,
+              "reactive": 0.9986900108371082,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6388107907682503,
+              "proactiveWind": 0.6387011991190341,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -3042,9 +3042,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994261962953975,
-              "actualRead": 0.004620747273089032,
-              "alsoFitsStep": 0.9948054490223085,
+              "probability": 0.999426621895278,
+              "actualRead": 0.003125374209882681,
+              "alsoFitsStep": 0.9963012476853953,
               "wind": 0.5,
               "sources": [
                 {
@@ -3056,8 +3056,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9987240749281855,
-              "dodge": 0.9987240749281855,
+              "probability": 0.9989297614615146,
+              "dodge": 0.9989297614615146,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -3115,12 +3115,12 @@
           "rows": [
             {
               "level": 1,
-              "probability": 0.998689017553979,
-              "firstHit": 0.998689017553979,
+              "probability": 0.9986904974983879,
+              "firstHit": 0.9986904974983879,
               "proactive": 0,
-              "reactive": 0.998689017553979,
+              "reactive": 0.9986904974983879,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6387752898866641,
+              "proactiveWind": 0.6386648674305062,
               "frightened": false,
               "wind": 0.4,
               "sources": [
@@ -3137,17 +3137,17 @@
               "wind": 1,
               "sources": [
                 {
-                  "uid": "raid1537",
-                  "source": "returned survivor",
+                  "uid": "reference-boar-body-0",
+                  "source": "generated reference",
                   "weapon": null
                 }
               ]
             },
             {
               "level": 3,
-              "probability": 0.9994263342151654,
-              "actualRead": 0.004364554806270626,
-              "alsoFitsStep": 0.9950617794088947,
+              "probability": 0.9994267628851405,
+              "actualRead": 0.002958587683767444,
+              "alsoFitsStep": 0.9964681752013731,
               "wind": 0.5,
               "sources": [
                 {
@@ -3159,8 +3159,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9987559363255176,
-              "dodge": 0.9987559363255176,
+              "probability": 0.9989561915936113,
+              "dodge": 0.9989561915936113,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -3385,7 +3385,7 @@
           "context": [
             {
               "t": 7800,
-              "msg": "郭靖這回先做客：存糧不足全門一日（2.0/14.0）",
+              "msg": "郭靖這回先做客：存糧不足全門一日（1.0/14.0）",
               "tier": "low",
               "who": null
             },
@@ -3409,7 +3409,7 @@
             },
             {
               "t": 7800,
-              "msg": "【過路高人】一位雲遊高人借宿一晚，指點了主角的「葵花寶典」幾招。",
+              "msg": "【過路高人】一位雲遊高人借宿一晚，指點了主角的「吐納」幾招。",
               "tier": "low",
               "who": "hero"
             },
@@ -3461,12 +3461,12 @@
         {
           "id": "origin-1",
           "mentor": "hero",
-          "totalReceived": 434
+          "totalReceived": 426.25
         },
         {
           "id": "origin-2",
           "mentor": "hero",
-          "totalReceived": 395.25
+          "totalReceived": 403
         }
       ],
       "famous": 0
@@ -4523,9 +4523,9 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9944595439325069,
+              "firstHit": 0.9944624929480136,
               "proactive": 0,
-              "reactive": 0.9944595439325069,
+              "reactive": 0.9944624929480136,
               "proactiveMove": "toolStone",
               "proactiveWind": 1.1220967312777295,
               "frightened": true,
@@ -4552,9 +4552,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9975825653833577,
-              "actualRead": 0.00652388495143863,
-              "alsoFitsStep": 0.991058680431919,
+              "probability": 0.9975834167766097,
+              "actualRead": 0.00651870142946398,
+              "alsoFitsStep": 0.9910647153471457,
               "wind": 0.5,
               "sources": [
                 {
@@ -4566,8 +4566,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9967247363541236,
-              "dodge": 0.9967247363541236,
+              "probability": 0.9967260783833929,
+              "dodge": 0.9967260783833929,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -4626,11 +4626,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.994470469586181,
+              "firstHit": 0.9944730524407261,
               "proactive": 0,
-              "reactive": 0.994470469586181,
+              "reactive": 0.9944730524407261,
               "proactiveMove": "toolStone",
-              "proactiveWind": 1.1082434432657153,
+              "proactiveWind": 1.1077988140512773,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -4655,9 +4655,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9975857208148864,
-              "actualRead": 0.004973145995250228,
-              "alsoFitsStep": 0.9926125748196362,
+              "probability": 0.997586467227955,
+              "actualRead": 0.004795013329175091,
+              "alsoFitsStep": 0.9927914538987799,
               "wind": 0.5,
               "sources": [
                 {
@@ -4669,8 +4669,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9970892654301355,
-              "dodge": 0.9970892654301355,
+              "probability": 0.9971339061453579,
+              "dodge": 0.9971339061453579,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -4729,11 +4729,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9944824247326942,
+              "firstHit": 0.998678693886315,
               "proactive": 0,
-              "reactive": 0.9944824247326942,
+              "reactive": 0.998678693886315,
               "proactiveMove": "toolStone",
-              "proactiveWind": 1.0951558719584729,
+              "proactiveWind": 1.1006918074318255,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -4758,9 +4758,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9975891771854909,
-              "actualRead": 0.004400981467321041,
-              "alsoFitsStep": 0.9931881957181699,
+              "probability": 0.9994233507403671,
+              "actualRead": 0.0011476008228629153,
+              "alsoFitsStep": 0.9982757499175042,
               "wind": 0.5,
               "sources": [
                 {
@@ -4772,8 +4772,8 @@
             },
             {
               "level": 4,
-              "probability": 0.997235131242579,
-              "dodge": 0.997235131242579,
+              "probability": 0.9993151998334905,
+              "dodge": 0.9993151998334905,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -4787,25 +4787,25 @@
             {
               "level": 5,
               "probability": 1,
-              "L": 0.7148594377510041,
+              "L": 0.6902423051735429,
               "parts": [
                 {
                   "attacker": "reference-bandit-blade-0",
                   "move": "looterBlade",
-                  "need": 0.21445783132530122,
+                  "need": 0.20707269155206287,
                   "window": 0.6,
                   "travel": 0,
                   "active": true,
-                  "share": 0.35742971887550207
+                  "share": 0.34512115258677145
                 },
                 {
                   "attacker": "reference-bandit-blade-1",
                   "move": "looterBlade",
-                  "need": 0.21445783132530122,
+                  "need": 0.20707269155206287,
                   "window": 0.6,
                   "travel": 0,
                   "active": true,
-                  "share": 0.35742971887550207
+                  "share": 0.34512115258677145
                 }
               ],
               "sources": [
@@ -4832,11 +4832,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9944893669701258,
+              "firstHit": 0.9986801327214576,
               "proactive": 0,
-              "reactive": 0.9944893669701258,
+              "reactive": 0.9986801327214576,
               "proactiveMove": "toolStone",
-              "proactiveWind": 1.122732888585045,
+              "proactiveWind": 1.127727831550994,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -4861,9 +4861,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9975911860022405,
-              "actualRead": 0.004023896989900022,
-              "alsoFitsStep": 0.9935672890123405,
+              "probability": 0.9994237658430519,
+              "actualRead": 0.001041254515412815,
+              "alsoFitsStep": 0.9983825113276391,
               "wind": 0.5,
               "sources": [
                 {
@@ -4875,8 +4875,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9973348723344517,
-              "dodge": 0.9973348723344517,
+              "probability": 0.9993424054611116,
+              "dodge": 0.9993424054611116,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -4890,25 +4890,25 @@
             {
               "level": 5,
               "probability": 1,
-              "L": 0.7148594377510041,
+              "L": 0.6902423051735429,
               "parts": [
                 {
                   "attacker": "reference-bandit-blade-0",
                   "move": "looterBlade",
-                  "need": 0.21445783132530122,
+                  "need": 0.20707269155206287,
                   "window": 0.6,
                   "travel": 0,
                   "active": true,
-                  "share": 0.35742971887550207
+                  "share": 0.34512115258677145
                 },
                 {
                   "attacker": "reference-bandit-blade-1",
                   "move": "looterBlade",
-                  "need": 0.21445783132530122,
+                  "need": 0.20707269155206287,
                   "window": 0.6,
                   "travel": 0,
                   "active": true,
-                  "share": 0.35742971887550207
+                  "share": 0.34512115258677145
                 }
               ],
               "sources": [
@@ -4935,11 +4935,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.998678911449098,
+              "firstHit": 0.9986814458846437,
               "proactive": 0,
-              "reactive": 0.998678911449098,
+              "reactive": 0.9986814458846437,
               "proactiveMove": "toolStone",
-              "proactiveWind": 1.1182895915334576,
+              "proactiveWind": 1.121047855715418,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -4964,9 +4964,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994234134922949,
-              "actualRead": 0.0009663400447907922,
-              "alsoFitsStep": 0.9984570734475041,
+              "probability": 0.9994241448901907,
+              "actualRead": 0.0009639269647336857,
+              "alsoFitsStep": 0.998460217925457,
               "wind": 0.5,
               "sources": [
                 {
@@ -4978,8 +4978,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9993619895185385,
-              "dodge": 0.9993619895185385,
+              "probability": 0.999362826480555,
+              "dodge": 0.999362826480555,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -5038,11 +5038,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986803464067718,
+              "firstHit": 0.9986824267458059,
               "proactive": 0,
-              "reactive": 0.9986803464067718,
+              "reactive": 0.9986824267458059,
               "proactiveMove": "toolStone",
-              "proactiveWind": 1.1142910297077613,
+              "proactiveWind": 1.117939037027562,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -5067,9 +5067,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994238275106839,
-              "actualRead": 0.0009649432136570324,
-              "alsoFitsStep": 0.9984588842970269,
+              "probability": 0.9994244281428015,
+              "actualRead": 0.0009443355554342725,
+              "alsoFitsStep": 0.9984800925873673,
               "wind": 0.5,
               "sources": [
                 {
@@ -5081,8 +5081,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9993624713988284,
-              "dodge": 0.9993624713988284,
+              "probability": 0.9993681377196184,
+              "dodge": 0.9993681377196184,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -5141,11 +5141,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986816376154765,
+              "firstHit": 0.9986836524264485,
               "proactive": 0,
-              "reactive": 0.9986816376154765,
+              "reactive": 0.9986836524264485,
               "proactiveMove": "toolStone",
-              "proactiveWind": 1.1078877222942327,
+              "proactiveWind": 1.1141697668685846,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -5170,9 +5170,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994242002497116,
-              "actualRead": 0.0009321642932175189,
-              "alsoFitsStep": 0.998492035956494,
+              "probability": 0.9994247822447908,
+              "actualRead": 0.0009079610146300876,
+              "alsoFitsStep": 0.9985168212301607,
               "wind": 0.5,
               "sources": [
                 {
@@ -5184,8 +5184,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9993713472191644,
-              "dodge": 0.9993713472191644,
+              "probability": 0.999378050950354,
+              "dodge": 0.999378050950354,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -5244,11 +5244,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986824693754138,
+              "firstHit": 0.9986847533274607,
               "proactive": 0,
-              "reactive": 0.9986824693754138,
+              "reactive": 0.9986847533274607,
               "proactiveMove": "toolStone",
-              "proactiveWind": 1.1055908445490814,
+              "proactiveWind": 1.104662602819022,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -5273,9 +5273,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994244404557865,
-              "actualRead": 0.0009138992925639133,
-              "alsoFitsStep": 0.9985105411632226,
+              "probability": 0.999425100440354,
+              "actualRead": 0.0008522970488457071,
+              "alsoFitsStep": 0.9985728033915083,
               "wind": 0.5,
               "sources": [
                 {
@@ -5287,8 +5287,8 @@
             },
             {
               "level": 4,
-              "probability": 0.999376346796464,
-              "dodge": 0.999376346796464,
+              "probability": 0.9993934129858142,
+              "dodge": 0.9993934129858142,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -5347,11 +5347,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.998683702840595,
+              "firstHit": 0.9986856995634324,
               "proactive": 0,
-              "reactive": 0.998683702840595,
+              "reactive": 0.9986856995634324,
               "proactiveMove": "toolStone",
-              "proactiveWind": 1.097056573625398,
+              "proactiveWind": 1.1010958746137884,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -5368,17 +5368,17 @@
               "wind": 1,
               "sources": [
                 {
-                  "uid": "raid1537",
-                  "source": "returned survivor",
+                  "uid": "reference-boar-body-0",
+                  "source": "generated reference",
                   "weapon": null
                 }
               ]
             },
             {
               "level": 3,
-              "probability": 0.9994247968131381,
-              "actualRead": 0.000853678377989775,
-              "alsoFitsStep": 0.9985711184351483,
+              "probability": 0.9994253740408049,
+              "actualRead": 0.0008515011506049497,
+              "alsoFitsStep": 0.9985738728901999,
               "wind": 0.5,
               "sources": [
                 {
@@ -5390,8 +5390,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9993929460605023,
-              "dodge": 0.9993929460605023,
+              "probability": 0.9993937095081502,
+              "dodge": 0.9993937095081502,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -5450,11 +5450,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986845277009203,
+              "firstHit": 0.998686429012013,
               "proactive": 0,
-              "reactive": 0.9986845277009203,
+              "reactive": 0.998686429012013,
               "proactiveMove": "toolStone",
-              "proactiveWind": 1.0948363163513832,
+              "proactiveWind": 1.0986561201406564,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -5479,9 +5479,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994250352160663,
-              "actualRead": 0.0008238730256747706,
-              "alsoFitsStep": 0.9986011621903915,
+              "probability": 0.999425585026247,
+              "actualRead": 0.0008328374647449399,
+              "alsoFitsStep": 0.9985927475615021,
               "wind": 0.5,
               "sources": [
                 {
@@ -5493,8 +5493,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994013150589145,
-              "dodge": 0.9994013150589145,
+              "probability": 0.9993989617438284,
+              "dodge": 0.9993989617438284,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -5553,11 +5553,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986854262328174,
+              "firstHit": 0.9986870968146278,
               "proactive": 0,
-              "reactive": 0.9986854262328174,
+              "reactive": 0.9986870968146278,
               "proactiveMove": "toolStone",
-              "proactiveWind": 1.1165322538437683,
+              "proactiveWind": 1.1235586227084386,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -5582,9 +5582,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994252949980581,
-              "actualRead": 0.0007997351316602064,
-              "alsoFitsStep": 0.9986255598663979,
+              "probability": 0.999425778233348,
+              "actualRead": 0.0008322902151748357,
+              "alsoFitsStep": 0.9985934880181732,
               "wind": 0.5,
               "sources": [
                 {
@@ -5596,8 +5596,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994081800367186,
-              "dodge": 0.9994081800367186,
+              "probability": 0.999399168533735,
+              "dodge": 0.999399168533735,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -5656,11 +5656,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986860914382376,
+              "firstHit": 0.9986879683120808,
               "proactive": 0,
-              "reactive": 0.9986860914382376,
+              "reactive": 0.9986879683120808,
               "proactiveMove": "toolStone",
-              "proactiveWind": 1.113187122777471,
+              "proactiveWind": 1.113154157596168,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -5685,9 +5685,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994254873791446,
-              "actualRead": 0.0007992163805200514,
-              "alsoFitsStep": 0.9986262709986246,
+              "probability": 0.9994260304479434,
+              "actualRead": 0.0007636210416458455,
+              "alsoFitsStep": 0.9986624094062976,
               "wind": 0.5,
               "sources": [
                 {
@@ -5699,8 +5699,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994083810727931,
-              "dodge": 0.9994083810727931,
+              "probability": 0.9994186686208153,
+              "dodge": 0.9994186686208153,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -5759,11 +5759,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986867257637528,
+              "firstHit": 0.9986885637406212,
               "proactive": 0,
-              "reactive": 0.9986867257637528,
+              "reactive": 0.9986885637406212,
               "proactiveMove": "toolStone",
-              "proactiveWind": 1.1103771520202903,
+              "proactiveWind": 1.110592628287625,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -5788,9 +5788,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994256708756191,
-              "actualRead": 0.0007856567027316741,
-              "alsoFitsStep": 0.9986400141728874,
+              "probability": 0.9994262028160202,
+              "actualRead": 0.0007631805077996656,
+              "alsoFitsStep": 0.9986630223082206,
               "wind": 0.5,
               "sources": [
                 {
@@ -5802,8 +5802,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994122768111124,
-              "dodge": 0.9994122768111124,
+              "probability": 0.9994188443148352,
+              "dodge": 0.9994188443148352,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -5862,11 +5862,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986874465803696,
+              "firstHit": 0.9986891558185765,
               "proactive": 0,
-              "reactive": 0.9986874465803696,
+              "reactive": 0.9986891558185765,
               "proactiveMove": "toolStone",
-              "proactiveWind": 1.1051824247938198,
+              "proactiveWind": 1.1071283341746305,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -5891,9 +5891,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994258794466487,
-              "actualRead": 0.0007516979869290896,
-              "alsoFitsStep": 0.9986741814597196,
+              "probability": 0.9994263742534966,
+              "actualRead": 0.0007627424962646234,
+              "alsoFitsStep": 0.9986636317572319,
               "wind": 0.5,
               "sources": [
                 {
@@ -5905,8 +5905,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994220503974514,
-              "dodge": 0.9994220503974514,
+              "probability": 0.9994190190597961,
+              "dodge": 0.9994190190597961,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -5965,11 +5965,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986879521097294,
+              "firstHit": 0.99868967966302,
               "proactive": 0,
-              "reactive": 0.9986879521097294,
+              "reactive": 0.99868967966302,
               "proactiveMove": "toolStone",
-              "proactiveWind": 1.1020643927963363,
+              "proactiveWind": 1.0992976705980262,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -5994,9 +5994,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994260257581479,
-              "actualRead": 0.0007380736484184913,
-              "alsoFitsStep": 0.9986879521097294,
+              "probability": 0.9994265259665388,
+              "actualRead": 0.0007368463035187789,
+              "alsoFitsStep": 0.99868967966302,
               "wind": 0.5,
               "sources": [
                 {
@@ -6008,8 +6008,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994260257581479,
-              "dodge": 0.9994260257581479,
+              "probability": 0.9994265259665388,
+              "dodge": 0.9994265259665388,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -6068,11 +6068,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986883853411025,
+              "firstHit": 0.998690119486876,
               "proactive": 0,
-              "reactive": 0.9986883853411025,
+              "reactive": 0.998690119486876,
               "proactiveMove": "toolStone",
-              "proactiveWind": 1.0999880311353523,
+              "proactiveWind": 1.0946629265619432,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -6097,9 +6097,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994261511677397,
-              "actualRead": 0.0007377658266372045,
-              "alsoFitsStep": 0.9986883853411025,
+              "probability": 0.999426653369727,
+              "actualRead": 0.0007365338828509982,
+              "alsoFitsStep": 0.998690119486876,
               "wind": 0.5,
               "sources": [
                 {
@@ -6111,8 +6111,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994261511677397,
-              "dodge": 0.9994261511677397,
+              "probability": 0.999426653369727,
+              "dodge": 0.999426653369727,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -6171,11 +6171,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986888723970174,
+              "firstHit": 0.9986904808086262,
               "proactive": 0,
-              "reactive": 0.9986888723970174,
+              "reactive": 0.9986904808086262,
               "proactiveMove": "toolStone",
-              "proactiveWind": 1.0952893597049604,
+              "proactiveWind": 1.0862435815190294,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -6200,9 +6200,9 @@
             },
             {
               "level": 3,
-              "probability": 0.999426292183263,
-              "actualRead": 0.0007374197862455301,
-              "alsoFitsStep": 0.9986888723970174,
+              "probability": 0.9994267580495366,
+              "actualRead": 0.0007362772409104101,
+              "alsoFitsStep": 0.9986904808086262,
               "wind": 0.5,
               "sources": [
                 {
@@ -6214,8 +6214,8 @@
             },
             {
               "level": 4,
-              "probability": 0.999426292183263,
-              "dodge": 0.999426292183263,
+              "probability": 0.9994267580495366,
+              "dodge": 0.9994267580495366,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -6274,11 +6274,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.998689267034092,
+              "firstHit": 0.9986907703732582,
               "proactive": 0,
-              "reactive": 0.998689267034092,
+              "reactive": 0.9986907703732582,
               "proactiveMove": "toolStone",
-              "proactiveWind": 1.0904734829532872,
+              "proactiveWind": 1.0828196318019556,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -6295,17 +6295,17 @@
               "wind": 1,
               "sources": [
                 {
-                  "uid": "raid1537",
-                  "source": "returned survivor",
+                  "uid": "reference-boar-body-0",
+                  "source": "generated reference",
                   "weapon": null
                 }
               ]
             },
             {
               "level": 3,
-              "probability": 0.9994264064605729,
-              "actualRead": 0.0007371394264809039,
-              "alsoFitsStep": 0.998689267034092,
+              "probability": 0.9994268419509016,
+              "actualRead": 0.0007360715776434379,
+              "alsoFitsStep": 0.9986907703732582,
               "wind": 0.5,
               "sources": [
                 {
@@ -6317,8 +6317,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994264064605729,
-              "dodge": 0.9994264064605729,
+              "probability": 0.9994268419509016,
+              "dodge": 0.9994268419509016,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -6377,11 +6377,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986896652361206,
+              "firstHit": 0.9986910519512594,
               "proactive": 0,
-              "reactive": 0.9986896652361206,
+              "reactive": 0.9986910519512594,
               "proactiveMove": "toolStone",
-              "proactiveWind": 1.088104975705845,
+              "proactiveWind": 1.0797033613666864,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -6406,9 +6406,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994265217878852,
-              "actualRead": 0.0007368565517645864,
-              "alsoFitsStep": 0.9986896652361206,
+              "probability": 0.9994269235471573,
+              "actualRead": 0.0007358715958979412,
+              "alsoFitsStep": 0.9986910519512594,
               "wind": 0.5,
               "sources": [
                 {
@@ -6420,8 +6420,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994265217878852,
-              "dodge": 0.9994265217878852,
+              "probability": 0.9994269235471573,
+              "dodge": 0.9994269235471573,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -6480,11 +6480,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986899051076021,
+              "firstHit": 0.9986913503674921,
               "proactive": 0,
-              "reactive": 0.9986899051076021,
+              "reactive": 0.9986913503674921,
               "proactiveMove": "toolStone",
-              "proactiveWind": 1.080973611408693,
+              "proactiveWind": 1.0763295994451132,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -6509,9 +6509,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994265912680615,
-              "actualRead": 0.0007366861604594099,
-              "alsoFitsStep": 0.9986899051076021,
+              "probability": 0.9994270100325378,
+              "actualRead": 0.0007356596650456293,
+              "alsoFitsStep": 0.9986913503674921,
               "wind": 0.5,
               "sources": [
                 {
@@ -6523,8 +6523,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994265912680615,
-              "dodge": 0.9994265912680615,
+              "probability": 0.9994270100325378,
+              "dodge": 0.9994270100325378,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -6583,11 +6583,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986903250468807,
+              "firstHit": 0.9986917046858135,
               "proactive": 0,
-              "reactive": 0.9986903250468807,
+              "reactive": 0.9986917046858135,
               "proactiveMove": "toolStone",
-              "proactiveWind": 1.076634655688334,
+              "proactiveWind": 1.0705004094756536,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -6612,9 +6612,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994267129214527,
-              "actualRead": 0.0007363878745719754,
-              "alsoFitsStep": 0.9986903250468807,
+              "probability": 0.9994271127321349,
+              "actualRead": 0.0007354080463214396,
+              "alsoFitsStep": 0.9986917046858135,
               "wind": 0.5,
               "sources": [
                 {
@@ -6626,8 +6626,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994267129214527,
-              "dodge": 0.9994267129214527,
+              "probability": 0.9994271127321349,
+              "dodge": 0.9994271127321349,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -6852,7 +6852,7 @@
           "context": [
             {
               "t": 7800,
-              "msg": "郭靖這回先做客：存糧不足全門一日（8.0/14.0）",
+              "msg": "郭靖這回先做客：存糧不足全門一日（11.0/14.0）",
               "tier": "low",
               "who": null
             },
@@ -6876,7 +6876,7 @@
             },
             {
               "t": 7800,
-              "msg": "【過路高人】一位雲遊高人借宿一晚，指點了主角的「葵花寶典」幾招。",
+              "msg": "【過路高人】一位雲遊高人借宿一晚，指點了主角的「空明拳」幾招。",
               "tier": "low",
               "who": "hero"
             },
@@ -6893,120 +6893,10 @@
               "who": null
             },
             {
-              "t": 7670,
-              "msg": "主角與阿禾在空地上徒手切磋",
-              "tier": "low",
-              "who": "hero"
-            }
-          ]
-        },
-        {
-          "id": "yunlongXinfa",
-          "day": 26,
-          "t": 15000,
-          "context": [
-            {
-              "t": 15000,
-              "msg": "【臨陣偷師】主角在場邊看出天地會招式精要，竟學會了《雲龍心法》！",
-              "tier": "mid",
-              "who": "hero"
-            },
-            {
-              "t": 15000,
-              "msg": "【天下論劍】以「田忌賽馬」排陣，先鋒阿禾負、中堅主角勝、主將石生負——不敵天地會。",
+              "t": 7669,
+              "msg": "阿禾把「吐納」練到極熟，自己悟出了綿長的變化！",
               "tier": "low",
               "who": "origin-1"
-            },
-            {
-              "t": 15000,
-              "msg": "郭靖這回先做客：存糧不足全門一日（9.0/16.8）",
-              "tier": "low",
-              "who": null
-            },
-            {
-              "t": 15000,
-              "msg": "【抉擇】【天下論劍】天地會代表團上門：天地會遣先鋒、中堅、主將三人來會，三戰兩勝。我方出陣：主角、阿禾、石生。如何排陣？",
-              "tier": "low",
-              "who": "hero"
-            },
-            {
-              "t": 15000,
-              "msg": "【奇遇】村路上的憨厚少年：一個背著長弓的少年在山門外跪了一夜：「求師父收我。我笨，可我肯練。」",
-              "tier": "low",
-              "who": null
-            },
-            {
-              "t": 15000,
-              "msg": "【傳聞】山下茶攤有人說，黑木崖魔教的人馬已在山腳集結，怕是明日就要殺上山來（魔教十長老圍山）！",
-              "tier": "low",
-              "who": null
-            },
-            {
-              "t": 15000,
-              "msg": "第 26 日晨，香火錢入帳 9。",
-              "tier": "low",
-              "who": null
-            },
-            {
-              "t": 14884,
-              "msg": "石生【築基培元】內功《吐納》長進 0.18",
-              "tier": "low",
-              "who": "origin-2"
-            }
-          ]
-        },
-        {
-          "id": "yiJing",
-          "day": 28,
-          "t": 16504.5,
-          "context": [
-            {
-              "t": 16504,
-              "msg": "【藏經閣】主角在書堆裡翻出一卷《醫經抄本》，從此略通醫術。",
-              "tier": "low",
-              "who": "hero"
-            },
-            {
-              "t": 16480,
-              "msg": "一頭野豬循山路下來，朝菜園去了。",
-              "tier": "low",
-              "who": null
-            },
-            {
-              "t": 16466,
-              "msg": "主角在露天灶煮好 3 份飯",
-              "tier": "low",
-              "who": "hero"
-            },
-            {
-              "t": 16463,
-              "msg": "阿禾與石生在空地上徒手切磋",
-              "tier": "low",
-              "who": "origin-1"
-            },
-            {
-              "t": 16442,
-              "msg": "阿禾與石生在空地上徒手切磋",
-              "tier": "low",
-              "who": "origin-1"
-            },
-            {
-              "t": 16430,
-              "msg": "主角與石生在空地上徒手切磋",
-              "tier": "low",
-              "who": "hero"
-            },
-            {
-              "t": 16430,
-              "msg": "石生向主角請教功夫，頗有心得",
-              "tier": "low",
-              "who": "origin-2"
-            },
-            {
-              "t": 16422,
-              "msg": "主角與阿禾在空地上徒手切磋",
-              "tier": "low",
-              "who": "hero"
             }
           ]
         }
@@ -7043,12 +6933,12 @@
         {
           "id": "origin-1",
           "mentor": "origin-2",
-          "totalReceived": 310
+          "totalReceived": 279
         },
         {
           "id": "origin-2",
           "mentor": "origin-1",
-          "totalReceived": 286.75
+          "totalReceived": 325.5
         }
       ],
       "famous": 0
@@ -8105,11 +7995,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9944590952492046,
+              "firstHit": 0.9944612972100003,
               "proactive": 0,
-              "reactive": 0.9944590952492046,
+              "reactive": 0.9944612972100003,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6402954131494353,
+              "proactiveWind": 0.6402567009829933,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -8134,9 +8024,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9975824358666748,
-              "actualRead": 0.005404607266036976,
-              "alsoFitsStep": 0.9921778286006379,
+              "probability": 0.9975830715343627,
+              "actualRead": 0.005401553949247018,
+              "alsoFitsStep": 0.9921815175851156,
               "wind": 0.5,
               "sources": [
                 {
@@ -8148,8 +8038,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9969832140321476,
-              "dodge": 0.9969832140321476,
+              "probability": 0.9969840998398124,
+              "dodge": 0.9969840998398124,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -8208,11 +8098,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9944716947923197,
+              "firstHit": 0.9944734880147064,
               "proactive": 0,
-              "reactive": 0.9944716947923197,
+              "reactive": 0.9944734880147064,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6400735917075153,
+              "proactiveWind": 0.640041959569008,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -8237,9 +8127,9 @@
             },
             {
               "level": 3,
-              "probability": 0.997586074862363,
-              "actualRead": 0.00451442762524934,
-              "alsoFitsStep": 0.9930716472371136,
+              "probability": 0.9975865931208221,
+              "actualRead": 0.004512431840496323,
+              "alsoFitsStep": 0.9930741612803258,
               "wind": 0.5,
               "sources": [
                 {
@@ -8251,8 +8141,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9972050696663342,
-              "dodge": 0.9972050696663342,
+              "probability": 0.9972057152149367,
+              "dodge": 0.9972057152149367,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -8311,11 +8201,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986788850214994,
+              "firstHit": 0.9986788410790225,
               "proactive": 0,
-              "reactive": 0.9986788850214994,
+              "reactive": 0.9986788410790225,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.639526315529033,
+              "proactiveWind": 0.6395295537357547,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -8340,9 +8230,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994234058694668,
-              "actualRead": 0.001040739411972691,
-              "alsoFitsStep": 0.9983826664574941,
+              "probability": 0.9994233931947842,
+              "actualRead": 0.0010797993681020968,
+              "alsoFitsStep": 0.9983435938266821,
               "wind": 0.5,
               "sources": [
                 {
@@ -8354,8 +8244,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9993424456948867,
-              "dodge": 0.9993424456948867,
+              "probability": 0.9993323774919718,
+              "dodge": 0.9993323774919718,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -8414,11 +8304,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986805358524778,
+              "firstHit": 0.9986805222623332,
               "proactive": 0,
-              "reactive": 0.9986805358524778,
+              "reactive": 0.9986805222623332,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6698051641523928,
+              "proactiveWind": 0.6698061675331495,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -8443,9 +8333,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994238821872287,
-              "actualRead": 0.0009687059642070617,
-              "alsoFitsStep": 0.9984551762230216,
+              "probability": 0.9994238782647998,
+              "actualRead": 0.0010389946639716152,
+              "alsoFitsStep": 0.9983848836008282,
               "wind": 0.5,
               "sources": [
                 {
@@ -8457,8 +8347,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9993614849773504,
-              "dodge": 0.9993614849773504,
+              "probability": 0.9993430209520308,
+              "dodge": 0.9993430209520308,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -8517,11 +8407,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986816708566446,
+              "firstHit": 0.9986819277375694,
               "proactive": 0,
-              "reactive": 0.9986816708566446,
+              "reactive": 0.9986819277375694,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6972220151180434,
+              "proactiveWind": 0.6697023170559125,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -8546,9 +8436,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994242098480366,
-              "actualRead": 0.0009675959935948608,
-              "alsoFitsStep": 0.9984566138544417,
+              "probability": 0.9994242840260688,
+              "actualRead": 0.0010012419323567334,
+              "alsoFitsStep": 0.998423042093712,
               "wind": 0.5,
               "sources": [
                 {
@@ -8560,8 +8450,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9993618672655583,
-              "dodge": 0.9993618672655583,
+              "probability": 0.9993529892531471,
+              "dodge": 0.9993529892531471,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -8620,11 +8510,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986825893131245,
+              "firstHit": 0.9986825634445236,
               "proactive": 0,
-              "reactive": 0.9986825893131245,
+              "reactive": 0.9986825634445236,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6971540805398763,
+              "proactiveWind": 0.6696552901593558,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -8641,17 +8531,17 @@
               "wind": 1,
               "sources": [
                 {
-                  "uid": "reference-boar-body-0",
-                  "source": "generated reference",
+                  "uid": "raid1537",
+                  "source": "returned survivor",
                   "weapon": null
                 }
               ]
             },
             {
               "level": 3,
-              "probability": 0.9994244750992555,
-              "actualRead": 0.0009124002951272914,
-              "alsoFitsStep": 0.9985120748041282,
+              "probability": 0.9994244676270909,
+              "actualRead": 0.0009688528376219363,
+              "alsoFitsStep": 0.998455614789469,
               "wind": 0.5,
               "sources": [
                 {
@@ -8663,8 +8553,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9993767626132803,
-              "dodge": 0.9993767626132803,
+              "probability": 0.9993616015787179,
+              "dodge": 0.9993616015787179,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -8723,11 +8613,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.998683643269149,
+              "firstHit": 0.9986836900623648,
               "proactive": 0,
-              "reactive": 0.998683643269149,
+              "reactive": 0.9986836900623648,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6970760360465575,
+              "proactiveWind": 0.6970725688790701,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -8744,17 +8634,17 @@
               "wind": 1,
               "sources": [
                 {
-                  "uid": "reference-boar-body-0",
-                  "source": "generated reference",
+                  "uid": "raid1537",
+                  "source": "returned survivor",
                   "weapon": null
                 }
               ]
             },
             {
               "level": 3,
-              "probability": 0.9994247795986053,
-              "actualRead": 0.0008830441428564484,
-              "alsoFitsStep": 0.9985417354557489,
+              "probability": 0.9994247931205426,
+              "actualRead": 0.0009085413572590406,
+              "alsoFitsStep": 0.9985162517632835,
               "wind": 0.5,
               "sources": [
                 {
@@ -8766,8 +8656,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9993848494048971,
-              "dodge": 0.9993848494048971,
+              "probability": 0.9993778962634136,
+              "dodge": 0.9993778962634136,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -8826,11 +8716,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986846670175383,
+              "firstHit": 0.9986845015665091,
               "proactive": 0,
-              "reactive": 0.9986846670175383,
+              "reactive": 0.9986845015665091,
               "proactiveMove": "kh1",
-              "proactiveWind": 0.6970001386490019,
+              "proactiveWind": 0.6970124106529999,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -8855,9 +8745,9 @@
             },
             {
               "level": 3,
-              "probability": 0.999425075489147,
-              "actualRead": 0.0008026051566741854,
-              "alsoFitsStep": 0.9986224703324729,
+              "probability": 0.9994250276614782,
+              "actualRead": 0.0009078048404399519,
+              "alsoFitsStep": 0.9985172228210383,
               "wind": 0.5,
               "sources": [
                 {
@@ -8869,8 +8759,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994073072510463,
-              "dodge": 0.9994073072510463,
+              "probability": 0.9993781600552001,
+              "dodge": 0.9993781600552001,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -8929,11 +8819,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986854524222576,
+              "firstHit": 0.9986852157723592,
               "proactive": 0,
-              "reactive": 0.9986854524222576,
-              "proactiveMove": "bs1",
-              "proactiveWind": 0.9015670993237568,
+              "reactive": 0.9986852157723592,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.696959419267639,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -8950,17 +8840,17 @@
               "wind": 1,
               "sources": [
                 {
-                  "uid": "reference-boar-body-0",
-                  "source": "generated reference",
+                  "uid": "raid1537",
+                  "source": "returned survivor",
                   "weapon": null
                 }
               ]
             },
             {
               "level": 3,
-              "probability": 0.9994253025712548,
-              "actualRead": 0.0007637393885109311,
-              "alsoFitsStep": 0.9986615631827439,
+              "probability": 0.9994252341420152,
+              "actualRead": 0.000902586231386393,
+              "alsoFitsStep": 0.9985226479106288,
               "wind": 0.5,
               "sources": [
                 {
@@ -8972,8 +8862,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994184261104878,
-              "dodge": 0.9994184261104878,
+              "probability": 0.9993796354823555,
+              "dodge": 0.9993796354823555,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -9032,11 +8922,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986864077141723,
+              "firstHit": 0.9986860275594645,
               "proactive": 0,
-              "reactive": 0.9986864077141723,
-              "proactiveMove": "bs1",
-              "proactiveWind": 0.899568564017454,
+              "reactive": 0.9986860275594645,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.6968991352884764,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -9061,9 +8951,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994255788652251,
-              "actualRead": 0.0007391711510528198,
-              "alsoFitsStep": 0.9986864077141723,
+              "probability": 0.9994254689029058,
+              "actualRead": 0.0009018541869206809,
+              "alsoFitsStep": 0.9985236147159852,
               "wind": 0.5,
               "sources": [
                 {
@@ -9075,8 +8965,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994255788652251,
-              "dodge": 0.9994255788652251,
+              "probability": 0.9993798987179727,
+              "dodge": 0.9993798987179727,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -9135,11 +9025,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986869833817434,
+              "firstHit": 0.9986865819949131,
               "proactive": 0,
-              "reactive": 0.9986869833817434,
-              "proactiveMove": "bs1",
-              "proactiveWind": 0.8983836596167232,
+              "reactive": 0.9986865819949131,
+              "proactiveMove": "kh1",
+              "proactiveWind": 0.6968579303522202,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -9156,17 +9046,17 @@
               "wind": 1,
               "sources": [
                 {
-                  "uid": "reference-boar-body-0",
-                  "source": "generated reference",
+                  "uid": "raid1537",
+                  "source": "returned survivor",
                   "weapon": null
                 }
               ]
             },
             {
               "level": 3,
-              "probability": 0.9994257454116959,
-              "actualRead": 0.0007387620299524889,
-              "alsoFitsStep": 0.9986869833817434,
+              "probability": 0.9994256292825042,
+              "actualRead": 0.0008579839666991163,
+              "alsoFitsStep": 0.9985676453158051,
               "wind": 0.5,
               "sources": [
                 {
@@ -9178,8 +9068,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994257454116959,
-              "dodge": 0.9994257454116959,
+              "probability": 0.9993919845148458,
+              "dodge": 0.9993919845148458,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -9238,11 +9128,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986876793561325,
+              "firstHit": 0.9986872555216865,
               "proactive": 0,
-              "reactive": 0.9986876793561325,
+              "reactive": 0.9986872555216865,
               "proactiveMove": "bs1",
-              "proactiveWind": 0.8968359658267003,
+              "proactiveWind": 0.9020675287236853,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -9267,9 +9157,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994259468136087,
-              "actualRead": 0.0007382674574762937,
-              "alsoFitsStep": 0.9986876793561325,
+              "probability": 0.9994258241574353,
+              "actualRead": 0.0008279566578216491,
+              "alsoFitsStep": 0.9985978674996137,
               "wind": 0.5,
               "sources": [
                 {
@@ -9281,8 +9171,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994259468136087,
-              "dodge": 0.9994259468136087,
+              "probability": 0.9994003927627844,
+              "dodge": 0.9994003927627844,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -9341,11 +9231,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986882469668102,
+              "firstHit": 0.9986879272184511,
               "proactive": 0,
-              "reactive": 0.9986882469668102,
+              "reactive": 0.9986879272184511,
               "proactiveMove": "bs1",
-              "proactiveWind": 0.8950492714138365,
+              "proactiveWind": 0.8994672150124182,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -9370,9 +9260,9 @@
             },
             {
               "level": 3,
-              "probability": 0.999426111109578,
-              "actualRead": 0.0007378641427677746,
-              "alsoFitsStep": 0.9986882469668102,
+              "probability": 0.9994260185533864,
+              "actualRead": 0.0008134158953313486,
+              "alsoFitsStep": 0.9986126026580551,
               "wind": 0.5,
               "sources": [
                 {
@@ -9384,8 +9274,8 @@
             },
             {
               "level": 4,
-              "probability": 0.999426111109578,
-              "dodge": 0.999426111109578,
+              "probability": 0.9994045263949667,
+              "dodge": 0.9994045263949667,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -9444,11 +9334,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986885338697806,
+              "firstHit": 0.9986884134230135,
               "proactive": 0,
-              "reactive": 0.9986885338697806,
+              "reactive": 0.9986884134230135,
               "proactiveMove": "bs1",
-              "proactiveWind": 0.8944019820525677,
+              "proactiveWind": 0.8973536729968139,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -9473,9 +9363,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994261941678925,
-              "actualRead": 0.0007376602981118419,
-              "alsoFitsStep": 0.9986885338697806,
+              "probability": 0.9994261592974718,
+              "actualRead": 0.0008070543282505671,
+              "alsoFitsStep": 0.9986191049692212,
               "wind": 0.5,
               "sources": [
                 {
@@ -9487,8 +9377,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994261941678925,
-              "dodge": 0.9994261941678925,
+              "probability": 0.9994063576911117,
+              "dodge": 0.9994063576911117,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -9547,11 +9437,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986890451339061,
+              "firstHit": 0.9986891110237037,
               "proactive": 0,
-              "reactive": 0.9986890451339061,
+              "reactive": 0.9986891110237037,
               "proactiveMove": "bs1",
-              "proactiveWind": 0.8930973139323612,
+              "proactiveWind": 0.8947873715814976,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -9576,9 +9466,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994263422015237,
-              "actualRead": 0.0007372970676176038,
-              "alsoFitsStep": 0.9986890451339061,
+              "probability": 0.99942636128167,
+              "actualRead": 0.000759066846454548,
+              "alsoFitsStep": 0.9986672944352154,
               "wind": 0.5,
               "sources": [
                 {
@@ -9590,8 +9480,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994263422015237,
-              "dodge": 0.9994263422015237,
+              "probability": 0.9994200701024792,
+              "dodge": 0.9994200701024792,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -9650,11 +9540,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986893682727812,
+              "firstHit": 0.9986895548531005,
               "proactive": 0,
-              "reactive": 0.9986893682727812,
+              "reactive": 0.9986895548531005,
               "proactiveMove": "bs1",
-              "proactiveWind": 0.8918371537061731,
+              "proactiveWind": 0.8932774113407215,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -9679,9 +9569,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994264357796485,
-              "actualRead": 0.000737067506867306,
-              "alsoFitsStep": 0.9986893682727812,
+              "probability": 0.9994264898169642,
+              "actualRead": 0.0007369349638637335,
+              "alsoFitsStep": 0.9986895548531005,
               "wind": 0.5,
               "sources": [
                 {
@@ -9693,8 +9583,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994264357796485,
-              "dodge": 0.9994264357796485,
+              "probability": 0.9994264898169642,
+              "dodge": 0.9994264898169642,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -9753,11 +9643,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986899179352433,
+              "firstHit": 0.9986898874213729,
               "proactive": 0,
-              "reactive": 0.9986899179352433,
+              "reactive": 0.9986898874213729,
               "proactiveMove": "bs1",
-              "proactiveWind": 0.8903607941402458,
+              "proactiveWind": 0.8924029682080379,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -9782,9 +9672,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994265949838445,
-              "actualRead": 0.000736677048601142,
-              "alsoFitsStep": 0.9986899179352433,
+              "probability": 0.9994265861449216,
+              "actualRead": 0.0007366987235487565,
+              "alsoFitsStep": 0.9986898874213729,
               "wind": 0.5,
               "sources": [
                 {
@@ -9796,8 +9686,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994265949838445,
-              "dodge": 0.9994265949838445,
+              "probability": 0.9994265861449216,
+              "dodge": 0.9994265861449216,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -9856,11 +9746,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986901786763458,
+              "firstHit": 0.9986903467494801,
               "proactive": 0,
-              "reactive": 0.9986901786763458,
+              "reactive": 0.9986903467494801,
               "proactiveMove": "bs1",
-              "proactiveWind": 0.8895984390263603,
+              "proactiveWind": 0.8910151233334631,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -9877,17 +9767,17 @@
               "wind": 1,
               "sources": [
                 {
-                  "uid": "reference-boar-body-0",
-                  "source": "generated reference",
+                  "uid": "raid1537",
+                  "source": "returned survivor",
                   "weapon": null
                 }
               ]
             },
             {
               "level": 3,
-              "probability": 0.9994266705167166,
-              "actualRead": 0.0007364918403708343,
-              "alsoFitsStep": 0.9986901786763458,
+              "probability": 0.999426719209077,
+              "actualRead": 0.0007363724595969012,
+              "alsoFitsStep": 0.9986903467494801,
               "wind": 0.5,
               "sources": [
                 {
@@ -9899,8 +9789,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994266705167166,
-              "dodge": 0.9994266705167166,
+              "probability": 0.999426719209077,
+              "dodge": 0.999426719209077,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -9959,11 +9849,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.998690567315235,
+              "firstHit": 0.9986905934282715,
               "proactive": 0,
-              "reactive": 0.998690567315235,
+              "reactive": 0.9986905934282715,
               "proactiveMove": "bs1",
-              "proactiveWind": 0.8884771271369762,
+              "proactiveWind": 0.8904223039471936,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -9980,17 +9870,17 @@
               "wind": 1,
               "sources": [
                 {
-                  "uid": "reference-boar-body-0",
-                  "source": "generated reference",
+                  "uid": "raid1537",
+                  "source": "returned survivor",
                   "weapon": null
                 }
               ]
             },
             {
               "level": 3,
-              "probability": 0.9994267831138455,
-              "actualRead": 0.0007362157986104956,
-              "alsoFitsStep": 0.998690567315235,
+              "probability": 0.9994267906799665,
+              "actualRead": 0.0007361972516950477,
+              "alsoFitsStep": 0.9986905934282715,
               "wind": 0.5,
               "sources": [
                 {
@@ -10002,8 +9892,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994267831138455,
-              "dodge": 0.9994267831138455,
+              "probability": 0.9994267906799665,
+              "dodge": 0.9994267906799665,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -10062,11 +9952,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.998690859255055,
+              "firstHit": 0.9986908843772696,
               "proactive": 0,
-              "reactive": 0.998690859255055,
+              "reactive": 0.9986908843772696,
               "proactiveMove": "bs1",
-              "proactiveWind": 0.8878243673091485,
+              "proactiveWind": 0.8892900960448361,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -10091,9 +9981,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994268677062921,
-              "actualRead": 0.0007360084512371134,
-              "alsoFitsStep": 0.998690859255055,
+              "probability": 0.9994268749861486,
+              "actualRead": 0.0007359906088789669,
+              "alsoFitsStep": 0.9986908843772696,
               "wind": 0.5,
               "sources": [
                 {
@@ -10105,8 +9995,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994268677062921,
-              "dodge": 0.9994268677062921,
+              "probability": 0.9994268749861486,
+              "dodge": 0.9994268749861486,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -10165,11 +10055,11 @@
             {
               "level": 1,
               "probability": 1,
-              "firstHit": 0.9986913625909345,
+              "firstHit": 0.9986912637797823,
               "proactive": 0,
-              "reactive": 0.9986913625909345,
+              "reactive": 0.9986912637797823,
               "proactiveMove": "bs1",
-              "proactiveWind": 0.8859868508631736,
+              "proactiveWind": 0.8880905357072753,
               "frightened": true,
               "wind": 0.4,
               "sources": [
@@ -10194,9 +10084,9 @@
             },
             {
               "level": 3,
-              "probability": 0.9994270135752827,
-              "actualRead": 0.0007356509843482462,
-              "alsoFitsStep": 0.9986913625909345,
+              "probability": 0.9994269849371266,
+              "actualRead": 0.0007357211573442157,
+              "alsoFitsStep": 0.9986912637797823,
               "wind": 0.5,
               "sources": [
                 {
@@ -10208,8 +10098,8 @@
             },
             {
               "level": 4,
-              "probability": 0.9994270135752827,
-              "dodge": 0.9994270135752827,
+              "probability": 0.9994269849371266,
+              "dodge": 0.9994269849371266,
               "disarm": 0,
               "wind": 0.6,
               "sources": [
@@ -10434,7 +10324,7 @@
           "context": [
             {
               "t": 7800,
-              "msg": "郭靖這回先做客：存糧不足全門一日（8.0/14.0）",
+              "msg": "郭靖這回先做客：存糧不足全門一日（9.0/14.0）",
               "tier": "low",
               "who": null
             },
@@ -10484,54 +10374,54 @@
         },
         {
           "id": "yiJing",
-          "day": 17,
-          "t": 9971.5,
+          "day": 18,
+          "t": 10548.25,
           "context": [
             {
-              "t": 9971,
+              "t": 10548,
               "msg": "【藏經閣】主角在書堆裡翻出一卷《醫經抄本》，從此略通醫術。",
               "tier": "low",
               "who": "hero"
             },
             {
-              "t": 9971,
-              "msg": "主角【築基培元】內功《吐納》長進 0.27",
+              "t": 10548,
+              "msg": "主角【築基培元】內功《吐納》長進 0.28",
               "tier": "low",
               "who": "hero"
             },
             {
-              "t": 9965,
-              "msg": "石生在露天灶煮好 3 份飯",
+              "t": 10548,
+              "msg": "石生【築基培元】內功《吐納》長進 0.34",
               "tier": "low",
               "who": "origin-2"
             },
             {
-              "t": 9958,
+              "t": 10529,
               "msg": "主角與阿禾在空地上徒手切磋",
               "tier": "low",
               "who": "hero"
             },
             {
-              "t": 9958,
-              "msg": "主角【築基培元】內功《吐納》長進 0.37",
+              "t": 10529,
+              "msg": "主角【築基培元】內功《吐納》長進 0.39",
               "tier": "low",
               "who": "hero"
             },
             {
-              "t": 9953,
-              "msg": "石生在露天灶煮好 3 份飯",
+              "t": 10526,
+              "msg": "石生【築基培元】內功《吐納》長進 0.32",
               "tier": "low",
               "who": "origin-2"
             },
             {
-              "t": 9941,
-              "msg": "石生在露天灶煮好 3 份飯",
+              "t": 10520,
+              "msg": "主角【築基培元】內功《吐納》長進 0.12",
               "tier": "low",
-              "who": "origin-2"
+              "who": "hero"
             },
             {
-              "t": 9928,
-              "msg": "主角和石生湊在一桌吃飯",
+              "t": 10520,
+              "msg": "主角【築基培元】內功《吐納》長進 0.05",
               "tier": "low",
               "who": "hero"
             }
@@ -10570,12 +10460,12 @@
         {
           "id": "origin-1",
           "mentor": "origin-2",
-          "totalReceived": 348.75
+          "totalReceived": 356.5
         },
         {
           "id": "origin-2",
           "mentor": "origin-1",
-          "totalReceived": 271.25
+          "totalReceived": 302.25
         }
       ],
       "famous": 0
