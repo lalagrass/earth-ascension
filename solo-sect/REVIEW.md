@@ -326,6 +326,7 @@ N34 的 `duel.mjs --log` 仍輸出每拍的 `T/r/m/margin` 供 reviewer 任取�
 實際主筆 grass／Codex Cloud。base 為 #497 已合併的 `270f746`。Claude 在 #497 複審指出，舊 `plots.length > 0` 讓四塊正在種或被預約的菜畦仍算可做工，無束脩候選無法走下山路徑。現在 `availableAdmissionWork` 查各菜畦真狀態與 `plot:i` 預約，再查未滿庫、當下無工作／預約的林緣和石場；成功入門的抵食宿工作會按日記格，避免同日重複承諾。僅管新人的食宿承諾，不縮現有門人的工序容量。錢 3 是原 `ECON.wage=2` 的一日半食宿及指導時辰機會成本，不是虛構的飯食市價；飯仍真扣。公式及限制見 [收徒系統](docs/systems/recruitment.md)。
 
 - A：`bash test/run.sh smoke`，21/21；新增一支小測試驗菜畦全預約、木石滿庫後無工，`recruit` 真使候選下山，隔 `DAY` 帶糧回來；同測試驗 3.8→3.81 空工作預約欄。原 N58 及 N50 斷言不改。
+- CI 首輪 quick 與 golden 通過，accept 300/301；唯一失敗是 `v220` 的三十日**完整存檔**雜湊仍釘 3.8。新增當日 `workBooked` 欄和規則版 3.81 會改序列化內容，即使同尺 bot12 的戰鬥、招收和資源數字不變。Node 22 同一 seed 42 重產 `golden-30d-v22.txt` 為 `65e97bad8cee89c7`；測試情境和相等斷言保留，待新 CI 驗證。
 - A：Node 22 `docker run --rm -v "$PWD":/repo -w /repo/solo-sect node:22-bookworm-slim node tools/golden.mjs --write`；quick 4、full 32、舊檔 6 格更新。每格存檔 hash 因規則 3.81 與新欄改變，完整模擬輸出差異由 CI `golden --check` 核對。
 - B：無新增機率或權重，工作格是已預約／可工作與否的確定性判斷。
 - C：`node tools/bot12.mjs . --json > artifacts/n58-fix/bot12-head.json`；[原 #497 3.8 輸出](artifacts/n58/bot12-full-head.json)與[3.81 輸出](artifacts/n58-fix/bot12-head.json)。12 種子 30 日，原版／小修：自然下山 0／0、常駐名俠第 10／30 日中位 3／3→3／3、日常山賊 78/82→78/82、有柵探針 90/96→90/96、柵留住 29→29、惱羞 326→326、威脅點中位 267→267。bot 的正常日程未填滿所有工作格，因此這 12 種子沒有下山；A 的合法滿格情境證明路徑可達，不把零次改報成有發生。
