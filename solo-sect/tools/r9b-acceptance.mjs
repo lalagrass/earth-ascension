@@ -1,7 +1,8 @@
 // #441 2026-11-07 A/B：固定情境核對規則，再用公式與 99.9% 信賴區間核對隨機結果。
 import assert from 'node:assert/strict';
 import {createState,clone,rand} from '../src/sim.mjs';
-import {clashTimes,clashOdds,resolveSwing,assessLoad} from '../src/arts.mjs';
+import {clashTimes,clashOdds,resolveSwing,assessLoad,learnArt} from '../src/arts.mjs';
+import {TIERS} from '../src/data.mjs';
 import {learnFromLoss} from '../src/techniques.mjs';
 import {learningWeight} from '../src/practice.mjs';
 import {COVERS} from '../src/tactics.mjs';
@@ -12,6 +13,9 @@ const seed=Number(process.argv.find(x=>x.startsWith('--seed='))?.slice(7)??17);
 if(!Number.isSafeInteger(seed))throw Error('--seed 須為整數');
 const novice=createState(seed,{kind:'bare',askMajor:false}).ds[0];
 const master=growthSnapshots(seed,[60]).snapshots[0].hero;
+// N51 的登門理由會改變自然日程能否巧遇武學。A/B 固定高手情境明確補同一武學火候，
+// 仍由 N33/N42 的真反應公式判定，不以偶遇江湖客作高手的隱性前置。
+learnArt(master,'basicFist');master.arts.basicFist.xp=TIERS[3][0];
 const fastWind=.4; // 固定情境：和起手表的狗咬同量級，並非遊戲新增常數。
 function humanScene(base,wind=fastWind){
   const s=createState(seed,{kind:'bare',askMajor:false}),atk=clone(novice),def=clone(base);
