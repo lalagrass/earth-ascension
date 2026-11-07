@@ -1,10 +1,10 @@
-import { createState } from './harness/historical-party.mjs';
+import { createState, historicJoin as join } from './harness/historical-party.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { tick } from '../src/sim.mjs';
 import { ARTS, RULES_VERSION, DAY, JH } from '../src/data.mjs';
 import { artTier } from '../src/arts.mjs';
-import { join, XIA_PAIRS, xiaResolve } from '../src/wuxia.mjs';
+import { XIA_PAIRS, xiaResolve } from '../src/wuxia.mjs';
 import { jhStep, jhResolve, card, comedyOk, CARDS } from '../src/jianghu.mjs';
 import { migrate } from '../src/save.mjs';
 const st = (o = {}) => { const s = createState(11, { kind: 'template', id: 'guojing', companion: 'huangrong', askMajor: true, ...o }); tick(s); s.jh.morningOn = false; return s; };

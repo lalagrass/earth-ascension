@@ -133,7 +133,7 @@ export { book }; // v1.8 移到 util.mjs（各模組共用）
 export function capacity(s) { return FACILITIES.reduce((a, f) => a + (facStage(s, f.id).beds || 0), 0); }
 export function recruitNeed(s) { return RECRUIT.baseRep + RECRUIT.stepRep * (disciples(s).length - 3); }
 export function canRecruit(s) {
-  const next = RECRUIT_POOL.find((p) => !s.ds.some((d) => d.id === p.id)) || econOf(s).pool[0]; /* v1.85 A10：名冊用完後收義學帶回的人 */
+  const next = econOf(s).pool[0] || RECRUIT_POOL.find((p) => !s.ds.some((d) => d.id === p.id)); // 義學帶回的人先評估食宿與師父，毋須等固定名冊招滿
   if (!next) return { ok: false, why: '暫無人選' };
   if(!next.school&&s.rep<recruitNeed(s))return {ok:false,why:`還未聽說山門（名聲 ${s.rep}/${recruitNeed(s)}）`,heard:false};
   const candidate=makeBare({id:next.id,skills:{...next.skills},situation:next.situation});

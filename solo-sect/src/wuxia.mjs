@@ -6,7 +6,7 @@ import { DAY, TIERS, TREES, HS, DUGU, MOVES, COMPANIONS, ACTIVITIES, buildCards 
 import { think, initPair, meetOpinion } from './social.mjs';
 import { encounterPool, mkComp, heroById, addWexin } from './hero.mjs';
 import { learnArt, seedArts, artById, artTier } from './arts.mjs';
-import { log, resAdd } from './util.mjs';
+import { book, log, resAdd } from './util.mjs';
 import { removeActor } from './core.mjs';
 import { onJoin13 } from './jianghu.mjs';
 // ==== （原 wuxia.mjs）====
@@ -98,7 +98,7 @@ export function xiaResolve(s, ch, i) {
     const hr = s.ds.find((d) => xidOf(s, d) === 'huangrong'); if (hr) s.aff[`${hr.id}>hongqigong`] = 40;
     log(s, `洪七公在膳房邊上住下：「女娃娃的菜好吃，老叫化就教點東西。」（吃人嘴軟）`); arcAdvance(s, 2, '吃人嘴軟：洪七公留下了'); return true; }
   const candidate=makeXiaCandidate(s,k),host=s.ds.find(d=>d.id==='hero')||s.ds[0];
-  if(s.res.food>=ACTIVITIES.eat.use.food&&host){resAdd(s,'food',-ACTIVITIES.eat.use.food);meetOpinion(s,candidate,host,4);s.xia.met??={};s.xia.met[k]={day:s.day,at:s.t,reason:'一起吃飯談近況'};}
+  if(s.res.food>=ACTIVITIES.eat.use.food&&host){resAdd(s,'food',-ACTIVITIES.eat.use.food);book(s,'out','food',ACTIVITIES.eat.use.food);meetOpinion(s,candidate,host,4);s.xia.met??={};s.xia.met[k]={day:s.day,at:s.t,reason:'一起吃飯談近況'};}
   const joined=join(s,k);if(!joined){s.xia.declined[k]=s.t;log(s,`${A.name}這回先做客：${xiaAdmission(s,k).why}`);}return true;
 }
 // 突然入門的高手：帶著底子來（技藝高、心情好）

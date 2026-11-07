@@ -21,6 +21,8 @@ docker run --rm -v "$PWD":/repo -w /repo node:22-bookworm-slim node solo-sect/to
 
 規則 3.6 遷移保留舊名單與已學武學，為舊角色補 `timeToday`／`guidanceTotal`；新局同行仍由出身真資料產生。Node 22 是 CI 的 canonical golden runtime；Node 24 的前輪 N33 浮點計算曾有 1 ULP 差異，不混用兩版 hash。
 
+9c 第一輪完整 CI（[run 42326710710](https://github.com/lalagrass/earth-ascension/actions/runs/42326710710)）quick 572 過、57 敗，golden 因 quick 失敗跳過。舊測試多處默認開局有林師姐／堂弟、指定名俠當場入門；N50 正式開局已改為出身同行與共用招募，因此舊機制測試改用 `test/harness/historical-party.mjs` 明確建出所需歷史角色，原交手、劇情和人際斷言保留。真實回歸另修：新同行者剛建立時缺 `best`／`insight`／`away`，讀檔才補，破壞現行存讀冪等；義學帶回的候選被固定招募名冊擋在後面，未能優先走共用食宿與師父驗算。第七輪群戰探針現在明確安排洪七公第三段傳藝後量亢龍時間，避免把 N50 不再保證見到師父誤當成群戰機制失敗。舊 v2.2 三十日存檔 hash 隨正式新開局改變，Node 22 重產 `test/fixtures/golden-30d-v22.txt`，不改早期 `golden-30d.txt`。後續 CI 結果仍待核對。
+
 本輪觸及舊招募／練功程式的可讀名稱：`fnv29 → stableTraitHash`、`RECRUIT29 → RECRUIT_TRAIT_VARIATION`、`trained31 → trainedArt`。歷史文件中的舊名保留為當時紀錄；舊存檔鍵 `v29n` 仍照 3.6 遷移讀取，不靠改鍵名破壞回放。
 
 bot12 取已合併 9b 的相同工具重跑 base，與 9c head 的[完整原始輸出](artifacts/round9c/bot12-head-final.json)對照（[base](artifacts/round9c/bot12-base.json)）。第10／30日常住名俠中位數為 **7／11 → 0／0**，後者兩日均低於 N50 原 C 目標；候選人的拒絕理由明記「存糧不足全門一日」，例如 9.0/14.0，並保留每人床位／師父空檔／處境效用。這是食宿共用門檻對舊免費名俠的真影響，沒有為湊人頭轉動出現頻率。其餘 C 指標：單人狩獵擊退 317→248、溜走 139→331、失血 9→66；**有柵探針** 96/96→96/96，守柵 26→87，重傷 28→4；**自然日常山賊** 84/84→4/5、重傷 20→1，兩個分母不能混用。自然山賊戰數隨招募和威脅點數 687→0 一起下降，五場的勝率不可和前輪 84 場當同分布的強弱結論。巫時自然 1→0、柵探針 1→39，惱羞 125→167，常見武學 DPS 中位 144.4→492.6（樣本 155→2）；後一個中位數因新規則讓該類僅餘兩人，不能代表通常武學被整體加強。

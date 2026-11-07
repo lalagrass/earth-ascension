@@ -48,7 +48,7 @@ test('A10 下山義學：花錢派人下山一日，帶回的人不看名聲、�
   const r = startSchoolTrip(s); assert.ok(r.ok, r.why); assert.ok(r.d.away); assert.match(schoolWhy(s), /正在山下/);
   const t0 = s.t; while (s.t < t0 + SCHOOL.dur + 1) tick(s); assert.ok(!r.d.away); assert.equal(E(s).pool.length, 1);
   s.rep = 0; const c = canRecruit(s); if (c.ok) { assert.ok(c.next.school); const n = s.ds.length; recruit(s); assert.equal(s.ds.length, n + 1); assert.equal(E(s).pool.length, 0); }
-  else assert.match(c.why, /床位|存糧/, '反例：不看名聲，只會卡床位或糧');
+  else assert.match(c.why, /床位|存糧|師父/, 'N50：義學人選不看名聲，仍須食宿與師父真空檔');
 });
 test('郭靖：標為困難；前 20 日有降龍衝關標記，出手不吃這段加成', () => {
   const G = HEROES.find((h) => h.id === 'guojing'); assert.equal(G.hard, true); assert.match(G.tag, /困難/);
