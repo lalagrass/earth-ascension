@@ -1,0 +1,6 @@
+{
+  "seed": 17,
+  "A": 60,
+  "B": 1,
+  "command": "node tools/n61-blind-card.mjs --seed=17 --out=artifacts/n61"
+}

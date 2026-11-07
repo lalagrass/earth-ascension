@@ -58,6 +58,12 @@ label.btn { border:1px solid #888; padding:2px 8px; border-radius:4px; cursor:po
 #rail-head .row{margin:5px 0}
 #urgent{font-size:12px;font-weight:bold;color:#8b3d27;padding:3px 5px;background:#fff2d5;border-left:3px solid #aa6940}
 #focuscard{margin:5px 0;padding:6px 8px;border:10px solid transparent;border-image:url('assets/ui/kenney/panelInset_beige.png') 16 fill / 10px / 0 stretch;background:#f0e2c2}
+.actor-card-head{display:flex;align-items:center;gap:10px}.actor-name{font:700 21px WenKaiSubset,'Noto Serif TC',serif;color:#48311d}
+.actor-portrait{width:56px;height:64px;object-fit:contain;image-rendering:pixelated;background:#d5bf95;border:1px solid #96794b}
+.battle-radar{display:block;width:100%;max-width:262px;height:auto;margin:2px auto}.battle-radar text{fill:#493b2b;font:700 13px WenKaiSubset,'Noto Serif TC',serif}
+.radar-grid{fill:none;stroke:#baa47e;stroke-width:.7}.radar-earlier{fill:#a8ad90;fill-opacity:.2;stroke:#87936b;stroke-width:1.5;stroke-dasharray:4 3}
+.radar-opponent{fill:#b35c48;fill-opacity:.12;stroke:#b35c48;stroke-width:2}.radar-now{fill:#4f7690;fill-opacity:.28;stroke:#365d78;stroke-width:2.4}
+.radar-legend{text-align:center;font-size:11px;color:#65563c}.radar-info,.actor-card-more{font-size:12px;color:#6b583d}.radar-info summary,.actor-card-more summary{cursor:pointer}
 .focus-level{font-size:15px;font-weight:bold;color:#4b3926}
 .level-card{margin:5px 0;padding:5px 7px;background:#fff5d5;color:#54713d;border-left:3px solid #698243}
 #rail-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}

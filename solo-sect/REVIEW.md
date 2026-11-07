@@ -384,3 +384,18 @@ DPS 下降的主要規則原因是撤去十重、星數、同類造詣及小成�
 | `accept/sim` 掌／腿傳授 | N42 禁止日課自悟整門武學，師父按待學列逐門傳；延長自由時段仍限定於第 2 日，保留學到指定招、不誤學掌招的斷言，另驗日誌確實由師父傳授。 |
 
 舊名 → 新名：`shenfaCd24` → N33 `practiceWindow` 的時間下限；`catDmg24` → `forceTarget` 的單一勁目標；`profMul` 和 `GUIZHEN.star` 不再進出手傷害，但保留舊檔讀取。最沒把握的三處：名門 head 只有一個樣本；整門自悟拿掉後 N35 在自動日程沒有自然發生；各段 DPS 降幅大，但公式重複倍率已撤，不為接近 C 數字補第二層係數。N40 只借指定的 22 段名稱，不使用未確認授權的圖或現代說明文字。
+
+## N61 六軸人物卡（#493）
+
+實際主筆 grass／Codex Cloud。承接已合併 #500；只讀 UI 成長資料，規則 3.9、模擬與 golden 不變。六軸的物理含義、尺度與素材見 [可見成長 UI](docs/systems/visible-growth-ui.md)和 [素材授權](assets/ui/LICENSES.md)。遊戲首日[人物卡實拍](artifacts/n61/live-card.png)、[滑過同門疊圖](artifacts/n61/compare-card.png)，第 1／60 日[遮名盲板](artifacts/n61/blind.png)及[分離答案](artifacts/n61/blind-answer.json)。
+
+| 類別 | 指令＋門檻 | 預期輸出 |
+|---|---|---|
+| A 六軸獨立 | `bash test/run.sh smoke`；`test/unit/growth/n61-card.test.mjs` 一支小測試 | 六軸名稱固定；改一軸底層原值只動同一根軸，其他五根精確相同。 |
+| A 30 日讀檔 | 同一 smoke；以 `save({...S,uiGrowthHistory})` 再 `load` | 第 31 日取第 1 日的原始快照，重新讀檔與原值深度相等，圖有現在及歷史兩層。 |
+| A 同源 | `node tools/growth-metrics.mjs --seed 17 --days 1,60 --json` | `cardAxes[*].raw` 與人物卡 `battleMetrics` 是同一函式；`display` 與 SVG `battleAxisValues` 同源。seed 改任意正整數仍讀同一來源；[seed 17 原始輸出](artifacts/n61/growth-metrics-seed17.json)。 |
+| A 盲測 | `PW=/path/to/playwright-core/index.mjs node tools/n61-blind-card.mjs --seed=17 --out=artifacts/n61`；遮名板不顯日期 | 兩卡一張日 1、一張日 60；先判形狀，再開獨立 `blind-answer.json`，seed 17：A=60、B=1。seed 777 重跑的[板](artifacts/n61/seed777/blind.png)與[答案](artifacts/n61/seed777/blind-answer.json)：A=1、B=60。 |
+| B | 沒有新概率、抽樣或遊戲公式 | 不適用；六軸比例只是畫面顯示。 |
+| C | `node tools/bot12.mjs . --json`，Node 22、相同 12 種子；見[base](artifacts/n61/bot12-base.json)／[head](artifacts/n61/bot12-head.json) | 純 UI 變動，`cmp` 原始 JSON 逐位相同；美觀和可讀性留給擁有人目視。 |
+
+舊名 → 新名：本次沒有更動帶輪次編號的程式名稱；新增 `battleMetrics`、`battleAxisValues` 與 `uiGrowthHistory`。最沒把握的三處：身與耐包含當下疲勞，30 日線可能縮小而非單調成長；敵人的勁依既有碰撞勁每 10 點折一倍，與人的武學勁是比較尺度而非勝率；盲板第 60 日合法日程可能得到其他武學，形狀只表示當日真資料，不鎖死招式種類。
