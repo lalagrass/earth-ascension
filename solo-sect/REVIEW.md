@@ -647,7 +647,7 @@ CI 第三輪 quick 與 golden 全過，accept 296/301。五項逐項處置：
 
 | 類別 | 證據與結論 |
 |---|---|
-| A 固定情境 | `bash solo-sect/test/run.sh smoke`：54/54；新增單一測試檔 `test/unit/growth/phase5-labor-herbal-diet.test.mjs`。無藥做活到 18 與每日 1.2、痠痛恢復、真任務黃蓉煮／吃藥膳到 4 週期與突破 18、體魄 10／18／26 畫面遙測均有明確斷言。 |
+| A 固定情境 | `bash solo-sect/test/run.sh smoke`；單一測試檔 `test/unit/growth/phase5-labor-herbal-diet.test.mjs`。無藥做活到 18 與每日 1.2、痠痛恢復、真任務黃蓉煮／吃藥膳到 4 週期與突破 18、體魄 10／18／26 畫面遙測。另以 `food=0/1, medFood=1` 固定用飯情境驗可選用、飽足增加與帳本只扣一份藥膳；煮飯後轉一份存糧，舊局行為不變。 |
 | B 隨機公式 | 本輪無新亂數。原 N62 6,000 次出獵公式測試保留在 smoke；期望 0.4926757803、觀察 0.4978333333、容差 0.021407701。 |
 | C 舊 bot12 | [base 原始輸出](artifacts/phase5/bot12-base.json)／[head 原始輸出](artifacts/phase5/bot12-head.json)：同尺 12 種子，第 30 日。自然山賊 53/62、柵欄探針 84/96 與守住 48/96；惱羞 1052、林克時間 149、`winP` 中位 0.985。僅報告，不為 C 調參。 |
 | C 隱居 | `node solo-sect/tools/phase5-check.mjs <checkout>/solo-sect`：12 種子、每步 6 秒且每步清除 `s.alert` 的受控日程，5 日[base](artifacts/phase5/hermitage-base.json)／[head](artifacts/phase5/hermitage-head.json)。主角臂力中位 10→14.2、身法中位 12.546→10.6；此受控窗無採藥與藥膳。這不是正常 0.25 秒含警示暫停玩法的可達性量測，不推論藥膳自然不可達。 |

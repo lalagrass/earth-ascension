@@ -312,8 +312,9 @@ function scoreCtx(s, d) {
     wood: s.res.wood + s.ds.reduce((a, o) => a + (o.task?.act === 'chop' ? 1 : 0), 0), stone: s.res.stone + s.ds.reduce((a, o) => a + (o.task?.act === 'quarry' ? 1 : 0), 0),
     passWhy: pp ? `${PASS.why}：帶${pp.p.name}練「${artById(pp.art).name}」` : '', pendingName: d.pendingArt ? artById(d.pendingArt).name : '', btName: bt ? artById(bt).name : '', buildWhy: haul ? '把料搬到工地料堆' : '料齊了，去施工' };
 }
+const hasMeal = (s) => s.res.food > 0 || (bodyConditionOn(s) && s.res.medFood > 0); // 出自 Phase 5 規格：藥膳本身是一份可吃的飯。
 export const PRED = {
-  tired: (c) => c.d.tired, wake: (c) => c.n.energy < CORE.wakeAt, hurt: (c) => c.d.hp < 40, hasFood: (c) => c.s.res.food > 0, foodLow: (c) => foodLow(c.s), starving: (c) => !!c.d.famished || c.n.hunger < 15, /* v1.7 遲滯：餓昏後吃到 50 才解除 */ hungry: (c) => c.n.hunger < 30,
+  tired: (c) => c.d.tired, wake: (c) => c.n.energy < CORE.wakeAt, hurt: (c) => c.d.hp < 40, hasFood: (c) => hasMeal(c.s), foodLow: (c) => foodLow(c.s), starving: (c) => !!c.d.famished || c.n.hunger < 15, /* v1.7 遲滯：餓昏後吃到 50 才解除 */ hungry: (c) => c.n.hunger < 30,
   others: (c) => c.others.length > 0, pp: (c) => !!c.pp, dull: (c) => c.fun < 25, encourageOk: (c) => !!c.low, pending: (c) => !!c.d.pendingArt,
   btOk: (c) => !!c.bt && c.d.mood >= BREAK.moodMin && c.n.energy >= BREAK.energyMin, wexin: (c) => c.d.wexin > 0,
   sparOk: (c) => /* loop15：空地也能徒手過招 */ c.n.energy > 45 && c.others.some((o) => o.needs.energy > 45),
@@ -422,7 +423,7 @@ function assign(s, d, act, why) {
   }
   if (act === 'defend') { if (!s.band || !canDefend(d)) return false; d.task = { act, node: FENCE.node, phase: 'go' }; goto(d, FENCE.node); d.reason = why; return true; }
   if (act === 'repair') { if (!(repairScore(s, d) > 0)) return false; d.task = { act, node: FENCE.node, phase: 'go' }; goto(d, FENCE.node); d.reason = why; return true; }
-  if (act === 'eat' && s.res.food <= 0) return false;
+  if (act === 'eat' && !hasMeal(s)) return false;
   if (act === 'eat' && !d.noPairMeal) mealInvite(s, d);
   if (act === 'cook' && vegFree(s) < STOCK_RESV.cook.amt) return false;
   let plot; if (act === 'farm') { plot = s.plots.findIndex((p, i) => (p.st === 'ripe' || p.st === 'empty') && !holder(s, `plot:${i}`)); if (plot < 0) return false; }
@@ -494,7 +495,7 @@ function breakDeed(s, d, r) {
 function decide(s, d) {
   if (d.carry) { d.task = { act: 'deliver', phase: 'return', node: 'court', walkStart: d.walked }; goto(d, 'court'); d.reason = '先把東西送回院倉'; d.decision = { layer: 'carry', act: 'deliver', why: d.reason }; return true; }
   if (d.order) {
-    const o = d.order; if (o !== 'hunt' && (d.needs.energy < 15 || (o !== 'eat' && d.needs.hunger < 10 && s.res.food > 0))) { const a = d.needs.energy < 15 ? 'rest' : 'eat'; d.decision = { layer: 'need', act: a, why: '指派中先自理' }; return assign(s, d, a, '指派中先自理'); }
+    const o = d.order; if (o !== 'hunt' && (d.needs.energy < 15 || (o !== 'eat' && d.needs.hunger < 10 && hasMeal(s)))) { const a = d.needs.energy < 15 ? 'rest' : 'eat'; d.decision = { layer: 'need', act: a, why: '指派中先自理' }; return assign(s, d, a, '指派中先自理'); }
     if (assign(s, d, o, '玩家指派')) { onAssign(s, d, o, true); d.decision = { layer: 'order', act: o, why: '玩家指派' }; return true; }
     if (!d.reason?.includes('站位都有人')) d.reason = `指派「${o === 'hunt' ? '狩獵' : ACTIVITIES[o].name}」暫不可行`; return false;
   }
@@ -566,10 +567,12 @@ function doTask(s,d,dt){
     if (t.act === 'build') { const site = s.fac[t.fac].site; site.work += dt; d.needs.energy = clamp(d.needs.energy - dt, 0, 100); grow(s, d, 'strength', 0.2 * dt, 'labor'); if (site.work >= site.workNeed) { finishBuild(s, t.fac); finish(s, d); } else if (t.timer >= A.dur) finish(s, d); return; }
     const dur = effDur;
     if (t.timer >= dur) {
-      if (t.act === 'cook') { const st = facStage(s, t.fac); resAdd(s, 'veg', -2); t.phase = 'done'; const wat = s.res.water >= 1 ? 1 : 0; if (wat) { s.res.water -= 1; book(s, 'out', 'water', 1); } const yld = st.cookYield + cookBonus(d) + wat; /* v1.6 有井水多煮一份 */ onCook(s, d); resAdd(s, 'food', yld, 'kitchen'); log(s, `${d.name}在${st.name}煮好 ${yld} 份飯`); const meal = cookMedicatedMeal(s, d); if (meal) log(s, `${d.name}採藥入鍋，添做一份${meal}。`); grow(s, d, 'cooking', 6); finish(s, d); return; }
+      if (t.act === 'cook') { const st = facStage(s, t.fac); resAdd(s, 'veg', -2); t.phase = 'done'; const wat = s.res.water >= 1 ? 1 : 0; if (wat) { s.res.water -= 1; book(s, 'out', 'water', 1); } const yld = st.cookYield + cookBonus(d) + wat; /* v1.6 有井水多煮一份 */ onCook(s, d); resAdd(s, 'food', yld, 'kitchen'); log(s, `${d.name}在${st.name}煮好 ${yld} 份飯`); const meal = cookMedicatedMeal(s, d); if (meal) log(s, `${d.name}採藥入鍋，把其中一份升作${meal}。`); grow(s, d, 'cooking', 6); finish(s, d); return; }
       if (t.act === 'farm') { const p = s.plots[t.plot]; t.resv = []; grow(s, d, 'farming', 6); stepWorkCondition(d, s, 'farm'); if (p.st === 'ripe') { p.st = 'empty'; p.g = 0; d.carry = { veg: HARVEST }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; } p.st = 'grow'; p.g = 0; finish(s, d); return; }
-      if (A.use) { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } resAdd(s, 'food', -1, 'meal'); }
-      if (t.act === 'eat') { const meal = applyMedicatedMeal(d, s); if (meal) { if (meal.cold) { addQi(d, restQi(d)); d.mood = clamp(d.mood + PAIR.mealSocial, 0, 100); } log(s, `${d.name}吃下${meal.name}，肌肉痠痛漸消，今日可完成 ${meal.cycles} 輪恢復${meal.cold ? '；寒潭靈泉也回了內息與心情' : ''}。`); } }
+      if (A.use) {
+        if (t.act === 'eat' && bodyConditionOn(s) && s.res.medFood > 0) { const meal = applyMedicatedMeal(d, s); if (meal) { if (meal.cold) { addQi(d, restQi(d)); d.mood = clamp(d.mood + PAIR.mealSocial, 0, 100); } log(s, `${d.name}吃下${meal.name}，肌肉痠痛漸消，今日可完成 ${meal.cycles} 輪恢復${meal.cold ? '；寒潭靈泉也回了內息與心情' : ''}。`); } }
+        else { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } resAdd(s, 'food', -1, 'meal'); }
+      }
       if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) { d.needs.social = clamp(d.needs.social + b / 2, 0, 100); think(s, d, 'hallMeal'); } likeMeal(s, d, think); }
       let trainedArt = null;
       acquireWorkTool(d, t.act);

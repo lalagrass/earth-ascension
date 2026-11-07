@@ -163,8 +163,8 @@ export function restBodyCondition(d, s) {
   return false;
 }
 export function cookMedicatedMeal(s, chef) {
-  if (!bodyConditionOn(s) || (s.res.herb || 0) < 1) return null;
-  resAdd(s, 'herb', -1, 'kitchen'); resAdd(s, 'medFood', 1, 'kitchen');
+  if (!bodyConditionOn(s) || (s.res.herb || 0) < 1 || (s.res.food || 0) < 1) return null;
+  resAdd(s, 'food', -1, 'kitchen'); resAdd(s, 'herb', -1, 'kitchen'); resAdd(s, 'medFood', 1, 'kitchen'); // 出自 Phase 5 規格：一份煮好的飯入藥升級，不憑空添一份餐食。
   const cold = (s.res.coldWater || 0) > 0; if (cold) resAdd(s, 'coldWater', -1, 'kitchen'); // 出自 Phase 6 規格：寒潭泉水只進藥膳，食用時回內息與心情。
   const name = s.hermitage?.partnerId === 'xiaolongnv' ? '百花玉蜂藥膳' : s.hermitage?.partnerId === 'huangrong' ? '桃花歸元藥膳' : '山草強身湯飯';
   (s.medFoodBatches ??= []).push({ name, chef: chef?.id || null, rong: chef?.xia === 'huangrong', ...(cold ? { cold: true } : {}) });
