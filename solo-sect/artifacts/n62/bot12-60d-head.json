@@ -103,8 +103,8 @@
         "expN": 12
       },
       "day60": {
-        "starts": 22,
-        "patrols": 2,
+        "starts": 27,
+        "patrols": 1,
         "hurt": 0,
         "discoveries": 0,
         "targets": [
@@ -199,6 +199,24 @@
             "motive": "food"
           },
           {
+            "day": 55,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 55,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 56,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
             "day": 56,
             "seg": "foot",
             "key": "hare",
@@ -212,9 +230,21 @@
           },
           {
             "day": 56,
-            "seg": "wood",
-            "key": null,
-            "motive": "practice"
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 56,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 56,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
           },
           {
             "day": 56,
@@ -242,7 +272,7 @@
           }
         ],
         "totalDiscoveries": 0,
-        "expN": 22
+        "expN": 27
       }
     },
     {
@@ -883,7 +913,7 @@
     {
       "seed": 1003,
       "day30": {
-        "starts": 21,
+        "starts": 23,
         "patrols": 1,
         "hurt": 0,
         "discoveries": 0,
@@ -1010,16 +1040,28 @@
           },
           {
             "day": 29,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 30,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 30,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
           }
         ],
         "totalDiscoveries": 0,
-        "expN": 21
+        "expN": 23
       },
       "day60": {
-        "starts": 61,
+        "starts": 56,
         "patrols": 1,
         "hurt": 0,
         "discoveries": 0,
@@ -1151,37 +1193,25 @@
             "motive": "food"
           },
           {
-            "day": 31,
+            "day": 30,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
           },
           {
-            "day": 31,
+            "day": 30,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
           },
           {
-            "day": 32,
+            "day": 34,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
           },
           {
-            "day": 33,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 33,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 33,
+            "day": 34,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
@@ -1205,7 +1235,7 @@
             "motive": "food"
           },
           {
-            "day": 35,
+            "day": 36,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
@@ -1253,19 +1283,7 @@
             "motive": "food"
           },
           {
-            "day": 39,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 39,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 39,
+            "day": 38,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
@@ -1289,24 +1307,6 @@
             "motive": "food"
           },
           {
-            "day": 40,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 41,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 41,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
             "day": 41,
             "seg": "foot",
             "key": "hare",
@@ -1337,7 +1337,7 @@
             "motive": "food"
           },
           {
-            "day": 42,
+            "day": 43,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
@@ -1386,13 +1386,25 @@
           },
           {
             "day": 44,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 44,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 45,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
           }
         ],
         "totalDiscoveries": 0,
-        "expN": 61
+        "expN": 56
       }
     },
     {
@@ -4117,7 +4129,7 @@
     {
       "seed": 1009,
       "day30": {
-        "starts": 30,
+        "starts": 34,
         "patrols": 0,
         "hurt": 0,
         "discoveries": 0,
@@ -4285,7 +4297,13 @@
             "motive": "food"
           },
           {
-            "day": 27,
+            "day": 28,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 28,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
@@ -4298,16 +4316,34 @@
           },
           {
             "day": 29,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 30,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 30,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 30,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
           }
         ],
         "totalDiscoveries": 0,
-        "expN": 30
+        "expN": 34
       },
       "day60": {
-        "starts": 54,
+        "starts": 40,
         "patrols": 0,
         "hurt": 0,
         "discoveries": 0,
@@ -4475,7 +4511,13 @@
             "motive": "food"
           },
           {
-            "day": 27,
+            "day": 28,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 28,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
@@ -4488,6 +4530,24 @@
           },
           {
             "day": 29,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 30,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 30,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 30,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
@@ -4517,19 +4577,552 @@
             "motive": "food"
           },
           {
-            "day": 33,
+            "day": 34,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
           },
           {
-            "day": 33,
+            "day": 34,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          }
+        ],
+        "totalDiscoveries": 0,
+        "expN": 40
+      }
+    },
+    {
+      "seed": 1010,
+      "day30": {
+        "starts": 40,
+        "patrols": 1,
+        "hurt": 0,
+        "discoveries": 0,
+        "targets": [
+          {
+            "day": 2,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 3,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 4,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 7,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 7,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 7,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 9,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 10,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 11,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 15,
+            "seg": "wood",
+            "key": null,
+            "motive": "practice"
+          },
+          {
+            "day": 18,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 18,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 19,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 19,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 20,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 20,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 20,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 21,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 21,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 22,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 22,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 22,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 22,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 22,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 23,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 23,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 23,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 24,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 24,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 25,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 25,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 25,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 27,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 27,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 28,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 28,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 28,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 28,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 29,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 29,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          }
+        ],
+        "totalDiscoveries": 0,
+        "expN": 40
+      },
+      "day60": {
+        "starts": 91,
+        "patrols": 1,
+        "hurt": 0,
+        "discoveries": 0,
+        "targets": [
+          {
+            "day": 2,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 3,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 4,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 7,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 7,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 7,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 9,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 10,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 11,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 15,
+            "seg": "wood",
+            "key": null,
+            "motive": "practice"
+          },
+          {
+            "day": 18,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 18,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 19,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 19,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 20,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 20,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 20,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 21,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 21,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 22,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 22,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 22,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 22,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 22,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 23,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 23,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 23,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 24,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 24,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 25,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 25,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 25,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 27,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 27,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 28,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 28,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 28,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 28,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 29,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 29,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 31,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 32,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
           },
           {
             "day": 35,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 36,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 36,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 36,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
@@ -4547,7 +5140,79 @@
             "motive": "food"
           },
           {
+            "day": 37,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 37,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 37,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 37,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 38,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 38,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
             "day": 39,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 40,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 40,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 41,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 41,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 41,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 41,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
@@ -4559,630 +5224,7 @@
             "motive": "food"
           },
           {
-            "day": 48,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 50,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 50,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 51,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 51,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 52,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 52,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 53,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 54,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 54,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 54,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 55,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 55,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          }
-        ],
-        "totalDiscoveries": 0,
-        "expN": 54
-      }
-    },
-    {
-      "seed": 1010,
-      "day30": {
-        "starts": 41,
-        "patrols": 1,
-        "hurt": 0,
-        "discoveries": 0,
-        "targets": [
-          {
-            "day": 2,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 3,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 4,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 7,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 7,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 7,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 9,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 10,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 11,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 15,
-            "seg": "wood",
-            "key": null,
-            "motive": "practice"
-          },
-          {
-            "day": 18,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 18,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 19,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 19,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 20,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 20,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 20,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 21,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 21,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 22,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 22,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 22,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 22,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 22,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 23,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 23,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 23,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 24,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 24,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 25,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 25,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 25,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 27,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 27,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 28,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 28,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 28,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 28,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 29,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 29,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 30,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          }
-        ],
-        "totalDiscoveries": 0,
-        "expN": 41
-      },
-      "day60": {
-        "starts": 76,
-        "patrols": 1,
-        "hurt": 0,
-        "discoveries": 0,
-        "targets": [
-          {
-            "day": 2,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 3,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 4,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 7,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 7,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 7,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 9,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 10,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 11,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 15,
-            "seg": "wood",
-            "key": null,
-            "motive": "practice"
-          },
-          {
-            "day": 18,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 18,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 19,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 19,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 20,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 20,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 20,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 21,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 21,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 22,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 22,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 22,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 22,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 22,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 23,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 23,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 23,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 24,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 24,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 25,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 25,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 25,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 27,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 27,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 28,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 28,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 28,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 28,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 29,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 29,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 30,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 31,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 31,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 32,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 34,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 35,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 36,
+            "day": 43,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
@@ -5207,24 +5249,6 @@
           },
           {
             "day": 44,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 44,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 45,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 45,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
@@ -5236,6 +5260,24 @@
             "motive": "food"
           },
           {
+            "day": 46,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 47,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 50,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
             "day": 50,
             "seg": "foot",
             "key": "hare",
@@ -5266,6 +5308,12 @@
             "motive": "food"
           },
           {
+            "day": 52,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
             "day": 53,
             "seg": "foot",
             "key": "hare",
@@ -5284,7 +5332,7 @@
             "motive": "food"
           },
           {
-            "day": 54,
+            "day": 56,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
@@ -5332,38 +5380,26 @@
             "motive": "food"
           },
           {
-            "day": 58,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
-            "day": 58,
-            "seg": "foot",
-            "key": "hare",
-            "motive": "food"
-          },
-          {
             "day": 59,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
           },
           {
-            "day": 59,
+            "day": 60,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
           },
           {
-            "day": 59,
+            "day": 60,
             "seg": "foot",
             "key": "hare",
             "motive": "food"
           }
         ],
         "totalDiscoveries": 0,
-        "expN": 76
+        "expN": 91
       }
     },
     {
@@ -6171,15 +6207,15 @@
   ],
   "totals": {
     "30": {
-      "starts": 370,
+      "starts": 375,
       "patrols": 9,
       "hurt": 1,
       "discoveries": 0,
       "totalDiscoveries": 0
     },
     "60": {
-      "starts": 609,
-      "patrols": 12,
+      "starts": 610,
+      "patrols": 11,
       "hurt": 1,
       "discoveries": 0,
       "totalDiscoveries": 0

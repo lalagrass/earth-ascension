@@ -49,7 +49,7 @@ export function stepMapBout(s, owner, dt, H) {
   for (const a of [...foes, ...team]) {
     if (!alive(a)) continue;
     postureRegen(s, a, dt); fretStep(s, a);
-    if (a.k && !owner.pendingGate && !a.fleeAttempted && a.hp < a.max * EXP_BOUT.fleeAt) {
+    if (a.k && owner === s.exp && !owner.pendingGate && !a.fleeAttempted && a.hp < a.max * EXP_BOUT.fleeAt) {
       a.fleeAttempted = true;
       if (H.rand(s) < (ENEMIES[B.key]?.flee || 0)) a.fleeing = true;
     }

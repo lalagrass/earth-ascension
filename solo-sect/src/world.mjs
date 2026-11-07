@@ -548,7 +548,7 @@ function finishExpedition(s, team, H) {
   const rec = []; for (const d of team) if (dist > (d.best || 0)) { if (d.best) { H.think(s, d, 'recordSelf'); rec.push(d.name); } d.best = dist; }
   let sectRec = false; if (dist > (s.records.sect || 0)) { sectRec = true; Object.assign(s.records, { sect: dist, who: team.map((d) => d.name), n: X.n, t: s.t }); for (const d of s.ds) if (d.role !== 'laborer') H.think(s, d, 'recordSect'); }
   const R = s.records, clear = {}, qing = []; R.clear ??= {}; R.qing ??= {};
-  for (const g of [...ROUTE, ...Array.from({ length: Math.max(0, segIndex(X.dist) - ROUTE.length + 1) }, (_, k) => routeSeg(ROUTE.length + k))]) { const v = X.seg[g.id]; if (!v || !v.enc) continue; const c = v.kill / v.enc; clear[g.id] = c; if (c > (R.clear[g.id] || 0)) R.clear[g.id] = c; if (c >= 1) { qing.push(g.name); R.qing[g.id] = (R.qing[g.id] || 0) + 1; } }
+  for (const g of [...ROUTE, ...Array.from({ length: Math.max(0, segIndex(X.dist) - ROUTE.length + 1) }, (_, k) => routeSeg(ROUTE.length + k))]) { const v = X.seg[g.id]; if (!v || !v.enc) continue; const c = v.kill / v.enc; clear[g.id] = c; if (R.clear[g.id] == null || c > R.clear[g.id]) R.clear[g.id] = c; if (c >= 1) { qing.push(g.name); R.qing[g.id] = (R.qing[g.id] || 0) + 1; } }
   let fast = X.style === 'dash'; if (X.gorgeT != null && (R.fastGorge == null || X.gorgeT < R.fastGorge)) { R.fastGorge = Math.round(X.gorgeT); fast = true; }
   const cool = EXP.cool * (fast ? EXP.coolFast : 1); for (const d of team) d.restUntil = s.t + cool;
   const st = team.filter((d) => (d.personality || []).includes('stubborn')), lz = team.filter((d) => (d.personality || []).includes('lazy')), qu = [];
