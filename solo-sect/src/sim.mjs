@@ -345,12 +345,12 @@ function assign(s, d, act, why) {
   if (act === 'foray' || act === 'patrol') {
     if ((act === 'foray' && !PRED.animalTracks({ s })) || d.needs.energy < 45 || d.needs.hunger < 30) return false;
     const motive = act === 'foray' ? 'food' : 'practice', choice = forayChoice(s, d, motive); if (!choice) return false;
-    const result = startExp0(s, [d.id], { target: choice.target, ...(choice.from ? { from: choice.from } : {}) }, H); if (!result.ok) return false;
-    s.exp.autonomous = why !== '玩家指派'; s.exp.outing = act; s.exp.focus = { seg: choice.seg, key: choice.key, p: choice.p, receive: choice.receive, motive };
+    const result = startExp0(s, [d.id], { target: choice.target }, H); if (!result.ok) return false;
+    s.exp.autonomous = why !== '玩家指派'; s.exp.outing = act; s.exp.focus = { seg: choice.seg, key: choice.key, motive };
     s.exp.glimmerBefore = (d.glimmer?.known || []).length;
     const stats = (s.forayStats ??= { starts: 0, patrols: 0, hurt: 0, discoveries: 0, targets: [] }); stats.starts++; if (act === 'patrol') stats.patrols++;
-    (stats.targets ??= []).push({ day: s.day, seg: choice.seg, key: choice.key, p: choice.p, receive: choice.receive, motive });
-    d.reason = `${why}；追${ENEMIES[choice.key].name}，交手勝算估計 ${Math.round(choice.p * 100)}%`;
+    (stats.targets ??= []).push({ day: s.day, seg: choice.seg, key: choice.key, motive });
+    d.reason = choice.key ? `${why}；追${ENEMIES[choice.key].name}` : `${why}；走${ROUTE[choice.index].name}看獸跡`;
     log(s, `${d.name}決定${act === 'foray' ? '出獵' : '巡山'}：${d.reason}`); return true;
   }
   if (act === 'hunt') { const post = s.hunt?.post || s.post; d.task = { act: 'hunt', node: post, phase: 'go' }; goto(d, post); d.reason = why || '後山守點'; return true; }

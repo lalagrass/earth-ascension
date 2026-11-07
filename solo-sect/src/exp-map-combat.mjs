@@ -1,4 +1,4 @@
-// N45／N62：巡山前四段的真地圖交手。與守山／狩獵共用出手、截擊及應接時間式。
+// N45：巡山前三段的真地圖交手。與守山／狩獵共用出手、截擊及應接時間式。
 import { ENEMIES, ROUTE, SOURCES } from './data.mjs';
 import { chooseCombatMove, combatMoves, windOf, interceptOpening, resolveSwing, postureRegen, fretStep, shieldHit, moveMul, cdMul, CLASH } from './arts.mjs';
 import { BODY_TIMING, FOE_ACTIONS, foeAction } from './starter-combat.mjs';

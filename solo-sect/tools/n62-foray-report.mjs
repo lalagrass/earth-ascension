@@ -25,9 +25,4 @@ for (const seed of seeds) {
   rows.push({ seed, day30: snapshots[30], day60: snapshots[60] });
 }
 const totals = Object.fromEntries([30, 60].map(day => [day, Object.fromEntries(['starts', 'patrols', 'hurt', 'discoveries', 'totalDiscoveries'].map(key => [key, rows.reduce((n, row) => n + (row[`day${day}`]?.[key] || 0), 0)]))]));
-const targetOdds = Object.fromEntries([30, 60].map(day => [day, Object.fromEntries(['food', 'practice'].map(motive => {
-  const list = rows.flatMap(row => row[`day${day}`]?.targets || []).filter(row => row.motive === motive).map(row => row.p).sort((a, b) => a - b);
-  const quantile = q => list.length ? list[Math.floor((list.length - 1) * q)] : null;
-  return [motive, { n: list.length, q10: quantile(.1), median: quantile(.5), q90: quantile(.9) }];
-}))]));
-console.log(JSON.stringify({ days: [30, 60], seeds, rows, totals, targetOdds }, null, 2));
+console.log(JSON.stringify({ days: [30, 60], seeds, rows, totals }, null, 2));

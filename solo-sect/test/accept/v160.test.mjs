@@ -59,7 +59,7 @@ test('七個門派的鎮派活動各自不同、建成鎮派建築才出現、�
   }
 });
 test('長跑：九座新建築＋鎮派建築全開 10 日，每 20 tick 不變式無違反、活動真的被做到', () => {
-  const s = built(11); s.sect.id = 'gaibang'; buildFac(s, true); s.res.herb = 8; const seen = new Set();
+  const s = built(11); s.forayPolicy = 'forbid'; s.sect.id = 'gaibang'; buildFac(s, true); s.res.herb = 8; const seen = new Set(); // 專驗設施活動，門規不讓自主遠征搶走全派時間
   for (let i = 0; i < 10 * 4 * 600 && s.day <= 10; i++) { tick(s); for (const d of s.ds) if (d.task) seen.add(d.task.act); if (i % 20 === 0) assert.deepEqual(invariants(s), [], `tick ${i}`); }
   for (const a of ['study', 'worship', 'water', 'sig']) assert.ok(seen.has(a), a); assert.ok(Object.values(s.res).every((v) => v >= 0));
 });

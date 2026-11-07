@@ -408,7 +408,7 @@ function encounter(s, e, seg, team, H) {
     X.events.push(`閃${E.name}失手`);
   }
   X.fights++;
-  if (ROUTE.indexOf(seg) < 4 && ROUTE.indexOf(seg) >= 0) {
+  if (ROUTE.indexOf(seg) < 3 && ROUTE.indexOf(seg) >= 0) {
     for (const d of team) seeEnemy(s, e, 'fight', d);
     seeEnemy(s, e, 'see');
     const source = seg.id === 'foot' ? DEN : RINGS.find(r => r.id === seg.id)?.nest || trailAt(X.dist);
@@ -470,7 +470,7 @@ export function expStep(s, dt, H) {
     X.sta = (X.sta ?? EXP.sta + Math.max(0, ...team.map((d) => d.staBonus || 0))) - (X.dist - d0) * EXP.staStep;
     if (X.gorgeT == null && !(X.from > 0) && X.dist >= ROUTE[3].from) X.gorgeT = s.t - X.startT;
     const G = rivalGate(s, routeSeg(X.gateI), X.gateI);
-    if (G && X.dist >= G.to && X.gateI < 4) {
+    if (G && X.dist >= G.to && X.gateI < 3) {
       X.dist = G.to; X.gateI++; X.encN = (X.encN || 0) + 1; X.fights++;
       const sg = (X.seg[G.id] ??= { enc: 0, kill: 0 }); sg.enc++;
       for (const d of team) seeEnemy(s, G.gate, 'fight', d); seeEnemy(s, G.gate, 'see');

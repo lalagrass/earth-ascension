@@ -1435,7 +1435,7 @@ export function techniqueFacts(s,a,t,move=null){
   return {hands:FOE_ACTIONS[a.k]?.hands??2,weapon,opponentWind:!!(t.swing||t.bswing),afterDodge,opponentCharge:!!(afterDodge?last.charging:incoming?.travel),enemies:close.length,opponentUnbalanced:(t.posture??postureMax(t))<postureMax(t)/2,losing:a.hp<(a.max||100)/2||(a.posture??postureMax(a))<postureMax(a)/2,cornered:!!coverFor(a)||burden>=1,approaching:!!t.path?.length&&!t.swing&&!t.bswing,force:moveStats(a,move).force,opponentForce:moveStats(t).force};
 }
 function moveParents(move){const m=MOVES.find(m=>m.id===move)||Object.values(FOE_ACTIONS).flatMap(p=>p.moves).find(m=>m.id===move);return [move,m?.type,m?.skill,m?.weapon,m?.tool==='stone'?'stone':null].filter(Boolean);}
-function noteDiscoveries(s,d,rows){for(const row of rows){const text=`${d.name||d.k}在吃虧後悟出「${row.name}」：${row.reason}`;log(s,text);if(d.id)chronOf(s,d,'glimmer',{chron:text});}}
+function noteDiscoveries(s,d,rows){for(const row of rows){const text=`${d.name||d.k}在吃虧後悟出「${row.name}」`;log(s,text);if(d.id)chronOf(s,d,'glimmer',{chron:text});}}
 function reportContact(s,a,t,m,c){if(!c.layer)return;const row=TISSUES.blunt.find(r=>r.id===c.layer);log(s,`${a.name||a.k}以${m.name||m.id}打在${t.name||t.k}的${c.where==='body'?'':c.side}${BODY_PARTS[c.where].name}，${row.name}${c.layer==='bruise'?'，只痛未失血':''}`);}
 export function transferredDamage(s,a,t,damage,force,move){const action=MOVES.find(m=>m.id===move)||{id:move||'redirect',type:moveStats(a,move).type},contact=contactImpact(s,a,t,{move:action,force,armor:moveStats(t).armor});reportContact(s,a,t,action,contact);return damage*contact.damageFactor;}
 

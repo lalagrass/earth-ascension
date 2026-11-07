@@ -1,6 +1,6 @@
-# quick：4 格，3 秒
+# quick：4 格，11 秒
 寫入 test/golden/quick.json
-# full：32 格，243 秒
+# full：32 格，222 秒
 寫入 test/golden/full.json
 寫入 test/golden/saves.json
 

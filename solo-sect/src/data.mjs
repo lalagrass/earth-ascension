@@ -193,7 +193,7 @@ export const ACTIVITIES = {
   deliver: { name: '送回院倉', dur: 0, pose: 'carry' },
   defend: { name: '守柵迎敵', dur: 6, pose: 'stand', energy: -8, skill: { style: 1 } }, // loop3：只有山賊在地圖上時出現
   foray: { name: '後山出獵', dur: 0, pose: 'walk' }, // N62：效用 AI 發起 N45 巡山，不佔設施工作格
-  patrol: { name: '巡山練招', dur: 0, pose: 'walk' }, // N62：已有林地經驗者找遠段真對手
+  patrol: { name: '巡山練招', dur: 0, pose: 'walk' }, // N62：沿已走過的後山路段遇真對手
   repair: { name: '修柵', dur: 8, pose: 'chop', energy: -6, skill: { strength: 2 } }, // loop2：只有築了木柵且受損時才會出現
 };
 
@@ -947,7 +947,7 @@ export const SCORE = [
   { act: 'quarry', when: ['stoneRoom'], tiers: [{ if: 'shortStone', v: 50, why: '工地缺石' }, { v: 14, why: '備石' }] },
   { act: 'farm', tiers: [{ if: 'foodLow', v: 'FS.farm', why: '存糧見底，先顧菜畦', layer: 'need' }, { if: 'ripe', v: 50, why: '菜熟了' }, { v: 30, why: '菜畦空著該播種' }] },
   { act: 'foray', when: ['forayReady', 'animalTracks'], tiers: [{ if: 'foodLow', v: 95, why: '存糧不足，沿後山獸跡找獵物', layer: 'need' }, { v: 20, why: '後山有獸跡，想去看看' }] },
-  { act: 'patrol', when: ['practiceStuck', 'patrolReady'], v: 60, why: '招式卡住了，想找交手勝算近半的真對手' },
+  { act: 'patrol', when: ['practiceStuck', 'patrolReady'], v: 60, why: '招式卡住了，想去走過的後山實戰' },
   { act: 'forage', v: { pick: [true, 18, 18], mul: ['tr.playful'] }, why: '採藥' },
   { gen: true }, // v1.6 建築活動（ACTIVITIES[].gen）在這個位置展開
   { act: 'build', when: ['siteWork'], v: { pick: [true, 55, 55], mul: [{ pick: ['d.adult', 1, 0.6] }] }, why: '{buildWhy}' },

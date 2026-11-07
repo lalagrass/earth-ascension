@@ -30,184 +30,138 @@
             "day": 3,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9897978332040446,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 3,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999696124865777,
-            "receive": 0.9929421375085091,
             "motive": "food"
           },
           {
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999848065232485,
-            "receive": 0.9944124890368643,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9995672863525351,
-            "receive": 0.9445430345121143,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9995899681835297,
-            "receive": 0.971451229183188,
             "motive": "food"
           },
           {
             "day": 6,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999980013294937,
-            "receive": 0.999012957874815,
             "motive": "food"
           },
           {
             "day": 6,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9996411834156811,
-            "receive": 0.9721011814886842,
             "motive": "food"
           },
           {
             "day": 8,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9992772489596783,
-            "receive": 0.9225307922434889,
             "motive": "food"
           },
           {
             "day": 8,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9997715161045192,
-            "receive": 0.9555919220723615,
             "motive": "food"
           },
           {
             "day": 8,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9920726243571688,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 8,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999985252453425,
-            "receive": 0.9991858633387953,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999992543355565,
-            "receive": 0.9996964623814776,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998819144761579,
-            "receive": 0.9656014437181626,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999959510717962,
-            "receive": 0.999701011327918,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999785910664214,
-            "receive": 0.9937523687922935,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999802754062505,
-            "receive": 0.9942299821286427,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998575030138005,
-            "receive": 0.98527652599171,
             "motive": "food"
           },
           {
             "day": 12,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999857805288173,
-            "receive": 0.985307762875496,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999577211247426,
-            "receive": 0.9861831840211398,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.99999789981454,
-            "receive": 0.9997028453385937,
             "motive": "food"
           },
           {
             "day": 18,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999979374134462,
-            "receive": 0.9997028534581328,
             "motive": "food"
           },
           {
             "day": 19,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999968105737033,
-            "receive": 0.9986224527641454,
             "motive": "food"
           },
           {
             "day": 20,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999969279811229,
-            "receive": 0.998673162436765,
             "motive": "food"
           }
         ],
@@ -224,192 +178,144 @@
             "day": 3,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9897978332040446,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 3,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999696124865777,
-            "receive": 0.9929421375085091,
             "motive": "food"
           },
           {
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999848065232485,
-            "receive": 0.9944124890368643,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9995672863525351,
-            "receive": 0.9445430345121143,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9995899681835297,
-            "receive": 0.971451229183188,
             "motive": "food"
           },
           {
             "day": 6,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999980013294937,
-            "receive": 0.999012957874815,
             "motive": "food"
           },
           {
             "day": 6,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9996411834156811,
-            "receive": 0.9721011814886842,
             "motive": "food"
           },
           {
             "day": 8,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9992772489596783,
-            "receive": 0.9225307922434889,
             "motive": "food"
           },
           {
             "day": 8,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9997715161045192,
-            "receive": 0.9555919220723615,
             "motive": "food"
           },
           {
             "day": 8,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9920726243571688,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 8,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999985252453425,
-            "receive": 0.9991858633387953,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999992543355565,
-            "receive": 0.9996964623814776,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998819144761579,
-            "receive": 0.9656014437181626,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999959510717962,
-            "receive": 0.999701011327918,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999785910664214,
-            "receive": 0.9937523687922935,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999802754062505,
-            "receive": 0.9942299821286427,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998575030138005,
-            "receive": 0.98527652599171,
             "motive": "food"
           },
           {
             "day": 12,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999857805288173,
-            "receive": 0.985307762875496,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999577211247426,
-            "receive": 0.9861831840211398,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.99999789981454,
-            "receive": 0.9997028453385937,
             "motive": "food"
           },
           {
             "day": 18,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999979374134462,
-            "receive": 0.9997028534581328,
             "motive": "food"
           },
           {
             "day": 19,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999968105737033,
-            "receive": 0.9986224527641454,
             "motive": "food"
           },
           {
             "day": 20,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999969279811229,
-            "receive": 0.998673162436765,
             "motive": "food"
           },
           {
             "day": 56,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999970152827933,
-            "receive": 0.9937195313609498,
             "motive": "food"
           }
         ],
@@ -429,96 +335,72 @@
             "day": 2,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9975127163685666,
-            "receive": 0.6616250108781847,
             "motive": "food"
           },
           {
             "day": 3,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9898378244979348,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999983968619597,
-            "receive": 0.9940162132584424,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999876148392166,
-            "receive": 0.9951776462905453,
             "motive": "food"
           },
           {
             "day": 6,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999902066534556,
-            "receive": 0.9957318181029045,
             "motive": "food"
           },
           {
             "day": 6,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999955255828548,
-            "receive": 0.9989963012325755,
             "motive": "food"
           },
           {
             "day": 7,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9914513713262235,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 7,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9994339420473735,
-            "receive": 0.8784249766882126,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996511380027,
-            "receive": 0.9997986576301429,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999971960839985,
-            "receive": 0.999750097618118,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9970913762624339,
-            "receive": 0.6752639052661984,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999381926657084,
-            "receive": 0.9936010117808135,
             "motive": "food"
           }
         ],
@@ -535,96 +417,72 @@
             "day": 2,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9975127163685666,
-            "receive": 0.6616250108781847,
             "motive": "food"
           },
           {
             "day": 3,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9898378244979348,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999983968619597,
-            "receive": 0.9940162132584424,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999876148392166,
-            "receive": 0.9951776462905453,
             "motive": "food"
           },
           {
             "day": 6,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999902066534556,
-            "receive": 0.9957318181029045,
             "motive": "food"
           },
           {
             "day": 6,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999955255828548,
-            "receive": 0.9989963012325755,
             "motive": "food"
           },
           {
             "day": 7,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9914513713262235,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 7,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9994339420473735,
-            "receive": 0.8784249766882126,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996511380027,
-            "receive": 0.9997986576301429,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999971960839985,
-            "receive": 0.999750097618118,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9970913762624339,
-            "receive": 0.6752639052661984,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999381926657084,
-            "receive": 0.9936010117808135,
             "motive": "food"
           }
         ],
@@ -644,224 +502,168 @@
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999533910430831,
-            "receive": 0.993240064400186,
             "motive": "food"
           },
           {
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.998905573075486,
-            "receive": 0.6808248322314124,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9910808036267994,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "wood",
-            "key": "wolf",
-            "p": 0.9999802216168836,
-            "receive": 0.9999320083185833,
+            "key": null,
             "motive": "practice"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998047599153413,
-            "receive": 0.952265669366381,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999964544594598,
-            "receive": 0.9985080178854306,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999997690481844,
-            "receive": 0.9999028203802108,
             "motive": "food"
           },
           {
             "day": 12,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994717282326,
-            "receive": 0.9997918352516796,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995072293577,
-            "receive": 0.9997934588970675,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999850969263278,
-            "receive": 0.9565377816606558,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995148147692,
-            "receive": 0.9997966382667302,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999996513734801,
-            "receive": 0.9985329613479073,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995259326926,
-            "receive": 0.999801298262743,
             "motive": "food"
           },
           {
             "day": 15,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995355898688,
-            "receive": 0.999805345997137,
             "motive": "food"
           },
           {
             "day": 15,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999966225734992,
-            "receive": 0.9985787613967136,
             "motive": "food"
           },
           {
             "day": 16,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999912914679735,
-            "receive": 0.9652837335850392,
             "motive": "food"
           },
           {
             "day": 17,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999997840567965,
-            "receive": 0.9999091356868546,
             "motive": "food"
           },
           {
             "day": 18,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999349837053839,
-            "receive": 0.9729384665088608,
             "motive": "food"
           },
           {
             "day": 20,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999997997900826,
-            "receive": 0.9999141640463729,
             "motive": "food"
           },
           {
             "day": 20,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999803353673,
-            "receive": 0.9999156918639873,
             "motive": "food"
           },
           {
             "day": 21,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999998091510015,
-            "receive": 0.9999181773517983,
             "motive": "food"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999998106997263,
-            "receive": 0.9999188413364429,
             "motive": "food"
           },
           {
             "day": 23,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999998147268184,
-            "receive": 0.999920567871003,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999998175139824,
-            "receive": 0.9999217628113819,
             "motive": "food"
           },
           {
             "day": 25,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999998202304079,
-            "receive": 0.9999229274241058,
             "motive": "food"
           },
           {
             "day": 26,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999998235925773,
-            "receive": 0.9999243688865164,
             "motive": "food"
           },
           {
             "day": 29,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999998302646598,
-            "receive": 0.9999272294073482,
             "motive": "food"
           },
           {
             "day": 30,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999998320480098,
-            "receive": 0.9999279939827054,
             "motive": "food"
           }
         ],
@@ -878,440 +680,330 @@
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999533910430831,
-            "receive": 0.993240064400186,
             "motive": "food"
           },
           {
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.998905573075486,
-            "receive": 0.6808248322314124,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9910808036267994,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "wood",
-            "key": "wolf",
-            "p": 0.9999802216168836,
-            "receive": 0.9999320083185833,
+            "key": null,
             "motive": "practice"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998047599153413,
-            "receive": 0.952265669366381,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999964544594598,
-            "receive": 0.9985080178854306,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999997690481844,
-            "receive": 0.9999028203802108,
             "motive": "food"
           },
           {
             "day": 12,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994717282326,
-            "receive": 0.9997918352516796,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995072293577,
-            "receive": 0.9997934588970675,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999850969263278,
-            "receive": 0.9565377816606558,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995148147692,
-            "receive": 0.9997966382667302,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999996513734801,
-            "receive": 0.9985329613479073,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995259326926,
-            "receive": 0.999801298262743,
             "motive": "food"
           },
           {
             "day": 15,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995355898688,
-            "receive": 0.999805345997137,
             "motive": "food"
           },
           {
             "day": 15,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999966225734992,
-            "receive": 0.9985787613967136,
             "motive": "food"
           },
           {
             "day": 16,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999912914679735,
-            "receive": 0.9652837335850392,
             "motive": "food"
           },
           {
             "day": 17,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999997840567965,
-            "receive": 0.9999091356868546,
             "motive": "food"
           },
           {
             "day": 18,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999349837053839,
-            "receive": 0.9729384665088608,
             "motive": "food"
           },
           {
             "day": 20,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999997997900826,
-            "receive": 0.9999141640463729,
             "motive": "food"
           },
           {
             "day": 20,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999803353673,
-            "receive": 0.9999156918639873,
             "motive": "food"
           },
           {
             "day": 21,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999998091510015,
-            "receive": 0.9999181773517983,
             "motive": "food"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999998106997263,
-            "receive": 0.9999188413364429,
             "motive": "food"
           },
           {
             "day": 23,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999998147268184,
-            "receive": 0.999920567871003,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999998175139824,
-            "receive": 0.9999217628113819,
             "motive": "food"
           },
           {
             "day": 25,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999998202304079,
-            "receive": 0.9999229274241058,
             "motive": "food"
           },
           {
             "day": 26,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999998235925773,
-            "receive": 0.9999243688865164,
             "motive": "food"
           },
           {
             "day": 29,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999998302646598,
-            "receive": 0.9999272294073482,
             "motive": "food"
           },
           {
             "day": 30,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999998320480098,
-            "receive": 0.9999279939827054,
             "motive": "food"
           },
           {
             "day": 43,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994523683756,
-            "receive": 0.9997722083109647,
             "motive": "food"
           },
           {
             "day": 43,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994663590434,
-            "receive": 0.9997780278425927,
             "motive": "food"
           },
           {
             "day": 45,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994811424286,
-            "receive": 0.9997841771112306,
             "motive": "food"
           },
           {
             "day": 45,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994923627243,
-            "receive": 0.9997888442838694,
             "motive": "food"
           },
           {
             "day": 46,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995000541557,
-            "receive": 0.999792043596828,
             "motive": "food"
           },
           {
             "day": 46,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999503562036,
-            "receive": 0.999793502727919,
             "motive": "food"
           },
           {
             "day": 47,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995036153096,
-            "receive": 0.9997935248875355,
             "motive": "food"
           },
           {
             "day": 47,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995107699563,
-            "receive": 0.9997965009204705,
             "motive": "food"
           },
           {
             "day": 47,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995175110213,
-            "receive": 0.9997993049208153,
             "motive": "food"
           },
           {
             "day": 48,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995175168116,
-            "receive": 0.9997993073293165,
             "motive": "food"
           },
           {
             "day": 49,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999523799808,
-            "receive": 0.9998019207922355,
             "motive": "food"
           },
           {
             "day": 49,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995323327269,
-            "receive": 0.9998054701285028,
             "motive": "food"
           },
           {
             "day": 50,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995380737668,
-            "receive": 0.9998078581601938,
             "motive": "food"
           },
           {
             "day": 50,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995472380232,
-            "receive": 0.999811670106228,
             "motive": "food"
           },
           {
             "day": 50,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995633459002,
-            "receive": 0.9998183703069005,
             "motive": "food"
           },
           {
             "day": 51,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995659523448,
-            "receive": 0.999819454478417,
             "motive": "food"
           },
           {
             "day": 51,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995716484589,
-            "receive": 0.9998218238226567,
             "motive": "food"
           },
           {
             "day": 51,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995832256767,
-            "receive": 0.9998266394591208,
             "motive": "food"
           },
           {
             "day": 51,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995941592976,
-            "receive": 0.9998311873861064,
             "motive": "food"
           },
           {
             "day": 54,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996021584429,
-            "receive": 0.9998345146944339,
             "motive": "food"
           },
           {
             "day": 54,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996092641771,
-            "receive": 0.9998374703813081,
             "motive": "food"
           },
           {
             "day": 54,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996168967817,
-            "receive": 0.9998406452240591,
             "motive": "food"
           },
           {
             "day": 55,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996215915937,
-            "receive": 0.9998425980684972,
             "motive": "food"
           },
           {
             "day": 55,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996262813562,
-            "receive": 0.9998445488125518,
             "motive": "food"
           },
           {
             "day": 56,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996286865385,
-            "receive": 0.9998455492672609,
             "motive": "food"
           },
           {
             "day": 56,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996376453885,
-            "receive": 0.9998492757722016,
             "motive": "food"
           },
           {
             "day": 56,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996421837758,
-            "receive": 0.9998511635505192,
             "motive": "food"
           }
         ],
@@ -1331,104 +1023,78 @@
             "day": 3,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999806554678599,
-            "receive": 0.9933200753905845,
             "motive": "food"
           },
           {
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9993327131083656,
-            "receive": 0.939453888050484,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9909960045558834,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998394733648778,
-            "receive": 0.9608215573083031,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999985602914894,
-            "receive": 0.998807793498059,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998902506164965,
-            "receive": 0.9661325829730866,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999387039395081,
-            "receive": 0.9936717600756572,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999389439210313,
-            "receive": 0.9936955335780439,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999391720007218,
-            "receive": 0.9937190858310776,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999101315491883,
-            "receive": 0.968764239836556,
             "motive": "food"
           },
           {
             "day": 20,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999032671612,
-            "receive": 0.9998591691542239,
             "motive": "food"
           },
           {
             "day": 20,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999404563699587,
-            "receive": 0.9938517137886184,
             "motive": "food"
           },
           {
             "day": 20,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999856048163334,
-            "receive": 0.9936514529915276,
             "motive": "food"
           }
         ],
@@ -1445,104 +1111,78 @@
             "day": 3,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999806554678599,
-            "receive": 0.9933200753905845,
             "motive": "food"
           },
           {
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9993327131083656,
-            "receive": 0.939453888050484,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9909960045558834,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998394733648778,
-            "receive": 0.9608215573083031,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999985602914894,
-            "receive": 0.998807793498059,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998902506164965,
-            "receive": 0.9661325829730866,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999387039395081,
-            "receive": 0.9936717600756572,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999389439210313,
-            "receive": 0.9936955335780439,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999391720007218,
-            "receive": 0.9937190858310776,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999101315491883,
-            "receive": 0.968764239836556,
             "motive": "food"
           },
           {
             "day": 20,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999032671612,
-            "receive": 0.9998591691542239,
             "motive": "food"
           },
           {
             "day": 20,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999404563699587,
-            "receive": 0.9938517137886184,
             "motive": "food"
           },
           {
             "day": 20,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999856048163334,
-            "receive": 0.9936514529915276,
             "motive": "food"
           }
         ],
@@ -1553,7 +1193,7 @@
     {
       "seed": 1005,
       "day30": {
-        "starts": 42,
+        "starts": 38,
         "patrols": 1,
         "hurt": 0,
         "discoveries": 0,
@@ -1562,344 +1202,236 @@
             "day": 2,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9873536469952678,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 2,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9873427409771002,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9984147583941309,
-            "receive": 0.7000438601860504,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.998860538461418,
-            "receive": 0.887784392820939,
             "motive": "food"
           },
           {
             "day": 7,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999979791691972,
-            "receive": 0.9990154125240858,
             "motive": "food"
           },
           {
             "day": 8,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999983092438187,
-            "receive": 0.9990855304822837,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999984611025331,
-            "receive": 0.9991514117264834,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999961045673254,
-            "receive": 0.9994263607310223,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9985214713577061,
-            "receive": 0.8462172373063664,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998899628545204,
-            "receive": 0.9682339501078469,
             "motive": "food"
           },
           {
             "day": 16,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999827914163578,
-            "receive": 0.9941748800188127,
             "motive": "food"
           },
           {
             "day": 16,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999992247138338,
-            "receive": 0.999734353775642,
             "motive": "food"
           },
           {
             "day": 16,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9988172192991348,
-            "receive": 0.8768754932954683,
             "motive": "food"
           },
           {
             "day": 17,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999992448605672,
-            "receive": 0.999741256914013,
             "motive": "food"
           },
           {
             "day": 17,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9955966912300762,
-            "receive": 0.4959282417253079,
             "motive": "food"
           },
           {
             "day": 18,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999992621789929,
-            "receive": 0.9997471909522176,
             "motive": "food"
           },
           {
             "day": 19,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999963648525106,
-            "receive": 0.9985997786849257,
             "motive": "food"
           },
           {
             "day": 19,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999415907772051,
-            "receive": 0.993922127326085,
             "motive": "food"
           },
           {
             "day": 19,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999992815281497,
-            "receive": 0.9997538208059976,
             "motive": "food"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9968633778437819,
-            "receive": 0.6352466818989139,
             "motive": "food"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996724638904,
-            "receive": 0.9998056086556143,
             "motive": "food"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999299420092,
-            "receive": 0.9997599513552303,
             "motive": "food"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999942673205355,
-            "receive": 0.9940324778284391,
             "motive": "food"
           },
           {
             "day": 23,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996468656233,
-            "receive": 0.9998056086556143,
             "motive": "food"
           },
           {
             "day": 23,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999299420092,
-            "receive": 0.9997599513552303,
             "motive": "food"
           },
           {
             "day": 23,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999968027995013,
-            "receive": 0.9986212306803715,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996489037466,
-            "receive": 0.9998066851542282,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999307078002,
-            "receive": 0.9997625752845436,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9984244775698253,
-            "receive": 0.8170712117253693,
             "motive": "food"
           },
           {
             "day": 25,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999968729352232,
-            "receive": 0.998651476291816,
             "motive": "food"
           },
           {
             "day": 25,
             "seg": "wood",
-            "key": "wolf",
-            "p": 0.9999912088964654,
-            "receive": 0.999935434109605,
+            "key": null,
             "motive": "practice"
           },
           {
             "day": 26,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996496985594,
-            "receive": 0.9998070752121175,
             "motive": "food"
           },
           {
             "day": 26,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999307078002,
-            "receive": 0.9997625752845436,
             "motive": "food"
           },
           {
             "day": 26,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999439883780563,
-            "receive": 0.9941693861788896,
-            "motive": "food"
-          },
-          {
-            "day": 26,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999996751053064,
-            "receive": 0.9998070752121175,
-            "motive": "food"
-          },
-          {
-            "day": 26,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999969220566289,
-            "receive": 0.9986726596023755,
-            "motive": "food"
-          },
-          {
-            "day": 26,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999996751214306,
-            "receive": 0.9998070752121175,
-            "motive": "food"
-          },
-          {
-            "day": 26,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9989963225514019,
-            "receive": 0.883532979983913,
             "motive": "food"
           },
           {
             "day": 27,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9996850942239067,
-            "receive": 0.9634834199605798,
             "motive": "food"
           },
           {
             "day": 27,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999377339692864,
-            "receive": 0.9943122938351748,
+            "motive": "food"
+          },
+          {
+            "day": 27,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           },
           {
             "day": 28,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9997198824528968,
-            "receive": 0.9704929801325036,
-            "motive": "food"
-          },
-          {
-            "day": 28,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9997778617955888,
-            "receive": 0.9766015725906092,
             "motive": "food"
           }
         ],
         "totalDiscoveries": 0,
-        "expN": 42
+        "expN": 38
       },
       "day60": {
-        "starts": 47,
+        "starts": 57,
         "patrols": 1,
         "hurt": 0,
         "discoveries": 0,
@@ -1908,1028 +1440,760 @@
             "day": 2,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9873536469952678,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 2,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9873427409771002,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9984147583941309,
-            "receive": 0.7000438601860504,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.998860538461418,
-            "receive": 0.887784392820939,
             "motive": "food"
           },
           {
             "day": 7,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999979791691972,
-            "receive": 0.9990154125240858,
             "motive": "food"
           },
           {
             "day": 8,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999983092438187,
-            "receive": 0.9990855304822837,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999984611025331,
-            "receive": 0.9991514117264834,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999961045673254,
-            "receive": 0.9994263607310223,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9985214713577061,
-            "receive": 0.8462172373063664,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998899628545204,
-            "receive": 0.9682339501078469,
             "motive": "food"
           },
           {
             "day": 16,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999827914163578,
-            "receive": 0.9941748800188127,
             "motive": "food"
           },
           {
             "day": 16,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999992247138338,
-            "receive": 0.999734353775642,
             "motive": "food"
           },
           {
             "day": 16,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9988172192991348,
-            "receive": 0.8768754932954683,
             "motive": "food"
           },
           {
             "day": 17,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999992448605672,
-            "receive": 0.999741256914013,
             "motive": "food"
           },
           {
             "day": 17,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9955966912300762,
-            "receive": 0.4959282417253079,
             "motive": "food"
           },
           {
             "day": 18,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999992621789929,
-            "receive": 0.9997471909522176,
             "motive": "food"
           },
           {
             "day": 19,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999963648525106,
-            "receive": 0.9985997786849257,
             "motive": "food"
           },
           {
             "day": 19,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999415907772051,
-            "receive": 0.993922127326085,
             "motive": "food"
           },
           {
             "day": 19,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999992815281497,
-            "receive": 0.9997538208059976,
             "motive": "food"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9968633778437819,
-            "receive": 0.6352466818989139,
             "motive": "food"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996724638904,
-            "receive": 0.9998056086556143,
             "motive": "food"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999299420092,
-            "receive": 0.9997599513552303,
             "motive": "food"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999942673205355,
-            "receive": 0.9940324778284391,
             "motive": "food"
           },
           {
             "day": 23,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996468656233,
-            "receive": 0.9998056086556143,
             "motive": "food"
           },
           {
             "day": 23,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999299420092,
-            "receive": 0.9997599513552303,
             "motive": "food"
           },
           {
             "day": 23,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999968027995013,
-            "receive": 0.9986212306803715,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996489037466,
-            "receive": 0.9998066851542282,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999307078002,
-            "receive": 0.9997625752845436,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9984244775698253,
-            "receive": 0.8170712117253693,
             "motive": "food"
           },
           {
             "day": 25,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999968729352232,
-            "receive": 0.998651476291816,
             "motive": "food"
           },
           {
             "day": 25,
             "seg": "wood",
-            "key": "wolf",
-            "p": 0.9999912088964654,
-            "receive": 0.999935434109605,
+            "key": null,
             "motive": "practice"
           },
           {
             "day": 26,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996496985594,
-            "receive": 0.9998070752121175,
             "motive": "food"
           },
           {
             "day": 26,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999307078002,
-            "receive": 0.9997625752845436,
             "motive": "food"
           },
           {
             "day": 26,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999439883780563,
-            "receive": 0.9941693861788896,
-            "motive": "food"
-          },
-          {
-            "day": 26,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999996751053064,
-            "receive": 0.9998070752121175,
-            "motive": "food"
-          },
-          {
-            "day": 26,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999969220566289,
-            "receive": 0.9986726596023755,
-            "motive": "food"
-          },
-          {
-            "day": 26,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999996751214306,
-            "receive": 0.9998070752121175,
-            "motive": "food"
-          },
-          {
-            "day": 26,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9989963225514019,
-            "receive": 0.883532979983913,
             "motive": "food"
           },
           {
             "day": 27,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9996850942239067,
-            "receive": 0.9634834199605798,
             "motive": "food"
           },
           {
             "day": 27,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999377339692864,
-            "receive": 0.9943122938351748,
+            "motive": "food"
+          },
+          {
+            "day": 27,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           },
           {
             "day": 28,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9997198824528968,
-            "receive": 0.9704929801325036,
+            "motive": "food"
+          },
+          {
+            "day": 54,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 55,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 55,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 55,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 55,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 55,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 55,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 55,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 56,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 56,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 56,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 56,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 56,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 56,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 56,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 56,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 57,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 57,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 57,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          }
+        ],
+        "totalDiscoveries": 0,
+        "expN": 57
+      }
+    },
+    {
+      "seed": 1006,
+      "day30": {
+        "starts": 24,
+        "patrols": 1,
+        "hurt": 1,
+        "discoveries": 0,
+        "targets": [
+          {
+            "day": 3,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 4,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 5,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 6,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 9,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 9,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 10,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 10,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 11,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 11,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 12,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 14,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 22,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 23,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 23,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 23,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 24,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 25,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 25,
+            "seg": "wood",
+            "key": null,
+            "motive": "practice"
+          },
+          {
+            "day": 27,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 27,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 27,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           },
           {
             "day": 28,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9997778617955888,
-            "receive": 0.9766015725906092,
+            "motive": "food"
+          },
+          {
+            "day": 29,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          }
+        ],
+        "totalDiscoveries": 0,
+        "expN": 24
+      },
+      "day60": {
+        "starts": 41,
+        "patrols": 1,
+        "hurt": 1,
+        "discoveries": 0,
+        "targets": [
+          {
+            "day": 3,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 4,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 5,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 6,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 9,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 9,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 10,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 10,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 11,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 11,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 12,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 14,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 22,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 23,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 23,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 23,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 24,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 25,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 25,
+            "seg": "wood",
+            "key": null,
+            "motive": "practice"
+          },
+          {
+            "day": 27,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 27,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 27,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 28,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 29,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           },
           {
             "day": 31,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998406185233771,
-            "receive": 0.9815075331391785,
             "motive": "food"
           },
           {
-            "day": 32,
+            "day": 38,
             "seg": "foot",
             "key": "hare",
-            "p": 0.99986937482346,
-            "receive": 0.9848444604274783,
-            "motive": "food"
-          },
-          {
-            "day": 32,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9998901060631223,
-            "receive": 0.9872500277394312,
-            "motive": "food"
-          },
-          {
-            "day": 56,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999988057469571,
-            "receive": 0.9997644160321062,
-            "motive": "food"
-          },
-          {
-            "day": 57,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999988167176215,
-            "receive": 0.9997663139774576,
-            "motive": "food"
-          }
-        ],
-        "totalDiscoveries": 0,
-        "expN": 47
-      }
-    },
-    {
-      "seed": 1006,
-      "day30": {
-        "starts": 23,
-        "patrols": 1,
-        "hurt": 0,
-        "discoveries": 0,
-        "targets": [
-          {
-            "day": 3,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9909597980325884,
-            "receive": 0.19999999999999996,
-            "motive": "food"
-          },
-          {
-            "day": 4,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9974775552034537,
-            "receive": 0.775700280362824,
-            "motive": "food"
-          },
-          {
-            "day": 5,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9982797237833833,
-            "receive": 0.6842077917000158,
-            "motive": "food"
-          },
-          {
-            "day": 6,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999636494379789,
-            "receive": 0.9955937640458516,
-            "motive": "food"
-          },
-          {
-            "day": 9,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999395057202024,
-            "receive": 0.9937304645941963,
-            "motive": "food"
-          },
-          {
-            "day": 9,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999218678245831,
-            "receive": 0.9920441988950277,
-            "motive": "food"
-          },
-          {
-            "day": 10,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999959976010403,
-            "receive": 0.9984873593636195,
-            "motive": "food"
-          },
-          {
-            "day": 10,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999974042247957,
-            "receive": 0.9988299418647171,
-            "motive": "food"
-          },
-          {
-            "day": 11,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999979812967139,
-            "receive": 0.9990247223468878,
-            "motive": "food"
-          },
-          {
-            "day": 11,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999983935482932,
-            "receive": 0.9991532401563763,
-            "motive": "food"
-          },
-          {
-            "day": 12,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9989974699413211,
-            "receive": 0.8866823048514346,
-            "motive": "food"
-          },
-          {
-            "day": 14,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999992088216159,
-            "receive": 0.9998000114634803,
-            "motive": "food"
-          },
-          {
-            "day": 22,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999995940135779,
-            "receive": 0.9997596188638562,
-            "motive": "food"
-          },
-          {
-            "day": 23,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999996034006935,
-            "receive": 0.9997651462728496,
-            "motive": "food"
-          },
-          {
-            "day": 23,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999996098845227,
-            "receive": 0.9997689670891717,
-            "motive": "food"
-          },
-          {
-            "day": 23,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999953186593208,
-            "receive": 0.9993179593512195,
-            "motive": "food"
-          },
-          {
-            "day": 24,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999996176397757,
-            "receive": 0.9997735318160863,
-            "motive": "food"
-          },
-          {
-            "day": 25,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999996247292768,
-            "receive": 0.9997776744821919,
-            "motive": "food"
-          },
-          {
-            "day": 25,
-            "seg": "wood",
-            "key": "wolf",
-            "p": 0.9999900251245066,
-            "receive": 0.9999268903997623,
-            "motive": "practice"
-          },
-          {
-            "day": 26,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999996328431597,
-            "receive": 0.9997823506359873,
-            "motive": "food"
-          },
-          {
-            "day": 27,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.999995321625675,
-            "receive": 0.9993183915316126,
-            "motive": "food"
-          },
-          {
-            "day": 28,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999979201760336,
-            "receive": 0.999696984070541,
-            "motive": "food"
-          },
-          {
-            "day": 30,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999979266763672,
-            "receive": 0.9996979311260208,
-            "motive": "food"
-          }
-        ],
-        "totalDiscoveries": 0,
-        "expN": 23
-      },
-      "day60": {
-        "starts": 55,
-        "patrols": 1,
-        "hurt": 0,
-        "discoveries": 0,
-        "targets": [
-          {
-            "day": 3,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9909597980325884,
-            "receive": 0.19999999999999996,
-            "motive": "food"
-          },
-          {
-            "day": 4,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9974775552034537,
-            "receive": 0.775700280362824,
-            "motive": "food"
-          },
-          {
-            "day": 5,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9982797237833833,
-            "receive": 0.6842077917000158,
-            "motive": "food"
-          },
-          {
-            "day": 6,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999636494379789,
-            "receive": 0.9955937640458516,
-            "motive": "food"
-          },
-          {
-            "day": 9,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999395057202024,
-            "receive": 0.9937304645941963,
-            "motive": "food"
-          },
-          {
-            "day": 9,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999218678245831,
-            "receive": 0.9920441988950277,
-            "motive": "food"
-          },
-          {
-            "day": 10,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999959976010403,
-            "receive": 0.9984873593636195,
-            "motive": "food"
-          },
-          {
-            "day": 10,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999974042247957,
-            "receive": 0.9988299418647171,
-            "motive": "food"
-          },
-          {
-            "day": 11,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999979812967139,
-            "receive": 0.9990247223468878,
-            "motive": "food"
-          },
-          {
-            "day": 11,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999983935482932,
-            "receive": 0.9991532401563763,
-            "motive": "food"
-          },
-          {
-            "day": 12,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9989974699413211,
-            "receive": 0.8866823048514346,
-            "motive": "food"
-          },
-          {
-            "day": 14,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999992088216159,
-            "receive": 0.9998000114634803,
-            "motive": "food"
-          },
-          {
-            "day": 22,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999995940135779,
-            "receive": 0.9997596188638562,
-            "motive": "food"
-          },
-          {
-            "day": 23,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999996034006935,
-            "receive": 0.9997651462728496,
-            "motive": "food"
-          },
-          {
-            "day": 23,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999996098845227,
-            "receive": 0.9997689670891717,
-            "motive": "food"
-          },
-          {
-            "day": 23,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999953186593208,
-            "receive": 0.9993179593512195,
-            "motive": "food"
-          },
-          {
-            "day": 24,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999996176397757,
-            "receive": 0.9997735318160863,
-            "motive": "food"
-          },
-          {
-            "day": 25,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999996247292768,
-            "receive": 0.9997776744821919,
-            "motive": "food"
-          },
-          {
-            "day": 25,
-            "seg": "wood",
-            "key": "wolf",
-            "p": 0.9999900251245066,
-            "receive": 0.9999268903997623,
-            "motive": "practice"
-          },
-          {
-            "day": 26,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999996328431597,
-            "receive": 0.9997823506359873,
-            "motive": "food"
-          },
-          {
-            "day": 27,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.999995321625675,
-            "receive": 0.9993183915316126,
-            "motive": "food"
-          },
-          {
-            "day": 28,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999979201760336,
-            "receive": 0.999696984070541,
-            "motive": "food"
-          },
-          {
-            "day": 30,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999979266763672,
-            "receive": 0.9996979311260208,
-            "motive": "food"
-          },
-          {
-            "day": 32,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999979589403608,
-            "receive": 0.9997026317757414,
             "motive": "food"
           },
           {
             "day": 39,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999991823890728,
-            "receive": 0.9996556271504444,
-            "motive": "food"
-          },
-          {
-            "day": 39,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999992008748285,
-            "receive": 0.9996634132468324,
             "motive": "food"
           },
           {
             "day": 40,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999992296791392,
-            "receive": 0.9996755454599118,
             "motive": "food"
           },
           {
-            "day": 41,
+            "day": 40,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999992470822432,
-            "receive": 0.9996828755487734,
             "motive": "food"
           },
           {
-            "day": 41,
+            "day": 46,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999992682309747,
-            "receive": 0.9996917832743923,
-            "motive": "food"
-          },
-          {
-            "day": 42,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999992846121675,
-            "receive": 0.9996986829394608,
-            "motive": "food"
-          },
-          {
-            "day": 42,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999993027238342,
-            "receive": 0.9997063114700803,
-            "motive": "food"
-          },
-          {
-            "day": 43,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999993277198325,
-            "receive": 0.9997168396414369,
-            "motive": "food"
-          },
-          {
-            "day": 43,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999993380839546,
-            "receive": 0.9997212049501337,
             "motive": "food"
           },
           {
             "day": 47,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999746239549239,
-            "receive": 0.9954538322322735,
+            "motive": "food"
+          },
+          {
+            "day": 48,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 49,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 50,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 50,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 51,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 51,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           },
           {
             "day": 52,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999758034411252,
-            "receive": 0.9956596714969542,
             "motive": "food"
           },
           {
             "day": 52,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999776518625935,
-            "receive": 0.9959912449129574,
             "motive": "food"
           },
           {
-            "day": 54,
+            "day": 53,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999957157754336,
-            "receive": 0.9922119597280817,
-            "motive": "food"
-          },
-          {
-            "day": 54,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999785133009841,
-            "receive": 0.9961457709779022,
-            "motive": "food"
-          },
-          {
-            "day": 54,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999585501548741,
-            "receive": 0.9924650865378696,
-            "motive": "food"
-          },
-          {
-            "day": 54,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999807753231711,
-            "receive": 0.9965515345233471,
-            "motive": "food"
-          },
-          {
-            "day": 54,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999601117268293,
-            "receive": 0.9927489664623591,
-            "motive": "food"
-          },
-          {
-            "day": 55,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999808139517802,
-            "receive": 0.9965584637415518,
-            "motive": "food"
-          },
-          {
-            "day": 55,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999630267202313,
-            "receive": 0.9932788840236301,
-            "motive": "food"
-          },
-          {
-            "day": 55,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999821157103247,
-            "receive": 0.9967919734931777,
-            "motive": "food"
-          },
-          {
-            "day": 55,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999645388186044,
-            "receive": 0.9935537676423206,
-            "motive": "food"
-          },
-          {
-            "day": 55,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999842949726492,
-            "receive": 0.9971828887169222,
-            "motive": "food"
-          },
-          {
-            "day": 56,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999856597234532,
-            "receive": 0.9974276963149541,
-            "motive": "food"
-          },
-          {
-            "day": 56,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999868267643032,
-            "receive": 0.9976370383743909,
-            "motive": "food"
-          },
-          {
-            "day": 56,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999669535390652,
-            "receive": 0.9939927367620436,
-            "motive": "food"
-          },
-          {
-            "day": 56,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999875684563629,
-            "receive": 0.9977700817437918,
-            "motive": "food"
-          },
-          {
-            "day": 56,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999679913336164,
-            "receive": 0.9941813955302891,
-            "motive": "food"
-          },
-          {
-            "day": 57,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999882608274675,
-            "receive": 0.997894277832078,
-            "motive": "food"
-          },
-          {
-            "day": 57,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999689989116852,
-            "receive": 0.9943645609249503,
-            "motive": "food"
-          },
-          {
-            "day": 59,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999889631257142,
-            "receive": 0.9980202544547181,
             "motive": "food"
           },
           {
             "day": 60,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999604370745366,
-            "receive": 0.9944055508847174,
             "motive": "food"
           }
         ],
         "totalDiscoveries": 0,
-        "expN": 55
+        "expN": 41
       }
     },
     {
@@ -2944,192 +2208,144 @@
             "day": 3,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999147463168633,
-            "receive": 0.9007106170407374,
             "motive": "food"
           },
           {
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999683030935891,
-            "receive": 0.9929421375085091,
             "motive": "food"
           },
           {
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9912064165110991,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9986493268365191,
-            "receive": 0.6874870328882211,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9996182642116794,
-            "receive": 0.9441248930273758,
             "motive": "food"
           },
           {
             "day": 6,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998022966537188,
-            "receive": 0.9832713754646841,
             "motive": "food"
           },
           {
             "day": 7,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9919926966154723,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 7,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999882004540427,
-            "receive": 0.9948140965001262,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999993028344647,
-            "receive": 0.9998044112337372,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999360357450121,
-            "receive": 0.9933774278200352,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999923272314628,
-            "receive": 0.9990917577011379,
             "motive": "food"
           },
           {
             "day": 12,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999993227144035,
-            "receive": 0.9998088604523167,
             "motive": "food"
           },
           {
             "day": 12,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996406861159,
-            "receive": 0.9997872323611687,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999643434544,
-            "receive": 0.9997888030725914,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999403505588396,
-            "receive": 0.9938241909475914,
             "motive": "food"
           },
           {
             "day": 16,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999941403286512,
-            "receive": 0.9939331915676862,
             "motive": "food"
           },
           {
             "day": 16,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999713707134449,
-            "receive": 0.9917620637924188,
             "motive": "food"
           },
           {
             "day": 17,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999943259475208,
-            "receive": 0.9941253828965556,
             "motive": "food"
           },
           {
             "day": 18,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999739690683832,
-            "receive": 0.9922114574495737,
             "motive": "food"
           },
           {
             "day": 19,
             "seg": "wood",
-            "key": "wolf",
-            "p": 0.9980753134069572,
-            "receive": 0.992399818813113,
+            "key": null,
             "motive": "practice"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999761570971195,
-            "receive": 0.9928428890890133,
             "motive": "food"
           },
           {
             "day": 25,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996608669097,
-            "receive": 0.999798750947743,
             "motive": "food"
           },
           {
             "day": 25,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996776142409,
-            "receive": 0.9998086221127409,
             "motive": "food"
           },
           {
             "day": 26,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996814337627,
-            "receive": 0.999810858211712,
             "motive": "food"
           }
         ],
@@ -3146,192 +2362,144 @@
             "day": 3,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999147463168633,
-            "receive": 0.9007106170407374,
             "motive": "food"
           },
           {
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999683030935891,
-            "receive": 0.9929421375085091,
             "motive": "food"
           },
           {
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9912064165110991,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9986493268365191,
-            "receive": 0.6874870328882211,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9996182642116794,
-            "receive": 0.9441248930273758,
             "motive": "food"
           },
           {
             "day": 6,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998022966537188,
-            "receive": 0.9832713754646841,
             "motive": "food"
           },
           {
             "day": 7,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9919926966154723,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 7,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999882004540427,
-            "receive": 0.9948140965001262,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999993028344647,
-            "receive": 0.9998044112337372,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999360357450121,
-            "receive": 0.9933774278200352,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999923272314628,
-            "receive": 0.9990917577011379,
             "motive": "food"
           },
           {
             "day": 12,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999993227144035,
-            "receive": 0.9998088604523167,
             "motive": "food"
           },
           {
             "day": 12,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996406861159,
-            "receive": 0.9997872323611687,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999643434544,
-            "receive": 0.9997888030725914,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999403505588396,
-            "receive": 0.9938241909475914,
             "motive": "food"
           },
           {
             "day": 16,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999941403286512,
-            "receive": 0.9939331915676862,
             "motive": "food"
           },
           {
             "day": 16,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999713707134449,
-            "receive": 0.9917620637924188,
             "motive": "food"
           },
           {
             "day": 17,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999943259475208,
-            "receive": 0.9941253828965556,
             "motive": "food"
           },
           {
             "day": 18,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999739690683832,
-            "receive": 0.9922114574495737,
             "motive": "food"
           },
           {
             "day": 19,
             "seg": "wood",
-            "key": "wolf",
-            "p": 0.9980753134069572,
-            "receive": 0.992399818813113,
+            "key": null,
             "motive": "practice"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999761570971195,
-            "receive": 0.9928428890890133,
             "motive": "food"
           },
           {
             "day": 25,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996608669097,
-            "receive": 0.999798750947743,
             "motive": "food"
           },
           {
             "day": 25,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996776142409,
-            "receive": 0.9998086221127409,
             "motive": "food"
           },
           {
             "day": 26,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999996814337627,
-            "receive": 0.999810858211712,
             "motive": "food"
           }
         ],
@@ -3342,8 +2510,8 @@
     {
       "seed": 1008,
       "day30": {
-        "starts": 40,
-        "patrols": 3,
+        "starts": 31,
+        "patrols": 1,
         "hurt": 1,
         "discoveries": 0,
         "targets": [
@@ -3351,329 +2519,195 @@
             "day": 3,
             "seg": "foot",
             "key": "hare",
-            "p": 0.997440157853895,
-            "receive": 0.6249046899216205,
             "motive": "food"
           },
           {
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9992671155875794,
-            "receive": 0.8723841366136976,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999551708681049,
-            "receive": 0.9092545416489016,
             "motive": "food"
           },
           {
             "day": 6,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9912020948863427,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 7,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999980824540856,
-            "receive": 0.9990632733580028,
             "motive": "food"
           },
           {
             "day": 8,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999984061921965,
-            "receive": 0.9991759116471524,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999917476889938,
-            "receive": 0.9993324992591927,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9997470302816911,
-            "receive": 0.9441044235153344,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9996604724157135,
-            "receive": 0.9305410880790899,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999953432524,
-            "receive": 0.9993663635968042,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9997739431160022,
-            "receive": 0.9497322467711943,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999971265748123,
-            "receive": 0.9994695806683978,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999969908558369,
-            "receive": 0.9997138870737006,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998033399865293,
-            "receive": 0.95592456671538,
             "motive": "food"
           },
           {
             "day": 12,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999981132992678,
-            "receive": 0.9995666747062382,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9929871674050741,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999975572220859,
-            "receive": 0.9997139095221976,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9972813726214796,
-            "receive": 0.6911841554568363,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999998340020037,
-            "receive": 0.9996093108772802,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998528920273159,
-            "receive": 0.9660177797341665,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999984361207817,
-            "receive": 0.9996304753318914,
             "motive": "food"
           },
           {
             "day": 15,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999396330199358,
-            "receive": 0.9937511689886104,
             "motive": "food"
           },
           {
             "day": 15,
             "seg": "wood",
-            "key": "wolf",
-            "p": 0.9998980125181666,
-            "receive": 0.9996679013482205,
+            "key": null,
             "motive": "practice"
           },
           {
             "day": 16,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999989995809759,
-            "receive": 0.9997525569911344,
-            "motive": "food"
-          },
-          {
-            "day": 17,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9998324858194365,
-            "receive": 0.96172540155502,
-            "motive": "food"
-          },
-          {
-            "day": 17,
-            "seg": "wood",
-            "key": "wolf",
-            "p": 0.9999785596461134,
-            "receive": 0.9999257173578088,
-            "motive": "practice"
-          },
-          {
-            "day": 18,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9998181752286983,
-            "receive": 0.968501453447654,
-            "motive": "food"
-          },
-          {
-            "day": 19,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999990310853578,
-            "receive": 0.9997593399985163,
-            "motive": "food"
-          },
-          {
-            "day": 19,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999254097982119,
-            "receive": 0.9715379328668828,
-            "motive": "food"
-          },
-          {
-            "day": 20,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999855365340777,
-            "receive": 0.9940688548195791,
-            "motive": "food"
-          },
-          {
-            "day": 21,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999990677334637,
-            "receive": 0.9997678937690705,
-            "motive": "food"
-          },
-          {
-            "day": 21,
-            "seg": "wood",
-            "key": "wolf",
-            "p": 0.9999790621779914,
-            "receive": 0.9999270877538634,
-            "motive": "practice"
-          },
-          {
-            "day": 22,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.999999099769817,
-            "receive": 0.9997757664455209,
             "motive": "food"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999855474199238,
-            "receive": 0.9940733189270919,
-            "motive": "food"
-          },
-          {
-            "day": 22,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999991185388369,
-            "receive": 0.9997804168129399,
-            "motive": "food"
-          },
-          {
-            "day": 22,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999991428445388,
-            "receive": 0.9997864319955075,
             "motive": "food"
           },
           {
             "day": 23,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999991546841203,
-            "receive": 0.9997892934437059,
             "motive": "food"
           },
           {
             "day": 23,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999967090751695,
-            "receive": 0.9985863403724379,
+            "motive": "food"
+          },
+          {
+            "day": 23,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999991609767251,
-            "receive": 0.9997908394159318,
             "motive": "food"
           },
           {
-            "day": 27,
+            "day": 25,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999991988689656,
-            "receive": 0.9997995441441541,
+            "motive": "food"
+          },
+          {
+            "day": 26,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           }
         ],
         "totalDiscoveries": 0,
-        "expN": 40
+        "expN": 31
       },
       "day60": {
-        "starts": 59,
-        "patrols": 3,
+        "starts": 40,
+        "patrols": 1,
         "hurt": 1,
         "discoveries": 0,
         "targets": [
@@ -3681,477 +2715,245 @@
             "day": 3,
             "seg": "foot",
             "key": "hare",
-            "p": 0.997440157853895,
-            "receive": 0.6249046899216205,
             "motive": "food"
           },
           {
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9992671155875794,
-            "receive": 0.8723841366136976,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999551708681049,
-            "receive": 0.9092545416489016,
             "motive": "food"
           },
           {
             "day": 6,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9912020948863427,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 7,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999980824540856,
-            "receive": 0.9990632733580028,
             "motive": "food"
           },
           {
             "day": 8,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999984061921965,
-            "receive": 0.9991759116471524,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999917476889938,
-            "receive": 0.9993324992591927,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9997470302816911,
-            "receive": 0.9441044235153344,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9996604724157135,
-            "receive": 0.9305410880790899,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999953432524,
-            "receive": 0.9993663635968042,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9997739431160022,
-            "receive": 0.9497322467711943,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999971265748123,
-            "receive": 0.9994695806683978,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999969908558369,
-            "receive": 0.9997138870737006,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998033399865293,
-            "receive": 0.95592456671538,
             "motive": "food"
           },
           {
             "day": 12,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999981132992678,
-            "receive": 0.9995666747062382,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9929871674050741,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999975572220859,
-            "receive": 0.9997139095221976,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9972813726214796,
-            "receive": 0.6911841554568363,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999998340020037,
-            "receive": 0.9996093108772802,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998528920273159,
-            "receive": 0.9660177797341665,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999984361207817,
-            "receive": 0.9996304753318914,
             "motive": "food"
           },
           {
             "day": 15,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999396330199358,
-            "receive": 0.9937511689886104,
             "motive": "food"
           },
           {
             "day": 15,
             "seg": "wood",
-            "key": "wolf",
-            "p": 0.9998980125181666,
-            "receive": 0.9996679013482205,
+            "key": null,
             "motive": "practice"
           },
           {
             "day": 16,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999989995809759,
-            "receive": 0.9997525569911344,
-            "motive": "food"
-          },
-          {
-            "day": 17,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9998324858194365,
-            "receive": 0.96172540155502,
-            "motive": "food"
-          },
-          {
-            "day": 17,
-            "seg": "wood",
-            "key": "wolf",
-            "p": 0.9999785596461134,
-            "receive": 0.9999257173578088,
-            "motive": "practice"
-          },
-          {
-            "day": 18,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9998181752286983,
-            "receive": 0.968501453447654,
-            "motive": "food"
-          },
-          {
-            "day": 19,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999990310853578,
-            "receive": 0.9997593399985163,
-            "motive": "food"
-          },
-          {
-            "day": 19,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999254097982119,
-            "receive": 0.9715379328668828,
-            "motive": "food"
-          },
-          {
-            "day": 20,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999855365340777,
-            "receive": 0.9940688548195791,
-            "motive": "food"
-          },
-          {
-            "day": 21,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999990677334637,
-            "receive": 0.9997678937690705,
-            "motive": "food"
-          },
-          {
-            "day": 21,
-            "seg": "wood",
-            "key": "wolf",
-            "p": 0.9999790621779914,
-            "receive": 0.9999270877538634,
-            "motive": "practice"
-          },
-          {
-            "day": 22,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.999999099769817,
-            "receive": 0.9997757664455209,
             "motive": "food"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999855474199238,
-            "receive": 0.9940733189270919,
-            "motive": "food"
-          },
-          {
-            "day": 22,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999991185388369,
-            "receive": 0.9997804168129399,
-            "motive": "food"
-          },
-          {
-            "day": 22,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999991428445388,
-            "receive": 0.9997864319955075,
             "motive": "food"
           },
           {
             "day": 23,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999991546841203,
-            "receive": 0.9997892934437059,
             "motive": "food"
           },
           {
             "day": 23,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999967090751695,
-            "receive": 0.9985863403724379,
+            "motive": "food"
+          },
+          {
+            "day": 23,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999991609767251,
-            "receive": 0.9997908394159318,
             "motive": "food"
           },
           {
-            "day": 27,
+            "day": 25,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999991988689656,
-            "receive": 0.9997995441441541,
+            "motive": "food"
+          },
+          {
+            "day": 26,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 36,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 36,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 36,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           },
           {
             "day": 37,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994602936974,
-            "receive": 0.9997688077950811,
             "motive": "food"
           },
           {
             "day": 37,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994712073741,
-            "receive": 0.999773482853186,
+            "motive": "food"
+          },
+          {
+            "day": 37,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           },
           {
             "day": 38,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994832939157,
-            "receive": 0.9997786603277123,
             "motive": "food"
           },
           {
-            "day": 39,
+            "day": 38,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994897434131,
-            "receive": 0.999781064618004,
             "motive": "food"
           },
           {
-            "day": 39,
+            "day": 38,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994900638943,
-            "receive": 0.9997812021267236,
-            "motive": "food"
-          },
-          {
-            "day": 40,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999994923447687,
-            "receive": 0.9997821807801412,
-            "motive": "food"
-          },
-          {
-            "day": 41,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999994953988639,
-            "receive": 0.999783491198927,
-            "motive": "food"
-          },
-          {
-            "day": 41,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999995011544365,
-            "receive": 0.9997859607390192,
-            "motive": "food"
-          },
-          {
-            "day": 41,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999995012990046,
-            "receive": 0.9997860227688156,
-            "motive": "food"
-          },
-          {
-            "day": 42,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999995029702399,
-            "receive": 0.9997867398447238,
-            "motive": "food"
-          },
-          {
-            "day": 43,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9998719708343184,
-            "receive": 0.9766280227838707,
-            "motive": "food"
-          },
-          {
-            "day": 44,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999995142183603,
-            "receive": 0.9997915660689434,
-            "motive": "food"
-          },
-          {
-            "day": 45,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999995171427007,
-            "receive": 0.9997928208139227,
-            "motive": "food"
-          },
-          {
-            "day": 46,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9998883807300684,
-            "receive": 0.9796240160940856,
-            "motive": "food"
-          },
-          {
-            "day": 46,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999011480147049,
-            "receive": 0.9819549012980788,
-            "motive": "food"
-          },
-          {
-            "day": 47,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.999911021084859,
-            "receive": 0.9837573575545988,
-            "motive": "food"
-          },
-          {
-            "day": 49,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999204131464688,
-            "receive": 0.9854719664639652,
-            "motive": "food"
-          },
-          {
-            "day": 60,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999956811509199,
-            "receive": 0.9992306929827648,
-            "motive": "food"
-          },
-          {
-            "day": 60,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999958602658493,
-            "receive": 0.9992625984603742,
             "motive": "food"
           }
         ],
         "totalDiscoveries": 0,
-        "expN": 59
+        "expN": 40
       }
     },
     {
@@ -4159,247 +2961,187 @@
       "day30": {
         "starts": 30,
         "patrols": 2,
-        "hurt": 0,
+        "hurt": 1,
         "discoveries": 0,
         "targets": [
           {
             "day": 3,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999946545164213,
-            "receive": 0.9927820942556854,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9917273870998969,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 6,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999709747627832,
-            "receive": 0.9938579923792396,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999994921832682,
-            "receive": 0.9988078686847469,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9992671278467873,
-            "receive": 0.7849499198947932,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999950593415333,
-            "receive": 0.9988389790204415,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999996636148383,
-            "receive": 0.998611264729879,
             "motive": "food"
           },
           {
             "day": 16,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999988997480298,
-            "receive": 0.9997478508145913,
             "motive": "food"
           },
           {
             "day": 16,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999967548687291,
-            "receive": 0.9986324101497813,
             "motive": "food"
           },
           {
             "day": 17,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999989307086905,
-            "receive": 0.9997548143456026,
             "motive": "food"
           },
           {
             "day": 17,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999849204350447,
-            "receive": 0.9978553517224928,
             "motive": "food"
           },
           {
             "day": 18,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999989790247472,
-            "receive": 0.9997655184531139,
             "motive": "food"
           },
           {
             "day": 19,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999990013331151,
-            "receive": 0.9997704502672088,
             "motive": "food"
           },
           {
             "day": 19,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999990289284435,
-            "receive": 0.9997767724780915,
             "motive": "food"
           },
           {
             "day": 19,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999911301950923,
-            "receive": 0.9987297506168783,
             "motive": "food"
           },
           {
             "day": 19,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999991170041294,
-            "receive": 0.9997811324224245,
             "motive": "food"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999997879138262,
-            "receive": 0.99991044741504,
             "motive": "food"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994705292745,
-            "receive": 0.9997964271994998,
             "motive": "food"
           },
           {
             "day": 23,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999981816657312,
-            "receive": 0.999736003488357,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994787158614,
-            "receive": 0.9997989870484028,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994937699822,
-            "receive": 0.9998047920874447,
             "motive": "food"
           },
           {
             "day": 25,
             "seg": "wood",
-            "key": "boars",
-            "p": 0.9998735877357282,
-            "receive": 0.9999719888895114,
+            "key": null,
             "motive": "practice"
           },
           {
             "day": 26,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995061903426,
-            "receive": 0.9998095815186018,
             "motive": "food"
           },
           {
             "day": 26,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999969182346226,
-            "receive": 0.9986742058296316,
             "motive": "food"
           },
           {
             "day": 27,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995251089107,
-            "receive": 0.9998168767317827,
             "motive": "food"
           },
           {
             "day": 27,
             "seg": "wood",
-            "key": "wolf",
-            "p": 0.9999844131311263,
-            "receive": 0.999927613296289,
+            "key": null,
             "motive": "practice"
           },
           {
             "day": 28,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995411512766,
-            "receive": 0.99982306284879,
             "motive": "food"
           },
           {
             "day": 29,
             "seg": "foot",
             "key": "hare",
-            "p": 0.99999958657717,
-            "receive": 0.9998281181496232,
             "motive": "food"
           },
           {
             "day": 29,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999970117324164,
-            "receive": 0.9987144292682426,
             "motive": "food"
           },
           {
             "day": 30,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995969218164,
-            "receive": 0.9998324189708833,
             "motive": "food"
           }
         ],
@@ -4407,294 +3149,290 @@
         "expN": 30
       },
       "day60": {
-        "starts": 35,
-        "patrols": 3,
-        "hurt": 0,
+        "starts": 46,
+        "patrols": 4,
+        "hurt": 3,
         "discoveries": 0,
         "targets": [
           {
             "day": 3,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999946545164213,
-            "receive": 0.9927820942556854,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9917273870998969,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 6,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999709747627832,
-            "receive": 0.9938579923792396,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999994921832682,
-            "receive": 0.9988078686847469,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9992671278467873,
-            "receive": 0.7849499198947932,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999950593415333,
-            "receive": 0.9988389790204415,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999996636148383,
-            "receive": 0.998611264729879,
             "motive": "food"
           },
           {
             "day": 16,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999988997480298,
-            "receive": 0.9997478508145913,
             "motive": "food"
           },
           {
             "day": 16,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999967548687291,
-            "receive": 0.9986324101497813,
             "motive": "food"
           },
           {
             "day": 17,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999989307086905,
-            "receive": 0.9997548143456026,
             "motive": "food"
           },
           {
             "day": 17,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999849204350447,
-            "receive": 0.9978553517224928,
             "motive": "food"
           },
           {
             "day": 18,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999989790247472,
-            "receive": 0.9997655184531139,
             "motive": "food"
           },
           {
             "day": 19,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999990013331151,
-            "receive": 0.9997704502672088,
             "motive": "food"
           },
           {
             "day": 19,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999990289284435,
-            "receive": 0.9997767724780915,
             "motive": "food"
           },
           {
             "day": 19,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999911301950923,
-            "receive": 0.9987297506168783,
             "motive": "food"
           },
           {
             "day": 19,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999991170041294,
-            "receive": 0.9997811324224245,
             "motive": "food"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999997879138262,
-            "receive": 0.99991044741504,
             "motive": "food"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994705292745,
-            "receive": 0.9997964271994998,
             "motive": "food"
           },
           {
             "day": 23,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999981816657312,
-            "receive": 0.999736003488357,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994787158614,
-            "receive": 0.9997989870484028,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994937699822,
-            "receive": 0.9998047920874447,
             "motive": "food"
           },
           {
             "day": 25,
             "seg": "wood",
-            "key": "boars",
-            "p": 0.9998735877357282,
-            "receive": 0.9999719888895114,
+            "key": null,
             "motive": "practice"
           },
           {
             "day": 26,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995061903426,
-            "receive": 0.9998095815186018,
             "motive": "food"
           },
           {
             "day": 26,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999969182346226,
-            "receive": 0.9986742058296316,
             "motive": "food"
           },
           {
             "day": 27,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995251089107,
-            "receive": 0.9998168767317827,
             "motive": "food"
           },
           {
             "day": 27,
             "seg": "wood",
-            "key": "wolf",
-            "p": 0.9999844131311263,
-            "receive": 0.999927613296289,
+            "key": null,
             "motive": "practice"
           },
           {
             "day": 28,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995411512766,
-            "receive": 0.99982306284879,
             "motive": "food"
           },
           {
             "day": 29,
             "seg": "foot",
             "key": "hare",
-            "p": 0.99999958657717,
-            "receive": 0.9998281181496232,
             "motive": "food"
           },
           {
             "day": 29,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999970117324164,
-            "receive": 0.9987144292682426,
             "motive": "food"
           },
           {
             "day": 30,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995969218164,
-            "receive": 0.9998324189708833,
             "motive": "food"
           },
           {
             "day": 31,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995701059804,
-            "receive": 0.9998342281081571,
             "motive": "food"
           },
           {
             "day": 31,
-            "seg": "slope",
-            "key": "bandit",
-            "p": 0.9999556748539546,
-            "receive": 0.9999459512524845,
+            "seg": "wood",
+            "key": null,
             "motive": "practice"
-          },
-          {
-            "day": 32,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999996097763785,
-            "receive": 0.9998377632977502,
-            "motive": "food"
-          },
-          {
-            "day": 32,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999970928877361,
-            "receive": 0.9987493428775859,
-            "motive": "food"
           },
           {
             "day": 33,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995845625264,
-            "receive": 0.9998397879780656,
+            "motive": "food"
+          },
+          {
+            "day": 34,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 34,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 35,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 36,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 36,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 37,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 37,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 38,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 38,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 39,
+            "seg": "wood",
+            "key": null,
+            "motive": "practice"
+          },
+          {
+            "day": 41,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 42,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 43,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           }
         ],
         "totalDiscoveries": 0,
-        "expN": 35
+        "expN": 46
       }
     },
     {
@@ -4709,232 +3447,174 @@
             "day": 2,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999677545154733,
-            "receive": 0.9929421375085091,
             "motive": "food"
           },
           {
             "day": 3,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9984281612635032,
-            "receive": 0.6249046899216204,
             "motive": "food"
           },
           {
             "day": 3,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999823223883021,
-            "receive": 0.9939343397962558,
             "motive": "food"
           },
           {
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999865350106755,
-            "receive": 0.995049836053568,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999890161702467,
-            "receive": 0.9985340290654879,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999988089298579,
-            "receive": 0.998807793498059,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999446825990163,
-            "receive": 0.9774411417694878,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999997140831573,
-            "receive": 0.9989772706564416,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999973987852924,
-            "receive": 0.9990072370219051,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999966319616251,
-            "receive": 0.9985394491968749,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999385192693,
-            "receive": 0.9997399724444158,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999993946743077,
-            "receive": 0.9997439826156127,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994032118346,
-            "receive": 0.9997475934926239,
             "motive": "food"
           },
           {
             "day": 15,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994213907504,
-            "receive": 0.9997552821157752,
             "motive": "food"
           },
           {
             "day": 16,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994440511872,
-            "receive": 0.9997648661610046,
             "motive": "food"
           },
           {
             "day": 17,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999887577157809,
-            "receive": 0.9946149385299609,
             "motive": "food"
           },
           {
             "day": 18,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999883383818382,
-            "receive": 0.9948056070467796,
             "motive": "food"
           },
           {
             "day": 18,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999967592477292,
-            "receive": 0.9985946470310915,
             "motive": "food"
           },
           {
             "day": 19,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999988588289021,
-            "receive": 0.9949169235815084,
             "motive": "food"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999901342842106,
-            "receive": 0.9951706741971615,
             "motive": "food"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999969129324883,
-            "receive": 0.9986612926680435,
             "motive": "food"
           },
           {
             "day": 23,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999969809655889,
-            "receive": 0.9986907953223189,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999970702039015,
-            "receive": 0.9987294936419756,
             "motive": "food"
           },
           {
             "day": 25,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999970705703113,
-            "receive": 0.9987296525360359,
             "motive": "food"
           },
           {
             "day": 25,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999971234080512,
-            "receive": 0.9987525656929693,
             "motive": "food"
           },
           {
             "day": 26,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999971956552615,
-            "receive": 0.9987838957887883,
             "motive": "food"
           },
           {
             "day": 27,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999958855714389,
-            "receive": 0.9988090301780737,
             "motive": "food"
           },
           {
             "day": 29,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999997405950572,
-            "receive": 0.9988750905953518,
             "motive": "food"
           },
           {
             "day": 30,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999974322957143,
-            "receive": 0.998886515194317,
             "motive": "food"
           }
         ],
@@ -4951,728 +3631,546 @@
             "day": 2,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999677545154733,
-            "receive": 0.9929421375085091,
             "motive": "food"
           },
           {
             "day": 3,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9984281612635032,
-            "receive": 0.6249046899216204,
             "motive": "food"
           },
           {
             "day": 3,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999823223883021,
-            "receive": 0.9939343397962558,
             "motive": "food"
           },
           {
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999865350106755,
-            "receive": 0.995049836053568,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999890161702467,
-            "receive": 0.9985340290654879,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999988089298579,
-            "receive": 0.998807793498059,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999446825990163,
-            "receive": 0.9774411417694878,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999997140831573,
-            "receive": 0.9989772706564416,
             "motive": "food"
           },
           {
             "day": 11,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999973987852924,
-            "receive": 0.9990072370219051,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999966319616251,
-            "receive": 0.9985394491968749,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999385192693,
-            "receive": 0.9997399724444158,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999993946743077,
-            "receive": 0.9997439826156127,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994032118346,
-            "receive": 0.9997475934926239,
             "motive": "food"
           },
           {
             "day": 15,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994213907504,
-            "receive": 0.9997552821157752,
             "motive": "food"
           },
           {
             "day": 16,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994440511872,
-            "receive": 0.9997648661610046,
             "motive": "food"
           },
           {
             "day": 17,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999887577157809,
-            "receive": 0.9946149385299609,
             "motive": "food"
           },
           {
             "day": 18,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999883383818382,
-            "receive": 0.9948056070467796,
             "motive": "food"
           },
           {
             "day": 18,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999967592477292,
-            "receive": 0.9985946470310915,
             "motive": "food"
           },
           {
             "day": 19,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999988588289021,
-            "receive": 0.9949169235815084,
             "motive": "food"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999901342842106,
-            "receive": 0.9951706741971615,
             "motive": "food"
           },
           {
             "day": 22,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999969129324883,
-            "receive": 0.9986612926680435,
             "motive": "food"
           },
           {
             "day": 23,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999969809655889,
-            "receive": 0.9986907953223189,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999970702039015,
-            "receive": 0.9987294936419756,
             "motive": "food"
           },
           {
             "day": 25,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999970705703113,
-            "receive": 0.9987296525360359,
             "motive": "food"
           },
           {
             "day": 25,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999971234080512,
-            "receive": 0.9987525656929693,
             "motive": "food"
           },
           {
             "day": 26,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999971956552615,
-            "receive": 0.9987838957887883,
             "motive": "food"
           },
           {
             "day": 27,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999958855714389,
-            "receive": 0.9988090301780737,
             "motive": "food"
           },
           {
             "day": 29,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999997405950572,
-            "receive": 0.9988750905953518,
             "motive": "food"
           },
           {
             "day": 30,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999974322957143,
-            "receive": 0.998886515194317,
             "motive": "food"
           },
           {
             "day": 31,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999974792911934,
-            "receive": 0.9989068948323985,
             "motive": "food"
           },
           {
             "day": 33,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999975811472555,
-            "receive": 0.9989510648121451,
             "motive": "food"
           },
           {
             "day": 34,
             "seg": "foot",
             "key": "hare",
-            "p": 0.99999762633413,
-            "receive": 0.9989706601411112,
             "motive": "food"
           },
           {
             "day": 35,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999976544586426,
-            "receive": 0.9989828563605838,
             "motive": "food"
           },
           {
             "day": 35,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999976696096612,
-            "receive": 0.9989894266126356,
             "motive": "food"
           },
           {
             "day": 37,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999993973293309,
-            "receive": 0.999746675576771,
             "motive": "food"
           },
           {
             "day": 38,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994062953366,
-            "receive": 0.9997504443176615,
             "motive": "food"
           },
           {
             "day": 38,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994235761648,
-            "receive": 0.9997577080829729,
             "motive": "food"
           },
           {
             "day": 39,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999977496018062,
-            "receive": 0.9990241152712457,
             "motive": "food"
           },
           {
             "day": 39,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994365337026,
-            "receive": 0.99976315461078,
             "motive": "food"
           },
           {
             "day": 40,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994492581855,
-            "receive": 0.9997685031769354,
             "motive": "food"
           },
           {
             "day": 41,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994648951873,
-            "receive": 0.9997750759812732,
             "motive": "food"
           },
           {
             "day": 42,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994727888109,
-            "receive": 0.9997783939601206,
             "motive": "food"
           },
           {
             "day": 43,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994682118064,
-            "receive": 0.9997757051367115,
             "motive": "food"
           },
           {
             "day": 44,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999978235855732,
-            "receive": 0.9990561983869296,
             "motive": "food"
           },
           {
             "day": 44,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994839896248,
-            "receive": 0.9997831020721002,
             "motive": "food"
           },
           {
             "day": 44,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994682212114,
-            "receive": 0.999775709103482,
             "motive": "food"
           },
           {
             "day": 44,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999978235855732,
-            "receive": 0.9990561983869296,
             "motive": "food"
           },
           {
             "day": 45,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994708354654,
-            "receive": 0.9997768117305805,
             "motive": "food"
           },
           {
             "day": 45,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999978523183074,
-            "receive": 0.9990686583571659,
             "motive": "food"
           },
           {
             "day": 45,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999470846636,
-            "receive": 0.9997768164420396,
             "motive": "food"
           },
           {
             "day": 45,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994708821442,
-            "receive": 0.9997768314185957,
             "motive": "food"
           },
           {
             "day": 45,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999978792834447,
-            "receive": 0.9990803518072375,
             "motive": "food"
           },
           {
             "day": 46,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994708933124,
-            "receive": 0.9997768361290159,
             "motive": "food"
           },
           {
             "day": 46,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999978923735287,
-            "receive": 0.9990860283307793,
             "motive": "food"
           },
           {
             "day": 46,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999979053368248,
-            "receive": 0.9990916498725275,
             "motive": "food"
           },
           {
             "day": 46,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995002482552,
-            "receive": 0.9997899361691759,
             "motive": "food"
           },
           {
             "day": 47,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994709374888,
-            "receive": 0.9997768547614555,
             "motive": "food"
           },
           {
             "day": 47,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994709449322,
-            "receive": 0.9997768579009422,
             "motive": "food"
           },
           {
             "day": 47,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995129127638,
-            "receive": 0.9997952595252534,
             "motive": "food"
           },
           {
             "day": 47,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999979444311358,
-            "receive": 0.9991086031449319,
             "motive": "food"
           },
           {
             "day": 48,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995227730126,
-            "receive": 0.9997994041483116,
             "motive": "food"
           },
           {
             "day": 48,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995320487316,
-            "receive": 0.999803303072003,
             "motive": "food"
           },
           {
             "day": 49,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999979951193949,
-            "receive": 0.9991305841381513,
             "motive": "food"
           },
           {
             "day": 50,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995434730813,
-            "receive": 0.9998081051436946,
             "motive": "food"
           },
           {
             "day": 50,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994710155086,
-            "receive": 0.9997768876682752,
             "motive": "food"
           },
           {
             "day": 50,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995566800935,
-            "receive": 0.9998136565333863,
             "motive": "food"
           },
           {
             "day": 51,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994725512981,
-            "receive": 0.9997775354259103,
             "motive": "food"
           },
           {
             "day": 51,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995595575658,
-            "receive": 0.9998148660400672,
             "motive": "food"
           },
           {
             "day": 51,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999561931485,
-            "receive": 0.9998158638850181,
             "motive": "food"
           },
           {
             "day": 52,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999474057772,
-            "receive": 0.9997781708190531,
             "motive": "food"
           },
           {
             "day": 52,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994755467205,
-            "receive": 0.9997787988203304,
             "motive": "food"
           },
           {
             "day": 52,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999475554003,
-            "receive": 0.999778801891894,
             "motive": "food"
           },
           {
             "day": 52,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995646728782,
-            "receive": 0.9998170161927199,
             "motive": "food"
           },
           {
             "day": 52,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995646728782,
-            "receive": 0.9998170161927199,
             "motive": "food"
           },
           {
             "day": 53,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994787204893,
-            "receive": 0.999780137436742,
             "motive": "food"
           },
           {
             "day": 53,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994787555097,
-            "receive": 0.9997801522074177,
             "motive": "food"
           },
           {
             "day": 53,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995646772175,
-            "receive": 0.9998170180166251,
             "motive": "food"
           },
           {
             "day": 54,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994787626811,
-            "receive": 0.9997801552322212,
             "motive": "food"
           },
           {
             "day": 54,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995704633772,
-            "receive": 0.9998194501508759,
             "motive": "food"
           },
           {
             "day": 54,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994793177119,
-            "receive": 0.9997803893303286,
             "motive": "food"
           },
           {
             "day": 55,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995752582653,
-            "receive": 0.9998214656174217,
             "motive": "food"
           },
           {
             "day": 55,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994793521777,
-            "receive": 0.9997804038671383,
             "motive": "food"
           },
           {
             "day": 58,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995834549591,
-            "receive": 0.9998249109870424,
             "motive": "food"
           },
           {
             "day": 58,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995883356706,
-            "receive": 0.9998269625282304,
             "motive": "food"
           },
           {
             "day": 59,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995935994795,
-            "receive": 0.999829175099288,
             "motive": "food"
           },
           {
             "day": 59,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994807776473,
-            "receive": 0.9997810050946174,
             "motive": "food"
           },
           {
             "day": 59,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995962131432,
-            "receive": 0.9998302737174409,
             "motive": "food"
           },
           {
             "day": 60,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994815454661,
-            "receive": 0.9997813289413828,
             "motive": "food"
           },
           {
             "day": 60,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994815560801,
-            "receive": 0.9997813334180882,
             "motive": "food"
           },
           {
             "day": 60,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999994823573731,
-            "receive": 0.999781671383527,
             "motive": "food"
           },
           {
             "day": 60,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999601083648,
-            "receive": 0.9998323209683498,
             "motive": "food"
           }
         ],
@@ -5683,7 +4181,7 @@
     {
       "seed": 1011,
       "day30": {
-        "starts": 18,
+        "starts": 20,
         "patrols": 2,
         "hurt": 1,
         "discoveries": 0,
@@ -5692,152 +4190,128 @@
             "day": 3,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999788227180127,
-            "receive": 0.9928590255354579,
             "motive": "food"
           },
           {
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9904776361522152,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999879849875837,
-            "receive": 0.9950309051664228,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9988307085639193,
-            "receive": 0.887784392820939,
             "motive": "food"
           },
           {
             "day": 6,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9981377973181934,
-            "receive": 0.8297103755062256,
             "motive": "food"
           },
           {
             "day": 8,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999982997341353,
-            "receive": 0.9990732878406259,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999919214690559,
-            "receive": 0.9993465558376825,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "wood",
-            "key": "wolf",
-            "p": 0.9434921010801094,
-            "receive": 0.9697265607711334,
+            "key": null,
             "motive": "practice"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999947940850763,
-            "receive": 0.9993851993683234,
             "motive": "food"
           },
           {
             "day": 25,
             "seg": "foot",
-            "key": "hare",
-            "p": 0.9999960604852828,
-            "receive": 0.9994320811296438,
+            "key": null,
             "motive": "practice"
           },
           {
             "day": 27,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999864747225127,
-            "receive": 0.9940409351284338,
             "motive": "food"
           },
           {
             "day": 27,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999963549214615,
-            "receive": 0.998564720427722,
-            "motive": "food"
-          },
-          {
-            "day": 27,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999992803962404,
-            "receive": 0.9997534329651626,
-            "motive": "food"
-          },
-          {
-            "day": 27,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999867588546918,
-            "receive": 0.9941650382203733,
-            "motive": "food"
-          },
-          {
-            "day": 27,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999967614451784,
-            "receive": 0.9986063311409962,
             "motive": "food"
           },
           {
             "day": 28,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9927121537226794,
-            "receive": 0.19999999999999996,
+            "motive": "food"
+          },
+          {
+            "day": 28,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 28,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 28,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           },
           {
             "day": 29,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9981797051745119,
-            "receive": 0.7897425032728909,
+            "motive": "food"
+          },
+          {
+            "day": 29,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           },
           {
             "day": 30,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9994612831110401,
-            "receive": 0.9375753265307429,
+            "motive": "food"
+          },
+          {
+            "day": 30,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           }
         ],
         "totalDiscoveries": 0,
-        "expN": 18
+        "expN": 20
       },
       "day60": {
-        "starts": 52,
+        "starts": 38,
         "patrols": 2,
         "hurt": 1,
         "discoveries": 0,
@@ -5846,421 +4320,233 @@
             "day": 3,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999788227180127,
-            "receive": 0.9928590255354579,
             "motive": "food"
           },
           {
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9904776361522152,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999879849875837,
-            "receive": 0.9950309051664228,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9988307085639193,
-            "receive": 0.887784392820939,
             "motive": "food"
           },
           {
             "day": 6,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9981377973181934,
-            "receive": 0.8297103755062256,
             "motive": "food"
           },
           {
             "day": 8,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999982997341353,
-            "receive": 0.9990732878406259,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999919214690559,
-            "receive": 0.9993465558376825,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "wood",
-            "key": "wolf",
-            "p": 0.9434921010801094,
-            "receive": 0.9697265607711334,
+            "key": null,
             "motive": "practice"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999947940850763,
-            "receive": 0.9993851993683234,
             "motive": "food"
           },
           {
             "day": 25,
             "seg": "foot",
-            "key": "hare",
-            "p": 0.9999960604852828,
-            "receive": 0.9994320811296438,
+            "key": null,
             "motive": "practice"
           },
           {
             "day": 27,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999864747225127,
-            "receive": 0.9940409351284338,
             "motive": "food"
           },
           {
             "day": 27,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999963549214615,
-            "receive": 0.998564720427722,
-            "motive": "food"
-          },
-          {
-            "day": 27,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999992803962404,
-            "receive": 0.9997534329651626,
-            "motive": "food"
-          },
-          {
-            "day": 27,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999867588546918,
-            "receive": 0.9941650382203733,
-            "motive": "food"
-          },
-          {
-            "day": 27,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999967614451784,
-            "receive": 0.9986063311409962,
             "motive": "food"
           },
           {
             "day": 28,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9927121537226794,
-            "receive": 0.19999999999999996,
+            "motive": "food"
+          },
+          {
+            "day": 28,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 28,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 28,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           },
           {
             "day": 29,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9981797051745119,
-            "receive": 0.7897425032728909,
+            "motive": "food"
+          },
+          {
+            "day": 29,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           },
           {
             "day": 30,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9994612831110401,
-            "receive": 0.9375753265307429,
+            "motive": "food"
+          },
+          {
+            "day": 30,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           },
           {
             "day": 31,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9996411639723431,
-            "receive": 0.9584267887329049,
+            "motive": "food"
+          },
+          {
+            "day": 31,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           },
           {
             "day": 32,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9997098059915561,
-            "receive": 0.9663816686909176,
+            "motive": "food"
+          },
+          {
+            "day": 32,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 33,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           },
           {
             "day": 35,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9997460545997361,
-            "receive": 0.9705820561034367,
             "motive": "food"
           },
           {
             "day": 35,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999968783954685,
-            "receive": 0.9986566592951565,
+            "motive": "food"
+          },
+          {
+            "day": 35,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 35,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 35,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 35,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 35,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           },
           {
             "day": 36,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999288249518751,
-            "receive": 0.9870066380472133,
+            "motive": "food"
+          },
+          {
+            "day": 36,
+            "seg": "foot",
+            "key": "hare",
+            "motive": "food"
+          },
+          {
+            "day": 36,
+            "seg": "foot",
+            "key": "hare",
             "motive": "food"
           },
           {
             "day": 37,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9997794023621975,
-            "receive": 0.9744460326242488,
             "motive": "food"
           },
           {
             "day": 37,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999364671508565,
-            "receive": 0.9884018484358688,
             "motive": "food"
           },
           {
-            "day": 37,
+            "day": 57,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9997972356266148,
-            "receive": 0.9786451859441936,
-            "motive": "food"
-          },
-          {
-            "day": 43,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999985610945268,
-            "receive": 0.9994390643248,
-            "motive": "food"
-          },
-          {
-            "day": 44,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.999998590390765,
-            "receive": 0.9994504850390841,
-            "motive": "food"
-          },
-          {
-            "day": 45,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.999998619835966,
-            "receive": 0.9994619638237879,
-            "motive": "food"
-          },
-          {
-            "day": 47,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999986401509641,
-            "receive": 0.9994698833307676,
-            "motive": "food"
-          },
-          {
-            "day": 50,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999989219330286,
-            "receive": 0.9997170311360108,
-            "motive": "food"
-          },
-          {
-            "day": 50,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999989567460406,
-            "receive": 0.9997261687952982,
-            "motive": "food"
-          },
-          {
-            "day": 50,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999989889667699,
-            "receive": 0.9997346260362007,
-            "motive": "food"
-          },
-          {
-            "day": 51,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999990089216948,
-            "receive": 0.9997398637698561,
-            "motive": "food"
-          },
-          {
-            "day": 51,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999990213775257,
-            "receive": 0.9997431331543793,
-            "motive": "food"
-          },
-          {
-            "day": 51,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999990406614445,
-            "receive": 0.9997481947631693,
-            "motive": "food"
-          },
-          {
-            "day": 52,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999990700702424,
-            "receive": 0.9997559139319144,
-            "motive": "food"
-          },
-          {
-            "day": 52,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999990816495297,
-            "receive": 0.99975895324246,
-            "motive": "food"
-          },
-          {
-            "day": 52,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.999999100378323,
-            "receive": 0.9997638691423778,
-            "motive": "food"
-          },
-          {
-            "day": 52,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999991099598695,
-            "receive": 0.9997663840893264,
-            "motive": "food"
-          },
-          {
-            "day": 52,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.999999135268004,
-            "receive": 0.9997730269223676,
-            "motive": "food"
-          },
-          {
-            "day": 52,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999991520133404,
-            "receive": 0.999777422207617,
-            "motive": "food"
-          },
-          {
-            "day": 53,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999991639656814,
-            "receive": 0.9997805594360591,
-            "motive": "food"
-          },
-          {
-            "day": 53,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999991742723019,
-            "receive": 0.9997832646987967,
-            "motive": "food"
-          },
-          {
-            "day": 54,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999991964236337,
-            "receive": 0.9997890789392693,
-            "motive": "food"
-          },
-          {
-            "day": 55,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999992035744696,
-            "receive": 0.9997909558774228,
-            "motive": "food"
-          },
-          {
-            "day": 55,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999992135732908,
-            "receive": 0.9997935803493355,
-            "motive": "food"
-          },
-          {
-            "day": 56,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.999999227728896,
-            "receive": 0.9997972958860729,
-            "motive": "food"
-          },
-          {
-            "day": 56,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999992414999996,
-            "receive": 0.9998009104994597,
-            "motive": "food"
-          },
-          {
-            "day": 56,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999992459057554,
-            "receive": 0.999802066913952,
-            "motive": "food"
-          },
-          {
-            "day": 56,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999992600895135,
-            "receive": 0.9998057898399654,
-            "motive": "food"
-          },
-          {
-            "day": 56,
-            "seg": "foot",
-            "key": "hare",
-            "p": 0.9999992601049358,
-            "receive": 0.9998057938879858,
             "motive": "food"
           }
         ],
         "totalDiscoveries": 0,
-        "expN": 52
+        "expN": 38
       }
     },
     {
@@ -6275,208 +4561,156 @@
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9906628837582616,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998139925508605,
-            "receive": 0.9827969958630309,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9910189575207733,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 6,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999642319817965,
-            "receive": 0.9934864413014555,
             "motive": "food"
           },
           {
             "day": 7,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999946856480842,
-            "receive": 0.9989154487492997,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999762113948709,
-            "receive": 0.9946884903349783,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999991515995947,
-            "receive": 0.9997867769142699,
             "motive": "food"
           },
           {
             "day": 12,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995239886577,
-            "receive": 0.999748925726993,
             "motive": "food"
           },
           {
             "day": 12,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9982716028766997,
-            "receive": 0.8202582748274307,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999782063202203,
-            "receive": 0.9947331354295588,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9988855958852336,
-            "receive": 0.8841806709807755,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995863831611,
-            "receive": 0.999755522051276,
             "motive": "food"
           },
           {
             "day": 15,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995926095232,
-            "receive": 0.999759129433499,
             "motive": "food"
           },
           {
             "day": 15,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9990875837057848,
-            "receive": 0.905192311356011,
             "motive": "food"
           },
           {
             "day": 15,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999967517084448,
-            "receive": 0.9985997786849257,
             "motive": "food"
           },
           {
             "day": 15,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999368264017156,
-            "receive": 0.993470564183009,
             "motive": "food"
           },
           {
             "day": 21,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999992268580838,
-            "receive": 0.9998041135304223,
             "motive": "food"
           },
           {
             "day": 21,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999992446833187,
-            "receive": 0.9998086298098753,
             "motive": "food"
           },
           {
             "day": 21,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9992873416704791,
-            "receive": 0.9259636384476487,
             "motive": "food"
           },
           {
             "day": 23,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999968367301043,
-            "receive": 0.9986364285713287,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9993900238007764,
-            "receive": 0.9339612651585057,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999993010730931,
-            "receive": 0.9998223406449421,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9994723113831165,
-            "receive": 0.9428747881784308,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999993083195164,
-            "receive": 0.9998241753300621,
             "motive": "food"
           },
           {
             "day": 25,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999993236711675,
-            "receive": 0.9998280756387408,
             "motive": "food"
           },
           {
             "day": 26,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999334146215,
-            "receive": 0.9998307034458971,
             "motive": "food"
           }
         ],
@@ -6493,328 +4727,246 @@
             "day": 4,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9906628837582616,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9998139925508605,
-            "receive": 0.9827969958630309,
             "motive": "food"
           },
           {
             "day": 5,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9910189575207733,
-            "receive": 0.19999999999999996,
             "motive": "food"
           },
           {
             "day": 6,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999642319817965,
-            "receive": 0.9934864413014555,
             "motive": "food"
           },
           {
             "day": 7,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999946856480842,
-            "receive": 0.9989154487492997,
             "motive": "food"
           },
           {
             "day": 9,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999762113948709,
-            "receive": 0.9946884903349783,
             "motive": "food"
           },
           {
             "day": 10,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999991515995947,
-            "receive": 0.9997867769142699,
             "motive": "food"
           },
           {
             "day": 12,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995239886577,
-            "receive": 0.999748925726993,
             "motive": "food"
           },
           {
             "day": 12,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9982716028766997,
-            "receive": 0.8202582748274307,
             "motive": "food"
           },
           {
             "day": 13,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999782063202203,
-            "receive": 0.9947331354295588,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9988855958852336,
-            "receive": 0.8841806709807755,
             "motive": "food"
           },
           {
             "day": 14,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995863831611,
-            "receive": 0.999755522051276,
             "motive": "food"
           },
           {
             "day": 15,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999995926095232,
-            "receive": 0.999759129433499,
             "motive": "food"
           },
           {
             "day": 15,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9990875837057848,
-            "receive": 0.905192311356011,
             "motive": "food"
           },
           {
             "day": 15,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999967517084448,
-            "receive": 0.9985997786849257,
             "motive": "food"
           },
           {
             "day": 15,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999368264017156,
-            "receive": 0.993470564183009,
             "motive": "food"
           },
           {
             "day": 21,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999992268580838,
-            "receive": 0.9998041135304223,
             "motive": "food"
           },
           {
             "day": 21,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999992446833187,
-            "receive": 0.9998086298098753,
             "motive": "food"
           },
           {
             "day": 21,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9992873416704791,
-            "receive": 0.9259636384476487,
             "motive": "food"
           },
           {
             "day": 23,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999968367301043,
-            "receive": 0.9986364285713287,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9993900238007764,
-            "receive": 0.9339612651585057,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999993010730931,
-            "receive": 0.9998223406449421,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9994723113831165,
-            "receive": 0.9428747881784308,
             "motive": "food"
           },
           {
             "day": 24,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999993083195164,
-            "receive": 0.9998241753300621,
             "motive": "food"
           },
           {
             "day": 25,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999993236711675,
-            "receive": 0.9998280756387408,
             "motive": "food"
           },
           {
             "day": 26,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999999334146215,
-            "receive": 0.9998307034458971,
             "motive": "food"
           },
           {
             "day": 54,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999811994551724,
-            "receive": 0.9931024038694002,
             "motive": "food"
           },
           {
             "day": 54,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999838963140658,
-            "receive": 0.994091850888192,
             "motive": "food"
           },
           {
             "day": 54,
             "seg": "foot",
             "key": "hare",
-            "p": 0.99998450637861,
-            "receive": 0.9943156759276529,
             "motive": "food"
           },
           {
             "day": 54,
             "seg": "foot",
             "key": "hare",
-            "p": 0.999985058363872,
-            "receive": 0.9945181921706876,
             "motive": "food"
           },
           {
             "day": 55,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999861627550167,
-            "receive": 0.9949233783059437,
             "motive": "food"
           },
           {
             "day": 55,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999878268967008,
-            "receive": 0.9955339276333103,
             "motive": "food"
           },
           {
             "day": 55,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999882832563978,
-            "receive": 0.9957013589991782,
             "motive": "food"
           },
           {
             "day": 55,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999889788781298,
-            "receive": 0.9959565716381442,
             "motive": "food"
           },
           {
             "day": 56,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999892989562702,
-            "receive": 0.9960740031387971,
             "motive": "food"
           },
           {
             "day": 56,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999904476485348,
-            "receive": 0.9964954391612043,
             "motive": "food"
           },
           {
             "day": 56,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999907538404398,
-            "receive": 0.9966077756979281,
             "motive": "food"
           },
           {
             "day": 56,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999912038701647,
-            "receive": 0.9967728837287331,
             "motive": "food"
           },
           {
             "day": 57,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999914446314528,
-            "receive": 0.996861214771158,
             "motive": "food"
           },
           {
             "day": 57,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999914643502505,
-            "receive": 0.9968684492460873,
             "motive": "food"
           },
           {
             "day": 57,
             "seg": "foot",
             "key": "hare",
-            "p": 0.9999917308149646,
-            "receive": 0.9969662103657646,
             "motive": "food"
           }
         ],
@@ -6825,48 +4977,18 @@
   ],
   "totals": {
     "30": {
-      "starts": 308,
+      "starts": 298,
+      "patrols": 9,
+      "hurt": 4,
+      "discoveries": 0,
+      "totalDiscoveries": 0
+    },
+    "60": {
+      "starts": 482,
       "patrols": 11,
-      "hurt": 2,
+      "hurt": 6,
       "discoveries": 0,
       "totalDiscoveries": 0
-    },
-    "60": {
-      "starts": 508,
-      "patrols": 12,
-      "hurt": 2,
-      "discoveries": 0,
-      "totalDiscoveries": 0
-    }
-  },
-  "targetOdds": {
-    "30": {
-      "food": {
-        "n": 297,
-        "q10": 0.9984147583941309,
-        "median": 0.9999950593415333,
-        "q90": 0.9999995969218164
-      },
-      "practice": {
-        "n": 11,
-        "q10": 0.9980753134069572,
-        "median": 0.9999790621779914,
-        "q90": 0.9999912088964654
-      }
-    },
-    "60": {
-      "food": {
-        "n": 496,
-        "q10": 0.9994339420473735,
-        "median": 0.9999974322957143,
-        "q90": 0.9999995834549591
-      },
-      "practice": {
-        "n": 12,
-        "q10": 0.9980753134069572,
-        "median": 0.9999785596461134,
-        "q90": 0.9999900251245066
-      }
     }
   }
 }

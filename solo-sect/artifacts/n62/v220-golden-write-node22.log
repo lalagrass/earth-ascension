@@ -2,91 +2,91 @@ TAP version 13
 # Subtest: BASELINE_V22 涵蓋擁有人點名的 30 條規則
 ok 1 - BASELINE_V22 涵蓋擁有人點名的 30 條規則
   ---
-  duration_ms: 1.644116
+  duration_ms: 6.216657
   type: 'test'
   ...
 # Subtest: 開局江湖規則只剩 1 個勾選框（執事自動營建）＋重大抉擇＋名俠池畫風
 ok 2 - 開局江湖規則只剩 1 個勾選框（執事自動營建）＋重大抉擇＋名俠池畫風
   ---
-  duration_ms: 0.395444
+  duration_ms: 0.510223
   type: 'test'
   ...
 # Subtest: classic：新局底層規則全開、執事三項全開
 ok 3 - classic：新局底層規則全開、執事三項全開
   ---
-  duration_ms: 2.511516
+  duration_ms: 8.511584
   type: 'test'
   ...
 # Subtest: classic：取消執事自動營建 → 執事三項全關，底層照開
 ok 4 - classic：取消執事自動營建 → 執事三項全關，底層照開
   ---
-  duration_ms: 0.794121
+  duration_ms: 5.168871
   type: 'test'
   ...
 # Subtest: custom：新局底層規則全開、執事三項全開
 ok 5 - custom：新局底層規則全開、執事三項全開
   ---
-  duration_ms: 0.84046
+  duration_ms: 1.399396
   type: 'test'
   ...
 # Subtest: custom：取消執事自動營建 → 執事三項全關，底層照開
 ok 6 - custom：取消執事自動營建 → 執事三項全關，底層照開
   ---
-  duration_ms: 4.852348
+  duration_ms: 0.943553
   type: 'test'
   ...
 # Subtest: 照舊分頁、不帶 spec 也套用現行規則（\#390，擁有人 2026-11-02）
 ok 7 - 照舊分頁、不帶 spec 也套用現行規則（\#390，擁有人 2026-11-02）
   ---
-  duration_ms: 0.560728
+  duration_ms: 0.743948
   type: 'test'
   ...
 # Subtest: v0.5.json：舊檔讀入升到現行規則（\#390）
 ok 8 - v0.5.json：舊檔讀入升到現行規則（\#390）
   ---
-  duration_ms: 647.595496
+  duration_ms: 2130.582929
   type: 'test'
   ...
 # Subtest: v0.6.json：舊檔讀入升到現行規則（\#390）
 ok 9 - v0.6.json：舊檔讀入升到現行規則（\#390）
   ---
-  duration_ms: 528.127507
+  duration_ms: 1237.104628
   type: 'test'
   ...
 # Subtest: v0.7.json：舊檔讀入升到現行規則（\#390）
 ok 10 - v0.7.json：舊檔讀入升到現行規則（\#390）
   ---
-  duration_ms: 534.642073
+  duration_ms: 1252.383601
   type: 'test'
   ...
 # Subtest: v0.8.json：舊檔讀入升到現行規則（\#390）
 ok 11 - v0.8.json：舊檔讀入升到現行規則（\#390）
   ---
-  duration_ms: 623.423818
+  duration_ms: 1353.414502
   type: 'test'
   ...
 # Subtest: v0.85.json：舊檔讀入升到現行規則（\#390）
 ok 12 - v0.85.json：舊檔讀入升到現行規則（\#390）
   ---
-  duration_ms: 534.45594
+  duration_ms: 844.732669
   type: 'test'
   ...
 # Subtest: v0.9.json：舊檔讀入升到現行規則（\#390）
 ok 13 - v0.9.json：舊檔讀入升到現行規則（\#390）
   ---
-  duration_ms: 288.401011
+  duration_ms: 552.28778
   type: 'test'
   ...
 # Subtest: v0.92.json：舊檔讀入升到現行規則（\#390）
 ok 14 - v0.92.json：舊檔讀入升到現行規則（\#390）
   ---
-  duration_ms: 239.240147
+  duration_ms: 464.65578
   type: 'test'
   ...
 # Subtest: 新基準 golden-30d-v22（全開規則、郭靖模板、自動抉擇）
 ok 15 - 新基準 golden-30d-v22（全開規則、郭靖模板、自動抉擇）
   ---
-  duration_ms: 15653.772217
+  duration_ms: 18297.348883
   type: 'test'
   ...
 1..15
@@ -97,4 +97,4 @@ ok 15 - 新基準 golden-30d-v22（全開規則、郭靖模板、自動抉擇）
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 19391.954062
+# duration_ms 26617.42174

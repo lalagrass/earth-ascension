@@ -65,8 +65,8 @@ test('敵人種類齊全；圖鑑未見為？？？，交手累積觀破值', ()
 // 5 巡山遠征
 const expRun = (seed, lvl, n, thr, trained = false) => { const s = createState(seed); tick(s);
   for (const d of s.ds) { d.skills.palm = d.skills.leg = Math.max(d.skills.palm, lvl); d.skills.agility = d.skills.strength = lvl / 2;
-    // N32/N45：光把身體數字拉高仍是白身拳腳，破不了野豬硬皮；高手情境要明寫已習得的招。
-    if (trained && lvl > 0) { learnArt(d, 'pushPalm'); d.arts.pushPalm.xp = TIERS[lvl >= 90 ? 3 : 1][0]; }
+    // N32/N45：光把身體數字拉高仍是白身拳腳；同尺高手有已練熟的普通刀招破野豬硬皮。
+    if (trained && lvl > 0) { learnArt(d, 'pushPalm'); d.arts.pushPalm.xp = TIERS[lvl >= 90 ? 3 : 1][0]; learnArt(d, 'wuhuBlade'); d.arts.wuhuBlade.xp = TIERS[4][0]; }
   }
   s.res.food = 20; const r = startExpedition(openExp(s), s.ds.slice(0, n).map((d) => d.id), { thr }); let i = 0; while (s.exp && i++ < 40000) tick(s); return { s, r, rep: s.lastExp }; };
 test('派遣 1–4 人；雇工、傷者不可；同時只一隊', () => {
