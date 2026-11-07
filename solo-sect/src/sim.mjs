@@ -924,7 +924,7 @@ export function tick(s, dt = 0.25) {
   for (const d of s.ds) d.lg = 1; /* loop127 新入門者 */
   for (const d of s.ds) { if (!d.gInit) growEnsure(d); d.gdr = 1; } /* loop84 新入門者立即折算，介面不必寫狀態 */
   { const day = Math.floor(s.t / DAY) + 1; if (day !== s.day) { s.day = day; dailyPipeline(s); } }
-  schoolStep(s, EH); threatStep(s, EH); bandStep(s, dt, EH); if (s.lair) lairStep(s, EH); if (s.v27n?.cru) crusadeStep27(s, EH);
+  schoolStep(s, EH); threatStep(s, EH); bandStep(s, dt, EH); if (s.lair) lairStep(s, EH, dt); if (s.v27n?.cru) crusadeStep27(s, EH);
   const se = seasonOf(s); for (const p of s.plots) if (p.st === 'grow' && (p.g += dt / se.grow) >= PLOT_GROW) p.st = 'ripe';
   const seIdx = se.i; if (s.seasonI !== seIdx) { if (s.seasonI !== undefined) log(s, `入${se.name}了。${{ spring: '萬物萌發，菜長得快。', summer: '天長日暖。', autumn: '秋高氣爽，心情開闊。', winter: '天寒地凍，菜長得慢，飯量變大。' }[se.id]}`); s.seasonI = seIdx; }
   arrangeGuidance(s);

@@ -86,7 +86,7 @@ export const MIGRATIONS = [
       }
     }
   } },
-  { to: '4.0', note: '第十一輪（#454）：來犯與喘息輪替；舊威脅點數及已到山門的事件保留，從現有戰報重建本期來犯次數', up(o) {
+  { to: '4.0', note: '第十一輪（#454）：來犯與喘息輪替、巡山前三段和剿寨改真地圖交手；舊威脅點數及已到山門的事件保留，從現有戰報重建本期來犯次數', up(o) {
     if (o.threat) { o.threat.rhythmCycle = null; o.threat.rhythmStrikes = 0; o.threat.lastBigDay = null; }
   } },
 ];
