@@ -6,7 +6,8 @@ import { combatMoves,combatTacticStep,fretStep,chooseCombatMove, fastestMove, wi
 import { practiceWindow } from './practice.mjs';
 import { foeAction } from './starter-combat.mjs';
 import { log, seedMix, resAdd, recordDeed, tallyAct, chronOf } from './util.mjs';
-import { NODES, EDGES, SOURCES, DAY, SEASON_DAYS, FACILITIES, MOVES, ARTS } from './data.mjs';
+import { NODES, EDGES, SOURCES, DAY, SEASON_DAYS, FACILITIES, MOVES, ARTS, FENCE_FAC } from './data.mjs';
+export { FENCE_FAC };
 import { noteFret, interceptOpening, breakWindup, taijiReturn, zjHas, zjMark, zjIntercept, ZJ, partHit, resolveSwing, postureOf, postureRegen, postureHit, handleTake, topTierOf, windFrac, CLASH, perfectDodge, witchK, lightCross, WITCH } from './arts.mjs';
 import { qiInjuryFight28, qiInjuryAdd28, innerDrive28, mainOuterArt, CHAMP28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
 import { power } from './jianghu.mjs';
@@ -106,10 +107,6 @@ export function fenceHtml(s) {
 function placeFence(s) { s.fence = { lv: 1, hp: FENCE.max, max: FENCE.max, hits: 0, broken: 0, repaired: 0, blocked: 0 }; log(s, `菜園圍起了木柵（耐久 ${FENCE.max}）。`); }
 function raiseFence(s, nx) { const F = s.fence; F.lv = (F.lv || 1) + 1; F.hp = Math.min(nx.max, F.hp + (nx.max - F.max)); F.max = nx.max; F.warned = false; log(s, `菜園木柵加砌成${nx.name}（耐久 ${F.hp}/${F.max}）。`); }
 export const FENCE_SITE = { work: { build: 12, up: 20 } };
-export const FENCE_FAC = { id: 'fence', name: '菜園柵', node: FENCE.node, stages: [
-  { name: '未築', offers: [], proposal: '上次被圍時沒有牆可以靠，先把柵築起來' }, { name: '木柵', offers: ['defend'], coverSlots: 2, proposal: '先築木柵，守門時有地方靠' },
-  { name: '石牆', offers: ['defend'], coverSlots: 1, proposal: '上次被圍時木柵守不住，把通道收窄' }, { name: '山門壘', offers: ['defend'], coverSlots: 1, proposal: '把石牆加固，守住窄處' },
-] };
 export const fenceSite = (s) => s.fac?.fence?.site || null;
 export function canStartFenceSite(s) {
   if (fenceSite(s)) return { ok: false, why: '柵牆工地施工中' };

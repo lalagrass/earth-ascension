@@ -574,22 +574,26 @@ CI 第三輪 quick 與 golden 全過，accept 296/301。五項逐項處置：
 | 類 | 驗收及目前證據 |
 |---|---|
 | A 人際 | `bash solo-sect/test/run.sh smoke`：被掩護者單向好感 +8、人物面板有原因、第 100 日仍銘記；共守、切磋落敗、拉住惱羞、傳藝共用 `SOCIAL_EVENTS` 資料列。短期想法按日撤回當時實際加值；掩護成功事件接 N44。 |
-| A 設施 | 同一 smoke：外功場升 Lv1 後 `registry` 真站位增加，可逐個預約直到滿；石牆將山門貼身位 2→1。醫館、藥園各階治傷資料和自然工作點四階見[設施階段](docs/systems/facility-stages.md)。 |
+| A 設施 | 同一 smoke：外功場升 Lv1 後 `registry` 真站位增加，可逐個預約直到滿；菜園柵未築／木柵／石牆／破牆的貼身位為 4／2／1／4，邊緣山門仍維持 2。醫館、藥園各階治傷資料和自然工作點四階見[設施階段](docs/systems/facility-stages.md)。 |
 | A 舊驗收更新 | `test/accept/v160.test.mjs` 原有「九座新建築只兩階」與 #461 四階規則互斥，改成恰四階並逐階有活動；未建不登記、修復後原容量及其餘舊斷言不放寬。`v145-review`、`v145`、`v150` 的精確遷移路徑追加新 4.2，仍逐版比較完整序列；未來版本拒讀的斷言保留。 |
 | B 公式 | 本輪沒有新抽機率；沿用 N62 的 6,000 次出獵效用期望測試，smoke 期望 0.4926757803、實測 0.4978333333、容差 0.021407701，沒有改斷言。 |
 | golden | Node 22：`docker run --rm -v "$PWD:/work" -w /work node:22-bookworm-slim node solo-sect/tools/golden.mjs --write --tier all`；quick 4 格、full 32 格及舊檔重產並自檢「✓ 全部相符」。山門紀 CI 仍是正式門檻。 |
 
+首輪山門紀 golden 曾在 `bot-1007-emei` 第 10 日單格不符，第 20／30 日相同。重現為同一進程連跑 30 日兩局時，第二局郭靖的 `child.grown` 提早出現在第 10 日；`mkDisciple` 原本把可變的 `RECRUIT_POOL` 子物件直接借入人物，前一局成年時污染模板。現在建角複製 `child` 和 `parents`，同一進程兩局的第 10／20／30 日雜湊逐格一致。這是跨局隔離修復，沒有調整成年日或招式規則。
+
+守點補核對：現有柵欄在菜園 `NODES.veg`，不是地圖邊緣的 `NODES.gate`。因此窄處貼在菜園，階段容量直接讀 `FENCE_FAC.stages[].coverSlots`；破牆不提供遮擋。它沿用現有站位負荷，沒有寫門派勝率倍率。
+
 | C 指標（Node 22 bot12） | #505 head | 本輪 head |
 |---|---:|---:|
-| 自然山賊勝場／交手場 | 65/69（出現 70 場） | 62/67（出現 67 場） |
-| 有柵欄探針勝場／96 | 91/96 | 91/96 |
-| 有柵欄探針守住／96、受傷數 | 34/96、23 | 49/96、20 |
-| 惱羞、林克時間 | 678、122 | 792、92 |
-| 出獵擊倒／逃脫 | 295／241 | 293／256 |
-| `winP` 中位數 | 0.966 | 0.986 |
+| 自然山賊勝場／交手場 | 65/69（出現 70 場） | 53/62（出現 62 場） |
+| 有柵欄探針勝場／96 | 91/96 | 84/96 |
+| 有柵欄探針守住／96、受傷數 | 34/96、23 | 48/96、27 |
+| 惱羞、林克時間 | 678、122 | 1052、149 |
+| 出獵擊倒／逃脫 | 295／241 | 314／204 |
+| `winP` 中位數；無武學人數 | 0.966；23 | 0.985；32 |
 
-同尺原始輸出：[N62 base](artifacts/r12/bot12-base.json)、[第十二輪 head](artifacts/r12/bot12-head.json)。產生命令各在對應 checkout 根目錄：`docker run --rm -v "$PWD:/work" -w /work node:22-bookworm-slim node solo-sect/tools/bot12.mjs solo-sect --json > solo-sect/artifacts/r12/bot12-{base,head}.json`（實際執行時分別指定單一檔名）。自然山賊、柵欄探針與出獵是不同樣本，分母不混用。C 只回報，未為貼近數字調參。
+同尺原始輸出：[N62 base](artifacts/r12/bot12-base.json)、[第十二輪 head](artifacts/r12/bot12-head.json)。產生命令各在對應 checkout 根目錄：`docker run --rm -v "$PWD:/work" -w /work node:22-bookworm-slim node solo-sect/tools/bot12.mjs solo-sect --json > solo-sect/artifacts/r12/bot12-{base,head}.json`（實際執行時分別指定單一檔名）。自然山賊、柵欄探針與出獵是不同樣本，分母不混用。兩欄日程、招募與訓練樣本也不同：本輪自然工作點改為按階段給工作位，無武學人數 23→32；木柵探針從各日程克隆，沒有升石牆，勝場下降不能歸給石牆貼身位。守柵增加而勝場減少是如實回報的 C 變化，未為貼近數字調參。
 
 畫面：[四階藍圖及弟子理由](artifacts/r12/facility-panel.png)為正常白身開局後的門派面板；[可讀救援記憶](artifacts/r12/social-memory-panel.png)在白身開局後透過公用 `recordSocialEvent` 注入一筆救援事件以展示面板，不代表該局已實戰救援。
 
-舊名 → 新名：本輪改動的 N46/N47 接口新設 `SOCIAL_EVENTS`／`recordSocialEvent`／`fadeSocialThoughts`；原有鄰近輪次編號函式未改名或移動，故無舊名改名。三處最沒把握：① 自然工作點由原不限同時使用改為階段容量，可能推移日常山賊樣本與練功日程；② 守柵窄處改變群戰時機，柵探針守住率 34→49 的主因尚須用 CI 長跑及事件追蹤再判；③ 惱羞與林克時間 C 指標變動，不能單從兩個總數推出是人際事件還是新工作容量的影響，不為 C 數字改公式。
+舊名 → 新名：本輪改動的 N46/N47 接口新設 `SOCIAL_EVENTS`／`recordSocialEvent`／`fadeSocialThoughts`；原有鄰近輪次編號函式未改名或移動，故無舊名改名。三處最沒把握：① 自然工作點由原不限同時使用改為階段容量，無武學人數 23→32，日程與勝場都被推移；② 守柵窄處只在菜園、且只有牆未破時生效，木柵探針勝場 91→84、守住 34→48，原因還混有每日訓練改變；③ 惱羞與林克時間 C 指標變動，不能單從兩個總數推出是人際事件還是新工作容量的影響，不為 C 數字改公式。

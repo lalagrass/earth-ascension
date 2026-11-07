@@ -18,8 +18,12 @@ test('N47 外功場升至 Lv1 後，額外實體站位可同時讓更多人練�
   }
   assert.equal(freeSpot(s, 'yard', 'train', { id: 'extra' }), null);
   assert.equal(FACILITIES.find((f) => f.id === 'clinic').stages.length, 4);
-  const defender = { pos: [NODES.gate[0] - 24, NODES.gate[1]] };
+  const defender = { pos: [NODES.veg[0] + 24, NODES.veg[1]] };
+  assert.equal(ringCapacity(defender, s), 4, '未築柵的菜園沒有憑空的牆');
+  s.fence = { lv: 1, hp: 60 };
   assert.equal(ringCapacity(defender, s), 2);
-  s.fence = { lv: 2 };
+  s.fence = { lv: 2, hp: 150 };
   assert.equal(ringCapacity(defender, s), 1);
+  s.fence.hp = 0;
+  assert.equal(ringCapacity(defender, s), 4, '破牆不再提供窄處');
 });

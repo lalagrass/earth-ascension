@@ -13,4 +13,8 @@ test('被掩護的人記得原因，好感上升且大事不淡去', () => {
   fadeSocialThoughts(s);
   assert.equal(s.aff['mei>lin'], 8);
   assert.match(socialThoughtHtml(s, saved), /銘記/);
+  helper.name = '<img>'; // Names and teaching details are displayed inside HTML.
+  recordSocialEvent(s, 'taught', helper, saved, '<script>');
+  assert.match(socialThoughtHtml(s, saved), /&lt;img&gt;/);
+  assert.match(socialThoughtHtml(s, saved), /&lt;script&gt;/);
 });

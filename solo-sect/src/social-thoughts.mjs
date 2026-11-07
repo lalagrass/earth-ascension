@@ -46,5 +46,6 @@ export function fadeSocialThoughts(s) {
 }
 
 export const thoughtsFor = (s, person) => (s.socialThoughts || []).filter((entry) => entry.target === (person.id ?? person));
+const htmlText = (value) => String(value).replace(/[&<>"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[char]);
 export const socialThoughtHtml = (s, person) => thoughtsFor(s, person).slice(-4).map((m) =>
-  `<div class="k mem">📜 第${m.day}日・${m.where}：${m.text}（對${s.ds.find((d) => d.id === m.actor)?.name || '同門'}好感 +${m.effect}${m.expires == null ? '・銘記' : `・至第${m.expires}日`}）</div>`).join('');
+  `<div class="k mem">📜 第${m.day}日・${htmlText(m.where)}：${htmlText(m.text)}（對${htmlText(s.ds.find((d) => d.id === m.actor)?.name || '同門')}好感 +${m.effect}${m.expires == null ? '・銘記' : `・至第${m.expires}日`}）</div>`).join('');

@@ -178,6 +178,15 @@ export const FACILITIES = [
   { id: 'store', name: '院倉', node: 'court', stages: [{ name: '柴堆', sprite: 'woodpile', offers: ['chat', 'leisure'] }] },
 ];
 
+// N47: The fence is built through its existing work site; each stage advertises
+// the defend activity and the physical number of enemies able to press in.
+export const FENCE_FAC = { id: 'fence', name: '菜園柵', node: 'veg', stages: [
+  { name: '未築', offers: [], coverSlots: 0, proposal: '上次被圍時沒有牆可以靠，先把柵築起來' },
+  { name: '木柵', offers: ['defend'], coverSlots: 2, proposal: '先築木柵，守門時有地方靠' },
+  { name: '石牆', offers: ['defend'], coverSlots: 1, proposal: '上次被圍時木柵守不住，把通道收窄' },
+  { name: '山門壘', offers: ['defend'], coverSlots: 1, proposal: '把石牆加固，守住窄處' },
+] };
+
 // 活動：時間、需求變化、技能經驗、產出
 export const ACTIVITIES = {
   rest:   { name: '歇息', dur: 10, pose: 'sit', need: { energy: 'rate' } },
