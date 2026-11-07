@@ -11,4 +11,6 @@
 
 圖示署名：**Delapouite / game-icons.net, CC BY 3.0**。這些圖示只作資源標記，不改資源數值或規則。
 
+N61 人物卡沿用上表 Kenney CC0 紙框及霞鶩文楷 OFL 子集，沒有新增外部 UI 素材；肖像由本倉 N60 程式繪製紙娃娃，不下載第三方圖片。
+
 三選一外觀比較：Kenney 為 CC0；[RPGUI](https://github.com/RonenNess/RPGUI) 實際為 **zlib**（issue 舊稱 MIT）；[NES.css](https://github.com/nostalgic-css/NES.css) 為 MIT。最終採 Kenney。未載入 RPGUI，也未引入任何遠端字型。

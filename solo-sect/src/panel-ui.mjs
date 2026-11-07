@@ -7,6 +7,7 @@ import { BRANCHES } from './artcard.mjs';
 import { partText, CHIEF24_WHY, chiefLocked24, lockedArt24, NG, NG2, qiMax, qiOf, mitOf, tenthOf, INNER, profOf, profMul, profLabel, nextLvXp, PROF, effectTier, effectMul, artTier, stuckAt, gated, curCap, focusOf, reqMissing, fits, rustOf, CATS, supOf, NG23, INNER_SPECS, innerSpecs, yuqiOn, medQi, restQi, CAT_ORDER, ART_CAT, mastery, levelOf, accelOf, GROW, growCapOf, mainInner28, baseInner28, innerDrive28, isInner, qiGreat24, artById, artMulParts, appetite31, modeTitle31, qiArtBadge24, swordFast24, MODE31, QI_SAT31, blowWhy } from './arts.mjs';
 import { CLQ } from './bonds.mjs';
 import { JHEV, letterP } from './jianghu.mjs';
+import { BATTLE_AXES, battleMetrics, battleAxisValues } from './growth-adapter.mjs';
 // ==== （原 dcard.mjs）====
 // loop45：弟子卡摘要（右欄最大宗）。卡片只露一行重點，細節收進 <details>（記住展開）。只用面板原本就顯示的資訊。
 export const NEED_WARN = { hunger: [30, '餓'], energy: [30, '累'], social: [30, '寂寞'], fun: [30, '悶'] };
@@ -78,6 +79,18 @@ export function polySvg(d, now = 0, cls = '') {
   const labels = AXES.map((x, i) => { const [lx, ly] = P(i, 1.28), over = vals[i] > x.hi; return `<text x="${lx}" y="${ly}" font-size="10" text-anchor="middle" dominant-baseline="middle"${over ? ' fill="#b0482e"' : ''}>${x.name} ${fmtV(x, vals[i])}${over ? '▲' : ''}</text>`; }).join('');
   return `<svg class="poly ${cls}" viewBox="-34 0 248 180" style="width:100%;max-width:248px;height:auto" role="img" aria-label="人物實力：${AXES.map((x, i) => `${x.name}${fmtV(x, vals[i])}`).join('、')}">${grid}${spokes}<polygon class="poly-shape" points="${fr.map((f, i) => P(i, f).join(',')).join(' ')}" fill="#7a9a5a" fill-opacity="0.18" stroke="#5a7a3a" stroke-width="1.6"/>${labels}</svg>`;
 }
+// N61 card: all layers share the same fixed axes and adapter. The SVG contains
+// only display values; the opponent and history never enter the simulation.
+export function battleRadarSvg(raw, earlier = null, opponent = null, opponentName = '') {
+  const cx = 114, cy = 100, radius = 67, n = BATTLE_AXES.length;
+  const fmt = (v) => { const n = Number(v) || 0; return n > 0 && n < 0.01 ? n.toFixed(4) : n.toFixed(2); };
+  const point = (i, f) => { const a = -Math.PI / 2 + i * 2 * Math.PI / n; return `${(cx + radius * f * Math.cos(a)).toFixed(2)},${(cy + radius * f * Math.sin(a)).toFixed(2)}`; };
+  const poly = (data, cls) => `<polygon class="${cls}" points="${battleAxisValues(data).map((v, i) => point(i, v)).join(' ')}"/>`;
+  const grid = [0.25, 0.5, 0.75, 1].map((f) => `<polygon class="radar-grid" points="${BATTLE_AXES.map((_, i) => point(i, f)).join(' ')}"/>`).join('');
+  const labels = BATTLE_AXES.map((axis, i) => { const [x,y] = point(i, 1.26).split(','); return `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle">${axis.name}</text>`; }).join('');
+  const info = BATTLE_AXES.map((axis) => `${axis.name} ${fmt(raw[axis.key])} ${axis.unit}`).join('、');
+  return `<svg class="battle-radar" viewBox="0 0 228 200" role="img" aria-label="六項能力：${info}">${grid}${BATTLE_AXES.map((_, i) => `<line class="radar-grid" x1="${cx}" y1="${cy}" x2="${point(i, 1).split(',')[0]}" y2="${point(i, 1).split(',')[1]}"/>`).join('')}${earlier ? poly(earlier, 'radar-earlier') : ''}${opponent ? poly(opponent, 'radar-opponent') : ''}${poly(raw, 'radar-now')}${labels}</svg><div class="radar-legend">● 現在${earlier ? '　◌ 30 日前／入門日' : ''}${opponent ? `　◆ 比較：${String(opponentName).replace(/[&<>"']/g, '')}` : ''}</div><details class="radar-info" data-keep="radar-info"><summary>六軸數字與根據</summary>${BATTLE_AXES.map((axis) => `<div>${axis.name} ${fmt(raw[axis.key])} ${axis.unit}：${axis.note}</div>`).join('')}</details>`;
+}
 /* 合併成長提示：UI 記憶（不存檔）。換日時比較前一日起點，只有真的成長才回傳 anim＝true 與提示字串 */
 export function dailyGrowth(memo, d, day, now = 0) {
   const AXES = axesOf(d), v = axisVals(d, now), m = (memo[d.id] ??= { day, start: v, msg: '', anim: false });
@@ -90,7 +103,7 @@ const bar = (v, max, col) => `<span class="gbar"><span style="width:${Math.max(0
 export function powerHtml(d, memo, day, now = 0) {
   const AXES = axesOf(d), m = dailyGrowth(memo, d, day, now), over = AXES.filter((x) => x.get(d, now) > x.hi);
   const temp = [d.powMul && d.powMul !== 1 ? `兵器 ×${d.powMul.toFixed(2)}` : '', d.jhMul && d.jhMul !== 1 ? `江湖 ×${d.jhMul.toFixed(2)}` : ''].filter(Boolean);
-  return `<div class="grow-power"><b>人物實力</b>（常態能力；顯示基準固定，非能力上限）${polySvg(d, now, m.anim ? 'poly-grow' : '')}`
+  return `<div class="grow-power"><b>技能細目</b>（能力圖六軸取自實戰底層；以下是原始技能）`
     + `<div class="k" data-blow-why="1">${blowWhy(d)}</div>`
     + `<div class="k" data-clash-best="1">實戰紀錄：一次應接最多 ${d.maxHandled || 0} 路｜單波最多擊退 ${d.waveBest || 0} 隻</div>` /* #420 N16 */
     + `<div class="k">${AXES.map((x) => `${x.name} ${fmtV(x, x.get(d, now))}（基準 ${x.fmt ? x.fmt(x.lo) + '–' + x.fmt(x.hi) : x.lo + '–' + x.hi}；${x.note}）`).join('<br>')}</div>`
