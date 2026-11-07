@@ -1,0 +1,63 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createState, setOrder, tick } from '../../../src/sim.mjs';
+import { BODY_CONDITION, stepWorkCondition, restBodyCondition, ensureBodyCondition, cookMedicatedMeal } from '../../../src/economy.mjs';
+import { choreFluencyTier, ergonomicFrame } from '../../../src/growth-playback.mjs';
+import { renderMicroStage } from '../../../src/pose-render.mjs';
+import { gainArt } from '../../../src/arts.mjs';
+
+test('Phase 5：未採藥的一日做活至疲勞滿，體魄受 18 與 1.2 上限，歇息後須等次日', () => {
+  const old = createState(42), oldHero = old.ds[0];
+  assert.equal(stepWorkCondition(oldHero, old, 'chop').active, false);
+  assert.equal('muscleFatigue' in oldHero, false);
+  const s = createState(42, { hermitage: true }), d = s.ds[0];
+  d.skills.strength = 10;
+  for (let i = 0; i < 4; i++) stepWorkCondition(d, s, 'chop');
+  assert.ok(Math.abs(d.skills.strength - 11.2) < 1e-9);
+  assert.equal(d.muscleFatigue, 100); assert.equal(d.soreness, true);
+  stepWorkCondition(d, s, 'chop'); assert.ok(Math.abs(d.skills.strength - 11.2) < 1e-9);
+  assert.equal(restBodyCondition(d, s), true); assert.equal(d.recoveryCyclesToday, 1);
+  stepWorkCondition(d, s, 'chop'); assert.ok(Math.abs(d.skills.strength - 11.2) < 1e-9);
+  s.day++; ensureBodyCondition(d, s.day); assert.equal(d.recoveryCyclesToday, 0);
+  d.skills.strength = 17.9; stepWorkCondition(d, s, 'chop'); assert.equal(d.skills.strength, BODY_CONDITION.mundaneCap);
+  s.res.herb = 0; assert.equal(cookMedicatedMeal(s, d), null); assert.equal(s.res.medFood, 0);
+});
+
+test('Phase 5：黃蓉煮飯和用飯走真任務，藥膳消疲勞、四週期並破 18', () => {
+  const s = createState(17, { hermitage: true, partner: 'huangrong' }), d = s.ds[1];
+  s.res.veg = 10; s.res.herb = 1;
+  assert.equal(setOrder(s, d.id, 'cook'), true);
+  for (let i = 0; i < 4000 && !s.res.medFood; i++) tick(s);
+  assert.equal(s.res.medFood, 1); assert.equal(s.res.herb, 0);
+  assert.equal(s.medFoodBatches[0].name, '桃花歸元藥膳');
+  d.muscleFatigue = 100; d.soreness = true; d.skills.strength = 18;
+  assert.equal(setOrder(s, d.id, 'eat'), true); d.needs.hunger = 10;
+  for (let i = 0; i < 4000 && !(d.herbalDietUntil > s.t); i++) tick(s);
+  assert.equal(s.res.medFood, 0); assert.equal(d.muscleFatigue, 35);
+  assert.equal(d.maxCyclesToday, 4); assert.equal(d.recoveryCyclesToday, 1);
+  stepWorkCondition(d, s, 'chop'); assert.ok(d.skills.strength > 18 && d.skills.strength <= 36);
+  const plain = createState(17, { hermitage: true }).ds[0], warmed = createState(17, { hermitage: true }).ds[0];
+  warmed.herbalDietUntil = 600;
+  gainArt(plain, 5, 1, 0, { raw: 5, src: 'train' });
+  gainArt(warmed, 5, 1, 0, { raw: 5, src: 'train' });
+  assert.ok(warmed.arts.chunyangFist.xp > plain.arts.chunyangFist.xp);
+});
+
+test('Phase 5：10／18／26 體魄的流暢度、濺水與藥氣繪製不同，渲染不改狀態', () => {
+  const s = createState(17, { hermitage: true }), d = s.ds[0];
+  const view = { work: 'water', clock: Math.PI / 8, isFootfall: true };
+  const frames = [10, 18, 26].map((n) => { d.skills.strength = n; d.skills.agility = n; return ergonomicFrame(d, s, view); });
+  assert.deepEqual(frames.map((f) => f.choreFluencyTier), [0, 2, 3]);
+  assert.deepEqual(frames.map((f) => f.laborDetail.waterSplash), [true, false, false]);
+  assert.ok(frames[0].playback.waterTilt > frames[1].playback.waterTilt && frames[1].playback.waterTilt > frames[2].playback.waterTilt);
+  assert.equal(choreFluencyTier(d, 'chop'), 3);
+  d.herbalDietUntil = s.t + 600; d.herbalBuffName = '百花玉蜂藥膳';
+  const before = JSON.stringify(s), labels = [], colors = [];
+  const g = { save() {}, restore() {}, beginPath() {}, closePath() {}, moveTo() {}, lineTo() {}, stroke() {},
+    fill() { colors.push(this.fillStyle); }, fillRect() {}, strokeRect() {}, arc() {}, ellipse() {},
+    fillText(x) { labels.push(x); }, quadraticCurveTo() {}, scale() {}, translate() {}, rotate() {}, measureText() { return { width: 10 }; } };
+  renderMicroStage(g, s, d, view);
+  assert.ok(labels.some((x) => x.includes('藥膳溫養中')) || labels.some((x) => x.includes('百花玉蜂藥膳溫養中')));
+  assert.ok(colors.includes('#d99a45'));
+  assert.equal(JSON.stringify(s), before);
+});

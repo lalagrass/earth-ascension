@@ -366,7 +366,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '4.3'; /* Phase 4 規格：荒山雙人隱居開局 */
+export const RULES_VERSION = '4.4'; /* Phase 5 規格：隱居勞作疲勞與藥膳調養 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -894,7 +894,7 @@ export const SIG_ACTS = {
   zhulong:   { name: '大雜院收租', dur: 8, energy: -4, perDay: 2, why: '大雜院：挨家收租', eff: { res: { coin: 1, food: 1 } } },
   wuming:    { name: '祖師堂祭祖', dur: 6, energy: -1, perDay: 2, why: '祖師堂：祭拜開山祖師', eff: { rep: 0.5, mood: 3 } },
 };
-RES_NAMES.water = '水'; RES_NAMES.pill = '療傷丹';
+RES_NAMES.water = '水'; RES_NAMES.pill = '療傷丹'; RES_NAMES.medFood = '藥膳'; // 出自 Phase 5 規格：新路線藥膳存糧名稱。
 
 // v1.65 傳功（夥伴活動，由 bonds.mjs 判斷誰傳誰）
 // ---- v1.7 四大武道相剋環（ADOPTION A17）：破綻→蓄力→卸力→歸真→破綻（前者剋後者）----

@@ -5,6 +5,12 @@ import { opponents, allies, backToBackPartner, coverFor } from './tactics.mjs';
 import { composure, assessLoad, postureMax, qiPow, topTier } from './arts.mjs';
 
 export const PLAYBACK = Object.freeze({ pause: .5, uprightHip: 17, deepHipRatio: .5, tilt: 30, sway: 4, bodyScale: 10, legacyStart: .5 });
+// 出自 Phase 5 規格：12／16／18 對應生疏、漸熟、保健圓滿、藥膳破限四種雜務表現。
+export function choreFluencyTier(d, act = 'water') {
+  const strength = d?.skills?.strength || 0, agility = d?.skills?.agility || 0;
+  const body = act === 'water' ? Math.min(strength, agility) : ['chop', 'quarry'].includes(act) ? strength : agility;
+  return body < 12 ? 0 : body < 16 ? 1 : body <= 18 ? 2 : 3;
+}
 export function playbackParams(d, art=null, timing={}) {
   const move=art?.tech || (d?.bare?'bodyPunch':d?.moves?.[0]) || 'bodyPunch';
   const start=bodyMove(move)?.wind || PLAYBACK.legacyStart;
@@ -622,7 +628,9 @@ export function crowdSynergyFrame(d, s = {}, view = {}) {
 }
 
 export function ergonomicFrame(d, s = {}, view = {}) {
-  const p = view.playback || playbackParams(d, view.art, view.timing || {});
+  const bodyMode = !!(s?.hermitage?.active || s?.herbalDiet), fluencyTier = choreFluencyTier(d, view.work || d?.task?.act || 'water');
+  const originalPlayback = view.playback || playbackParams(d, view.art, view.timing || {});
+  const p = bodyMode && fluencyTier >= 2 ? { ...originalPlayback, waterTilt: originalPlayback.waterTilt / (fluencyTier + 1), chopPause: originalPlayback.chopPause / (fluencyTier + 1) } : originalPlayback; // 出自 Phase 5 規格：熟練後動作幅度收斂，分母直接用四階級數。
   const strength = d?.skills?.strength || 0;
   const agility = d?.skills?.agility || 0;
   const move = view.move || p.move || 'bodyPunch';
@@ -676,7 +684,7 @@ export function ergonomicFrame(d, s = {}, view = {}) {
   const isStumbling = Math.abs(comOffset) > 0.75;
 
   const overshoot = residual > 0.5 || strength < 15;
-  const wobblePx = residual > 0.25 ? Math.min(3.5, 3.5 * residual) : 0;
+  const wobblePx = residual > 0.25 ? Math.min(3.5, 3.5 * residual) / (bodyMode ? fluencyTier + 1 : 1) : 0;
   const hitstopAlpha = residual < 0.25 ? Math.min(1, (0.25 - residual) / 0.25) : 0;
 
   const jointSpring = {
@@ -691,20 +699,26 @@ export function ergonomicFrame(d, s = {}, view = {}) {
   const strFactor = Math.max(0, Math.min(1, (strength || 10) / 40));
   const poleBend = 6 * (1 - 0.5 * strFactor);
   const isFootfall = view.isFootfall ?? (Math.abs(Math.sin(clock * 4)) >= 0.7);
-  const waterSplash = isWater && (p.waterTilt > 18) && isFootfall;
+  const waterSplash = isWater && (bodyMode ? fluencyTier === 0 && isFootfall : (p.waterTilt > 18) && isFootfall);
 
   const chopResidual = practiceResidual(handUses(d, 'work:chop'));
   const isImpact = view.isImpact ?? (view.u == null || (view.u >= 0.5 && view.u <= 0.85));
   const chopOffset = isChop && chopResidual > 0.7 ? (chopResidual - 0.7) * 12 : 0;
-  const isAxeStuck = isChop && (chopResidual > 0.7) && isImpact;
-  const woodSplit = isChop && (chopResidual <= 0.7) && isImpact;
+  const isAxeStuck = isChop && (bodyMode ? fluencyTier === 0 : chopResidual > 0.7) && isImpact;
+  const woodSplit = isChop && (bodyMode ? fluencyTier >= 2 : chopResidual <= 0.7) && isImpact;
+  const herbalBuffActive = bodyMode && (d?.herbalDietUntil || 0) > (s?.t || 0);
+  const recoveryCycleLabel = bodyMode ? `${Math.min(d?.maxCyclesToday || 1, (d?.recoveryCyclesToday || 0) + 1)}/${d?.maxCyclesToday || 1}` : null;
 
   const laborDetail = {
     poleBend,
     waterSplash,
     chopOffset,
     isAxeStuck,
-    woodSplit
+    woodSplit,
+    choreFluencyTier: bodyMode ? fluencyTier : null,
+    muscleFatigue: bodyMode ? d?.muscleFatigue || 0 : null,
+    herbalBuffActive,
+    recoveryCycleLabel
   };
 
   // 4. Combat Detail
@@ -748,6 +762,10 @@ export function ergonomicFrame(d, s = {}, view = {}) {
     buildProfile,
     jointSpring,
     laborDetail,
+    choreFluencyTier: laborDetail.choreFluencyTier,
+    muscleFatigue: laborDetail.muscleFatigue,
+    herbalBuffActive,
+    recoveryCycleLabel,
     combatDetail,
     duel: combatDetail,
     crowdDetail,

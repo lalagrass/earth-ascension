@@ -508,7 +508,8 @@ export function gainArt(d, amt, mf = 1, now = 0, g = null) {
   if (id) { out.trained = id; const a = artById(id), r = d.arts[id]; r.rust = rustOf(r, now, Object.keys(d.arts || {}).length); r.last = now; const xp0 = r.xp;
     const acc = g && !r.guizhen ? accelOf(d, a, r.xp) : null; out.acc = acc;
     const P = artMulParts(d, a, [['心情', mf], ['荒疏', 1 - r.rust]], acc && acc.mul > 1 ? [['同類底子', acc.mul]] : []); d.growMul = { art: id, total: P.total, talent: P.talent, state: P.state, ext: P.ext, gate: P.gate };
-    const gx = amt * ART_GAIN.base * P.total;
+    const dietAwakening = d.herbalDietUntil > now && ['chunyangFist', 'luohanHands'].includes(id) ? 1.35 : 1; // 出自 Phase 5 規格：藥膳溫養令入門外功走向內功的修練速度 +35%。
+    const gx = amt * ART_GAIN.base * P.total * dietAwakening;
     r.rust = Math.max(0, r.rust - RUST.shake);
     if (r.guizhen) { r.sxp = (r.sxp || 0) + gx * 0.4; r.lifetime = (r.lifetime || 0) + gx * 0.4; while (r.sxp >= starCost(r)) { r.sxp -= starCost(r); r.stars = (r.stars || 0) + 1; out.star = true; } }
     else { const next = Math.min(curCap(d, a), r.xp + gx * (1 - r.xp / 130)); r.xp = clampTrainXp(d, a, r.xp, next); out.moves = unlockTechs(d, a); }
