@@ -724,6 +724,13 @@ MOVES.push({ id: 'xx2', skill: 'palm', name: '腐屍毒', req: 0, range: 60, cd:
 ARTS.push({ id: 'zixia', chiefOnly24: true, name: '紫霞神功', school: 'palm', grade: 3, tags: ['柔'], req: [], techs: [], secret: true, hint: '岳不群開局：開局即得第一層，之後在華山劇情中逐層修煉', classic: true, layered: true, mode: 'lian', qiScale: 0.40, isPublic: false, cats: { neigong: 1 }});
 ARTS.push({ id: 'bixie', name: '辟邪劍法', school: 'palm', grade: 4, tags: ['快'], req: [], techs: ['bx1', 'bx2', 'bx3'], tech: 'bx1', secret: true, hint: '岳不群開局：華山劇情中選擇練辟邪劍譜（自宮＋斷情）', classic: true, mode: 'da', qiScale: 0.08, isPublic: false, cats: { jianfa: 1 }});
 ARTS.push({ id: 'dugu', name: '獨孤九劍', school: 'palm', grade: 4, tags: ['巧'], type: 'sword', req: [], techs: [], secret: true, hint: '華山劇情「思過崖的老人」：請教風清揚三晚，第四晚過招後得總訣；其餘各式要對該敵人有足夠觀破。破劍一類約在熟其招式，破掌再深，破氣要到看破，狂風卷地還要過了看破', classic: true, forms: true, mode: 'da', qiScale: 0.20, isPublic: false, cats: { jianfa: 1 }});
+// N40：藏經閣內的實物拳譜，22 段招序由 luohan18 套路資料提供；不得從日課憑空自悟。
+ARTS.push({ id: 'luohanHands', name: '少林羅漢十八手', school: 'palm', grade: 1, tags: ['拙'], req: [], techs: ['lhChop', 'lhPush', 'lhTiger'], tech: 'lhChop', secret: true, bookOnly: true, chainFromPose: true, routine: 'luohan18', mode: 'base', qiScale: 0.15, isPublic: false, cats: { quanzhang: 1 }, hint: '藏經閣有羅漢十八手拳譜；逐段研讀，不會憑空自悟' });
+for (const [source, id, name, poses] of [
+  ['push', 'lhChop', '斬手劈心掌', ['ready', 'rightStep', 'block', 'rightChop']],
+  ['push2', 'lhPush', '托塔雙推山', ['rightChop', 'doubleUp', 'rightStep', 'doublePalm']],
+  ['fist3', 'lhTiger', '羅漢打虎', ['doublePalm', 'crouch', 'tiger', 'downFist']],
+]) MOVES.push({ ...MOVES.find((m) => m.id === source), id, name, poses, fx: 'luohanHands' });
 MOVES.push({ id: 'bx1', skill: 'palm', name: '流星飛墮', req: 0, range: 60, cd: 0.45, dmg: 9, aoe: 0, color: '#c03060', fx: 'bixie' });
 MOVES.push({ id: 'bx2', skill: 'palm', name: '群邪辟易', req: 0, range: 60, cd: 0.6, dmg: 13, aoe: 60, color: '#d04070', fx: 'bixie' });
 MOVES.push({ id: 'bx3', skill: 'palm', name: '鍾馗抉目', req: 0, range: 70, cd: 0.7, dmg: 18, aoe: 0, color: '#e05080', fx: 'bixie' });

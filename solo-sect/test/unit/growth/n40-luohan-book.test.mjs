@@ -1,0 +1,33 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { artById, artCap, learnArt, windOf } from '../../../src/arts.mjs';
+import { MOVES } from '../../../src/data.mjs';
+import { LUOHAN_READING, readLuohanBook } from '../../../src/luohan-book.mjs';
+import { routineFrame } from '../../../src/routines.mjs';
+
+test('N40 同一本譜：打過架者對照土招較快，二十二段讀完才學會', () => {
+  const novice = { arts: {}, moves: ['bodyPunch'], bare: true, practice: { hands: {}, eyes: {}, origin: {} } };
+  const fighter = structuredClone(novice);
+  fighter.practice.hands = { bodyPunch: 250, bodyPush: 250, bodyGrab: 250 };
+  assert.equal(LUOHAN_READING.length, 22);
+  assert.deepEqual(LUOHAN_READING.reduce((n, row) => (n[row.kind]++, n), { recognize: 0, retrain: 0, new: 0 }), { recognize: 8, retrain: 3, new: 11 });
+  assert.equal(LUOHAN_READING[0].name, '朝山拜佛');
+  assert.equal(LUOHAN_READING[21].name, '歸山拜佛');
+  const first = readLuohanBook(novice), practiced = readLuohanBook(fighter);
+  assert.ok(practiced.index > first.index, '同一讀書時間，既有手熟應讀得更遠');
+  assert.equal(novice.arts.luohanHands, undefined);
+  for (let i = 0; i < 20 && !fighter.arts.luohanHands; i++) readLuohanBook(fighter, undefined, i + 1);
+  assert.ok(fighter.arts.luohanHands);
+  assert.equal(fighter.focus, 'luohanHands');
+  assert.equal(fighter.bare, false);
+  assert.ok(fighter.moves.includes('lhChop'));
+  assert.deepEqual(Object.values(fighter.selection.priors).map((r) => r.win), [5, 2, 1]);
+  assert.equal(fighter.arts.luohanHands.source, 'book');
+  assert.ok(artCap(fighter, artById('luohanHands')) < 85, '只靠譜停在大成');
+  fighter.lastCombatMove = 'lhChop'; fighter.lastCombatAt = 1;
+  const cd = MOVES.find((m) => m.id === 'lhPush').cd;
+  assert.ok(windOf(fighter, 'lhPush', cd, 1.1) < windOf(fighter, 'lhPush', cd, 10), '收勢接到下一招起勢才省前搖');
+  learnArt(fighter, 'luohanHands', 10);
+  assert.equal(artCap(fighter, artById('luohanHands')), 100, '有師父校正後可繼續往上練');
+  assert.equal(routineFrame(artById('luohanHands'), fighter, 0).routine.forms.length, 22);
+});

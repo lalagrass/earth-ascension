@@ -182,7 +182,8 @@ export function artMulParts(d, a, state = [], more = []) {
   const r = pipeline({ talent, state, ext }); r.gate = gated(d, a) ? ART_GAIN.gated : 1; r.total *= r.gate; r.outside = om; r.total *= om; return r; // v1.35 外門 ×0.7 是真乘數
 }
 export const artMul = (d, a) => artMulParts(d, a).total;
-export const artCap = (d, a) => (gated(d, a) ? ART_GAIN.gateCap : 100);
+const bookCeiling = (d, a) => a?.bookOnly && d.arts?.[a.id]?.source === 'book' ? TIERS[3][0] - (TIERS[2][0] - BREAK.caps[0]) : 100;
+export const artCap = (d, a) => Math.min(gated(d, a) ? ART_GAIN.gateCap : 100, bookCeiling(d, a));
 const hasMove24 = (a) => !!(a?.tech && MOVES.some((m) => m.id === a.tech));
 /* loop196：百毒譜等無招式圖譜不進主修，避免 autoFocus 空轉 */
 export function autoFocus(d) {
@@ -234,7 +235,7 @@ export const fits = (d, a) => ['fist', 'inner', 'step', d.style].includes(a.scho
 export const guizhenOk = (d, a) => a.grade <= 1 && ((d.wu ?? d.root ?? 3) <= GUIZHEN.rootMax || GUIZHEN.traits.some((t) => (d.personality || []).includes(t)));
 export const starCost = (r) => GUIZHEN.cost0 + GUIZHEN.costStep * (r.stars || 0);
 // 目前上限：悟性門檻 → 54.9；未破第一關 → 54.9；未破第二關 → 99.9
-export function curCap(d, a) { const r = d.arts[a.id]; if (gated(d, a)) return ART_GAIN.gateCap; if (!r.bt1) return BREAK.caps[0]; if (!r.bt2) return BREAK.caps[1]; return 100; }
+export function curCap(d, a) { const r = d.arts[a.id]; if (gated(d, a)) return ART_GAIN.gateCap; const ordinary = !r.bt1 ? BREAK.caps[0] : !r.bt2 ? BREAK.caps[1] : 100; return Math.min(ordinary, bookCeiling(d, a)); }
 // 卡在哪一關：1、2、3（歸真）；冷卻中或沒卡回 0
 export function stuckAt(d, a, now = 0) {
   const r = d.arts?.[a.id]; if (!r || gated(d, a) || (r.btCd || 0) > now) return 0;
@@ -523,7 +524,7 @@ const shenfaCd24 = (d) => (!!d ? 1 - 0.0015 * mastery(d, 'shenfa') : 1); /* loop
 export const cdMul = (d, mvId, now = 0) => { const raw = artOfMove(mvId), a = raw && d.arts?.[raw.id] ? raw : null, sh = shenfaCd24(d), mc = modeMul31(d, a, 'cd'); if (!a) return swordCdMul(d, mvId) * sh * mc; const t = artTier(d, a.id); return (t >= 1 ? PERKS.small.cd : 1) * (variantOf(d, a.id, now)?.cd || 1) * swordCdMul(d, mvId) * affixMul(d, mvId, 'cd') * sh * mc; };
 export const visTier = (d, mvId) => { const a = artOfMove(mvId); return a && d.arts?.[a.id] ? artTier(d, a.id) : 0; };
 export const topTier = (d) => ARTS.reduce((m, a) => (artTier(d, a.id) > m.t ? { t: artTier(d, a.id), a } : m), { t: -1, a: null });
-export function learnArt(d, id, now = 0) { d.arts[id] ??= { xp: 0, last: now }; const a = artById(id); if (id === 'zixia' && !d.zixia) d.zixia = 1; /* loop172 氣宗本門領悟紫霞＝第一層 */ unlockTechs(d, a); if (d.pendingArt === id) d.pendingArt = null; return a; }
+export function learnArt(d, id, now = 0) { d.arts[id] ??= { xp: 0, last: now }; const a = artById(id); if (d.arts[id].source === 'book') d.arts[id].source = 'teacher'; if (id === 'zixia' && !d.zixia) d.zixia = 1; /* loop172 氣宗本門領悟紫霞＝第一層 */ unlockTechs(d, a); if (d.pendingArt === id) d.pendingArt = null; return a; }
 const CATDMG24 = ['quanzhang', 'tuifa', 'jianfa', 'gunbang'];
 const catDmg24 = (d, a) => { if (!d || !a) return 1; const c = primaryCat(a.id); return CATDMG24.includes(c) ? 1 + 0.0015 * mastery(d, c) : 1; }; /* loop198：外功造詣每 20 點 +3% 招式傷害 */
 export const moveMul = (d, mvId, now = 0) => strMul(d) * moveMul0(d, mvId, now) * harmonyMul(d) * affixMul(d, mvId, 'dmg') * (d.raging ? CLASH.fret.force : 1); /* loop161 v2.4 陰陽共鳴 */ // loop127 勞作練體
@@ -1212,11 +1213,16 @@ export const CLASH = {
 const clamp01 = (x, hi = 1) => Math.max(0, Math.min(hi, x));
 export const windFrac = (tier) => CLASH.windIn + (CLASH.windHua - CLASH.windIn) * Math.max(0, Math.min(4, tier | 0)) / 4;
 /* 一招的前搖秒數：cd × 前搖比例（看這招所屬武學的火候） */
-export function windOf(d, mvId, cd) {
+export function windOf(d, mvId, cd, now = null) {
   const body=bodyMove(mvId)||TECHNIQUE_MOVES.find(m=>m.id===mvId)||Object.values(FOE_ACTIONS).flatMap(p=>p.moves).find(m=>m.id===mvId), a = artOfMove(mvId) || artById(mvId), tier = a && d?.arts?.[a.id] ? artTier(d,a.id) : 0;
   const start = body?.wind ?? cd * windFrac(0) * (a?.tags?.includes('快') ? .75 : 1) * (a?.id === 'kuihua' && zjHas(d,'kuihua') ? .1 : 1);
   const skill = body?.skill === 'strength' || a?.weapon === 'staff' ? 'strength' : 'agility';
-  return practiceWindow(d,mvId,start,{tier,skill}).wind * woundWind(d,body||MOVES.find(m=>m.id===mvId)||{}) * (d?.part?.where === 'hand'&&!d.part.layer ? PART.hand : 1);
+  const move = MOVES.find((m) => m.id === mvId), previous = MOVES.find((m) => m.id === d?.lastCombatMove);
+  // 上式收勢就是本式起勢時，只少掉第一個架子的準備；離開一輪冷卻就得重新起架。
+  const flowing = a?.chainFromPose && previous?.fx === a.id && move?.poses?.[0] === previous.poses?.at(-1)
+    && now != null && d.lastCombatAt != null && now >= d.lastCombatAt && now - d.lastCombatAt <= cd;
+  const flow = flowing ? (move.poses.length - 1) / move.poses.length : 1;
+  return practiceWindow(d,mvId,start,{tier,skill}).wind * flow * woundWind(d,body||move||{}) * (d?.part?.where === 'hand'&&!d.part.layer ? PART.hand : 1);
 }
 export function combatMoves(d,distance=0) {
   if(isMon(d)&&FOE_ACTIONS[d.k]){
@@ -1228,7 +1234,7 @@ export function combatMoves(d,distance=0) {
 export function chooseCombatMove(s,d,target,rnd,options={}) {
   const distance=options.distance??Math.hypot((d.pos?.[0]||0)-(target.pos?.[0]||0),(d.pos?.[1]||0)-(target.pos?.[1]||0));
   const facts=techniqueFacts(s,d,target);
-  const choices=(options.moves||combatMoves(d,distance)).filter(m=>!m.technique||matchesTechnique(TECHNIQUES.find(r=>r.id===m.id),facts)).map(m=>({...m,actualWind:windOf(d,m.id,m.cd),force:moveStats(d,m.id).force}));
+  const choices=(options.moves||combatMoves(d,distance)).filter(m=>!m.technique||matchesTechnique(TECHNIQUES.find(r=>r.id===m.id),facts)).map(m=>({...m,actualWind:windOf(d,m.id,m.cd,s?.t),force:moveStats(d,m.id).force}));
   return selectAction(s,d,target,choices,rnd,{distance,composure:composure(d),postureCapacity:postureMax(d),armor:moveStats(target).armor,...options});
 }
 export function fastestMove(d) {
@@ -1451,6 +1457,7 @@ export function resolveSwing(s, atk, def, rnd, ctx = {}) {
   }
   if(result.counter){const response=fastestMove(def);result.counterContact=contactImpact(s,def,atk,{move:{...response,balanceImpulse:result.kind==='read'?0:response.balanceImpulse},force:result.counter,armor:moveStats(atk).armor,nearby});result.counterDamage=result.counter*result.counterContact.damageFactor;reportContact(s,def,atk,response,result.counterContact);}
   if(result.heavy&&result.why==='open'){const opened=def.balanceOpenUntil||0;def.posture=postureMax(def)*0.5;def.balanceOpenUntil=0;if(def.downUntil<=opened)def.downUntil=0;}
+  atk.lastCombatAt = s?.t ?? 0;
   return result;
 }
 

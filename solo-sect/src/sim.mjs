@@ -18,6 +18,7 @@ import { MENTOR, think, moodStep, moodTarget, moodParts, traitMul, moodMul, focu
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf, raidMul, popStep, fogStep, unlockStep, chapterStep } from './world.mjs';
 import { BAND, canDefend, boarRam, fenceUp, fenceHit, repairScore, repairDone, FENCE, FENCE_FAC, finishFenceSite, threatDaily, threatStep, raidResolve, bandStep, lairDaily, lairStep, siegeDaily27, crusadeDaily27, crusadeStep27, startCrusade27 } from './threat.mjs';
 import { addMem, chatLine, passPick, passDo, PASS, passScore, passReserve, apprDaily, apprMul, aspStep, likeMeal, likesOf, cliqueDaily, cliqueTrain, teachDaily, teachMul } from './bonds.mjs';
+import { readLuohanBook } from './luohan-book.mjs';
 import { xiaStep, onCook, xiaInit, hsStep, hsInit } from './wuxia.mjs';
 import { jhStep, jhInit, jhevDaily } from './jianghu.mjs';
 import { sectStep, sectInit, sectRecruit, genStep, genInit, removeDisciple, canBuildFac, buildFac } from './sect.mjs';
@@ -530,6 +531,7 @@ function doTask(s,d,dt){
       if (t.act === 'repair') repairDone(s, d);
       if (t.act === 'pass' && t.lead && t.partner) { const p = byId(s, t.partner); if (p) passDo(s, d, p, t.art); }
       if (t.act === 'study') { const w = readStudy(s, d); if (w) log(s, `${d.name}在藏經閣讀了許久，忽然開竅——悟性長進了${d.rootKnown ? `（${w}）` : ''}。`); } // loop140 讀書長悟性
+      if (t.act === 'study' && t.fac === 'library') { const page = readLuohanBook(d, effDur, s.t); if (page.learned) { log(s, `【拳譜】${d.name}對照身體起手，把《少林羅漢十八手》的二十二段讀完，開始依譜練掌。`); think(s, d, 'learned'); } else if (page.form) log(s, `${d.name}讀《羅漢十八手》到「${page.form}」，照著圖譜試擺。`, 'low'); }
       if ((t.act === 'study' || t.act === 'meditate')) { const dv = checkDeriveArt(s, d); if (dv) { log(s, `【開宗立派】${d.name}融會貫通，將兩門絕藝合參推演出「《${dv.name}》」，納入本門傳承！`); recordDeed(s, d, 'derive', { chron: `${d.name}合參推演出《${dv.name}》，納入本門傳承` }); } } // loop165 Batch 5.1
       if (t.act === 'study') { const g = studyChart24(s, d, () => rand(s)); if (g) log(s, `【藏經閣】${d.name}在書堆裡翻出一卷《${g.art.name}》，從此略通${CATS[g.cat].name}。`); } // loop160 Batch 1.2
       /* loop181 v2.8 經脈內傷：練功／切磋逆催累積，打坐／醫館化解 */
@@ -758,7 +760,7 @@ function huntStep(s, dt) {
       const lv = d.skills[mv.skill]; const reach = mv.range * (1 + lv / 200), canDash = mv.range >= FLAIR.dash.minRange && visTier(d, mv.id) >= FLAIR.dash.tier;
       const tgt = live.filter((m) => dist(m.pos, d.pos) <= reach + (canDash ? FLAIR.dash.add : 0)).sort((a, b) => a.hp - b.hp)[0]; if (!tgt) continue;
       if (canDash && !dashTo(s, d, tgt, reach, h.post)) continue; /* #420 大成：滑步上前 */
-      const cd = mv.cd * cdMul(d, mv.id, s.t), kh = artOfMove(mv.id)?.id === 'kuihua' && zjHas(d, 'kuihua'), wind = (kh ? 0 : windOf(d,mv.id,cd))+(pick?.seconds||0); /* #426 葵花：沒有前搖 */
+      const cd = mv.cd * cdMul(d, mv.id, s.t), kh = artOfMove(mv.id)?.id === 'kuihua' && zjHas(d, 'kuihua'), wind = (kh ? 0 : windOf(d,mv.id,cd,s.t))+(pick?.seconds||0); /* #426 葵花：沒有前搖 */
       if (kh) zjMark(s, d, 'kuihua');
       if (mv.consumable) delete d.tools?.[mv.tool];
       d.swing = { mv: mv.id, tgt: tgt.uid, at: s.t + wind, wind, reach, targetApproachingAtWindup:!!tgt.path?.length&&!tgt.swing&&!tgt.bswing, dodgeAtWindup:d.lastDodge?.target===tgt.uid&&d.lastDodge.until>=s.t?{...d.lastDodge}:null }; d.cool = cd+(pick?.seconds||0); d.face = tgt.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'wind';
@@ -999,7 +1001,7 @@ function trialStep(s,d,dt){
   }
   if(d.cool>0||(d.busyUntil||0)>s.t)return;
   const pick=chooseCombatMove(s,d,m,()=>rand(s)),mv=pick?.move;if(!mv||dist(m.pos,d.pos)>mv.range)return;
-  const wind=windOf(d,mv.id,mv.cd)+pick.seconds,start=interceptOpening(s,d,m,()=>rand(s),{move:mv.id,wind});d.cool=mv.cd+pick.seconds;if(mv.consumable)delete d.tools?.[mv.tool];
+  const wind=windOf(d,mv.id,mv.cd,s.t)+pick.seconds,start=interceptOpening(s,d,m,()=>rand(s),{move:mv.id,wind});d.cool=mv.cd+pick.seconds;if(mv.consumable)delete d.tools?.[mv.tool];
   if(start.read){d.hp=Math.max(30,d.hp-start.read.counterDamage);return;}
   d.swing={mv:mv.id,tgt:m.uid,at:s.t+wind,wind,opening:start.opening,targetApproachingAtWindup:!!m.path?.length&&!m.swing&&!m.bswing,dodgeAtWindup:d.lastDodge?.target===m.uid&&d.lastDodge.until>=s.t?{...d.lastDodge}:null};d.anim='wind';warnFx(s,d,m,mv.range,wind);
 }

@@ -20,7 +20,7 @@ export function selectAction(s,d,target,moves,rnd,{distance,composure=Infinity,p
   if(!moves.length)return null;
   distance??=Math.hypot((d.pos?.[0]||0)-(target.pos?.[0]||0),(d.pos?.[1]||0)-(target.pos?.[1]||0));
   const key=contextKey(d,target,s?.t||0,distance,postureCapacity), state=d.selection||{contexts:{},habits:{}}, rows=state.contexts[key]||{};
-  const ranked=moves.map(move=>{const r=stats(rows[move.id]),value=utility(d,move,distance,armor);return {move,...r,value,lo:(r.mean-DECISION.credibleZ*r.sd)*value,hi:(r.mean+DECISION.credibleZ*r.sd)*value};});
+  const ranked=moves.map(move=>{const r=stats(rows[move.id]||state.priors?.[move.id]),value=utility(d,move,distance,armor);return {move,...r,value,lo:(r.mean-DECISION.credibleZ*r.sd)*value,hi:(r.mean+DECISION.credibleZ*r.sd)*value};});
   ranked.sort((a,b)=>b.mean*b.value-a.mean*a.value||a.move.id.localeCompare(b.move.id));
   const stable=ranked.length===1||ranked[0].lo>Math.max(...ranked.slice(1).map(r=>r.hi));
   const habit=d.raging||(d.fret||0)>=composure;
@@ -33,7 +33,7 @@ export function selectAction(s,d,target,moves,rnd,{distance,composure=Infinity,p
 }
 export function recordChoice(s,d,target,move,success,{expected=false}={}){
   const S=ensureSelection(d),key=S.last?.move===move?S.last.context:contextKey(d,target,s?.t||0),rows=S.contexts[key]??={};
-  const row=rows[move]??={win:0,loss:0};row.win+=Number(success);row.loss+=1-Number(success);S.habits[move]=(S.habits[move]||0)+1;
+  const row=rows[move]??={...(S.priors?.[move]||{win:0,loss:0})};row.win+=Number(success);row.loss+=1-Number(success);S.habits[move]=(S.habits[move]||0)+1;
   emitPractice(s,{type:'choiceResult',who:d.id||d.uid||d.k,move,context:key,success,expected});
 }
 export function desireTraining(s,d,cause,evidence){if(!d?.id||!TRAINING_CAUSES[cause])return;const S=ensureSelection(d);S.failures[cause]=(S.failures[cause]||0)+1;(S.evidence??={})[cause]=evidence;const kind=Object.keys(S.failures).sort((a,b)=>S.failures[b]-S.failures[a])[0];d.trainingWish={kind,...TRAINING_CAUSES[kind],evidence:S.evidence[kind],at:s?.t||0};}

@@ -244,7 +244,7 @@ function moveDps(s, d, mv) {
 const abstractFoe = (e = 'bandit') => ({ k: FOE_ACTIONS[e] ? e : ['rat', 'hare', 'bat'].includes(e) ? 'rat' : ['bandit', 'archer', 'chief', 'hermit'].includes(e) ? 'bandit' : 'boar', practiceTier: ENEMIES[e]?.practiceTier ?? -1, i: 0 });
 export function expectedDps(s, d, mv, e = 'bandit') {
   const base = moveDps(s, d, mv), ex = expectOf(d, mv, s.t), foe = abstractFoe(e);
-  const cd = mv.cd * cdMul(d, mv.id, s.t), wind = windOf(d, mv.id, cd);
+  const cd = mv.cd * cdMul(d, mv.id, s.t), wind = windOf(d, mv.id, cd, s.t);
   const o = clashOdds(s, d, foe, { move: mv.id, wind });
   const landed = o.hit, cut = moveStats(d, mv.id, wind).force > moveStats(foe).armor ? 0.08 : 0;
   return Math.max(0, base * ex.mul * landed * (1 + cut) * (1 + ex.reflect * 0.5) - ex.selfPerSec);
@@ -352,7 +352,7 @@ function fight(s, e, team, H, gate = false, scale = 1) {
       if (d.dugu?.length) d.hp = Math.min(100, d.hp + HS.duguHeal); // v1.2 九劍只攻不守：不格擋，但料敵機先回氣血
       if (!pick.mv) continue;
       if(due>0)continue;
-      const wind = windOf(d,pick.mv.id,pick.mv.cd * cdMul(d,pick.mv.id,s.t)), odds = clashOdds(s,d,learningFoe,{move:pick.mv.id,wind});
+      const wind = windOf(d,pick.mv.id,pick.mv.cd * cdMul(d,pick.mv.id,s.t),s.t), odds = clashOdds(s,d,learningFoe,{move:pick.mv.id,wind});
       recordExchange(s,d,learningFoe,pick.mv.id,odds.hit,{kind:'expected'});recordChoice(s,d,learningFoe,pick.mv.id,odds.hit,{expected:true});
       const quiet = said.has(`${d.id}:hit`);
       const on = applyArtOn(s, 'hit', d, foe, { power: 1, move: pick.mv.id, foeName: E.name, silent: quiet });
