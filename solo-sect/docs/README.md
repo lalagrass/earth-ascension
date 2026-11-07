@@ -27,6 +27,11 @@
 * [`plans/PHASE1-ERGONOMIC-MICRO-STAGE.md`](plans/PHASE1-ERGONOMIC-MICRO-STAGE.md)：Phase 1 微距武道與生活實況窗（Micro-Stage Viewport）× 人體工學物理演繹設計與交接規格書。
 * [`plans/PHASE2-COMBAT-EXCHANGE-DUEL-STAGE.md`](plans/PHASE2-COMBAT-EXCHANGE-DUEL-STAGE.md)：Phase 2 硬核武俠接招拆招 × 微距交鋒特寫（菜雞互啄、高手看破、原地擺頭反掌、多敵鎖角與心性崩潰）設計與交接規格書。
 * [`plans/PHASE3-CROWD-SYNERGY-WAVE-GAUNTLET.md`](plans/PHASE3-CROWD-SYNERGY-WAVE-GAUNTLET.md)：Phase 3 群戰無雙割草、雙劍合璧／陣法合擊 × 闖關波次與 MBTI 人格演繹設計與交接規格書。
+* [`plans/HERMITAGE-QUANZHEN-GUMU-ROADMAP.md`](plans/HERMITAGE-QUANZHEN-GUMU-ROADMAP.md)：Phase 4–7 總體規劃藍圖：「終南雙劍・荒山雙人隱居 ➔ 開山立宗」四大里程碑路線圖（全真純陽×古墓小龍女／少林羅漢×桃花黃蓉）。
+* [`plans/PHASE4-HERMITAGE-DUO-OPENING.md`](plans/PHASE4-HERMITAGE-DUO-OPENING.md)：Phase 4（M5.1）荒山雙人隱居開局 × 全真純陽拳／小龍女入門武學與漸進面板設計與交接規格書。
+* [`plans/PHASE5-LABOR-FATIGUE-HERBAL-DIET.md`](plans/PHASE5-LABOR-FATIGUE-HERBAL-DIET.md)：Phase 5（M5.2）雜務運動保健上限 × 單日肌肉疲勞週期 × 採藥藥膳（玉蜂漿／歸元湯）破限調養設計與交接規格書。
+* [`plans/PHASE6-EXTERIOR-TO-INTERIOR-CLIFF-QINGGONG.md`](plans/PHASE6-EXTERIOR-TO-INTERIOR-CLIFF-QINGGONG.md)：Phase 6（M5.3）由外而內武學頓悟鏈（純陽拳➔玄門心法➔金雁功）× 三階山崖輕功躍崖探索設計與交接規格書。
+* [`plans/PHASE7-DUAL-LINEAGE-SECT-FOUNDING.md`](plans/PHASE7-DUAL-LINEAGE-SECT-FOUNDING.md)：Phase 7（M5.4）雙人異派開山立宗・道統抉擇與「陰陽合宗・雙堂並立」傳承設計與交接規格書。
 
 ---
 
