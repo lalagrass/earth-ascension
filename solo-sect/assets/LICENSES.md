@@ -2,6 +2,8 @@
 
 此表以本目錄為基準，明列每檔；不以副檔名推測授權。既有生成圖僅供本倉研究，第三方權利未核實；不宣稱 CC0。見 docs/architecture/ASSETS.md、docs/reports/reviews/PORTRAIT-BACKLOG-2026-10-25.md 及 portraits/PROMPTS.md。
 
+N60 的紙娃娃像素部件由 `src/paper-doll.mjs` 在執行時原創繪製，未加入第三方圖檔；`cousin.png` 只供像素密度、輪廓與受光方向參照。本表既有檔案的授權與來源不變。
+
 | 檔案 | 來源／作者／修改 | 授權 |
 |---|---|---|
 | `LICENSES.md` | 本倉撰寫的來源／生成提示詞記錄；非第三方圖像授權 | 本倉自製 |

@@ -4,6 +4,7 @@ import { windOf, artTier } from './arts.mjs';
 import { playbackParams, PLAYBACK } from './growth-playback.mjs';
 import { POSTURES, COMBAT_POSES, DAILY_POSES, EXTRA_TASK_POSES, routineFrame } from './routines.mjs';
 import { isFemaleVisual } from './visual-gender.mjs';
+import { drawPaperDoll } from './paper-doll.mjs';
 
 // 同一個骨架與補間器套在每名人物，人物只提供外觀色與朝向。
 const LEGS = {
@@ -88,6 +89,10 @@ export function drawPoseActor(g, d, view) {
   const p=view.playback||playbackParams(d), hip=p.hipHeight, sink=PLAYBACK.uprightHip-hip;
   const lean = mix(a.lean, b.lean, u)+Math.sin((view.clock||0)*Math.PI*2)*p.sway, legsA = LEGS[a.legs], legsB = LEGS[b.legs], armsA = ARMS[a.arms], armsB = ARMS[b.arms];
   const female = isFemaleVisual(d);
+  if (typeof document !== 'undefined' && typeof document.createElement === 'function') {
+    drawPaperDoll(g,d,view,{hip,sink,lean,legs:[0,1].map(j=>mixArray(legsA[j],legsB[j],u)),arms:[0,1].map(j=>mixArray(armsA[j],armsB[j],u)),female,uprightHip:PLAYBACK.uprightHip,weapon:b.weapon||a.weapon});
+    return;
+  }
   const color = female ? '#806375' : d.sprite === 'senior' ? '#796d91' : d.sprite === 'cousin' ? '#718963' : d.sprite === 'hero' ? '#647f92' : '#6a755e';
   g.save(); g.lineCap = 'round'; g.lineJoin = 'round'; g.strokeStyle = '#332b25';
   for (let j = 0; j < 2; j++) {

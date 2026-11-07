@@ -1,5 +1,7 @@
 # FEATURES.md：codex/solo-sect-grok（山門紀 solo-sect）
 
+> N60（#492；實際主筆 grass／Codex Cloud）：以純程式繪製的低解析度像素部件套共用關節，不再以線條與圓頭代表人物。固定外觀資料與角色 id 導出頭髮、衣服、明暗和身形；師父、招式殘影也使用同一畫法。首日動作板與遮名三人盲測見 REVIEW；規則 3.9、存檔與 golden 不變。
+
 > N59（#490；實際主筆 grass／Codex Cloud）：日常人物使用共用骨架的站／走／蹲／坐／劈／挑資料姿勢，出身同行、山賊與遠行近景統一畫法；未知狀態退站姿。純畫面，規則 3.7 與 golden 不變；可換 seed 的首日 Playwright 與 A/B 盲板見 REVIEW。
 
 > N57（#487；已合併 PR #491；實際主筆 grass／Codex Cloud）：原糧食帳增加來源分類，逐日工具可重播 9b／9c 倉存守恆與住民／來犯的 C 類差異；舊帳遷移標為 legacy。規則 3.7，招募與糧食數量未改；詳 `docs/systems/food-ledger.md`、REVIEW。
