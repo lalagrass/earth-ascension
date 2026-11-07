@@ -15,6 +15,8 @@
 
 正常遊戲第 11 日的[門派收支畫面](artifacts/n57/ledger-ui.png)與[畫面原數](artifacts/n57/ledger-ui.json)可用 `PW=/tmp/ss-playwright/node_modules/playwright-core/index.mjs node solo-sect/tools/n57-shots.mjs` 重拍；頁面只顯示原有的倉存與昨日總帳，來源分類是 JSON 帳本的稽核欄。
 
+首次 CI quick 630/631：`v220.test.mjs` 的 30 日完整存檔 hash 仍釘 3.6 的序列化內容。3.7 增加 `foodBySource` 後，Node 22 同一 seed 42 的新 hash 為 `01c88b908115b6aa`；只重產 `golden-30d-v22.txt`，原斷言和測試場景不改。bot12 base/head 原始輸出逐位相同，並非藉新 hash 掩蓋糧食數值回歸。
+
 ## 第九輪 9c：N50／N38 與 #445 新增情境可達性（規則 3.6）
 
 本輪承接已由擁有人合併的 #485（merge `4885eb8`），實際主筆 grass／Codex Cloud。N50 出身普通同行、共同食宿與真雙人指導時數及同一招募公式；N38 用真接法機率即時命名等級，沒有第二套 XP。N33 新生者過往手眼熟不再沿用他人的記憶，N32 正式譜必須來自真授藝或教材。#445 追加的三種悟招情境修在同一輪；悟招難度、失手時 `w=4p(1−p)` 和原始 N22／N27 高手截鼠斷言不變。
