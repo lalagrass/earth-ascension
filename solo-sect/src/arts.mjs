@@ -511,7 +511,7 @@ export function gainArt(d, amt, mf = 1, now = 0, g = null) {
     else { const next = Math.min(curCap(d, a), r.xp + gx * (1 - r.xp / 130)); r.xp = clampTrainXp(d, a, r.xp, next); out.moves = unlockTechs(d, a); }
     if (g) out.gm = settleGrowth(d, a, r, { src: g.src || 'train', raw: g.raw ?? amt, xp0, xp1: r.xp });
     const feed = !r.guizhen && feedInner31(d, a, gx, g); if (feed) { out.feed = feed; d.growMul.feed = feed.label; } }
-  if (!d.pendingArt) { const next = [...sectUnlock24(d), ...ARTS.filter((a) => artOk(d, a) && !a.deprecated && (!a.secret || yunvOpen24(d, a)) && !d.arts[a.id] && !reqMissing(d, a).length && fits(d, a) && !lockedArt24(d, a)).sort((a, b) => ownFirst24(d)(a, b) || ((b.school === d.style) - (a.school === d.style)) || appetiteOrder31(d, a, b))][0]; if (next) { d.pendingArt = next.id; out.next = next; } } /* loop208：本門特許與本門、路數都先於偏好 */
+  if (!d.pendingArt && !d.bare) { const next = [...sectUnlock24(d), ...ARTS.filter((a) => artOk(d, a) && !a.deprecated && (!a.secret || yunvOpen24(d, a)) && !d.arts[a.id] && !reqMissing(d, a).length && fits(d, a) && !lockedArt24(d, a)).sort((a, b) => ownFirst24(d)(a, b) || ((b.school === d.style) - (a.school === d.style)) || appetiteOrder31(d, a, b))][0]; if (next) { d.pendingArt = next.id; out.next = next; } } /* loop208：本門特許與本門、路數都先於偏好；白身另須真教材來源 */
   return out;
 }
 export function chooseVariant(d, id, v, now = 0) {

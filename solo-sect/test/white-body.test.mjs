@@ -2,12 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
 import { BODY_MOVES, BODY_TIMING, foeAction } from '../src/starter-combat.mjs';
-import { windOf, clashTimes, moveStats, clashOdds, resolveSwing, selfTarget } from '../src/arts.mjs';
+import { windOf, clashTimes, moveStats, clashOdds, resolveSwing, selfTarget, learnArt, gainArt } from '../src/arts.mjs';
 import { MONSTERS, SOURCES, DAY } from '../src/data.mjs';
 
 test('N32 白身無武學、起手秒數與野狗從邊緣走來', () => {
   const s = createState(27, { kind: 'bare', askMajor: false }), d = s.ds.find((d) => d.id === 'hero');
   assert.deepEqual(d.arts, {}); assert.equal(selfTarget(d),null); assert.ok(d.moves.includes('bodyKick')); assert.ok(!d.moves.includes('fist'));
+  const learner=structuredClone(d);learnArt(learner,'basicFist');gainArt(learner,600,1,s.t);assert.equal(learner.pendingArt,null,'即使從真教材學會一門，白身不能憑熟練憑空取得下一本正式譜');
   assert.equal(windOf(d, 'bodyPunch', 1), .45);
   assert.ok(windOf(d,'bodyPunch',1) < windOf(d,'bodyPush',1) && windOf(d,'bodyPush',1) < windOf(d,'bodyKick',1));
   const charge = foeAction({ k: 'boar' }, 70), T = clashTimes(s, { k:'boar' }, d, { move:charge.id, wind:charge.wind });
