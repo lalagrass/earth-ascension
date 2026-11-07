@@ -496,14 +496,14 @@ function clampTrainXp(d, a, cur, next) {
   if (capped == null) return next;
   return Math.min(next, Math.max(cur, capped));
 }
-export function rustOf(r, now) { const idle = now - (r.last ?? now); return Math.min(RUST.max, Math.max(r.rust || 0, idle > RUST.after ? ((idle - RUST.after) / 600) * RUST.perDay : 0)); }
+export function rustOf(r, now, studiedArts = 1) { const idle = now - (r.last ?? now); return Math.min(RUST.max, Math.max(r.rust || 0, idle > RUST.after ? ((idle - RUST.after) / 600) * RUST.perDay * Math.sqrt(studiedArts) : 0)); }
 // 回傳 {next 可求學武學, moves 新招}
 /* g（loop79 成長分層，s.grow 時才傳）＝ { raw 原始投入, src 'train'|'fight' }：同類加速以結算前造詣計，造詣只吃原始投入 */
 export function gainArt(d, amt, mf = 1, now = 0, g = null) {
   const out = { next: null, moves: [], star: false };
   if (d.bare && !Object.keys(d.arts || {}).length) return out;
   const id = focusOf(d);
-  if (id) { out.trained = id; const a = artById(id), r = d.arts[id]; r.rust = rustOf(r, now); r.last = now; const xp0 = r.xp;
+  if (id) { out.trained = id; const a = artById(id), r = d.arts[id]; r.rust = rustOf(r, now, Object.keys(d.arts || {}).length); r.last = now; const xp0 = r.xp;
     const acc = g && !r.guizhen ? accelOf(d, a, r.xp) : null; out.acc = acc;
     const P = artMulParts(d, a, [['心情', mf], ['荒疏', 1 - r.rust]], acc && acc.mul > 1 ? [['同類底子', acc.mul]] : []); d.growMul = { art: id, total: P.total, talent: P.talent, state: P.state, ext: P.ext, gate: P.gate };
     const gx = amt * ART_GAIN.base * P.total;

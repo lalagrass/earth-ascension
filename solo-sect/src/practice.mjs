@@ -3,6 +3,7 @@ export {emitPractice} from './practice-events.mjs';
 // N33 共用成長底層：只讀武學資料，不依賴 arts.mjs／DOM。
 import { ARTS, MOVES, ENEMIES, TIERS } from './data.mjs';
 import { FOE_ACTIONS, bodyMove } from './starter-combat.mjs';
+import { lifeStage, recordLifeExchange, recordLifeRoutine } from './life-study.mjs';
 export const PRACTICE = Object.freeze({ halfUses: 50, alpha: Math.log(2) / Math.log(51), bodyScale: 10, reactionFloor: .2, reactionSpan: .4, eyeHalf: 3, ordinaryWu: 3, reactionShape: 2, codexUnit: 1, eventLimit: EVENT_LIMIT, familyTransfer: .5 });
 // Each row is a prior history in effective exchanges. Bare actors use tier -1.
 export const TRAINING_HISTORY = Object.freeze([
@@ -39,12 +40,16 @@ export const eyeKey = (attacker, move) => `${attacker?.k || 'human'}:${move}`;
 export function familiarUses(d, attacker, move, codex = {}) {
   const key = eyeKey(attacker, move);
   const oldCodex = d?.practice?.origin?.[attacker?.k] ?? (!d?.practice && attacker?.k ? (codex[attacker.k]?.insight || 0) / PRACTICE.codexUnit : 0);
-  const related = (d?.practice?.families?.[moveFamily(move)] || 0) * PRACTICE.familyTransfer;
+  const school = artForMove(move)?.school;
+  const shared = school ? ARTS.filter((a) => a.school === school && lifeStage(d, a.id) >= 2).reduce((m, a) => Math.max(m, lifeStage(d, a.id)), 0) : 0;
+  const related = (d?.practice?.families?.[moveFamily(move)] || 0) * PRACTICE.familyTransfer + shared * PRACTICE.eyeHalf;
   return Math.max(d?.practice?.eyes?.[key] || 0, oldCodex || 0, priorUses(veteranTier(d)), related);
 }
 export function familiarReaction(d, attacker, move, codex = {}) {
   const f = familiarUses(d, attacker, move, codex), half = PRACTICE.eyeHalf * PRACTICE.ordinaryWu / (d?.wu || d?.root || PRACTICE.ordinaryWu);
-  return PRACTICE.reactionFloor + PRACTICE.reactionSpan * half / (half + f);
+  const art = artForMove(move), stage = art && lifeStage(attacker, art.id);
+  const possibilities = stage >= 5 ? 2 : 1;
+  return PRACTICE.reactionFloor + possibilities * PRACTICE.reactionSpan * half / (half + f);
 }
 export function practiceWindow(d, move, start, { tier = d?.k ? veteranTier(d) : 0, skill = 'agility' } = {}) {
   const body = d?.skills?.[skill] || d?.agi || 0;
@@ -56,12 +61,14 @@ export function recordExchange(s, attacker, defender, move, p, result) {
   const w = learningWeight(p), priorHand = handUses(attacker, move), priorEye = familiarUses(defender, attacker, move, s?.codex);
   const a = ensurePractice(attacker, s?.codex), d = ensurePractice(defender, s?.codex), key = eyeKey(attacker, move), family = moveFamily(move);
   a.hands[move] = priorHand + w;
+  recordLifeExchange(attacker, move, w);
   d.eyes[key] = priorEye + w;
   (d.families ||= {})[family] = (d.families[family] || 0) + w;
   const row = { type: 'exchange', attacker: attacker.id || attacker.uid || attacker.k, defender: defender.id || defender.uid || defender.k, move, p, w, kind: result.kind, hand: a.hands[move], eye: d.eyes[key] };
   emitPractice(s, row); return row;
 }
 export function rehearse(s, d, moves, seconds, { partner = null } = {}) {
+  recordLifeRoutine(d, seconds);
   const hand = ensurePractice(d, s?.codex).hands;
   for (const mv of moves) {
     // 自己可把節奏放慢一倍；對練最多只練到夥伴現有手熟，不憑空刷出高手。
