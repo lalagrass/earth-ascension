@@ -439,6 +439,13 @@ export function checkRetreat(s, team) {
 }
 export function expStep(s, dt, H) {
   const X = s.exp; if (!X) return; const team = X.team.map((id) => s.ds.find((d) => d.id === id)).filter(Boolean);
+  if (X.recalled && X.bout) {
+    // 玩家召回是撤離指令：中斷尚未決勝的交手，不算擊倒，也不讓隊伍被遠段小地圖困住。
+    for (const d of team) { d.swing = null; d.busyUntil = s.t; }
+    X.bout = null; X.pendingGate = null; X.phase = 'back'; X.backLeft = X.dist / EXP.back; X.backPos = X.dist; X.ret = returnPlan(s, X);
+    log(s, `巡山隊在${segAt(X.dist).name}脫離交手，遵掌門傳令回山`);
+    return;
+  }
   if (X.bout) {
     const r = stepMapBout(s, X, dt, { ...H, guardOf }); if (!r) return;
     const sg = (X.seg[r.seg] ??= { enc: 0, kill: 0 });
