@@ -13,7 +13,8 @@ import { valorAdd, valorThreatMul, valorHtml, VALOR, def24Of as sectDefenseFacto
 import { peaceDelay } from './economy.mjs';
 import { mates } from './bonds.mjs';
 import { cancelTask } from './core.mjs';
-import { dpsOf } from './world.mjs';
+import { dpsOf, guardOf } from './world.mjs';
+import { startMapBout, stepMapBout } from './exp-map-combat.mjs';
 // ==== （原 raidkind.mjs）====
 // loop17 山賊多樣：只在 s.m9（江湖規則「太平與備料」）時抽類型；舊局／golden 無 kind＝原樣。
 // 期望點數 ≈ 原值（0.5×0.8+0.3×1.25+0.2×1.0=0.975），夜襲不能付錢、敗了只偷不傷人 → 不推高重傷。
@@ -494,8 +495,7 @@ export function threatHtml(s) {
 // ==== （原 lair.mjs）====
 // loop19 遠征剿寨：山賊來過幾次後，執事查出山寨所在；有閒人、糧夠時自主組隊出山剿寨。
 // 剿成→山賊很久不來（下次來犯延後 peaceDays）；剿敗→一人重傷、空手而回。只在 s.m9 生效（golden 不變）。
-export const LAIR = { after: 3, team: 2, supply: 2, dur: DAY / 2, k: 1.0, peaceDays: 10, minHp: 60, winHurt: 0.3, cool: 5 };
-const RL = (s) => { const L = s.lair; L.rng = ((L.rng || seedMix(s.seed || 1, 4219)) * 16807) % 2147483647; return L.rng / 2147483647; };
+export const LAIR = { after: 3, team: 2, supply: 2, dur: DAY / 2, k: 1.0, peaceDays: 10, minHp: 60, cool: 5 };
 const okD = (s, d) => d.role !== 'laborer' && d.adult !== false && !d.away && d.hp > LAIR.minHp && !d.order && !s.hunt?.team?.includes(d.id);
 const sumPow = (s, team) => power({ ...s, ds: team });
 // loop29（選用 s.lairpow）：寨子點數＝門派最強 top 人戰力×k，不再隨財富漲；預估 隊伍≈top3 的 2/3 → p≈.6
@@ -510,15 +510,21 @@ export function lairDaily(s, H) {
   const c = s.ds.filter((d) => okD(s, d)).sort((a, b) => sumPow(s, [b]) - sumPow(s, [a])); if (c.length < LAIR.team + 1) return null; // 至少留一人看家
   let team = c.slice(0, LAIR.team); { const lead = c[0], m = mates(s, lead).map((id) => c.find((d) => d.id === id)).filter(Boolean); if (m.length) team = [lead, ...m].slice(0, LAIR.team); } /* loop20 同派同行 */ const pts = Math.max(1, Math.round(sumPow(s, c.slice(0, LAIRP.top)) * LAIRP.k)); /* loop29 寨強看戰力（選用） */ if (pts <= 0) return null; const pow = sumPow(s, team);
   resAdd(s, 'food', -need, 'travel'); for (const d of team) { H?.cancelTask?.(s, d, '出山剿寨'); d.away = true; d.path = []; d.reason = '出山剿寨'; }
-  L.trip = { ids: team.map((d) => d.id), pts, back: s.t + LAIR.dur, pow }; L.n++;
+  L.trip = { ids: team.map((d) => d.id), pts, back: s.t + LAIR.dur, pow, n: L.n + 1 }; L.n++;
   log(s, `【剿寨】${team.map((d) => d.name).join('、')}帶 ${need} 份糧出山剿寨（寨中約 ${pts} 點）。`); return L.trip;
 }
-// 每 tick：到時間就回來結算
-export function lairStep(s, H) {
-  const L = s.lair, tr = L?.trip; if (!tr || s.t < tr.back) return; L.trip = null;
-  const team = tr.ids.map((id) => s.ds.find((d) => d.id === id)).filter(Boolean); for (const d of team) { d.away = false; d.reason = '剿寨歸來'; if (H?.gate) d.pos = [...H.gate]; }
-  const p = tr.pow / (tr.pow + tr.pts), win = RL(s) < p; let hurt = null;
-  if (!win || RL(s) < LAIR.winHurt) { { hurt = team[Math.floor(RL(s) * team.length)]; if (hurt) { hurt.hp = Math.min(hurt.hp, guardHurt(hurt, RAID.hurtHp)); /* loop117 */ hurt.raidHurt = (hurt.raidHurt || 0) + 1; T(s).homeHurt++; H?.think?.(s, hurt, 'raidHurt'); } } }
+// 到寨時開遠段同規則小地圖；真交手結束才讓隊伍回山並結算。
+export function lairStep(s, H, dt = .25) {
+  const L = s.lair, tr = L?.trip; if (!tr || s.t < tr.back) return;
+  const team = tr.ids.map((id) => s.ds.find((d) => d.id === id)).filter(Boolean);
+  if (!tr.bout && !tr.fought) { const count = Math.max(BAND_MEMBER.min, Math.min(BAND_MEMBER.max, Math.round(tr.pts / BAND_MEMBER.pts)));
+    startMapBout(s, tr, 'bandit', { id: 'lair', from: 250, scale: 1 }, team, [150, 100], null, { count, totalHp: tr.pts });
+    log(s, `【剿寨】${team.map(d => d.name).join('、')}到了山寨，${count} 名賊人從外圍聚攏，逐招交手。`); return; }
+  const bout = stepMapBout(s, tr, dt, { ...H, guardOf }); if (!bout) return;
+  tr.fought = true; L.trip = null;
+  for (const d of team) { d.away = false; d.reason = '剿寨歸來'; if (H?.gate) d.pos = [...H.gate]; if (d.hp <= 0) d.hp = 10; }
+  const p = tr.pow / (tr.pow + tr.pts), win = bout.won; let hurt = team.find(d => d.hp <= RAID.hurtHp) || null;
+  if (hurt) { hurt.raidHurt = (hurt.raidHurt || 0) + 1; T(s).homeHurt++; H?.think?.(s, hurt, 'raidHurt'); }
   const X = T(s); if (win) { L.won++; X.next = Math.max(X.next || 0, s.day) + LAIR.peaceDays; s.rep = (s.rep || 0) + RAID.rep * 2; L.next = X.next; for (const d of team) { tallyAct(d, 'lair', LAIR.dur / 4); recordDeed(s, d, 'lair'); } recordDeed(s, null, 'lair', { chron: `${team.map((d) => d.name).join('、')}大破後山山寨` }); if (!X.taiping && X.boss?.state !== 'wait' && X.boss?.state !== 'on') X.boss = { day: s.day + BOSS.after, state: 'wait' }; log(s, `【剿寨】大破山寨！山賊作鳥獸散，至少 ${LAIR.peaceDays} 日不敢來犯。名聲 +${RAID.rep * 2}${hurt ? `；${hurt.name}重傷` : ''}。`); }
   else { L.next = s.day + LAIR.cool; log(s, `【剿寨】寨子太硬，攻不下來${hurt ? `，${hurt.name}重傷` : ''}，只好先撤回。`); }
   (L.hist ??= []).push({ day: s.day, pts: tr.pts, p: +p.toFixed(2), win, hurt: hurt?.id || null });

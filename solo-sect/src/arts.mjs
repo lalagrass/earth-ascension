@@ -1260,7 +1260,7 @@ export const MOVE = {
 export function moveStats(w, moveId, wind = 0.5) {
   if (isMon(w)) {
     const p=FOE_ACTIONS[w.k],m=TECHNIQUE_MOVES.find(m=>m.id===moveId)||p?.moves.find(m=>m.id===moveId)||foeAction(w);
-    if (p) return { force: m.force * (w.raging ? CLASH.fret.force : 1), speed: p.speed, armor: p.armor, type: m.cut ? 'blade' : m.bite ? 'bite' : 'fist' };
+    if (p) return { force: m.force * (w.raging ? CLASH.fret.force : 1), speed: p.speed, armor: p.armor, type: m.type || (m.cut ? 'blade' : m.bite ? 'bite' : 'fist') };
     return MOVE.monsters[w.k] || MOVE.monsters.fist;
   }
   const body=bodyMove(moveId)||TECHNIQUE_MOVES.find(m=>m.id===moveId); if (body) return { force: (body.force + (w.skills?.strength || 0) * BODY_TIMING.forceSkill) * (w.raging ? CLASH.fret.force : 1), speed: 1 / body.wind, armor: MOVE.armor, type: body.type };

@@ -1,5 +1,22 @@
 # 可重跑驗收
 
+## 第十一輪 N45：巡山前三段與剿寨逐招（#457）
+
+實作 grass／Codex Cloud。山腳由主地圖上緣原 `DEN` 獸穴進場、林地由既有巢側接近；山腰及山寨另開 300×200 小地圖。隊伍及敵人的真位置每拍移動，`interceptOpening`、`resolveSwing`、`shieldHit`、原護體與出招冷卻決定結果。敵人、招式、前搖、勁、霸體及型的資料表見 [combat.md](docs/systems/combat.md)。圖只讀 `s.exp.bout`／`s.lair.trip.bout` 的權威狀態，沒有演出側的另擲勝負。
+
+真遊戲畫布截圖：[山腳主地圖](artifacts/r11/n45/foot-main-map.png)、[山寨小地圖](artifacts/r11/n45/lair-small-map.png)。離線重拍：`PW=/opt/codex/cua_node/lib/node_modules/playwright-core/index.mjs node solo-sect/tools/r11-visual-check.mjs --seed=17 --out=solo-sect/artifacts/r11/n45`；`--seed` 可改任何整數，輸出 [`visual-check.json`](artifacts/r11/n45/visual-check.json) 的 `errors` 必須是空陣列。該工具不改模擬與素材，畫布只在本機 Chromium 繪製。
+
+| 類 | 指令（repo 根目錄） | 門檻與預期輸出 |
+|---|---|---|
+| A 真來源／逐招 | `bash solo-sect/test/run.sh smoke` | exit 0；唯一 N45 小測試用正常 `startExpedition` 進第一段，敵人位置等於既有 `DEN`，下一拍距離縮短，交手交換數大於零，交手結束前不繼續行軍；剿寨也在小地圖以逐招得出布林勝負。 |
+| A 時間與點數 | 任意 seed 正常派巡；檢查存檔的 `exp.bout.strikes` 及 `lair.trip.bout.strikes` | 每筆有 `at/who/target/move/reaction`，`at` 非遞減；同一敵人只在自己的 `cool` 到期後再起手。山寨進場賊人數由原每人 40 點、最少 2／最多 8 推得，總血量仍為 `trip.pts`。 |
+| B 受力 | smoke 內既有 N35／N37 測試及山門紀 CI 中的 N27 回歸 | 地圖逐招使用原 `resolveSwing` 和 `contact.damageFactor`；命中後用原 `CLASH.heavy`、`guardOf`、`shieldHit`。沒有額外命中率或門派勝率係數。 |
+| C 自然日程 | `docker run --rm -v "$PWD:/work" -w /work node:22-bookworm-slim node solo-sect/tools/bot12.mjs solo-sect --json` | 12 種子同工具、同 Node 22 的自然山賊、狩獵和巡山結果與 N43 分開列；C 結果只回報，不為貼近比例調常數。原始輸出在本輪 artifacts；CI 快測及 golden 是發 PR 後的正式門檻。 |
+
+尚未補的敵人：深谷黑熊／山賊頭目；斷崖禿鷲／崖猿；古洞洞蝠群／巨蟒；絕頂瘋癲劍客／崖猿；白猿、古洞蟒王、劍塚守者、無盡段守者與大型分舵多波。這些路徑的舊期望值結算仍屬過渡，沒有將其輸出畫成已逐招。山腰以上地圖的四邊入場只在遠段使用，未讓門派內的敵人從四周憑空出現。
+
+舊測試變更：本 milestone 尚未改舊斷言；若山門紀發現真正受新規則影響的假設，逐項列在本節並保留原驗收語意。舊名 → 新名：修改的 `world.mjs`／`threat.mjs` 交戰入口未引入輪次數字名稱，新增 `startMapBout`、`stepMapBout`、`bout`；舊 `fight` 留給明列未完成的遠段。最沒把握的三處：四方入場對山腰可讀性（用真場景邊界而非隨機憑空生成）；野豬群的三頭分血使個別受力不同於舊批次 HP（總值守舊）；剿寨真交手會把原戰力擲勝負改成可觀察的時間交手，舊日程數字可能大幅改變，按 C 類真實回報。
+
 ## 第十一輪 N43：來犯期、喘息期與單波紀錄（#455）
 
 本節由 grass／Codex Cloud 實作。威脅點數與既有適應公式沒有修改；大威脅從第 8 日開始依本作七日一季、原重傷冷卻兩日循環，每次至少隔原排程最短的四日，同一期至多兩次。第二波若隔期才重來，按實際上山日占新一期名額。已在地圖上交手的山賊不因換期消失；野狗、偷菜野豬不受山賊週期限制。新常數的來源、世界理由見 [combat.md](docs/systems/combat.md)。

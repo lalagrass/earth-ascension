@@ -10,6 +10,7 @@ import { mateBonus } from './economy.mjs';
 import { addWexin, awaken } from './hero.mjs';
 import { aff } from './social.mjs';
 import { rivalGate, rivalWon } from './sect.mjs';
+import { startMapBout, stepMapBout } from './exp-map-combat.mjs';
 // ==== （原 world.mjs）====
 // v1.55a 同圖延伸：世界座標、7 環、巢點與山徑、各環族群、獸襲下山（演出）、鏡頭邊界、256px 區塊
 // 原則：權威模擬不看鏡頭；這裡只有 popStep 會寫狀態，而且不用亂數。
@@ -209,7 +210,7 @@ export function legacyBest(store) {
 export function syncLegacy(store, s) { const n = Math.max(+store.getItem(LEGACY.key) || 0, suhuiOf(s)); if (n > 0) store.setItem(LEGACY.key, String(Math.min(LEGACY.max, n))); return n; }
 
 // ==== （原 expedition.mjs）====
-// v0.95 巡山遠征（ROADMAP §15）：背景模擬＋戰報；地圖只畫進度條。固定名單、決定性、不會死。
+// 巡山遠征：前三段逐招在主圖／小圖交手，更深路段暫沿用背景結算；固定名單、決定性、不會死。
 // v1.7 相剋：a 剋 b → DAO.up；b 剋 a → DAO.down；其餘 1
 export function daoOf(d) { let best = null, bx = -1; for (const [id, r] of Object.entries(d.arts || {})) { const a = ARTS_ALL.find((x) => x.id === id); const tag = a?.tags?.find((g) => DAO.tagOf[g]); if (!tag || a.effect) continue; const x = r?.xp || 0; if (x > bx) { bx = x; best = DAO.tagOf[tag]; } } return best || '歸真'; }
 export function counterMul(a, b) { const R = DAO.ring, i = R.indexOf(a), j = R.indexOf(b); if (i < 0 || j < 0) return 1; if ((i + 1) % R.length === j) return DAO.up; if ((j + 1) % R.length === i) return DAO.down; return 1; }
@@ -406,7 +407,16 @@ function encounter(s, e, seg, team, H) {
     if (H.rand(s) < expOdds(ev, E.detect)) { add(X.evaded, e, 1); return 1; }
     X.events.push(`閃${E.name}失手`);
   }
-  X.fights++; const r = fight(s, e, team, H, false, sca); let t = r.t; if (r.won) { sg.kill++; popKill(s, seg.id); }
+  X.fights++;
+  if (ROUTE.indexOf(seg) < 3 && ROUTE.indexOf(seg) >= 0) {
+    for (const d of team) seeEnemy(s, e, 'fight', d);
+    seeEnemy(s, e, 'see');
+    const source = seg.id === 'foot' ? DEN : RINGS.find(r => r.id === seg.id)?.nest || trailAt(X.dist);
+    startMapBout(s, X, e, seg, team, trailAt(X.dist), source).spotDist = X.dist;
+    X.events.push(`在${seg.name}遇見${ENEMIES[e].name}，逐招在${seg.id === 'slope' ? '山腰小地圖' : '主地圖'}交手`);
+    return 0;
+  }
+  const r = fight(s, e, team, H, false, sca); let t = r.t; if (r.won) { sg.kill++; popKill(s, seg.id); }
   if (r.fled) { const stub = team.some((d) => (d.personality || []).includes('stubborn'));
     if (S.chase >= 1 || (S.chase > 0 && stub && H.rand(s) < S.chase)) {
       const ag = Math.max(...team.map((d) => d.skills.agility)); for (let k = 0; k < (S.chase >= 1 ? 2 : 1); k++) { X.chase.n++; t += EVADE.chaseTime;
@@ -429,6 +439,16 @@ export function checkRetreat(s, team) {
 }
 export function expStep(s, dt, H) {
   const X = s.exp; if (!X) return; const team = X.team.map((id) => s.ds.find((d) => d.id === id)).filter(Boolean);
+  if (X.bout) {
+    const r = stepMapBout(s, X, dt, { ...H, guardOf }); if (!r) return;
+    const sg = (X.seg[r.seg] ??= { enc: 0, kill: 0 });
+    if (r.won) { sg.kill++; popKill(s, r.seg); add(X.kills, r.key, 1); seeEnemy(s, r.key, 'kill', team.find(d => d.hp > 0)); lootRoll(s, X.loot, ENEMIES[r.key].loot, H); for (const d of team.filter(d => d.hp > 0)) H.grow(s, d, 'style', 3, 'fight'); }
+    else if (r.timedOut) { add(X.escaped, r.key, 1); seeEnemy(s, r.key, 'fled'); X.events.push(`${ENEMIES[r.key].name}沿地圖邊緣脫身`); }
+    X.busy = 0;
+    const why = X.reason || checkRetreat(s, team);
+    if (why) { X.reason = why; X.phase = 'back'; X.backLeft = X.dist / EXP.back; X.backPos = X.dist; X.ret = returnPlan(s, X); }
+    return;
+  }
   if (X.busy > 0) { X.busy -= dt; return; }
   if (X.phase === 'out') {
     const d0 = X.dist, f0 = X.fights, pm = peaceOf(s, segAt(X.dist).id) ? EXP.peaceSpeed : 1;
