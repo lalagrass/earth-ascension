@@ -10,6 +10,7 @@ case "${1:-quick}" in
   quick)
     node tools/check-assets.mjs || exit 1
     node tools/label-overlap.mjs --seed 1 --day 10 --phase dawn > /dev/null || exit 1
+    node tools/r9b-acceptance.mjs --seed=17 || exit 1
     exec node --test test/*.test.mjs
     ;;
   archive) exec node --test test/archive/*.test.mjs ;;

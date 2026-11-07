@@ -1,3 +1,5 @@
+import {impactVisual} from './contact-view.mjs';
+import {COVERS} from './tactics.mjs';
 import { BRANCHES } from './artcard.mjs';
 import { chiefLocked24, styleBadges24, lockedArt24, harmonyOf, harmonyMul, affixOf, readwuNote, artsSvg, artHintsHtml, setFocus, focusOf, artById, artMul, artState, topTier, chooseVariant, rechooseBranch, variantOf, stuckAt, breakChance, rustOf, starCost, guizhenOk, compProgress, blowWhy } from './arts.mjs';
 import { HOME, HOME_VIEW, CHUNK, CHUNK_CAP, lruGet, chunkKey, chunksInView, paintChunk, clampCam, camBounds, partyPos, partyDist, trailAt, SPOTS, styledPos, fogged, inVision, leftovers, FOG_W, FOG_H, WORLD, cellColor, STYLE_PATH, cloudAt, cloudPos, cloudSpots, partyCloud, CLOUD_MAP, ZOOMS, lodOf, TRAIL_END, raidDescent, RINGS, TRAIL, POP, capOf, denDown, raidMul, milestones, styleOf, teamStyle, UNLOCKS, ALL_SECS, secOpen, CHAPTER1, AUTO, autoDue, autosave, autoList, autoGet, suhuiOf, syncLegacy, routeSeg, segIndex, campsOpen, scoutOf, peaceOf, suggestTeam } from './world.mjs';
@@ -53,7 +55,7 @@ await Promise.all(names.map((n) => new Promise((r) => { const i = new Image(); i
   c.fillStyle = '#2b2524'; c.beginPath(); c.arc(39, 6, 5, 0, Math.PI * 2); c.fill(); IMG.sister = canvas; }
 let S = createState(Date.now() % 100000 | 0), speed = 1, starting = true;
 const newGame = () => { starting = true; openStart((spec) => { S = createState(Date.now() % 100000 | 0, spec); freshGame(); starting = false; panel(); /* loop65：新局重設每局介面狀態（自動存檔計時等） */ }); };
-window.__sect = { get S() { return S; }, set speed(v) { speed = v; }, freeze: false, panel: () => panel(), get starting() { return starting; } };
+window.__sect = { get S() { return S; }, set speed(v) { speed = v; }, freeze: false, hitstop: true, panel: () => panel(), get starting() { return starting; } };
 const ACT_ICON = { quarry: '⛏', spar: '🤺', cook: '🍲', deliver: '📦', rest: '💤', eat: '🍚', farm: '🌱', forage: '🌿', chop: '🪓', train: '掌', learn: '📜', build: '🔨', chat: '💬', hunt: '⚔', strike: '⚔', trial: '⚔' };
 let hoveredActor = null;
 // v1.45 B 級＝右側竹簡（可點推鏡）、A 級＝暫停＋推鏡
@@ -95,19 +97,21 @@ function draw() {
   items.push({ y: NODES.hall[1], f: () => sprite('master', NODES.hall[0] + 30, NODES.hall[1] - 6, SC) });
   for (const w of S.wild) items.push({ y: w.pos[1], f: () => { g.save(); g.globalAlpha = 0.85; g.translate(w.pos[0], w.pos[1]); g.scale(-(w.face || 1), 1); const i = IMG[MONSTERS[w.k].sprite]; g.drawImage(i, -i.width * SC / 2, -i.height * SC, i.width * SC, i.height * SC); g.restore(); } });
   for (const [k, n] of Object.entries(POSTS)) items.push({ y: NODES[k][1], f: () => { g.fillStyle = S.post === k ? '#c0392b' : 'rgba(120,80,40,.5)'; g.beginPath(); g.moveTo(NODES[k][0], NODES[k][1] - 40); g.lineTo(NODES[k][0] + 18, NODES[k][1] - 33); g.lineTo(NODES[k][0], NODES[k][1] - 26); g.fill(); g.fillRect(NODES[k][0] - 1, NODES[k][1] - 40, 2, 40); } });
-  for (const m of S.mons) items.push({ y: m.pos[1], f: () => { sprite(MONSTERS[m.k].sprite, m.pos[0], m.pos[1], SC); if (!m.raid) hp(m.pos[0], m.pos[1] - 30, m.hp / m.max, '#a33');  } });
-  if (S.band) { const b = S.band; items.push({ y: b.pos[1], f: () => { for (const m of (b.members || [{ hp: 1, max: 1, pos: b.pos }])) { const fled = !(m.hp > 0); if (fled && m.state !== 'down') continue; const p = m.pos || b.pos; g.save(); g.filter = 'grayscale(1) brightness(.55)'; if (fled) g.globalAlpha = 0.45; /* #424 被擊退的人沿山門那條路退走 */ sprite('hero', p[0], p[1], SC); g.restore(); if (b.members && !fled) hp(p[0], p[1] - 30, m.hp / m.max, m.ring === 2 ? '#a86' : '#a33'); } /* #419 一人一個，外圈的血條淡色 */ hp(b.pos[0], b.pos[1] - 34, b.hp / b.max, '#a33');  } }); } // loop3：沿用主角圖、灰暗濾鏡，不新增素材
+  for(const c of COVERS)items.push({y:c.pos[1],f:()=>{g.save();g.translate(...c.pos);if(c.kind==='tree'){g.fillStyle='#79573d';g.fillRect(-6,-38,12,38);g.fillStyle='#52643c';g.beginPath();g.arc(0,-43,23,0,Math.PI*2);g.fill();}g.strokeStyle='#c7ba85';g.setLineDash([3,3]);g.strokeRect(c.stand[0]-c.pos[0]-9,c.stand[1]-c.pos[1]-7,18,14);g.restore();}});
+  for(const drop of S.drops||[])if(!drop.taken)items.push({y:drop.pos[1],f:()=>{g.save();g.translate(...drop.pos);g.strokeStyle='#aab6bc';g.lineWidth=3;g.beginPath();g.moveTo(-8,4);g.lineTo(9,-5);g.stroke();g.fillStyle='#765237';g.fillRect(-10,2,6,3);g.restore();}});
+  for (const m of S.mons) items.push({ y: m.pos[1], f: () => { const v=impactVisual(S,m,S.t+acc,window.__sect.hitstop),[vx,vy]=v.pos;sprite(MONSTERS[m.k].sprite,vx+v.shake,vy,SC); if(m.scarred){g.strokeStyle='#ad4c45';g.beginPath();g.moveTo(m.pos[0]-6,m.pos[1]-16);g.lineTo(m.pos[0]+4,m.pos[1]-10);g.stroke();}if (!m.raid) hp(m.pos[0], m.pos[1] - 30, m.hp / m.max, '#a33');  } });
+  if (S.band) { const b = S.band; items.push({ y: b.pos[1], f: () => { for (const m of (b.members || [{ hp: 1, max: 1, pos: b.pos }])) { const fled = !(m.hp > 0); if (fled && m.state !== 'down') continue; const v=impactVisual(S,m,S.t+acc,window.__sect.hitstop),p=v.pos; g.save(); g.filter = 'grayscale(1) brightness(.55)'; if (fled) g.globalAlpha = 0.45; /* #424 被擊退的人沿山門那條路退走 */ sprite('hero', p[0]+v.shake, p[1], SC); g.restore(); if (b.members && !fled) hp(p[0], p[1] - 30, m.hp / m.max, m.ring === 2 ? '#a86' : '#a33'); } /* #419 一人一個，外圈的血條淡色 */ hp(b.pos[0], b.pos[1] - 34, b.hp / b.max, '#a33');  } }); } // loop3：沿用主角圖、灰暗濾鏡，不新增素材
   for (const d of S.ds) if (!d.away) items.push({ y: d.pos[1], f: () => {
-    const bob = d.path.length ? Math.sin(S.t * 10) * 2 : 0, [x, y] = d.pos;
+    const impact=impactVisual(S,d,S.t+acc,window.__sect.hitstop),bob=d.path.length?Math.sin(impact.clock*10)*2:0,[x,y]=impact.pos;
     if (d.ring && S.t - d.ring.t < 1.5) { const R = d.ring; g.beginPath(); g.arc(x, y - 70, 4.5, 0, 7); g.lineWidth = 2; g.strokeStyle = R.intercept ? '#e2b53c' : '#d0302a'; g.stroke(); g.fillStyle = R.intercept ? '#f2d06b' : 'rgba(208,48,42,.6)'; g.fill(); } /* N28：金圈＝仍能截擊，紅圈＝只能移步、招架或中招 */
     { const tt = topTier(d); if (tt.t >= 4) { const c = AURA[tt.a.school], gr = g.createRadialGradient(x, y - 20, 4, x, y - 20, 34 + Math.sin(S.t * 4) * 3); gr.addColorStop(0, c + 'aa'); gr.addColorStop(1, c + '00'); g.fillStyle = gr; g.beginPath(); g.ellipse(x, y - 20, 36, 42, 0, 0, 7); g.fill(); } }
     if (d.task?.act === 'meditate' && d.task.phase === 'do') { const A = ACTS2.meditate, pr = Math.min(1, d.task.timer / A.dur);
       for (let k = 0; k < 10; k++) { const an = S.t * 3 + k * 0.63, rr = 26 + 6 * Math.sin(S.t * 2 + k); g.fillStyle = `rgba(120,170,230,${0.35 + 0.4 * ((k % 3) / 3)})`; g.beginPath(); g.arc(x + Math.cos(an) * rr, y - 22 + Math.sin(an) * rr * 0.6, 2.5, 0, 7); g.fill(); }
       g.strokeStyle = '#0003'; g.lineWidth = 5; g.beginPath(); g.arc(x, y - 70, 12, 0, 7); g.stroke(); g.strokeStyle = '#4a90d9'; g.beginPath(); g.arc(x, y - 70, 12, -Math.PI / 2, -Math.PI / 2 + pr * Math.PI * 2); g.stroke(); }
     const art = artById(focusOf(d) || 'basicFist'), mv = MOVES.find((m) => m.id === d.swing?.mv);
-    const pose = displayPose(S, d, art, mv);
-    g.save(); g.translate(x, y + bob); if (d.face < 0) g.scale(-1, 1); if (d.anim === 'strike' && !pose) g.rotate(0.15);
-    if (d.task?.phase === 'do' && d.anim === 'rest') g.rotate(-1.3);
+    const pose = displayPose(S,d,art,mv,S.t+acc,window.__sect.hitstop);
+    g.save(); g.translate(x+impact.shake,y+bob); if (d.face < 0) g.scale(-1, 1); if (d.anim === 'strike' && !pose) g.rotate(0.15);
+    if (d.anim==='down'||(d.task?.phase === 'do' && d.anim === 'rest')) g.rotate(-1.3);
     const im = IMG[visualSpriteOf(d)], sc = SC * (d.adult === false && d.child ? 0.62 + 0.03 * ((d.age || 6) - 6) : 1);
     if (pose) { if (d.child && !d.adult) g.scale(sc / SC, sc / SC); drawPoseActor(g, d, pose); }
     else g.drawImage(im, -im.width * sc / 2, -im.height * sc, im.width * sc, im.height * sc);
@@ -135,6 +139,7 @@ function draw() {
   drawSect();
   if (S.xia?.teacher) { const [x, y] = [NODES.kitchen[0] + 60, NODES.kitchen[1] + 30], im = IMG.hero; g.save(); if (im?.width) { g.filter = 'sepia(0.8) brightness(0.8)'; g.drawImage(im, x - 22, y - 56, 44, 56); g.filter = 'none'; } g.fillStyle = '#b5651d'; g.beginPath(); g.ellipse(x + 16, y - 30, 7, 10, 0, 0, 7); g.fill(); g.font = 'bold 15px sans-serif'; g.textAlign = 'center'; g.lineWidth = 4; g.strokeStyle = '#fff'; g.strokeText(`洪七公 🍶 傳功${S.xia.teacher.stage}/3`, x, y - 62); g.fillStyle = '#6a3b10'; g.fillText(`洪七公 🍶 傳功${S.xia.teacher.stage}/3`, x, y - 62); g.restore(); }
   for (const f of S.fx) {
+    if(f.kind==='contact')continue; // contact-view消費；不能落入需要f.pos的舊泛用特效。
     if (f.kind === 'shake') continue;
     // #413 N10：絕活地圖浮字與光環閃爍
     if (f.kind === 'special') {

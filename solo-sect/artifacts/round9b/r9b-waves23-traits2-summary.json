@@ -1,0 +1,125 @@
+{
+  "seed": 23,
+  "training": "受控公開指派60日；入場回滿HP/精力；無手熟/眼熟灌值",
+  "trainingEventHash": "ba55686449face4f133f729ba9f22d78d52793bf583e0153916fd2da61079faf",
+  "runs": [
+    {
+      "count": 1,
+      "trait": "calm",
+      "location": "gate(two slots)",
+      "attacks": 23,
+      "rushAttacks": 0,
+      "hits": 0,
+      "hpLost": 0,
+      "counters": 1,
+      "overloadBeats": 5,
+      "overloadCounters": 0,
+      "seconds": 16.5,
+      "escaped": []
+    },
+    {
+      "count": 2,
+      "trait": "calm",
+      "location": "gate(two slots)",
+      "attacks": 22,
+      "rushAttacks": 8,
+      "hits": 0,
+      "hpLost": 0,
+      "counters": 22,
+      "overloadBeats": 33,
+      "overloadCounters": 0,
+      "seconds": 40,
+      "escaped": []
+    },
+    {
+      "count": 4,
+      "trait": "calm",
+      "location": "open",
+      "attacks": 0,
+      "rushAttacks": 0,
+      "hits": 48,
+      "hpLost": 77.52380952380949,
+      "counters": 8,
+      "overloadBeats": 90,
+      "overloadCounters": 0,
+      "seconds": 27.5,
+      "escaped": []
+    },
+    {
+      "count": 1,
+      "trait": "rash",
+      "location": "gate(two slots)",
+      "attacks": 5,
+      "rushAttacks": 0,
+      "hits": 0,
+      "hpLost": 0,
+      "counters": 1,
+      "overloadBeats": 1,
+      "overloadCounters": 0,
+      "seconds": 9.5,
+      "escaped": [
+        "foe0"
+      ]
+    },
+    {
+      "count": 2,
+      "trait": "rash",
+      "location": "gate(two slots)",
+      "attacks": 10,
+      "rushAttacks": 6,
+      "hits": 3,
+      "hpLost": 0,
+      "counters": 4,
+      "overloadBeats": 21,
+      "overloadCounters": 0,
+      "seconds": 14.5,
+      "escaped": []
+    },
+    {
+      "count": 4,
+      "trait": "rash",
+      "location": "open",
+      "attacks": 3,
+      "rushAttacks": 1,
+      "hits": 39,
+      "hpLost": 77.52380952380949,
+      "counters": 0,
+      "overloadBeats": 87,
+      "overloadCounters": 0,
+      "seconds": 22,
+      "escaped": [
+        "foe1"
+      ]
+    }
+  ],
+  "cover": {
+    "open": 2.908953747590726,
+    "cover": 0.7340350578032674,
+    "eyes": 14.7278885148171,
+    "receptionHp": 100,
+    "sameUid": true,
+    "sameHands": true
+  },
+  "pursuit": [
+    {
+      "running": false,
+      "followed": false,
+      "pursuitContactBeats": 0
+    },
+    {
+      "running": true,
+      "followed": true,
+      "pursuitContactBeats": 11
+    }
+  ],
+  "pass": false,
+  "personality": {
+    "calmAttacks": 45,
+    "rashAttacks": 18,
+    "calmRush": 8,
+    "rashRush": 7,
+    "calmHpLost": 77.52380952380949,
+    "rashHpLost": 77.52380952380949,
+    "pass": false
+  }
+}

@@ -54,6 +54,14 @@ export const MIGRATIONS = [
   { to: '3.2', note: '第七輪（#435–#440）：補焦躁並清除舊應接次數與半途出招，改由秒數逐招判定', up(o) { for (const d of o.ds || []) { d.fret ??= 0; d.raging = false; d.rageUntil = 0; d.busyUntil = 0; d.handled = []; d.ring = null; d.swing = null; d.bswing = null; } for (const m of o.mons || []) m.swing = null; if (o.band) for (const m of o.band.members || []) m.swing = null; } },
   { to: '3.3', note: '第八輪（#468）：晨課令改成持續門規作息，已給過的舊加成保留', up(o) { o.jh ??= {}; delete o.jh.morning; delete o.jh.morningOn; delete o.jh.morningDay; if (o.jh.cards) delete o.jh.cards.morning; o.choices = (o.choices || []).filter((c) => c.jh !== 'morning'); o.routine = { ...ROUTINE_DEFAULT }; } },
   { to: '3.4', note: '第九輪 9a（#442/#443/#474）：補共用手眼熟紀錄；已練武者的經歷依火候表推得，舊檔不洗招式', up(o) { for (const d of o.ds || []) ensurePractice(d, o.codex); for (const m of o.mons || []) ensurePractice(m, o.codex); for (const m of o.band?.members || []) ensurePractice(m, o.codex); } },
+  { to: '3.5', note: '第九輪 9b（#444/#445/#446/#448）：補選招、悟招與傷口記錄，保存原有武學、氣血與架勢', up(o) {
+    o.survivors ??= {}; o.drops ??= [];
+    for (const a of [...(o.ds || []), ...(o.mons || []), ...(o.band?.members || [])]) {
+      a.selection ??= { contexts: {}, habits: {}, failures: {} };
+      a.glimmer ??= { progress: {}, known: [], firstDay: null };
+      a.wounds ??= []; a.pain ??= 0; a.balanceOpenUntil ??= 0; a.downUntil ??= 0;
+    }
+  } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
 export function v150Up(o) {

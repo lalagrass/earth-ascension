@@ -1,0 +1,7800 @@
+{
+  "summary": {
+    "seed": 23,
+    "training": "受控公開指派60日；入場回滿HP/精力；無手熟/眼熟灌值",
+    "trainingEventHash": "ba55686449face4f133f729ba9f22d78d52793bf583e0153916fd2da61079faf",
+    "runs": [
+      {
+        "count": 1,
+        "trait": "normal",
+        "location": "gate(two slots)",
+        "attacks": 6,
+        "rushAttacks": 0,
+        "hits": 0,
+        "hpLost": 0,
+        "counters": 2,
+        "overloadBeats": 2,
+        "overloadCounters": 0,
+        "seconds": 10.5,
+        "escaped": [
+          "foe0"
+        ]
+      },
+      {
+        "count": 2,
+        "trait": "normal",
+        "location": "gate(two slots)",
+        "attacks": 10,
+        "rushAttacks": 4,
+        "hits": 3,
+        "hpLost": 0,
+        "counters": 5,
+        "overloadBeats": 18,
+        "overloadCounters": 0,
+        "seconds": 15.75,
+        "escaped": []
+      },
+      {
+        "count": 4,
+        "trait": "normal",
+        "location": "open",
+        "attacks": 3,
+        "rushAttacks": 0,
+        "hits": 58,
+        "hpLost": 77.52380952380949,
+        "counters": 0,
+        "overloadBeats": 101,
+        "overloadCounters": 0,
+        "seconds": 25.25,
+        "escaped": []
+      }
+    ],
+    "cover": {
+      "open": 2.908953747590726,
+      "cover": 0.7340350578032674,
+      "eyes": 14.7278885148171,
+      "receptionHp": 100,
+      "sameUid": true,
+      "sameHands": true
+    },
+    "pursuit": [
+      {
+        "running": false,
+        "followed": false,
+        "pursuitContactBeats": 0
+      },
+      {
+        "running": true,
+        "followed": true,
+        "pursuitContactBeats": 11
+      }
+    ],
+    "pass": true
+  },
+  "runs": [
+    {
+      "stats": {
+        "count": 1,
+        "trait": "normal",
+        "location": "gate(two slots)",
+        "attacks": 6,
+        "rushAttacks": 0,
+        "hits": 0,
+        "hpLost": 0,
+        "counters": 2,
+        "overloadBeats": 2,
+        "overloadCounters": 0,
+        "seconds": 10.5,
+        "escaped": [
+          "foe0"
+        ]
+      },
+      "rows": [
+        {
+          "t": 0,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0,
+          "who": "hero",
+          "L": 0.3328964613368284,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.25,
+          "who": "foe0",
+          "L": 1.2624277255796177,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.25,
+          "who": "hero",
+          "L": 1.2771010869600512,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.5,
+          "who": "foe0",
+          "L": 0.9879869156710052,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.5,
+          "who": "hero",
+          "L": 0.919958229817194,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.75,
+          "who": "hero",
+          "L": 0.32830896739336307,
+          "reaction": "dodge",
+          "counter": true,
+          "type": "defense",
+          "T": 0.7,
+          "r": 0.2039775209544326
+        },
+        {
+          "t": 0.75,
+          "who": "foe0",
+          "L": 0.7684342677441152,
+          "reaction": "dodge",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.75,
+          "who": "hero",
+          "L": 0.4364219120276839,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1,
+          "who": "foe0",
+          "L": 0.7654279858032701,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1,
+          "who": "foe0",
+          "L": 0.4283101792560954,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0.2109432379362559,
+          "r": 0.7233686926192382
+        },
+        {
+          "t": 1,
+          "who": "hero",
+          "L": 0.2741500269832704,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.25,
+          "who": "hero",
+          "L": 0.23900258762644086,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.5,
+          "who": "hero",
+          "L": 0.23051265076605704,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.75,
+          "who": "hero",
+          "L": 0.23051265076605704,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2,
+          "who": "foe0",
+          "L": 1.2205674348023516,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2,
+          "who": "hero",
+          "L": 0.9645877586564418,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.25,
+          "who": "foe0",
+          "L": 0.9685641146468986,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.25,
+          "who": "hero",
+          "L": 0.7172746763707091,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.5,
+          "who": "foe0",
+          "L": 0.7165607944914457,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.5,
+          "who": "hero",
+          "L": 0.46996159408497645,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.75,
+          "who": "hero",
+          "L": 0.23051265076605704,
+          "reaction": "dodge",
+          "counter": true,
+          "type": "defense",
+          "T": 1.0108644382635732,
+          "r": 0.30543568921781644
+        },
+        {
+          "t": 2.75,
+          "who": "foe0",
+          "L": 0.7056092964352682,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.75,
+          "who": "foe0",
+          "L": 1.0965554940873394,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 2.75,
+          "who": "hero",
+          "L": 0.596431307223336,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3,
+          "who": "hero",
+          "L": 0.1816852496871348,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.25,
+          "who": "hero",
+          "L": 0.12770751900491115,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.5,
+          "who": "hero",
+          "L": 0.12770751900491115,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.75,
+          "who": "hero",
+          "L": 0.12770751900491115,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4,
+          "who": "hero",
+          "L": 0.16549894021049652,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.25,
+          "who": "hero",
+          "L": 0.23900258762644086,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.5,
+          "who": "foe0",
+          "L": 0.9705861927060474,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.5,
+          "who": "hero",
+          "L": 0.6974431778650669,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.75,
+          "who": "foe0",
+          "L": 2.0239790543812033,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.75,
+          "who": "hero",
+          "L": 0.44985010417961685,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5,
+          "who": "foe0",
+          "L": 1.677341128414758,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5,
+          "who": "foe0",
+          "L": 1.1652033767234777,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0.7212136389951744,
+          "r": 1.685186163860955
+        },
+        {
+          "t": 5,
+          "who": "hero",
+          "L": 0.23076624489978162,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.25,
+          "who": "hero",
+          "L": 0.15798476131239308,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.5,
+          "who": "hero",
+          "L": 0.19022654933533045,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.75,
+          "who": "foe0",
+          "L": 1.3531298211611336,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.75,
+          "who": "hero",
+          "L": 1.0437598655073725,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6,
+          "who": "foe0",
+          "L": 1.1114994959537883,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6,
+          "who": "hero",
+          "L": 0.7873496090971162,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.25,
+          "who": "foe0",
+          "L": 0.869869170746443,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.25,
+          "who": "hero",
+          "L": 0.5309393526868598,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.5,
+          "who": "foe0",
+          "L": 0.6765649105805667,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.5,
+          "who": "hero",
+          "L": 0.2650711030484067,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.75,
+          "who": "foe0",
+          "L": 1.410851728816095,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.75,
+          "who": "foe0",
+          "L": 0.7883435848738714,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0.08463834593390818,
+          "r": 0.384471197676265
+        },
+        {
+          "t": 6.75,
+          "who": "hero",
+          "L": 0.23076624489978162,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7,
+          "who": "hero",
+          "L": 0.13508841909320568,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.25,
+          "who": "hero",
+          "L": 0.15798476131239308,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.5,
+          "who": "hero",
+          "L": 0.19022654933533045,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.75,
+          "who": "hero",
+          "L": 0.23900258762644086,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8,
+          "who": "foe0",
+          "L": 0.950293243280522,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8,
+          "who": "hero",
+          "L": 0.9539524135949197,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.25,
+          "who": "foe0",
+          "L": 0.7391169669959622,
+          "reaction": "flee",
+          "counter": false,
+          "type": "beat",
+          "tactic": "flee"
+        },
+        {
+          "t": 8.25,
+          "who": "hero",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.5,
+          "who": "foe0",
+          "L": 0.7391169669959622,
+          "reaction": "flee",
+          "counter": false,
+          "type": "beat",
+          "tactic": "flee"
+        },
+        {
+          "t": 8.5,
+          "who": "hero",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.75,
+          "who": "foe0",
+          "L": 0.7391169669959622,
+          "reaction": "flee",
+          "counter": false,
+          "type": "beat",
+          "tactic": "flee"
+        },
+        {
+          "t": 8.75,
+          "who": "foe0",
+          "L": 0.3755226644214703,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0.49707608031926664,
+          "r": 0.5555728235919319
+        },
+        {
+          "t": 8.75,
+          "who": "hero",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "flee",
+          "counter": false,
+          "type": "beat",
+          "tactic": "flee"
+        },
+        {
+          "t": 9,
+          "who": "hero",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "flee",
+          "counter": false,
+          "type": "beat",
+          "tactic": "flee"
+        },
+        {
+          "t": 9.25,
+          "who": "hero",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "flee",
+          "counter": false,
+          "type": "beat",
+          "tactic": "flee"
+        },
+        {
+          "t": 9.5,
+          "who": "hero",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "flee",
+          "counter": false,
+          "type": "beat",
+          "tactic": "flee"
+        },
+        {
+          "t": 9.75,
+          "who": "hero",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10,
+          "who": "foe0",
+          "L": 0.9053976922223387,
+          "reaction": "flee",
+          "counter": false,
+          "type": "beat",
+          "tactic": "flee"
+        },
+        {
+          "t": 10,
+          "who": "hero",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.25,
+          "who": "foe0",
+          "L": 0.7037948378401807,
+          "reaction": "flee",
+          "counter": false,
+          "type": "beat",
+          "tactic": "flee"
+        }
+      ]
+    },
+    {
+      "stats": {
+        "count": 2,
+        "trait": "normal",
+        "location": "gate(two slots)",
+        "attacks": 10,
+        "rushAttacks": 4,
+        "hits": 3,
+        "hpLost": 0,
+        "counters": 5,
+        "overloadBeats": 18,
+        "overloadCounters": 0,
+        "seconds": 15.75,
+        "escaped": []
+      },
+      "rows": [
+        {
+          "t": 0,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0,
+          "who": "hero",
+          "L": 0.7212756662297948,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.25,
+          "who": "foe0",
+          "L": 1.594534459445649,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.25,
+          "who": "hero",
+          "L": 2.0121176055170125,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.5,
+          "who": "foe0",
+          "L": 1.2478965334792036,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.5,
+          "who": "hero",
+          "L": 1.297831891231298,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.75,
+          "who": "hero",
+          "L": 0.5270860637833116,
+          "reaction": "dodge",
+          "counter": true,
+          "type": "defense",
+          "T": 0.7,
+          "r": 0.2039775209544326
+        },
+        {
+          "t": 0.75,
+          "who": "foe0",
+          "L": 0.9705861927060474,
+          "reaction": "dodge",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.75,
+          "who": "foe0",
+          "L": 0.6716021236135574,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0.021213638995174477,
+          "r": 0.6171217731936507
+        },
+        {
+          "t": 0.75,
+          "who": "hero",
+          "L": 1.122212799919041,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1,
+          "who": "hero",
+          "L": 0.468330894674335,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0.0029634197053275413,
+          "r": 0.20219211334724468
+        },
+        {
+          "t": 1,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1,
+          "who": "hero",
+          "L": 1.2159397537163326,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.25,
+          "who": "hero",
+          "L": 0.9468429573664332,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.5,
+          "who": "hero",
+          "L": 0.7767584097859328,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.75,
+          "who": "foe1",
+          "L": 0.7684342677441152,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.75,
+          "who": "hero",
+          "L": 2.83916486087798,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2,
+          "who": "foe1",
+          "L": 1.2208730586867427,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2,
+          "who": "hero",
+          "L": 2.044937990860967,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.25,
+          "who": "foe1",
+          "L": 0.9464322487781299,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.25,
+          "who": "hero",
+          "L": 1.2507111208439543,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.5,
+          "who": "hero",
+          "L": 0.49128785536726205,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0.0012028192529858206,
+          "r": 0.2261551409978656
+        },
+        {
+          "t": 2.5,
+          "who": "foe1",
+          "L": 0.7684342677441152,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.5,
+          "who": "foe1",
+          "L": 0.429992403032675,
+          "reaction": "dodge",
+          "counter": false,
+          "type": "defense",
+          "T": 0.9109432379362559,
+          "r": 0.4623402276549149
+        },
+        {
+          "t": 2.5,
+          "who": "hero",
+          "L": 1.258809424520434,
+          "reaction": "dodge",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 2.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.75,
+          "who": "hero",
+          "L": 0.8080814894765247,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 3,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3,
+          "who": "hero",
+          "L": 0.6796636085626911,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 3.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.25,
+          "who": "hero",
+          "L": 0.5825688073394495,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 3.5,
+          "who": "hero",
+          "L": 0.49391703230953327,
+          "reaction": "parry",
+          "counter": false,
+          "type": "defense",
+          "T": 0.6499999999999999,
+          "r": 0.21671890528981233
+        },
+        {
+          "t": 3.5,
+          "who": "foe0",
+          "L": 3.5,
+          "reaction": "cover",
+          "counter": false,
+          "type": "beat",
+          "tactic": "cover"
+        },
+        {
+          "t": 3.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.5,
+          "who": "foe0",
+          "L": 0.736842105263158,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0.14391220133298177,
+          "r": 0.8032444198708701
+        },
+        {
+          "t": 3.5,
+          "who": "hero",
+          "L": 1.4983045239689887,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 3.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "cover",
+          "counter": false,
+          "type": "beat",
+          "tactic": "cover"
+        },
+        {
+          "t": 3.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.75,
+          "who": "hero",
+          "L": 0.8584520487865601,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 4,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "cover",
+          "counter": false,
+          "type": "beat",
+          "tactic": "cover"
+        },
+        {
+          "t": 4,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4,
+          "who": "hero",
+          "L": 0.5210256529131251,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 4.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "cover",
+          "counter": false,
+          "type": "beat",
+          "tactic": "cover"
+        },
+        {
+          "t": 4.25,
+          "who": "hero",
+          "L": 0.43238428036894627,
+          "reaction": "parry",
+          "counter": false,
+          "type": "defense",
+          "T": 0.33328109471018763,
+          "r": 0.32783653779103006
+        },
+        {
+          "t": 4.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "parry",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.25,
+          "who": "hero",
+          "L": 1.5548557917087344,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 4.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "cover",
+          "counter": false,
+          "type": "beat",
+          "tactic": "cover"
+        },
+        {
+          "t": 4.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.5,
+          "who": "hero",
+          "L": 1.2380817163382791,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 4.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "cover",
+          "counter": false,
+          "type": "beat",
+          "tactic": "cover"
+        },
+        {
+          "t": 4.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.75,
+          "who": "hero",
+          "L": 0.6502578952001752,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5,
+          "who": "hero",
+          "L": 0.5429199386809946,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 5.25,
+          "who": "foe0",
+          "L": 8.320171785466304,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.25,
+          "who": "foe0",
+          "L": 1.7516151127297483,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.7821968613046624
+        },
+        {
+          "t": 5.25,
+          "who": "hero",
+          "L": 0.5429199386809946,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 5.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.5,
+          "who": "hero",
+          "L": 0.32498012292318534,
+          "reaction": "dodge",
+          "counter": true,
+          "type": "defense",
+          "T": 0.6343095193982118,
+          "r": 0.21113277814388123
+        },
+        {
+          "t": 5.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "dodge",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.5,
+          "who": "hero",
+          "L": 0.7058548468211077,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.75,
+          "who": "hero",
+          "L": 0.42721663160912515,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6,
+          "who": "hero",
+          "L": 0.5230685562762114,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.25,
+          "who": "foe0",
+          "L": 1.1114994959537883,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.25,
+          "who": "hero",
+          "L": 2.4552238687073347,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.5,
+          "who": "foe0",
+          "L": 0.869869170746443,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.5,
+          "who": "hero",
+          "L": 1.9197647005295662,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.75,
+          "who": "foe0",
+          "L": 0.6765649105805667,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.75,
+          "who": "hero",
+          "L": 0.939313172924414,
+          "reaction": "dodge",
+          "counter": true,
+          "type": "defense",
+          "T": 0.6596330473439576,
+          "r": 0.2181354761322443
+        },
+        {
+          "t": 6.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.75,
+          "who": "hero",
+          "L": 0.965905029322322,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7,
+          "who": "foe0",
+          "L": 1.4475695511723359,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7,
+          "who": "hero",
+          "L": 0.5713143729464147,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.25,
+          "who": "foe0",
+          "L": 1.2059392259649908,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.25,
+          "who": "foe0",
+          "L": 0.67384434035108,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0.3346383459339082,
+          "r": 0.4001188018903732
+        },
+        {
+          "t": 7.25,
+          "who": "hero",
+          "L": 0.6129364482261035,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.5,
+          "who": "hero",
+          "L": 0.5450211053796155,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.75,
+          "who": "hero",
+          "L": 0.5754529491400491,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8,
+          "who": "hero",
+          "L": 0.6208901245973627,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.25,
+          "who": "hero",
+          "L": 0.5822591013695385,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.5,
+          "who": "foe0",
+          "L": 0.9683517505216058,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.5,
+          "who": "hero",
+          "L": 2.2830169436447743,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.75,
+          "who": "foe0",
+          "L": 0.7531624726279162,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.75,
+          "who": "hero",
+          "L": 1.6356340024332372,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9,
+          "who": "foe0",
+          "L": 1.611456706387982,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9,
+          "who": "hero",
+          "L": 0.7482697173914719,
+          "reaction": "dodge",
+          "counter": true,
+          "type": "defense",
+          "T": 0.6591477315267191,
+          "r": 0.25034028560464705
+        },
+        {
+          "t": 9,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9,
+          "who": "hero",
+          "L": 0.9820392149287192,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.25,
+          "who": "foe0",
+          "L": 1.3424701090208693,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.25,
+          "who": "foe0",
+          "L": 0.7144446183184499,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0.4794143367998376,
+          "r": 2.299706275778367
+        },
+        {
+          "t": 9.25,
+          "who": "hero",
+          "L": 0.5897830197714725,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.5,
+          "who": "hero",
+          "L": 0.3911535211280866,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.75,
+          "who": "hero",
+          "L": 0.3911535211280866,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10,
+          "who": "hero",
+          "L": 0.3911535211280866,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.25,
+          "who": "hero",
+          "L": 0.3911535211280866,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.5,
+          "who": "foe1",
+          "L": 0.7391169669959622,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.5,
+          "who": "hero",
+          "L": 1.4117438761221757,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.75,
+          "who": "foe1",
+          "L": 1.1702860086336702,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.75,
+          "who": "hero",
+          "L": 1.0320065884719742,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11,
+          "who": "foe1",
+          "L": 0.9063156632779692,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11,
+          "who": "hero",
+          "L": 0.6522693008217729,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.25,
+          "who": "hero",
+          "L": 0.2005830382384643,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.2258637483471956
+        },
+        {
+          "t": 11.25,
+          "who": "foe1",
+          "L": 0.7391169669959622,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.25,
+          "who": "foe1",
+          "L": 0.3755226644214703,
+          "reaction": "dodge",
+          "counter": false,
+          "type": "defense",
+          "T": 0.7470760803192666,
+          "r": 0.4976277947930987
+        },
+        {
+          "t": 11.25,
+          "who": "hero",
+          "L": 0.532105442591736,
+          "reaction": "dodge",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.5,
+          "who": "hero",
+          "L": 0.3937690463300136,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.75,
+          "who": "hero",
+          "L": 0.3911535211280866,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12,
+          "who": "hero",
+          "L": 0.3529207560170864,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.25,
+          "who": "hero",
+          "L": 0.3529207560170864,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.5,
+          "who": "foe1",
+          "L": 0.8017549788061028,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.5,
+          "who": "hero",
+          "L": 1.4116503409961338,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.75,
+          "who": "hero",
+          "L": 0.5864893234787149,
+          "reaction": "dodge",
+          "counter": true,
+          "type": "defense",
+          "T": 0.6583498859092549,
+          "r": 0.24191898207076942
+        },
+        {
+          "t": 12.75,
+          "who": "foe1",
+          "L": 0.6345454105662994,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.75,
+          "who": "hero",
+          "L": 0.6206567541906239,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13,
+          "who": "foe1",
+          "L": 1.8938340086078784,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13,
+          "who": "hero",
+          "L": 0.5085011910608208,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13.25,
+          "who": "foe1",
+          "L": 1.6298464987974421,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13.25,
+          "who": "foe1",
+          "L": 0.7984103009271923,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 13.25,
+          "who": "hero",
+          "L": 0.3911535211280866,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 13.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13.5,
+          "who": "hero",
+          "L": 0.3911535211280866,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 13.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13.75,
+          "who": "hero",
+          "L": 0.3911535211280866,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 14,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14,
+          "who": "hero",
+          "L": 0.3911535211280866,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 14.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14.25,
+          "who": "hero",
+          "L": 0.29282109843113946,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 14.5,
+          "who": "foe1",
+          "L": 5.790339338569468,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14.5,
+          "who": "foe1",
+          "L": 1.219018808119888,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.5431471244905357
+        },
+        {
+          "t": 14.5,
+          "who": "hero",
+          "L": 0.29282109843113946,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 14.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14.75,
+          "who": "hero",
+          "L": 0.12512761799052963,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 15,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 15,
+          "who": "hero",
+          "L": 0.1445358461622309,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 15.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 15.25,
+          "who": "hero",
+          "L": 0.17107009580284785,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 15.5,
+          "who": "foe1",
+          "L": 5.312470082428065,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 15.5,
+          "who": "foe1",
+          "L": 2.1710463331427508,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 15.5,
+          "who": "hero",
+          "L": 0.20953751287076516,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        }
+      ]
+    },
+    {
+      "stats": {
+        "count": 4,
+        "trait": "normal",
+        "location": "open",
+        "attacks": 3,
+        "rushAttacks": 0,
+        "hits": 58,
+        "hpLost": 77.52380952380949,
+        "counters": 0,
+        "overloadBeats": 101,
+        "overloadCounters": 0,
+        "seconds": 25.25,
+        "escaped": []
+      },
+      "rows": [
+        {
+          "t": 0,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0,
+          "who": "hero",
+          "L": 1.2917277154092948,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.25,
+          "who": "foe0",
+          "L": 1.1114994959537878,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.25,
+          "who": "hero",
+          "L": 5.398865754426107,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.5,
+          "who": "foe0",
+          "L": 0.8698691707464428,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.5,
+          "who": "hero",
+          "L": 4.072579318087583,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.75,
+          "who": "hero",
+          "L": 2.4381584359932917,
+          "reaction": "dodge",
+          "counter": false,
+          "type": "defense",
+          "T": 0.7,
+          "r": 0.2039775209544326
+        },
+        {
+          "t": 0.75,
+          "who": "foe0",
+          "L": 0.6765649105805667,
+          "reaction": "dodge",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 0.75,
+          "who": "hero",
+          "L": 2.4773605734048663,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1,
+          "who": "foe0",
+          "L": 0.6765649105805667,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1,
+          "who": "hero",
+          "L": 1.1931939982375224,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.30828518831748497
+        },
+        {
+          "t": 1,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1,
+          "who": "hero",
+          "L": 2.421994416526601,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.2467235233372328
+        },
+        {
+          "t": 1,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1,
+          "who": "hero",
+          "L": 3.5144845263818056,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.21258877945651453
+        },
+        {
+          "t": 1,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1,
+          "who": "hero",
+          "L": 4.533046360868232,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.25,
+          "who": "foe0",
+          "L": 0.6765649105805667,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.25,
+          "who": "foe0",
+          "L": 0.7555466595477386,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0.3346383459339084,
+          "r": 0.6988212198166496
+        },
+        {
+          "t": 1.25,
+          "who": "hero",
+          "L": 4.1885225594591375,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 1.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.5,
+          "who": "hero",
+          "L": 3.9185785637627997,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 1.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 1.75,
+          "who": "hero",
+          "L": 2.794814508738611,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 2,
+          "who": "hero",
+          "L": 1.3337385633468835,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.35765572726490136
+        },
+        {
+          "t": 2,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2,
+          "who": "hero",
+          "L": 3.03067184868893,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 2.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.25,
+          "who": "hero",
+          "L": 1.93617058583092,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 2.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.5,
+          "who": "hero",
+          "L": 1.0563483674399543,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0.09999999999999964,
+          "r": 0.20872505570646516
+        },
+        {
+          "t": 2.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.5,
+          "who": "hero",
+          "L": 2.4507677629933275,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.22724874119024008
+        },
+        {
+          "t": 2.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.5,
+          "who": "hero",
+          "L": 3.815479650451364,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 2.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.75,
+          "who": "hero",
+          "L": 2.7162990559072506,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.23557997683521634
+        },
+        {
+          "t": 2.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 2.75,
+          "who": "hero",
+          "L": 6.35169941223036,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 3,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3,
+          "who": "hero",
+          "L": 6.554377788400523,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 3.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.25,
+          "who": "hero",
+          "L": 6.0504712179446996,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 3.5,
+          "who": "hero",
+          "L": 4.5138395762178645,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 3.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.5,
+          "who": "hero",
+          "L": 4.689235401191584,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 3.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.75,
+          "who": "hero",
+          "L": 3.463531631668805,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 3.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 3.75,
+          "who": "hero",
+          "L": 3.512052929725097,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 4,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4,
+          "who": "hero",
+          "L": 4.131867988582641,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 4,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4,
+          "who": "hero",
+          "L": 3.9986160710193035,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 4.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.25,
+          "who": "hero",
+          "L": 4.169076457729629,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 4.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.25,
+          "who": "hero",
+          "L": 3.9761309157361433,
+          "reaction": "flee",
+          "counter": false,
+          "type": "beat",
+          "tactic": "flee"
+        },
+        {
+          "t": 4.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.5,
+          "who": "hero",
+          "L": 3.277210879293344,
+          "reaction": "flee",
+          "counter": false,
+          "type": "beat",
+          "tactic": "flee"
+        },
+        {
+          "t": 4.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 4.75,
+          "who": "hero",
+          "L": 2.1021627064386323,
+          "reaction": "flee",
+          "counter": false,
+          "type": "beat",
+          "tactic": "flee"
+        },
+        {
+          "t": 5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5,
+          "who": "hero",
+          "L": 1.0456532846457895,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.25,
+          "who": "foe3",
+          "L": 0.7391169669959622,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.25,
+          "who": "hero",
+          "L": 4.017688731310137,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.5,
+          "who": "hero",
+          "L": 2.6612306023695935,
+          "reaction": "dodge",
+          "counter": false,
+          "type": "defense",
+          "T": 0.3340598598493538,
+          "r": 0.2280934076366757
+        },
+        {
+          "t": 5.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "dodge",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.5,
+          "who": "foe3",
+          "L": 1.3198517267785037,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.5,
+          "who": "hero",
+          "L": 2.8682701999245515,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.75,
+          "who": "foe3",
+          "L": 1.0558813814228027,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 5.75,
+          "who": "hero",
+          "L": 2.282627217948477,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6,
+          "who": "foe3",
+          "L": 0.7919110360671021,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6,
+          "who": "foe3",
+          "L": 0.40234571188014645,
+          "reaction": "dodge",
+          "counter": false,
+          "type": "defense",
+          "T": 0.9470760803192659,
+          "r": 0.5513494969184969
+        },
+        {
+          "t": 6,
+          "who": "hero",
+          "L": 1.2579689329799273,
+          "reaction": "dodge",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.25,
+          "who": "hero",
+          "L": 1.1112593954364434,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0.10292391968073411,
+          "r": 0.3148930420394269
+        },
+        {
+          "t": 6.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.25,
+          "who": "hero",
+          "L": 8.341940837425783,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.5,
+          "who": "hero",
+          "L": 7.641342791026814,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.75,
+          "who": "hero",
+          "L": 6.141157422314659,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0.15000000000000036,
+          "r": 0.20629148507136758
+        },
+        {
+          "t": 6.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 6.75,
+          "who": "hero",
+          "L": 8.708667235882405,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7,
+          "who": "hero",
+          "L": 6.539152721321285,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 7,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7,
+          "who": "hero",
+          "L": 7.16373737877278,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 7,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7,
+          "who": "hero",
+          "L": 7.076715996425364,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.25,
+          "who": "hero",
+          "L": 7.247817414047717,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.5,
+          "who": "hero",
+          "L": 6.263635665423764,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.75,
+          "who": "hero",
+          "L": 4.675705618312767,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 7.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 7.75,
+          "who": "hero",
+          "L": 4.746503579390015,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8,
+          "who": "hero",
+          "L": 3.5140674407211208,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.25,
+          "who": "hero",
+          "L": 2.336601209102102,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.5,
+          "who": "hero",
+          "L": 1.1675877532295356,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.2060657159562408
+        },
+        {
+          "t": 8.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.5,
+          "who": "hero",
+          "L": 8.071144857485795,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.379469312967743
+        },
+        {
+          "t": 8.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.5,
+          "who": "hero",
+          "L": 8.329480652026405,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.75,
+          "who": "hero",
+          "L": 7.369787756815146,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 8.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 8.75,
+          "who": "hero",
+          "L": 7.465036324942459,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9,
+          "who": "hero",
+          "L": 6.344919977844965,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 9,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9,
+          "who": "hero",
+          "L": 6.435222713128397,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.25,
+          "who": "hero",
+          "L": 5.156852782696723,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.5,
+          "who": "hero",
+          "L": 3.673431325314441,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 9.75,
+          "who": "hero",
+          "L": 2.327895588202355,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10,
+          "who": "hero",
+          "L": 2.7887054401458364,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 10,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10,
+          "who": "hero",
+          "L": 2.835049971314995,
+          "reaction": "flee",
+          "counter": false,
+          "type": "beat",
+          "tactic": "flee"
+        },
+        {
+          "t": 10.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.25,
+          "who": "hero",
+          "L": 1.3857962260701422,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.5,
+          "who": "foe2",
+          "L": 0.5770402683777361,
+          "reaction": "read",
+          "counter": true,
+          "type": "defense",
+          "T": 1.2130869167379723,
+          "r": 0.5472187766579468
+        },
+        {
+          "t": 10.5,
+          "who": "hero",
+          "L": 1.1860462769677282,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 10.75,
+          "who": "hero",
+          "L": 9.122649964426499,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11,
+          "who": "hero",
+          "L": 7.546577695623252,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.25,
+          "who": "hero",
+          "L": 5.168957399932513,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.5,
+          "who": "hero",
+          "L": 3.7831757599975306,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 11.75,
+          "who": "hero",
+          "L": 2.194061794350736,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12,
+          "who": "hero",
+          "L": 7.895221358423777,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 12,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12,
+          "who": "hero",
+          "L": 8.20323024367036,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.25,
+          "who": "hero",
+          "L": 6.972736001609548,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.2611342399400299
+        },
+        {
+          "t": 12.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.25,
+          "who": "hero",
+          "L": 7.860184925771513,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.21736486509473835
+        },
+        {
+          "t": 12.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.25,
+          "who": "hero",
+          "L": 8.085947900574993,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.5,
+          "who": "hero",
+          "L": 8.308570080089677,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.75,
+          "who": "hero",
+          "L": 9.542014100479086,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 12.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 12.75,
+          "who": "hero",
+          "L": 9.50929592532949,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13,
+          "who": "hero",
+          "L": 8.494620406086742,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13.25,
+          "who": "hero",
+          "L": 7.334406205681569,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13.5,
+          "who": "hero",
+          "L": 5.223163219842019,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 13.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13.5,
+          "who": "hero",
+          "L": 4.387871669375581,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 13.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13.5,
+          "who": "hero",
+          "L": 4.453084408180532,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13.75,
+          "who": "hero",
+          "L": 4.803620263653967,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 13.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 13.75,
+          "who": "hero",
+          "L": 4.848755773020026,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14,
+          "who": "hero",
+          "L": 3.999469182916975,
+          "reaction": "hold",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14.25,
+          "who": "hero",
+          "L": 4.05047245230088,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 14.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14.25,
+          "who": "hero",
+          "L": 4.1498103659605245,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 14.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14.5,
+          "who": "hero",
+          "L": 3.1593209612984956,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 14.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 14.75,
+          "who": "hero",
+          "L": 1.9827925901105092,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 15,
+          "who": "hero",
+          "L": 1.1156928380936204,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0.10000000000000142,
+          "r": 0.3264967910571537
+        },
+        {
+          "t": 15,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 15,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 15,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 15,
+          "who": "hero",
+          "L": 7.655359280195485,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 15,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 15,
+          "who": "hero",
+          "L": 8.047524610630532,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 15.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 15.25,
+          "who": "hero",
+          "L": 8.69158850590671,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 15.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 15.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 15.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 15.25,
+          "who": "hero",
+          "L": 9.01886205749243,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 15.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 15.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 15.5,
+          "who": "hero",
+          "L": 8.103245125404703,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 15.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 15.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 15.5,
+          "who": "hero",
+          "L": 8.584692498195663,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 15.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 15.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 15.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 15.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 15.75,
+          "who": "hero",
+          "L": 6.875370991262069,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 16,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 16,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 16,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 16,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 16,
+          "who": "hero",
+          "L": 5.5379257746887225,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 16.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 16.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 16.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 16.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 16.25,
+          "who": "hero",
+          "L": 3.8142129995117324,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 16.5,
+          "who": "hero",
+          "L": 2.9049999337086145,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 16.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 16.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 16.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 16.5,
+          "who": "hero",
+          "L": 4.1908034706610895,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 16.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 16.5,
+          "who": "hero",
+          "L": 4.289667477760329,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 16.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 16.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 16.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 16.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 16.75,
+          "who": "hero",
+          "L": 3.539374399842226,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 17,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 17,
+          "who": "hero",
+          "L": 2.3977133402554864,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.21870699107740496
+        },
+        {
+          "t": 17,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 17,
+          "who": "hero",
+          "L": 8.536058657068992,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.2081504407584126
+        },
+        {
+          "t": 17,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 17,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 17,
+          "who": "hero",
+          "L": 7.84990217735084,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 17.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 17.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 17.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 17.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 17.25,
+          "who": "hero",
+          "L": 7.653905348121414,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 17.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 17.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 17.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 17.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 17.5,
+          "who": "hero",
+          "L": 6.504029872530767,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 17.75,
+          "who": "hero",
+          "L": 4.635202343339465,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 17.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 17.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 17.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 17.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 17.75,
+          "who": "hero",
+          "L": 4.740084563030106,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 18,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 18,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 18,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 18,
+          "who": "hero",
+          "L": 8.21192265784114,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 18,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 18,
+          "who": "hero",
+          "L": 8.546977325821207,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 18.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 18.25,
+          "who": "hero",
+          "L": 7.893000477850517,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 18.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 18.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 18.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 18.25,
+          "who": "hero",
+          "L": 7.967429521548963,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 18.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 18.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 18.5,
+          "who": "hero",
+          "L": 8.712215824602623,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 18.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 18.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 18.5,
+          "who": "hero",
+          "L": 9.319652809301243,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 18.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 18.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 18.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 18.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 18.75,
+          "who": "hero",
+          "L": 8.57692192709319,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 19,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 19,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 19,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 19,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 19,
+          "who": "hero",
+          "L": 7.200871986664252,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 19.25,
+          "who": "hero",
+          "L": 5.10689527876497,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.22438266072133123
+        },
+        {
+          "t": 19.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 19.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 19.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 19.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 19.25,
+          "who": "hero",
+          "L": 4.947753725077042,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 19.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 19.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 19.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 19.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 19.5,
+          "who": "hero",
+          "L": 3.8208432512982395,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 19.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 19.75,
+          "who": "hero",
+          "L": 2.1695824201983935,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.3495688087231432
+        },
+        {
+          "t": 19.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 19.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 19.75,
+          "who": "hero",
+          "L": 2.7112428748642605,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.22264655940385855
+        },
+        {
+          "t": 19.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 19.75,
+          "who": "hero",
+          "L": 8.176275799265388,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 20,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 20,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 20,
+          "who": "hero",
+          "L": 7.017248100856685,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 20,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 20,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 20,
+          "who": "hero",
+          "L": 7.136517568985999,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 20.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 20.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 20.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 20.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 20.25,
+          "who": "hero",
+          "L": 6.39442552759834,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 20.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 20.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 20.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 20.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 20.5,
+          "who": "hero",
+          "L": 5.299580827422273,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 20.75,
+          "who": "hero",
+          "L": 8.8406979914217,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 20.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 20.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 20.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 20.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 20.75,
+          "who": "hero",
+          "L": 9.179804031229429,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 21,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 21,
+          "who": "hero",
+          "L": 7.492652147911586,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 21,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 21,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 21,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 21,
+          "who": "hero",
+          "L": 7.567065757145762,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 21.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 21.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 21.25,
+          "who": "hero",
+          "L": 6.1237124217387615,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 21.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 21.25,
+          "who": "hero",
+          "L": 8.153140984716885,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 21.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 21.25,
+          "who": "hero",
+          "L": 8.48819230113705,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 21.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 21.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 21.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 21.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 21.5,
+          "who": "hero",
+          "L": 8.460466962703126,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 21.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 21.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 21.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 21.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 21.75,
+          "who": "hero",
+          "L": 7.202122190904992,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 22,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 22,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 22,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 22,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 22,
+          "who": "hero",
+          "L": 5.352817150485755,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 22.25,
+          "who": "hero",
+          "L": 3.4989484259393775,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.24430771818053407
+        },
+        {
+          "t": 22.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 22.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 22.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 22.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 22.25,
+          "who": "hero",
+          "L": 3.5565740170075837,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 22.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 22.5,
+          "who": "hero",
+          "L": 2.0942580644082205,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.23512389738397782
+        },
+        {
+          "t": 22.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 22.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 22.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 22.5,
+          "who": "hero",
+          "L": 3.3190422701505953,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 22.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 22.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 22.75,
+          "who": "hero",
+          "L": 2.1545798987464,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.2041674589942478
+        },
+        {
+          "t": 22.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 22.75,
+          "who": "hero",
+          "L": 7.698344961930483,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 22.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 22.75,
+          "who": "hero",
+          "L": 7.877832660194771,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 23,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 23,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 23,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 23,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 23,
+          "who": "hero",
+          "L": 7.833750573115907,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 23.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 23.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 23.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 23.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 23.25,
+          "who": "hero",
+          "L": 6.8844765464402915,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 23.5,
+          "who": "hero",
+          "L": 4.864546678867301,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 23.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 23.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 23.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 23.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 23.5,
+          "who": "hero",
+          "L": 4.706156426016207,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 23.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 23.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 23.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 23.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 23.75,
+          "who": "hero",
+          "L": 3.6444091180137095,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 24,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 24,
+          "who": "hero",
+          "L": 8.467315688245026,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 24,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 24,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 24,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 24,
+          "who": "hero",
+          "L": 8.78131752695679,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 24.25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 24.25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 24.25,
+          "who": "hero",
+          "L": 7.039580475421352,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 24.25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 24.25,
+          "who": "hero",
+          "L": 7.603814284611186,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": null,
+          "r": null
+        },
+        {
+          "t": 24.25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 24.25,
+          "who": "hero",
+          "L": 7.938865601031351,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 24.5,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 24.5,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 24.5,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 24.5,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 24.5,
+          "who": "hero",
+          "L": 8.130198498999174,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 24.75,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 24.75,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 24.75,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 24.75,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "approach",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 24.75,
+          "who": "hero",
+          "L": 6.622319525668173,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        },
+        {
+          "t": 25,
+          "who": "hero",
+          "L": 4.92597042910169,
+          "reaction": "hit",
+          "counter": false,
+          "type": "defense",
+          "T": 0,
+          "r": 0.20635008916493844
+        },
+        {
+          "t": 25,
+          "who": "foe0",
+          "L": 0,
+          "reaction": "hit",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 25,
+          "who": "foe1",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 25,
+          "who": "foe2",
+          "L": 0,
+          "reaction": "idle",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 25,
+          "who": "foe3",
+          "L": 0,
+          "reaction": "wind",
+          "counter": false,
+          "type": "beat",
+          "tactic": "hold"
+        },
+        {
+          "t": 25,
+          "who": "hero",
+          "L": 8.4174924080862,
+          "reaction": "press",
+          "counter": false,
+          "type": "beat",
+          "tactic": "press"
+        }
+      ]
+    }
+  ]
+}

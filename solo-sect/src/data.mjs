@@ -1,3 +1,5 @@
+import {completeContactMove} from './contact.mjs';
+import {TECHNIQUE_MOVES} from './technique-data.mjs';
 import { BODY_MOVES } from './starter-combat.mjs';
 import TREES from './destiny-trees.json' with { type: 'json' };
 import { COMBAT_MOVE_SETS } from './combat-pose-sets.mjs';
@@ -196,6 +198,7 @@ export const ACTIVITIES = {
 // 武學：熟練門檻解鎖；範圍/冷卻/傷害由 palm 技能放大
 export const MOVES = [
   ...BODY_MOVES,
+  ...TECHNIQUE_MOVES,
   { id: 'fist', skill: 'palm', name: '基礎拳', req: 0, range: 34, cd: 1.0, dmg: 4, aoe: 0, color: '#8a6a4a' },
   { id: 'push', skill: 'palm', name: '推山掌', req: 25, range: 60, cd: 1.6, dmg: 8, aoe: 0, color: '#b0482e' },
   { id: 'wave', skill: 'palm', name: '迴風掌', req: 60, range: 80, cd: 3.0, dmg: 7, aoe: 70, color: '#3d6b8a' },
@@ -344,7 +347,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '3.4'; /* 第九輪 9a：白身起手、共用手眼熟與唯讀成長播放 */
+export const RULES_VERSION = '3.5'; /* 第九輪 9b：情境選招、失手悟招、負荷士氣與分層受力 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -759,7 +762,7 @@ A13('bagua', '五郎八卦棍', 'leg', 2, ['剛'], [['bg1', '五郎八卦棍', 1
 A13('hama', '蛤蟆功', 'palm', 4, ['剛', '蓄'], [['hm1', '蛤蟆功', 2.2, 40, 60, '#6a8a3a']], { signature: 'huoyunxieshen', mode: 'da', qiScale: 0.08, isPublic: false, cats: { neigong: 1 }});
 // 每門武學都有動作型別；兵器列繼承既有 weapon，指法與獨孤在資料列明寫。
 for (const art of ARTS) {
-  art.type ??= art.weapon === 'sword' ? 'sword' : 'fist';
+  art.type ??= ({sword:'sword',blade:'blade',staff:'staff',finger:'finger'})[art.weapon]||'fist';
   art.routine ??= ({ sword: 'sword', 劍: 'sword', blade: 'blade', 刀: 'blade', staff: 'staff', whip: 'staff' })[art.weapon]
     || (art.cats?.jianfa ? 'sword' : art.cats?.gunbang ? 'staff' : null)
     || (art.school === 'leg' ? 'leg' : art.school === 'palm' ? 'palm' : 'fist');
@@ -767,6 +770,7 @@ for (const art of ARTS) {
 for (const mv of MOVES) {
   const art = ARTS.find((a) => a.techs?.includes(mv.id));
   const kind = art?.routine || (mv.skill === 'leg' ? 'leg' : 'fist');
+  mv.type ??= kind==='leg'?'leg':art?.type||kind;
   const choices = COMBAT_MOVE_SETS[kind] || COMBAT_MOVE_SETS.fist;
   mv.poses ??= choices[Math.max(0, art?.techs?.indexOf(mv.id) ?? 0) % choices.length];
 }
@@ -988,3 +992,6 @@ export function destinyStep(s, id, ctx) {
   }
   return false;
 }
+
+// 共用接觸資料補全：招式可逐列覆寫肢側、部位、偏移衝量。
+for(const m of MOVES)completeContactMove(m);

@@ -1,5 +1,10 @@
+import {bodyOf,contactImpact,usableMove,woundWind,shiftBalance,recoverBody,healWounds,BODY_PARTS,TISSUES} from './contact.mjs';
+import {opponents,allies,loadFromForecast,coverFor,movementSpeed,distance,stepTactic} from './tactics.mjs';
+import {RING} from './combat-space.mjs';
+import {TECHNIQUES,TECHNIQUE_MOVES,learnFromLoss,applyTechnique,matchesTechnique} from './techniques.mjs';
+import {selectAction,recordChoice,desireTraining,witnessExchange} from './decision.mjs';
 import { PRACTICE, familiarReaction, practiceWindow, recordExchange } from './practice.mjs';
-import { bodyMove, BODY_TIMING, FOE_ACTIONS, foeAction } from './starter-combat.mjs';
+import { bodyMove, moveAvailable, BODY_TIMING, FOE_ACTIONS, foeAction } from './starter-combat.mjs';
 import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST, TRAITS } from './data.mjs';
 import { stampCard, curveMulOf, BRANCHES } from './artcard.mjs';
 import { strMul } from './economy.mjs';
@@ -1208,22 +1213,35 @@ const clamp01 = (x, hi = 1) => Math.max(0, Math.min(hi, x));
 export const windFrac = (tier) => CLASH.windIn + (CLASH.windHua - CLASH.windIn) * Math.max(0, Math.min(4, tier | 0)) / 4;
 /* 一招的前搖秒數：cd × 前搖比例（看這招所屬武學的火候） */
 export function windOf(d, mvId, cd) {
-  const body = bodyMove(mvId), a = artOfMove(mvId) || artById(mvId), tier = a && d?.arts?.[a.id] ? artTier(d,a.id) : 0;
+  const body=bodyMove(mvId)||TECHNIQUE_MOVES.find(m=>m.id===mvId)||Object.values(FOE_ACTIONS).flatMap(p=>p.moves).find(m=>m.id===mvId), a = artOfMove(mvId) || artById(mvId), tier = a && d?.arts?.[a.id] ? artTier(d,a.id) : 0;
   const start = body?.wind ?? cd * windFrac(0) * (a?.tags?.includes('快') ? .75 : 1) * (a?.id === 'kuihua' && zjHas(d,'kuihua') ? .1 : 1);
   const skill = body?.skill === 'strength' || a?.weapon === 'staff' ? 'strength' : 'agility';
-  return practiceWindow(d,mvId,start,{tier,skill}).wind * (d?.part?.where === 'hand' ? PART.hand : 1);
+  return practiceWindow(d,mvId,start,{tier,skill}).wind * woundWind(d,body||MOVES.find(m=>m.id===mvId)||{}) * (d?.part?.where === 'hand'&&!d.part.layer ? PART.hand : 1);
+}
+export function combatMoves(d,distance=0) {
+  if(isMon(d)&&FOE_ACTIONS[d.k]){
+    const weapon=d.weapon||['blade','staff','fist'][(d.i||0)%3];
+    return [...FOE_ACTIONS[d.k].moves,...TECHNIQUE_MOVES.filter(m=>d.glimmer?.known.includes(m.id)&&moveAvailable(d,m))].filter(m=>(!m.requiresSurvived||d.survived)&&(!m.once||!d.opened)&&(!m.minDistance||distance>=m.minDistance)&&(!m.weapon||m.weapon===weapon)&&usableMove(d,m)).map(m=>({...m,cd:m.wind+BODY_TIMING.recovery}));
+  }
+  return (d.moves||['fist']).map(id=>MOVES.find(m=>m.id===id)).filter(m=>m&&moveAvailable(d,m)&&usableMove(d,m));
+}
+export function chooseCombatMove(s,d,target,rnd,options={}) {
+  const distance=options.distance??Math.hypot((d.pos?.[0]||0)-(target.pos?.[0]||0),(d.pos?.[1]||0)-(target.pos?.[1]||0));
+  const facts=techniqueFacts(s,d,target);
+  const choices=(options.moves||combatMoves(d,distance)).filter(m=>!m.technique||matchesTechnique(TECHNIQUES.find(r=>r.id===m.id),facts)).map(m=>({...m,actualWind:windOf(d,m.id,m.cd),force:moveStats(d,m.id).force}));
+  return selectAction(s,d,target,choices,rnd,{distance,composure:composure(d),postureCapacity:postureMax(d),armor:moveStats(target).armor,...options});
 }
 export function fastestMove(d) {
-  const moves = (d?.moves || []).map((id) => MOVES.find((m) => m.id === id)).filter((m) => m && (!m.tool || d.tools?.[m.tool]));
+  const moves = combatMoves(d);
   return moves.sort((a,b) => windOf(d,a.id,a.cd) - windOf(d,b.id,b.cd))[0] || (d?.arts?.basicFist ? MOVES.find((m) => m.id === 'fist') : bodyMove('bodyPunch'));
 }
-export function timedMoveId(w, move) { return move || w?.swing?.mv || w?.bswing?.mv || (isMon(w) ? foeAction(w)?.id : fastestMove(w)?.id) || 'fist'; }
+export function timedMoveId(w,move){const declared=w?.swing?.mv||w?.bswing?.mv;return move||(typeof declared==='object'?declared.id:declared)||(isMon(w)?foeAction(w)?.id:fastestMove(w)?.id)||'fist';}
 
 export const isMon = (w) => !!w && w.k != null && !w.arts;
-export const postureMax = (w) => (isMon(w) ? CLASH.post[w.k] ?? CLASH.post.def : CLASH.post.d);
+export const postureMax = (w) => bodyOf(w).balance;
 export function postureOf(w) { if (w.posture == null) w.posture = postureMax(w); return w.posture; }
-export function postureHit(s, w, amt) { postureOf(w); w.posture = Math.max(0, w.posture - amt); w.postT = s?.t ?? 0; return w.posture; }
-export function postureRegen(s, w, dt) { postureOf(w); if ((s?.t ?? 0) - (w.postT ?? -1e9) >= CLASH.regenDelay) w.posture = Math.min(postureMax(w), w.posture + CLASH.regen * dt); }
+export function postureHit(s, w, amt) { return shiftBalance(s||{t:0},w,amt); }
+export function postureRegen(s, w, dt) { recoverBody(s||{t:0},w,dt,{engaged:opponents(s||{},w).some(a=>a.pos&&w.pos&&distance(a.pos,w.pos)<RING.outer)}); }
 /* 招式深淺：弟子＝這招所屬武學火候 + 1；獸看種類 */
 export function depthOf(atk, mvId) { if (isMon(atk)) return CLASH.depth[atk.k] ?? 1; const a = artOfMove(mvId); return (a && atk.arts?.[a.id] ? artTier(atk, a.id) : 0) + 1; }
 const qiPow = (w) => (isMon(w) ? CLASH.monQi[w.k] ?? 6 : (qiOf(w) || 0) + (w.skills?.strength || 0));
@@ -1237,11 +1255,11 @@ export const MOVE = {
 /* 每招同一套屬性：勁、速（數字越高越快）、霸體。山賊的刀與空手輪流分配。 */
 export function moveStats(w, moveId, wind = 0.5) {
   if (isMon(w)) {
-    const p = FOE_ACTIONS[w.k], m = p?.moves.find((m) => m.id === moveId) || foeAction(w);
-    if (p) return { force: m.force, speed: p.speed, armor: p.armor, type: m.cut ? 'blade' : m.bite ? 'bite' : 'fist' };
+    const p=FOE_ACTIONS[w.k],m=TECHNIQUE_MOVES.find(m=>m.id===moveId)||p?.moves.find(m=>m.id===moveId)||foeAction(w);
+    if (p) return { force: m.force * (w.raging ? CLASH.fret.force : 1), speed: p.speed, armor: p.armor, type: m.cut ? 'blade' : m.bite ? 'bite' : 'fist' };
     return MOVE.monsters[w.k] || MOVE.monsters.fist;
   }
-  const body = bodyMove(moveId); if (body) return { force: body.force + (w.skills?.strength || 0) * BODY_TIMING.forceSkill, speed: 1 / body.wind, armor: MOVE.armor, type: body.type };
+  const body=bodyMove(moveId)||TECHNIQUE_MOVES.find(m=>m.id===moveId); if (body) return { force: (body.force + (w.skills?.strength || 0) * BODY_TIMING.forceSkill) * (w.raging ? CLASH.fret.force : 1), speed: 1 / body.wind, armor: MOVE.armor, type: body.type };
   const a = artOfMove(moveId) || artById(moveId), t = a && w?.arts?.[a.id] ? artTier(w, a.id) : 0, tags = a?.tags || [];
   const force = MOVE.force + t * MOVE.tierForce + (w?.skills?.strength || 0) * MOVE.strengthForce + (tags.includes('剛') ? MOVE.hardForce : 0) + (tags.includes('拙') ? MOVE.plainForce : 0);
   const speed = MOVE.speed + t * MOVE.tierSpeed + (tags.includes('快') ? MOVE.quickSpeed : 0) + Math.min(MOVE.windSpeedMax, MOVE.windSpeed / Math.max(MOVE.minWind, wind));
@@ -1251,14 +1269,39 @@ export function moveStats(w, moveId, wind = 0.5) {
 }
 /* 太極借來勁：來招越重，可卸回去的比例越高；人、獸、賊共用。 */
 export const taijiReturn = (atk, moveId, wind) => { const force = moveStats(atk, moveId, wind).force; return force / (force + MOVE.taijiHalfForce); };
-export function breakWindup(s, atk, def, moveId, wind) {
+export function breakWindup(s, atk, def, moveId, wind, contact=null) {
+  if(contact&&!contact.injured)return false; // 低於傷口門檻不能憑畫面停頓打斷真前搖。
   if (!def?.swing && !def?.bswing) return false;
   const strike = moveStats(atk, moveId, wind), guard = moveStats(def, def.swing?.mv || def.bswing?.mv, def.swing?.wind || def.bswing?.wind);
   const observed = artOfMove(moveId)?.id === 'dugu' && isMon(def) && (s?.codex?.[def.k]?.insight || 0) >= ZJ.dugu.insight;
-  if (!observed && strike.force <= guard.armor) return false;
+  const bypass=atk.techniqueContact?.at===s?.t&&atk.techniqueContact.target===(def.uid||def.id||def.k)&&atk.techniqueContact.bypassArmor;
+  if(!observed&&!bypass&&strike.force<=guard.armor)return false;
   def.swing = null; def.bswing = null; postureHit(s, def, 25 + strike.force * 0.25);
   if (s) { (s.fx ||= []).push({ kind: 'clash', word: '斷', color: '#ffb05a', pos: [...(def.pos || [0, 0])], ttl: 0.8 }); s.breakN = (s.breakN || 0) + 1; }
   return true;
+}
+// N36 預測包含走近的對手；已起手者不能藉靠牆刪掉來招。
+export function assessLoad(s,def,extra=null,ctx={}) {
+  const busy=Math.max(0,(def.busyUntil||0)-(s?.t||0),(def.swing?.at||0)-(s?.t||0),(def.bswing?.at||0)-(s?.t||0),(def.downUntil||0)-(s?.t||0));
+  const rows=opponents(s||{},def,extra).filter(a=>a.pos&&def.pos).filter(a=>{
+    const target=a.swing?.tgt||a.bswing?.tgt||a.intentTarget||a.foe;
+    if(a===extra)return true;
+    if(!a.swing&&!a.bswing&&a.tactics?.action==='flee')return false;
+    // 持械待命不是已選的攻擊；只有宣告目標/在途招納入，避免兩個守勢角色互算假來招而永久停住。
+    return !!target&&target===(def.id||def.uid);
+  }).map(a=>{
+    const swing=a.swing||a.bswing,move=a===extra?timedMoveId(a,ctx.move):timedMoveId(a),action=FOE_ACTIONS[a.k]?.moves.find(m=>m.id===move)||MOVES.find(m=>m.id===move);
+    const wind=a===extra&&ctx.wind!=null?ctx.wind:swing?.wind??windOf(a,move,action?.cd||1);
+    const travel=Math.max(0,distance(a.pos,def.pos)-(action?.range||RING.engage))/movementSpeed(a);
+    // 未出手者可在冷卻時靠近；最早來招取兩者較久者，已出手的招不再算冷卻。
+    const ready=swing?0:Math.max(0,(a.next||0)-(s?.t||0),a.cool||0,a.bcool||0);
+    const guard=def.bare?BODY_TIMING.guard:CLASH.time.guard;
+    return {attacker:a.uid||a.id||a.k,move,need:familiarReaction(def,a,move,s?.codex)+guard+busy,window:Math.max(BODY_TIMING.simple,wind),travel:Math.max(travel,ready),active:!!swing};
+  });
+  return loadFromForecast(def,rows);
+}
+export function combatTacticStep(s,d,dt,H={}){
+  return stepTactic(s,d,assessLoad(s,d),dt,{temper:composure(d),normalTemper:CLASH.fret.normal,anger:a=>{a.raging=true;a.rageUntil=s.t+CLASH.fret.rageTime;},...H});
 }
 /* 同一組反應時間區間決定截擊、進身閃、招架。面板讀的是各結果的無條件機率。 */
 export function clashTimes(s, atk, def, ctx = {}) {
@@ -1267,12 +1310,15 @@ export function clashTimes(s, atk, def, ctx = {}) {
   const agi = isMon(def) ? (def.agi ?? moveStats(def).speed) : (def.skills?.agility || 0);
   const move = timedMoveId(atk,ctx.move), reaction = familiarReaction(def, atk, move, s?.codex);
   const jitter = (1 / PRACTICE.reactionShape) * (1 + (def.fret || 0) * T.fret);
-  const response = isMon(def) ? foeAction(def) : fastestMove(def);
-  const strike = isMon(def) ? practiceWindow(def,response?.id || 'fist',response?.wind || T.strike).wind : windOf(def,response.id,response.cd);
-  const step = BODY_TIMING.step / (1 + agi / T.agility);
+  const response = fastestMove(def);
+  const strike = windOf(def,response.id,response.cd);
+  const step=BODY_TIMING.step/(1+agi/T.agility);
   const guard = def.bare ? BODY_TIMING.guard : T.guard;
-  const busy = Math.max(0, (def.busyUntil || 0) - (s?.t ?? 0), (def.swing?.at || 0) - (s?.t ?? 0), (def.bswing?.at || 0) - (s?.t ?? 0));
-  return { wind: Math.max(0, wind - busy), reaction, jitter, strike, step, guard, busy };
+  const busy = Math.max(0, (def.busyUntil || 0) - (s?.t ?? 0), (def.swing?.at || 0) - (s?.t ?? 0), (def.bswing?.at || 0) - (s?.t ?? 0),(def.downUntil||0)-(s?.t??0));
+  const load=assessLoad(s,def,atk,ctx).L;
+  // 白身面對會護正面的人，走到側邊同拍接招較能保住出手；無手獸招則先截其起手。
+  const preferStep=!!def.bare&&(FOE_ACTIONS[atk.k]?.hands??(isMon(atk)?0:2))>0;
+  return { wind: Math.max(0, wind - busy), reaction, jitter, strike, step, guard, busy,load,canCounter:load<1,preferStep };
 }
 // 平移 log-logistic：簡單反應 .2 秒為物理下限，其餘有正尾，不造勝率保底。
 export const drawReaction = (T, rnd) => { const u = rnd(); return PRACTICE.reactionFloor + (T.reaction - PRACTICE.reactionFloor) * (u / (1 - u)) ** T.jitter; };
@@ -1280,18 +1326,21 @@ const reactionOdds = (T, action) => { const available = T.wind - action - PRACTI
 /* 起手時先抽反應；截擊立即發生，其餘接法帶同一次抽樣等來招落下。 */
 export function interceptOpening(s, atk, def, rnd, ctx = {}) {
   const T = clashTimes(s, atk, def, ctx), reaction = drawReaction(T,rnd);
-  const opening = { T, reaction, p: clashOdds(s,atk,def,ctx).hit, at: s?.t ?? 0 };
-  if (postureOf(def) > 0 && !(atk.sure && atk.sure === (def.uid || def.id)) && def.part?.where !== 'eye' && !(def.rageUntil > (s?.t ?? 0)) && reaction + T.strike < T.wind) {
+  const opening = { T, reaction, odds:clashOdds(s,atk,def,ctx), p: clashOdds(s,atk,def,ctx).hit, at: s?.t ?? 0 };
+  if (T.canCounter && postureOf(def) > 0 && !(atk.sure && atk.sure === (def.uid || def.id)) && def.part?.where!=='eye'&&!(def.visionUntil>(s?.t??0)) && !(def.rageUntil > (s?.t ?? 0)) && reaction+T.strike<T.wind && !(T.preferStep&&reaction+T.step+T.strike<T.wind)) {
     return { opening, read: resolveSwing(s, atk, def, rnd, { ...ctx, opening }) };
   }
   return { opening, read: null };
 }
 export function clashOdds(s, atk, def, ctx = {}) {
   const T = clashTimes(s, atk, def, ctx);
-  const read = def.part?.where === 'eye' || def.rageUntil > (s?.t ?? 0) ? 0 : reactionOdds(T, T.strike);
-  const dodgeTotal = def.rageUntil > (s?.t ?? 0) ? 0 : reactionOdds(T, T.step);
-  const parryTotal = reactionOdds(T, T.guard);
-  return { read, dodge: Math.max(0, dodgeTotal - read), parry: Math.max(0, parryTotal - Math.max(read,dodgeTotal)), hit: 1 - Math.max(read, dodgeTotal, parryTotal) };
+  const canRead=T.canCounter&&def.part?.where!=='eye'&&!(def.visionUntil>(s?.t??0))&&!(def.rageUntil>(s?.t??0));
+  const readTotal=canRead?reactionOdds(T,T.strike):0;
+  // 同一招的截擊先於移步；白身遇有手防禦者可選移到側邊再接招。
+  const dodgeCounter=canRead&&T.preferStep?reactionOdds(T,T.step+T.strike):0;
+  const dodgeTotal=def.rageUntil>(s?.t??0)?0:reactionOdds(T,T.step);
+  const parryTotal=reactionOdds(T,T.guard);
+  return {read:Math.max(0,readTotal-dodgeCounter),dodge:dodgeCounter+Math.max(0,dodgeTotal-readTotal),dodgeCounter,parry:Math.max(0,parryTotal-Math.max(readTotal,dodgeTotal)),hit:1-Math.max(readTotal,dodgeTotal,parryTotal)};
 }
 /* 前搖起手可用 interceptOpening 立即截擊；未截者在來招結束時用同一反應抽樣接法。
    rnd 是固定種子亂數。ctx.force 只用於架勢崩潰等既有必中規則。 */
@@ -1339,33 +1388,72 @@ function resolveSwingCore(s, atk, def, rnd, ctx = {}) {
       ? { ...ctx.opening.T, wind: Math.min(ctx.opening.T.wind, Math.max(0, (s?.t ?? 0) - Math.max(ctx.opening.at, def.busyUntil || 0))) }
       : ctx.opening.T)
     : clashTimes(s, atk, def, ctx);
-  if (def.posture <= 0) { def.posture = postureMax(def) * 0.5; def.postT = s?.t ?? 0; return settleDefense(s, def, T, { kind: 'hit', heavy: true, why: 'open' }); }
+  if (def.posture <= 0) { return settleDefense(s, def, T, { kind: 'hit', heavy: true, why: 'open' }); }
   if (ctx.force || (atk.sure && atk.sure === (def.uid || def.id))) { if (atk.sure === (def.uid || def.id)) atk.sure = null; return settleDefense(s, def, T, { kind: 'hit', heavy: false, why: ctx.force || 'sure' }); }
   const reaction = ctx.opening?.reaction ?? drawReaction(T,rnd);
+  const load=ctx.opening?assessLoad(s,def,atk,ctx).L:T.load,canCounter=load<1;
+  const timing={T:T.wind,r:reaction,step:T.step,strike:T.strike,guard:T.guard,L:load};
   const zjAtk = ctx.map && !isMon(atk) ? zjOfMove(ctx.move) : null; /* #426 */
   const duguPassive = ctx.map && isMon(atk) && zjHas(def, 'dugu') && (s?.codex?.[atk.k]?.insight || 0) >= ZJ.dugu.insight; /* 獨孤：讀招改成被動截，不再擲讀招 */
-  if (!duguPassive && def.part?.where !== 'eye' && !(def.rageUntil > (s?.t ?? 0)) && reaction + T.strike < T.wind) { postureHit(s, atk, CLASH.read.drop); def.sure = atk.uid || atk.id; return settleDefense(s, def, T, { kind: 'read', used: reaction + T.strike, counter: moveStats(def, fastestMove(def)?.id).force * CLASH.time.counterForce }); }
-  if (!(def.rageUntil > (s?.t ?? 0)) && reaction + T.step < T.wind) { if (!isMon(def)) spendQi(def, CLASH.dodge.qi * (reaction + T.step) / Math.max(T.wind, 1e-9)); advanceAfterDodge(s, atk, def); return settleDefense(s, def, T, { kind: 'dodge', used: reaction + T.step, strain: (reaction + T.step) / Math.max(T.wind, 1e-9) }); }
+  if(canCounter&&T.preferStep&&!duguPassive&&def.part?.where!=='eye'&&!(def.visionUntil>(s?.t??0))&&!(def.rageUntil>(s?.t??0))&&reaction+T.step+T.strike<T.wind){advanceAfterDodge(s,atk,def);return settleDefense(s,def,T,{timing,kind:'dodge',used:reaction+T.step+T.strike,counter:moveStats(def,fastestMove(def)?.id).force*CLASH.time.counterForce,strain:(reaction+T.step)/T.wind});}
+  if (canCounter && !duguPassive && def.part?.where!=='eye'&&!(def.visionUntil>(s?.t??0)) && !(def.rageUntil > (s?.t ?? 0)) && reaction + T.strike < T.wind) { postureHit(s, atk, CLASH.read.drop); def.sure = atk.uid || atk.id; return settleDefense(s, def, T, { timing,kind: 'read', used: reaction + T.strike, counter: moveStats(def, fastestMove(def)?.id).force * CLASH.time.counterForce }); }
+  if (!(def.rageUntil > (s?.t ?? 0)) && reaction + T.step < T.wind) { if (!isMon(def)) spendQi(def, CLASH.dodge.qi * (reaction + T.step) / Math.max(T.wind, 1e-9)); advanceAfterDodge(s, atk, def); return settleDefense(s, def, T, { timing,kind: 'dodge', used: reaction + T.step, strain: (reaction + T.step) / Math.max(T.wind, 1e-9) }); }
   if (reaction + T.guard < T.wind) {
     const force = moveStats(atk, ctx.move, ctx.wind).force, guard = isMon(def) ? moveStats(def).force : qiPow(def);
     const jolt = guard > force * 1.4;
-    postureHit(s, def, CLASH.parry.drop * Math.max(0.5, force / Math.max(1, guard))); postureHit(s, atk, CLASH.parry.drop * Math.max(0.5, guard / force) + (jolt ? CLASH.parry.joltDrop : 0));
-    return settleDefense(s, def, T, { kind: 'parry', jolt, used: reaction + T.guard });
+    // 招架的雙方架勢沿用 N14 的勁力比較；接觸事件另記畫面與傷層。
+    postureHit(s,def,CLASH.parry.drop*Math.max(0.5,force/Math.max(1,guard)));
+    postureHit(s,atk,CLASH.parry.drop*Math.max(0.5,guard/force)+(jolt?CLASH.parry.joltDrop:0));
+    return settleDefense(s, def, T, { timing,kind: 'parry', jolt, used: reaction + T.guard });
   }
-  return settleDefense(s, def, T, { kind: 'hit', heavy: false });
+  return settleDefense(s, def, T, { timing,kind: 'hit', heavy: false });
 }
+
+export function techniqueFacts(s,a,t,move=null){
+  const allMoves=[...MOVES,...Object.values(FOE_ACTIONS).flatMap(p=>p.moves)],mine=allMoves.find(m=>m.id===move),incoming=allMoves.find(m=>m.id===(t.swing?.mv||t.bswing?.mv||t.lastCombatMove));
+  const last=a.lastDodge,afterDodge=last?.target===(t.uid||t.id||t.k)&&last.until>=(s?.t||0);
+  const enemies=isMon(a)?(s?.ds||[]).filter(d=>!d.away&&d.hp>0):(s?.mons||[]).concat(s?.band?.members||[]).filter(d=>!d.gone&&d.hp>0);
+  const close=enemies.filter(d=>d.pos&&a.pos&&Math.hypot(d.pos[0]-a.pos[0],d.pos[1]-a.pos[1])<=RING.outer);
+  const weapon=t.weapon||incoming?.tool||incoming?.weapon||(t.k&&FOE_ACTIONS[t.k]?.moves.some(m=>m.weapon)?['blade','staff','fist'][(t.i||0)%3]:null);
+  return {hands:FOE_ACTIONS[a.k]?.hands??2,weapon,opponentWind:!!(t.swing||t.bswing),afterDodge,opponentCharge:!!(afterDodge?last.charging:incoming?.travel),enemies:close.length,opponentUnbalanced:(t.posture??postureMax(t))<postureMax(t)/2,losing:a.hp<(a.max||100)/2,cornered:!!coverFor(a),approaching:!!t.path?.length&&!t.swing&&!t.bswing,force:moveStats(a,move).force,opponentForce:moveStats(t).force};
+}
+function moveParents(move){const m=MOVES.find(m=>m.id===move)||Object.values(FOE_ACTIONS).flatMap(p=>p.moves).find(m=>m.id===move);return [move,m?.type,m?.weapon,m?.tool==='stone'?'stone':null].filter(Boolean);}
+function noteDiscoveries(s,d,rows){for(const row of rows){const text=`${d.name||d.k}在吃虧後悟出「${row.name}」`;log(s,text);if(d.id)chronOf(s,d,'glimmer',{chron:text});}}
+function reportContact(s,a,t,m,c){if(!c.layer)return;const row=TISSUES.blunt.find(r=>r.id===c.layer);log(s,`${a.name||a.k}以${m.name||m.id}打在${t.name||t.k}的${c.where==='body'?'':c.side}${BODY_PARTS[c.where].name}，${row.name}${c.layer==='bruise'?'，只痛未失血':''}`);}
+export function transferredDamage(s,a,t,damage,force,move){const action=MOVES.find(m=>m.id===move)||{id:move||'redirect',type:moveStats(a,move).type},contact=contactImpact(s,a,t,{move:action,force,armor:moveStats(t).armor});reportContact(s,a,t,action,contact);return damage*contact.damageFactor;}
 
 export function resolveSwing(s, atk, def, rnd, ctx = {}) {
   const move = timedMoveId(atk,ctx.move), odds = clashOdds(s,atk,def,{ ...ctx, move });
+  const initialT=ctx.opening?.T||clashTimes(s,atk,def,ctx),atkFacts=techniqueFacts(s,atk,def,move),defFacts={...techniqueFacts(s,def,atk),opponentWind:true};
+  atk.lastCombatMove=move;
   const result = resolveSwingCore(s,atk,def,rnd,{ ...ctx, move });
   result.learning = recordExchange(s,atk,def,move,ctx.opening?.p ?? odds.hit,result);
-  if (result.kind === 'read') result.counterLearning = recordExchange(s,def,atk,timedMoveId(def),odds.read,{kind:'counter'});
+  recordChoice(s,atk,def,move,result.kind==='hit');
+  if(result.kind==='dodge'){const action=Object.values(FOE_ACTIONS).flatMap(p=>p.moves).find(m=>m.id===move);def.lastDodge={target:atk.uid||atk.id||atk.k,move,charging:!!action?.travel,until:(s?.t||0)+(action?.wind||ctx.wind||BODY_TIMING.reaction)+BODY_TIMING.recovery};}
+  noteDiscoveries(s,atk,learnFromLoss(s,atk,moveParents(move),atkFacts,result.learning.p,{lost:result.kind!=='hit'}));
+  noteDiscoveries(s,def,learnFromLoss(s,def,['guard'],defFacts,1-result.learning.p,{lost:result.kind==='hit'}));
+  if(result.kind==='hit'&&def.tactics?.action==='flee')(def.flightSeen??={})[atk.k||atk.id]=true;
+  if(result.kind==='hit')result.technique=applyTechnique(s,atk,def,move,atkFacts);
+  witnessExchange(s,atk,def,move,result.learning.p);
+  const T=initialT;
+  if(result.kind==='hit')desireTraining(s,def,'timing',{move,wind:T.wind,reaction:T.reaction,deficit:T.reaction+Math.min(T.step,T.guard,T.strike)-T.wind});
+  if(result.kind==='hit'&&moveStats(atk,move,ctx.wind).force<=moveStats(def).armor)desireTraining(s,atk,'power',{move,force:moveStats(atk,move,ctx.wind).force,armor:moveStats(def).armor});
+  if(result.counter)result.counterLearning = recordExchange(s,def,atk,timedMoveId(def),(ctx.opening?.odds||odds)[result.kind==='read'?'read':'dodgeCounter'],{kind:'counter'});
+  const action=MOVES.find(m=>m.id===move)||Object.values(FOE_ACTIONS).flatMap(p=>p.moves).find(m=>m.id===move)||{id:move,type:moveStats(atk,move).type};
+  const nearby=new Set([...(s.ds||[]),...(s.mons||[]),...(s.band?.members||[])].filter(a=>a.hp>0&&!a.gone&&(a===atk||a===def||a.swing||a.bswing||a.intentTarget)&&a.pos&&def.pos&&distance(a.pos,def.pos)<=RING.outer)).size;
+  if(result.kind==='hit'||result.kind==='parry'){
+    const bypass=!!result.technique?.armorBypass,armor=moveStats(def).armor;
+    result.contact=contactImpact(s,atk,def,{move:result.kind==='parry'?{...action,balanceImpulse:0}:action,force:moveStats(atk,move,ctx.wind).force,armor,blocked:result.kind==='parry',bypass,nearby});
+    reportContact(s,atk,def,action,result.contact);
+  }
+  if(result.counter){const response=fastestMove(def);result.counterContact=contactImpact(s,def,atk,{move:{...response,balanceImpulse:result.kind==='read'?0:response.balanceImpulse},force:result.counter,armor:moveStats(atk).armor,nearby});result.counterDamage=result.counter*result.counterContact.damageFactor;reportContact(s,def,atk,response,result.counterContact);}
+  if(result.heavy&&result.why==='open'){const opened=def.balanceOpenUntil||0;def.posture=postureMax(def)*0.5;def.balanceOpenUntil=0;if(def.downUntil<=opened)def.downUntil=0;}
   return result;
 }
 
 // ==== #419 N15 交戰圈與應接 ====
 /* slots：一人身邊最多 4 個近戰位，第 5 隻起在外圈繞；win 只作應接紀錄窗口，不再硬限次數。 */
-export const RING = { engage: 44 /* 佔了近戰位的獸，對手滑步走開也會追上去，不趁機溜下山 */, slots: 4, outer: 50, win: 1.2, step: 24, leash: 40 };
+export {RING} from './combat-space.mjs';
 export function topTierOf(d) { let t = 0; for (const id of Object.keys(d?.arts || {})) { const c = ART_CAT[id] || {}; if (['quanzhang', 'tuifa', 'jianfa', 'gunbang', 'qimen'].some((k) => (c[k] || 0) > 0)) t = Math.max(t, artTier(d, id) | 0); } return Math.min(4, t); }
 export const handleThroughput = (d) => 1 / (CLASH.time.strike / (1 + topTierOf(d) * CLASH.time.strikeTier));
 /* 統計一段時間的應接紀錄；能否接下由未完成動作與剩餘前搖決定，不設次數硬上限。 */
@@ -1439,7 +1527,7 @@ export function zjWindK(s, pos, team) {
 /* 獨孤：已觀破（圖鑑觀破 ≥ insight）的獸一進前搖，身邊 reach 內有獨孤弟子就自動截下 */
 export function zjIntercept(s, m, team) {
   if (!isMon(m) || (s?.codex?.[m.k]?.insight || 0) < ZJ.dugu.insight) return null;
-  const d = (team || []).find((x) => x.hp > 25 && zjHas(x, 'dugu') && (x.zjT ?? -1e9) <= s.t && Math.hypot(m.pos[0] - x.pos[0], m.pos[1] - x.pos[1]) <= ZJ.dugu.reach);
+  const d = (team || []).find((x) => x.hp > 25 && assessLoad(s,x,m).L<1 && zjHas(x, 'dugu') && (x.zjT ?? -1e9) <= s.t && Math.hypot(m.pos[0] - x.pos[0], m.pos[1] - x.pos[1]) <= ZJ.dugu.reach);
   if (!d) return null;
   d.zjT = s.t + ZJ.dugu.cool; postureHit(s, m, ZJ.dugu.drop); d.sure = m.uid || m.id;
   (s.fx ||= []).push({ kind: 'cut', from: [...d.pos], to: [...m.pos], ttl: 0.5 }); zjMark(s, d, 'dugu'); zjCount(s, 'duguCut');
@@ -1455,6 +1543,7 @@ export const PART = { days: 3, hand: 1.3, where: ['eye', 'hand', 'body'], name: 
 const preciseArt = (mvId) => { const a = artOfMove(mvId); return !!a && (a.weapon === 'sword' || a.type === 'finger'); };
 export const partOf = (d, w) => (d?.part && d.part.where === w ? d.part : null);
 export function partHit(s, def, r, ctx = {}) {
+  if(r?.contact)return def?.part||null; // N37真分層已處理，不再隨機疊一份舊傷。
   if (!def || isMon(def) || !r?.heavy || def.part) return null;
   if (!(r.why === 'open' || preciseArt(ctx.move))) return null;
   const rnd = ctx.rnd || Math.random, type = moveStats(ctx.attack, ctx.move).type;
@@ -1468,6 +1557,7 @@ export function partHit(s, def, r, ctx = {}) {
 export function partText(d) { const p = d?.part; if (!p) return ''; const n = ['', '一', '兩', '三'][Math.min(3, p.days)] || p.days; return `${p.side}${PART.name[p.where]}受傷，${n}日內${PART.what[p.where]}`; }
 /* 每日：少一天；療傷（heal）再少一天；doctor＝直接好 */
 export function partHeal(s, d, how) {
+  if(!d)return;healWounds(d,how);
   if (!d?.part) return; if (how === 'doctor') d.part.days = 0; else d.part.days -= 1;
   if (d.part.days <= 0) { d.part = null; if (d.name) log(s, `${d.name}的傷好了`); }
 }
