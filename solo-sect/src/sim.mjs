@@ -1,6 +1,6 @@
 import {originPeople,ORIGIN_RELATIONS} from './origins.mjs';
 import {HUNGER_PER_SECOND,admissionStatus,mentorFor,guidanceSeconds,clockActor,noteGuidance,guidanceLearning,guidanceDaily} from './admission.mjs';
-import {attraction,applicantAway,discipleCount,policyCap,recruitmentInit,recruitmentOf,returnFromWork,sendApplicantToWork,setRecruitPolicy} from './recruitment.mjs';
+import {attraction,applicantAway,bookAdmissionWork,discipleCount,policyCap,recruitmentInit,recruitmentOf,returnFromWork,sendApplicantToWork,setRecruitPolicy} from './recruitment.mjs';
 export {attraction,policyCap,setRecruitPolicy} from './recruitment.mjs';
 import {transferredDamage,moveStats} from './arts.mjs';
 import {ringCapacity,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} from './tactics.mjs';
@@ -157,6 +157,7 @@ export function recruit(s, answers) {
   if (rand(s) < 0.3) { const x = rand(s) < 0.5 ? 'lazy' : 'stubborn'; if (!personality.includes(x)) personality.push(x); } // v0.97 一般弟子也可能懶散／較真（暗）
   if(c.offer.kind==='food')resAdd(s,'food',c.offer.amount,'tuition');
   if(c.offer.kind==='coin')resAdd(s,'coin',c.offer.amount,'tuition');
+  if(c.offer.kind==='work')bookAdmissionWork(s,c.offer.slot);
   resAdd(s, 'food', -ACTIVITIES.eat.use.food, 'admission'); { const h = stableTraitHash(`${s.seed}:trait29:${c.next.id}:${s.ds.length}`); if (h < RECRUIT_TRAIT_VARIATION.p) { const x = RECRUIT_TRAIT_VARIATION.pool[Math.floor(stableTraitHash(`${s.seed}:trait29b:${c.next.id}:${s.ds.length}`) * RECRUIT_TRAIT_VARIATION.pool.length)]; if (!personality.includes(x)) { const old = personality[1]; personality[1] = x; const k = known.indexOf(old); if (k >= 0) known[k] = x; (s.v29n ??= {}).recruitTrait = (s.v29n.recruitTrait || 0) + 1; } } } /* loop188 v2.9 經典特質（雜湊，不吃亂數流） */
   const d = makeBare(mkDisciple(c.next,1,'gate',personality,known)); d.guidanceMentor=c.mentor;d.admissionReason=c.reason; d.together = 0; d.boardByWork=c.offer.kind==='work'; Object.assign(d, { role: 'outer', root: 2 + Math.floor(rand(s) * 4), rootKnown: false }); { const A = archRecruit(() => rand(s)); Object.assign(d, { arch: A.id, root: c.next.root??A.root, wu: c.next.wu??A.wu }); if (!d.personality.includes(A.trait)) d.personality.push(A.trait); } /* loop21 原型 */ for(const art of c.next.starterArts||[])learnArt(d,art,s.t); s.ds.push(d); delete recruitmentOf(s).returned[c.next.id]; if (c.next.school) econOf(s).pool.splice(econOf(s).pool.findIndex((x)=>x.id===c.next.id),1);
   for (const o of s.ds) if (o !== d) initPair(s, o, d, 5); sectRecruit(s, d);
