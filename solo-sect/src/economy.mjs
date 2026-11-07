@@ -129,6 +129,56 @@ export function workStrCap(d, day, delta) {
 }
 export const laborToday = (d, day) => (d?.lg && d.lgDay === day ? d.lgGot || 0 : 0);
 
+// 出自 Phase 5 規格：18/36 是做活的凡軀／藥膳體魄上限；疲勞每次 25–35、單日最多 1.2 點。
+export const BODY_CONDITION = Object.freeze({ mundaneCap: 18, martialCap: 36, fatigueMax: 100, dailyGain: 1.2, workGain: 0.3,
+  fatigue: Object.freeze({ water: 30, chop: 30, quarry: 35, farm: 25, forage: 25, train: 35 }),
+  mealRelief: 65, mealCycles: 3, rongCycles: 4, defaultCycles: 1 });
+const bodyWork = { water: ['strength', 'agility'], chop: ['strength'], quarry: ['strength'], farm: ['agility'], forage: ['agility'], train: ['strength'] };
+export const bodyConditionOn = (s) => !!(s?.hermitage?.active || s?.herbalDiet);
+export function ensureBodyCondition(d, day) {
+  if (d.bodyConditionDay !== day) { d.bodyConditionDay = day; d.muscleFatigue = 0; d.soreness = false; d.recoveryCyclesToday = 0; d.maxCyclesToday = BODY_CONDITION.defaultCycles; d.bodyGainToday = 0; }
+  d.muscleFatigue ??= 0; d.soreness ??= false; d.recoveryCyclesToday ??= 0; d.maxCyclesToday ??= BODY_CONDITION.defaultCycles; d.bodyGainToday ??= 0;
+  return d;
+}
+export function stepWorkCondition(d, s, act, delta = BODY_CONDITION.workGain) {
+  if (!bodyConditionOn(s) || !bodyWork[act]) return { active: false, gained: 0 };
+  ensureBodyCondition(d, s.day);
+  const previous = d.muscleFatigue, targets = bodyWork[act]; let gained = 0;
+  const budget = Math.max(0, BODY_CONDITION.dailyGain * d.maxCyclesToday - d.bodyGainToday);
+  if (!d.soreness && d.recoveryCyclesToday < d.maxCyclesToday && budget > 0) {
+    const cap = d.herbalDietUntil > s.t ? BODY_CONDITION.martialCap : BODY_CONDITION.mundaneCap;
+    for (const skill of targets) { const old = d.skills[skill] || 0, add = Math.max(0, Math.min(delta / targets.length, budget - gained, cap - old)); d.skills[skill] = old + add; gained += add; }
+    d.bodyGainToday += gained;
+  }
+  d.muscleFatigue = Math.min(BODY_CONDITION.fatigueMax, previous + BODY_CONDITION.fatigue[act]);
+  if (d.muscleFatigue >= BODY_CONDITION.fatigueMax) d.soreness = true;
+  return { active: true, gained, fatigue: d.muscleFatigue, soreness: d.soreness };
+}
+export function restBodyCondition(d, s) {
+  if (!bodyConditionOn(s)) return false;
+  ensureBodyCondition(d, s.day);
+  if (d.soreness) { d.recoveryCyclesToday++; d.soreness = false; d.muscleFatigue = 0; return true; }
+  d.muscleFatigue = Math.max(0, d.muscleFatigue - BODY_CONDITION.fatigue.farm); // 出自 Phase 5 規格：歇息抵消一份最輕雜務疲勞。
+  return false;
+}
+export function cookMedicatedMeal(s, chef) {
+  if (!bodyConditionOn(s) || (s.res.herb || 0) < 1 || (s.res.food || 0) < 1) return null;
+  resAdd(s, 'food', -1, 'kitchen'); resAdd(s, 'herb', -1, 'kitchen'); resAdd(s, 'medFood', 1, 'kitchen'); // 出自 Phase 5 規格：一份煮好的飯入藥升級，不憑空添一份餐食。
+  const name = s.hermitage?.partnerId === 'xiaolongnv' ? '百花玉蜂藥膳' : s.hermitage?.partnerId === 'huangrong' ? '桃花歸元藥膳' : '山草強身湯飯';
+  (s.medFoodBatches ??= []).push({ name, chef: chef?.id || null, rong: chef?.xia === 'huangrong' });
+  return name;
+}
+export function applyMedicatedMeal(d, s) {
+  if (!bodyConditionOn(s) || !(s.res.medFood > 0)) return null;
+  ensureBodyCondition(d, s.day);
+  const batch = (s.medFoodBatches || []).shift() || { name: '山草強身湯飯', rong: false };
+  resAdd(s, 'medFood', -1, 'meal'); if (d.soreness) d.recoveryCyclesToday++;
+  d.muscleFatigue = Math.max(0, d.muscleFatigue - BODY_CONDITION.mealRelief); d.soreness = false;
+  d.maxCyclesToday = batch.rong ? BODY_CONDITION.rongCycles : BODY_CONDITION.mealCycles;
+  d.herbalDietUntil = s.t + DAY; d.herbalBuffName = batch.name;
+  return { name: batch.name, cycles: d.maxCyclesToday, fatigue: d.muscleFatigue };
+}
+
 // ==== （原 steward.mjs）====
 // loop30 執事自主（選用，s.steward）：每日一次，沒有工地時依序立藍圖——
 // ① 有人睡地鋪 → 擴寢舍；② 野豬來過且尚無哨崗 → 蓋護山哨（有人上哨，野豬下山會被嚇回）。

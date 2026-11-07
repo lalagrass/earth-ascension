@@ -623,3 +623,18 @@ CI 第三輪 quick 與 golden 全過，accept 296/301。五項逐項處置：
 這是舊開局隔離的 C 報告，不把自然山賊與柵欄探針分母混用。
 
 舊名 → 新名：`own28` → `ownLineageArt`、`sectRoots24` → `grantSectRoots`，只整理本輪碰到的讀取／授武接口。最沒把握三處：① 黃蓉鏈只規定招名，門檻沿小龍女鏈對應階段，細節在[隱居規則](docs/systems/hermitage.md)；② 小龍女第 4 階短暫對坐只在微距窗播放，不修改時間帳或戰鬥；③ 全真劍法以 `basicSword` 小成作替代前置，舊武學候選隔離需靠完整 golden 持續守住。
+
+## Phase 5：雜務體魄與藥膳（#510）
+
+| 類別 | 證據與結論 |
+|---|---|
+| A 固定情境 | `bash solo-sect/test/run.sh smoke`；單一測試檔 `test/unit/growth/phase5-labor-herbal-diet.test.mjs`。無藥做活到 18 與每日 1.2、痠痛恢復、真任務黃蓉煮／吃藥膳到 4 週期與突破 18、體魄 10／18／26 畫面遙測。`food=0/1, medFood=1` 驗可用飯、飽足和帳本只扣一份；`food=veg=0, medFood=8` 驗無斷糧、無糧荒種菜優先，藥膳耗盡與補回時日誌各切換一次；舊局仍只計普通飯。 |
+| B 隨機公式 | 本輪無新亂數。原 N62 6,000 次出獵公式測試保留在 smoke；期望 0.4926757803、觀察 0.4978333333、容差 0.021407701。 |
+| C 舊 bot12 | [base 原始輸出](artifacts/phase5/bot12-base.json)／[head 原始輸出](artifacts/phase5/bot12-head.json)：同尺 12 種子，第 30 日。自然山賊 53/62、柵欄探針 84/96 與守住 48/96；惱羞 1052、林克時間 149、`winP` 中位 0.985。僅報告，不為 C 調參。 |
+| C 隱居 | `node solo-sect/tools/phase5-check.mjs <checkout>/solo-sect`：12 種子、每步 6 秒且每步清除 `s.alert` 的受控日程，5 日[base](artifacts/phase5/hermitage-base.json)／[head](artifacts/phase5/hermitage-head.json)。主角臂力中位 10→14.2、身法中位 12.546→10.6；此受控窗無採藥與藥膳。這不是正常 0.25 秒含警示暫停玩法的可達性量測，不推論藥膳自然不可達。 |
+| golden | Node 22 `node tools/golden.mjs --write --tier hermitage` 只重產[隱居兩線](test/golden/hermitage.json)，`--check --tier all` 核對 quick 4、full 32、舊存檔 6、隱居 2。原 quick/full/saves 檔未改。 |
+| 畫面 A/B | `python3 solo-sect/tools/phase5-visual.py --seed=17` 從正常 UI 開局後固定演示狀態；[盲測 A](artifacts/phase5/blind-A.png)、[盲測 B](artifacts/phase5/blind-B.png)、[另存答案](artifacts/phase5/blind-answers.json)。判準：一張顯示痠痛與笨拙挑水，另一張顯示藥膳光暈與俐落挑水；任選 seed 可重播。 |
+
+bot12 同尺命令：分別在 Phase 4 與本輪 checkout 根目錄執行 `docker run --rm -v "$PWD:/app" -w /app node:22-bookworm-slim node solo-sect/tools/bot12.mjs solo-sect --json > solo-sect/artifacts/phase5/bot12-{base,head}.json`，一次只選一個輸出檔。base 原始輸出由 Phase 4 已驗證 head 複製，與當輪 head 比較。
+
+舊名 → 新名：本輪觸及的公開接口已具意義名稱，無編號名稱改動。最沒把握三處：① 採藥／市集購藥都能提供灶房原料，因實際判斷是 `res.herb >= 1`；② 自然 5 日樣本不會自己採藥，藥膳 A 驗收以實際煮／吃任務另驗；③ `+35%` 落在純陽拳／羅漢手外功 XP，沿原入內回饋傳遞，沒有另造內功悟性倍率。

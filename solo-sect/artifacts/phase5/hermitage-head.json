@@ -1,0 +1,392 @@
+{
+  "days": 5,
+  "dt": 6,
+  "alertPolicy": "clear on each step",
+  "scope": "controlled coarse-step C sample; not a normal 0.25-second reachability test",
+  "rows": [
+    {
+      "seed": 1001,
+      "partner": "xiaolongnv",
+      "herb": 0,
+      "medFood": 0,
+      "people": [
+        {
+          "id": "hero",
+          "strength": 14.50000000000001,
+          "agility": 10,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "partner-xln",
+          "strength": 14.50000000000001,
+          "agility": 16,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "guojing",
+          "strength": 36,
+          "agility": 14.600000000000001,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        }
+      ]
+    },
+    {
+      "seed": 1002,
+      "partner": "huangrong",
+      "herb": 0,
+      "medFood": 0,
+      "people": [
+        {
+          "id": "hero",
+          "strength": 13.90000000000001,
+          "agility": 10,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "partner-hr",
+          "strength": 8.199999999999998,
+          "agility": 18,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "guojing",
+          "strength": 36,
+          "agility": 14.900000000000002,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        }
+      ]
+    },
+    {
+      "seed": 1003,
+      "partner": "xiaolongnv",
+      "herb": 0,
+      "medFood": 0,
+      "people": [
+        {
+          "id": "hero",
+          "strength": 14.20000000000001,
+          "agility": 10.600000000000001,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "partner-xln",
+          "strength": 14.20000000000001,
+          "agility": 16,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "guojing",
+          "strength": 36,
+          "agility": 15.200000000000003,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        }
+      ]
+    },
+    {
+      "seed": 1004,
+      "partner": "huangrong",
+      "herb": 0,
+      "medFood": 0,
+      "people": [
+        {
+          "id": "hero",
+          "strength": 13.90000000000001,
+          "agility": 11.200000000000003,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "partner-hr",
+          "strength": 8.499999999999998,
+          "agility": 18,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "guojing",
+          "strength": 36,
+          "agility": 14.600000000000001,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        }
+      ]
+    },
+    {
+      "seed": 1005,
+      "partner": "xiaolongnv",
+      "herb": 0,
+      "medFood": 0,
+      "people": [
+        {
+          "id": "hero",
+          "strength": 14.20000000000001,
+          "agility": 10.600000000000001,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "partner-xln",
+          "strength": 14.20000000000001,
+          "agility": 16.6,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "guojing",
+          "strength": 36,
+          "agility": 14.900000000000002,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        }
+      ]
+    },
+    {
+      "seed": 1006,
+      "partner": "huangrong",
+      "herb": 0,
+      "medFood": 0,
+      "people": [
+        {
+          "id": "hero",
+          "strength": 14.20000000000001,
+          "agility": 10.600000000000001,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "partner-hr",
+          "strength": 7.299999999999998,
+          "agility": 18,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "guojing",
+          "strength": 36,
+          "agility": 14.600000000000001,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        }
+      ]
+    },
+    {
+      "seed": 1007,
+      "partner": "xiaolongnv",
+      "herb": 0,
+      "medFood": 0,
+      "people": [
+        {
+          "id": "hero",
+          "strength": 13.90000000000001,
+          "agility": 11.200000000000003,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "partner-xln",
+          "strength": 13.90000000000001,
+          "agility": 17.200000000000003,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "guojing",
+          "strength": 36,
+          "agility": 15.200000000000003,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        }
+      ]
+    },
+    {
+      "seed": 1008,
+      "partner": "huangrong",
+      "herb": 0,
+      "medFood": 0,
+      "people": [
+        {
+          "id": "hero",
+          "strength": 14.20000000000001,
+          "agility": 10.600000000000001,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "partner-hr",
+          "strength": 8.199999999999998,
+          "agility": 18,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "guojing",
+          "strength": 36,
+          "agility": 14.3,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        }
+      ]
+    },
+    {
+      "seed": 1009,
+      "partner": "xiaolongnv",
+      "herb": 0,
+      "medFood": 0,
+      "people": [
+        {
+          "id": "hero",
+          "strength": 14.50000000000001,
+          "agility": 10,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "partner-xln",
+          "strength": 14.20000000000001,
+          "agility": 16.6,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "guojing",
+          "strength": 36,
+          "agility": 15.500000000000004,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        }
+      ]
+    },
+    {
+      "seed": 1010,
+      "partner": "huangrong",
+      "herb": 0,
+      "medFood": 0,
+      "people": [
+        {
+          "id": "hero",
+          "strength": 14.20000000000001,
+          "agility": 10.600000000000001,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "partner-hr",
+          "strength": 8.499999999999998,
+          "agility": 18,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "guojing",
+          "strength": 36,
+          "agility": 14.3,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        }
+      ]
+    },
+    {
+      "seed": 1011,
+      "partner": "xiaolongnv",
+      "herb": 0,
+      "medFood": 0,
+      "people": [
+        {
+          "id": "hero",
+          "strength": 14.50000000000001,
+          "agility": 10,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "partner-xln",
+          "strength": 14.20000000000001,
+          "agility": 16.6,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "guojing",
+          "strength": 36,
+          "agility": 15.500000000000004,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        }
+      ]
+    },
+    {
+      "seed": 1012,
+      "partner": "huangrong",
+      "herb": 0,
+      "medFood": 0,
+      "people": [
+        {
+          "id": "hero",
+          "strength": 14.800000000000011,
+          "agility": 10.3,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "partner-hr",
+          "strength": 8.499999999999998,
+          "agility": 18,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        },
+        {
+          "id": "guojing",
+          "strength": 36,
+          "agility": 14.900000000000002,
+          "fatigue": 0,
+          "cycles": 1,
+          "buff": false
+        }
+      ]
+    }
+  ]
+}

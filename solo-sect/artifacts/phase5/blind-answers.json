@@ -1,0 +1,8 @@
+{
+  "seed": 17,
+  "answers": {
+    "A": "sore",
+    "B": "medicated"
+  },
+  "method": "normal UI start, deterministic render states"
+}

@@ -103,6 +103,11 @@ export const MIGRATIONS = [
     o.hermitage.founded ??= false;
     o.hermitage.livedDays ??= Math.max(0, (o.day || 1) - 1);
   } },
+  { to: '4.4', note: 'Phase 5（#510）：只為隱居局補藥膳存糧和身體疲勞週期；舊門派局不加欄位', up(o) {
+    if (!o.hermitage?.active && !o.herbalDiet) return;
+    o.res.medFood ??= 0; o.medFoodBatches ??= [];
+    for (const d of o.ds || []) { d.bodyConditionDay ??= o.day; d.muscleFatigue ??= 0; d.soreness ??= false; d.recoveryCyclesToday ??= 0; d.maxCyclesToday ??= 1; d.bodyGainToday ??= 0; }
+  } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
 export function v150Up(o) {

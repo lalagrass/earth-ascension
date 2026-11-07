@@ -11,7 +11,7 @@ import { ensurePractice, rehearse, practiceWork, practiceWindow } from './practi
 import { BODY_TIMING, BODY_MOVES, BODY_BASE, makeBare, acquireWorkTool, moveAvailable, foeAction, FOE_ACTIONS } from './starter-combat.mjs';
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
 import { combatTacticStep, chooseCombatMove, fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuterArt, studyChart24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
-import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
+import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar, bodyConditionOn, ensureBodyCondition, stepWorkCondition, restBodyCondition, cookMedicatedMeal, applyMedicatedMeal } from './economy.mjs';
 import { SOURCES } from './data.mjs';
 import { RECRUIT_TRAIT_VARIATION, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, ROUTINE_DEFAULT, ROUTINE_MODES, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, FENCE_FAC, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, COMPANIONS, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST, ROUTE, ENEMIES } from './data.mjs';
 import { chronOf, clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
@@ -76,6 +76,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (hermitage) {
     const partnerId = heroSpec.partner === 'huangrong' ? 'huangrong' : 'xiaolongnv';
     s.hermitage = { active: true, partnerId, stage: 0, founded: false, livedDays: 0 }; // 出自 Phase 4 規格。
+    s.res.medFood = 0; s.medFoodBatches = []; // 出自 Phase 5 規格：新模式才有藥膳存糧。
     if (s.hero) s.hero.sect24 = 'quanzhen';
     const hero = byId(s, 'hero'), base = partnerId === 'huangrong' ? COMPANIONS.huangrong : {
       name: '小龍女', style: 'palm', adult: true, fem: true, sprite: 'senior', personality: ['gentle', 'diligent'], skills: { ...DISCIPLES[0].skills, herbal: 14, agility: 16 },
@@ -113,6 +114,7 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.kind === 'bare') makeBare(byId(s, 'hero'));
   for(const d of s.ds)if(d.originRelation)makeBare(d);
   for (const d of s.ds) { d.moves=[...new Set([...d.moves,...BODY_BASE])];ensurePractice(d,s.codex); }
+  if (bodyConditionOn(s)) for (const d of s.ds) ensureBodyCondition(d, s.day); // 出自 Phase 5 規格：僅選新局起手建立疲勞週期。
   s.recruitment = recruitmentInit(discipleCount(s));
   return s;
 }
@@ -132,7 +134,8 @@ export const isLabor = (d) => d.role === 'laborer';
 export const disciples = (s) => s.ds.filter((d) => !isLabor(d));
 export const laborers = (s) => s.ds.filter(isLabor);
 export const outers = (s) => s.ds.filter((d) => d.role === 'outer');
-export const emergency = (s) => s.res.food <= 0 || s.mons.some((m) => m.raid && !m.gone);
+const readyMealCount = (s) => s.res.food + (bodyConditionOn(s) ? (s.res.medFood || 0) : 0); // 出自 Phase 5 規格：藥膳存糧是一份可直接食用的飯；舊局只計普通飯。
+export const emergency = (s) => readyMealCount(s) <= 0 || s.mons.some((m) => m.raid && !m.gone);
 // loop39：8 人時內門多、外門少（常 4 外門撐 8 人），日課過半做不完；「人多分攤」開時全派人數 ≥ 外門×QUOTA.shareAt，每位外門日課 −1。
 export const shareOn = (s) => !!s && s.ds.length >= QUOTA.shareAt * Math.max(1, outers(s).length);
 export const quotaOf = (d, s) => QUOTA.points - (shareOn(s) ? 1 : 0) + (d.choreDebt || 0) + (d.boardByWork ? 1 : 0);
@@ -297,19 +300,20 @@ function scoreCtx(s, d) {
   const short = (k) => !!(site0 && site0.need[k] > site0.delivered[k] + site0.reserved[k] + whAvail(s, k));
   const low = d.adult && d.mood >= 45 ? others.filter((o) => o.mood < 35).sort((a, b) => a.mood - b.mood)[0] : null, site = siteOf(s);
   const haul = !!site && MATS.some((k) => missingOf(site[1], k) > 0 && s.res[k] > 0);
-  return { s, d, n, tr: d.traits, others, pp, low, bt, fun: n.fun ?? 60, food: s.res.food, negWexin: -(d.wexin || 0), ph: phaseOf(s).id,
+  return { s, d, n, tr: d.traits, others, pp, low, bt, fun: n.fun ?? 60, food: readyMealCount(s), negWexin: -(d.wexin || 0), ph: phaseOf(s).id,
     shortWood: short('wood'), shortStone: short('stone'), haul, site, PASS, FS: FOOD_SEC, passScore: pp ? passScore(s) : 0,
     wood: s.res.wood + s.ds.reduce((a, o) => a + (o.task?.act === 'chop' ? 1 : 0), 0), stone: s.res.stone + s.ds.reduce((a, o) => a + (o.task?.act === 'quarry' ? 1 : 0), 0),
     passWhy: pp ? `${PASS.why}：帶${pp.p.name}練「${artById(pp.art).name}」` : '', pendingName: d.pendingArt ? artById(d.pendingArt).name : '', btName: bt ? artById(bt).name : '', buildWhy: haul ? '把料搬到工地料堆' : '料齊了，去施工' };
 }
+const hasMeal = (s) => readyMealCount(s) > 0;
 export const PRED = {
-  tired: (c) => c.d.tired, wake: (c) => c.n.energy < CORE.wakeAt, hurt: (c) => c.d.hp < 40, hasFood: (c) => c.s.res.food > 0, foodLow: (c) => foodLow(c.s), starving: (c) => !!c.d.famished || c.n.hunger < 15, /* v1.7 遲滯：餓昏後吃到 50 才解除 */ hungry: (c) => c.n.hunger < 30,
+  tired: (c) => c.d.tired, wake: (c) => c.n.energy < CORE.wakeAt, hurt: (c) => c.d.hp < 40, hasFood: (c) => hasMeal(c.s), foodLow: (c) => foodLow(c.s), starving: (c) => !!c.d.famished || c.n.hunger < 15, /* v1.7 遲滯：餓昏後吃到 50 才解除 */ hungry: (c) => c.n.hunger < 30,
   others: (c) => c.others.length > 0, pp: (c) => !!c.pp, dull: (c) => c.fun < 25, encourageOk: (c) => !!c.low, pending: (c) => !!c.d.pendingArt,
   btOk: (c) => !!c.bt && c.d.mood >= BREAK.moodMin && c.n.energy >= BREAK.energyMin, wexin: (c) => c.d.wexin > 0,
   sparOk: (c) => /* loop15：空地也能徒手過招 */ c.n.energy > 45 && c.others.some((o) => o.needs.energy > 45),
   woodRoom: (c) => c.wood < c.s.cap.wood, stoneRoom: (c) => c.stone < c.s.cap.stone, shortWood: (c) => c.shortWood, shortStone: (c) => c.shortStone,
   ripe: (c) => c.s.plots.some((p) => p.st === 'ripe'), siteWork: (c) => !!c.site && (c.haul || siteReady(c.site[1])),
-  nightRest: (c) => c.ph === 'night' && c.n.energy < 95, cookable: (c) => vegFree(c.s) >= 2 && c.s.res.food < 10,
+  nightRest: (c) => c.ph === 'night' && c.n.energy < 95, cookable: (c) => vegFree(c.s) >= 2 && readyMealCount(c.s) < 10,
   forayReady: (c) => c.s.forayPolicy !== 'forbid' && !c.s.band && !c.s.hunt && c.d.role !== 'laborer' && c.d.adult !== false && c.n.energy >= 45 && c.n.hunger >= 30 && canExpedition(c.s, [c.d.id]).ok,
   patrolReady: (c) => PRED.forayReady(c) && !!forayChoice(c.s, c.d, 'practice'),
   animalTracks: (c) => (c.s.eco?.boar?.n || 0) > 0 && (c.s.pop?.foot?.n ?? POP.foot.start) > 0,
@@ -320,7 +324,7 @@ export function valOf(v, c) { if (typeof v === 'number') return v; if (typeof v 
   let x = v.pick ? (path(c, v.pick[0]) ? v.pick[1] : v.pick[2]) : v.lin[1] - path(c, v.lin[0]);
   for (const m of v.mul || []) x *= typeof m === 'number' ? m : typeof m === 'string' ? path(c, m) : valOf(m, c);
   return v.plus != null ? v.plus + x : x; }
-export const foodLow = (s) => s.res.food + s.res.veg < FOOD_SEC.perHead * s.ds.filter((d) => !d.away).length; // v1.76 糧食安全
+export const foodLow = (s) => readyMealCount(s) + s.res.veg < FOOD_SEC.perHead * s.ds.filter((d) => !d.away).length; // v1.76 糧食安全；出自 Phase 5 規格：藥膳計一份存糧。
 export const vegFree = (s) => s.res.veg - stockReserved(s, 'veg');
 const fillWhy = (w, c) => (w || '').replace(/\{([\w.]+)\}/g, (_, p) => path(c, p) ?? '');
 // v1.8 後處理解讀器（規則在 score-data.mjs 的 SCORE_POST）
@@ -404,7 +408,7 @@ function assign(s, d, act, why) {
   }
   if (act === 'defend') { if (!s.band || !canDefend(d)) return false; d.task = { act, node: FENCE.node, phase: 'go' }; goto(d, FENCE.node); d.reason = why; return true; }
   if (act === 'repair') { if (!(repairScore(s, d) > 0)) return false; d.task = { act, node: FENCE.node, phase: 'go' }; goto(d, FENCE.node); d.reason = why; return true; }
-  if (act === 'eat' && s.res.food <= 0) return false;
+  if (act === 'eat' && !hasMeal(s)) return false;
   if (act === 'eat' && !d.noPairMeal) mealInvite(s, d);
   if (act === 'cook' && vegFree(s) < STOCK_RESV.cook.amt) return false;
   let plot; if (act === 'farm') { plot = s.plots.findIndex((p, i) => (p.st === 'ripe' || p.st === 'empty') && !holder(s, `plot:${i}`)); if (plot < 0) return false; }
@@ -437,7 +441,7 @@ export function pairOf(s, d) {
   return m ? byId(s, m[0]) || null : null;
 }
 function mealInvite(s, d) {
-  const p = pairOf(s, d); if (!p || p.away || p.order || p.carry || p.needs.hunger > PAIR.inviteMax || s.res.food < 2) return;
+  const p = pairOf(s, d); if (!p || p.away || p.order || p.carry || p.needs.hunger > PAIR.inviteMax || readyMealCount(s) < 2) return;
   if (p.task && !['leisure', 'chat'].includes(p.task.act)) return;
   if (p.task) cancelTask(s, p, `${d.name}喊一起吃飯`);
   p.noPairMeal = true; const ok = assign(s, p, 'eat', `${d.name}喊一起吃飯`); p.noPairMeal = false;
@@ -476,7 +480,7 @@ function breakDeed(s, d, r) {
 function decide(s, d) {
   if (d.carry) { d.task = { act: 'deliver', phase: 'return', node: 'court', walkStart: d.walked }; goto(d, 'court'); d.reason = '先把東西送回院倉'; d.decision = { layer: 'carry', act: 'deliver', why: d.reason }; return true; }
   if (d.order) {
-    const o = d.order; if (o !== 'hunt' && (d.needs.energy < 15 || (o !== 'eat' && d.needs.hunger < 10 && s.res.food > 0))) { const a = d.needs.energy < 15 ? 'rest' : 'eat'; d.decision = { layer: 'need', act: a, why: '指派中先自理' }; return assign(s, d, a, '指派中先自理'); }
+    const o = d.order; if (o !== 'hunt' && (d.needs.energy < 15 || (o !== 'eat' && d.needs.hunger < 10 && hasMeal(s)))) { const a = d.needs.energy < 15 ? 'rest' : 'eat'; d.decision = { layer: 'need', act: a, why: '指派中先自理' }; return assign(s, d, a, '指派中先自理'); }
     if (assign(s, d, o, '玩家指派')) { onAssign(s, d, o, true); d.decision = { layer: 'order', act: o, why: '玩家指派' }; return true; }
     if (!d.reason?.includes('站位都有人')) d.reason = `指派「${o === 'hunt' ? '狩獵' : ACTIVITIES[o].name}」暫不可行`; return false;
   }
@@ -505,6 +509,7 @@ function moveStep(d, dt) {
 
 function grow(s, d, sk, amt, src = 'train') {
   if (sk === 'style') sk = d.style; const raw = amt; /* loop79：造詣只吃原始投入（師父在場倍率前） */
+  if (bodyConditionOn(s) && src === 'labor' && ['strength', 'agility'].includes(sk)) return; // 出自 Phase 5 規格：新局體魄由疲勞週期結算，不能從舊勞作通路繞過 18 點上限。
   const before = d.skills[sk]; d.skills[sk] = Math.min(100, before + amt * (d.traits.diligent || 1) * 0.3 * (1 - before / 130) * focusMul(d));
   if (src === 'labor' && sk === 'strength' && d.lg) d.skills[sk] = before + workStrCap(d, Math.floor(s.t / DAY), d.skills[sk] - before); // loop127 做活力氣每日軟上限
   if (sk === d.style) { growEnsure(d); const o = gainArt(d, amt * (d.arts ? teachMul(s, d, focusOf(d)) : 1), focusMul(d), s.t, { raw, src }); /* #415 N12 師父傳授時段：這門名功練得快 */ if (o.feed) log(s, `${d.name}【${o.feed.label}】內功《${o.feed.name}》長進 ${o.feed.xp.toFixed(2)}`); if (o.next) log(s, `${d.name}功夫到了火候，可向師父求學「${o.next.name}」`); for (const m of o.moves) log(s, `${d.name}把已學套路的「${MOVES.find((x) => x.id === m).name}」練成了`); if (o.star) log(s, `${d.name}的基本功又添一顆星`); return o; }
@@ -541,19 +546,23 @@ function doTask(s,d,dt){
     const effDur = durOf(s, t) / (laborSpeed(s, d, t.act)); /* loop155 幫工專長／清修 */
     if (A.energy && effDur > 0) d.needs.energy = clamp(d.needs.energy + A.energy * dt / effDur, 0, 100);
     if (t.act === 'rest' && d.ng) addQi(d, (restQi(d)) * dt); // loop103 歇息回內力
-    if (t.act === 'rest') { const rate = (facStage(s, t.fac).restRate || 3) * (t.floor ? 0.6 : 1) * (1 + ART_GAIN.restPerTier * Math.max(0, effectTier(d, 'rest') + 1)) * effectMul(d, 'rest', s.t); if (t.timer < dt * 1.5) think(s, d, t.floor || (t.fac === 'hall' && s.fac.hall.stage === 0) ? 'floorSleep' : 'bedSleep'); d.needs.energy = clamp(d.needs.energy + rate * dt, 0, 100); d.hp = clamp(d.hp + 3 * dt, 0, 100); const night = phaseOf(s).id === 'night' && !s.hunt?.team.includes(d.id); if (!night && (d.needs.energy >= 100 || (d.order !== 'rest' && d.needs.energy >= CORE.wakeAt && t.timer > 4))) finish(s, d); return; }
+    if (t.act === 'rest') { const rate = (facStage(s, t.fac).restRate || 3) * (t.floor ? 0.6 : 1) * (1 + ART_GAIN.restPerTier * Math.max(0, effectTier(d, 'rest') + 1)) * effectMul(d, 'rest', s.t); if (t.timer < dt * 1.5) think(s, d, t.floor || (t.fac === 'hall' && s.fac.hall.stage === 0) ? 'floorSleep' : 'bedSleep'); d.needs.energy = clamp(d.needs.energy + rate * dt, 0, 100); d.hp = clamp(d.hp + 3 * dt, 0, 100); const night = phaseOf(s).id === 'night' && !s.hunt?.team.includes(d.id); if (!night && (d.needs.energy >= 100 || (d.order !== 'rest' && d.needs.energy >= CORE.wakeAt && t.timer > 4))) { restBodyCondition(d, s); finish(s, d); } return; }
     if (t.act === 'build') { const site = s.fac[t.fac].site; site.work += dt; d.needs.energy = clamp(d.needs.energy - dt, 0, 100); grow(s, d, 'strength', 0.2 * dt, 'labor'); if (site.work >= site.workNeed) { finishBuild(s, t.fac); finish(s, d); } else if (t.timer >= A.dur) finish(s, d); return; }
     const dur = effDur;
     if (t.timer >= dur) {
-      if (t.act === 'cook') { const st = facStage(s, t.fac); resAdd(s, 'veg', -2); t.phase = 'done'; const wat = s.res.water >= 1 ? 1 : 0; if (wat) { s.res.water -= 1; book(s, 'out', 'water', 1); } const yld = st.cookYield + cookBonus(d) + wat; /* v1.6 有井水多煮一份 */ onCook(s, d); resAdd(s, 'food', yld, 'kitchen'); log(s, `${d.name}在${st.name}煮好 ${yld} 份飯`); grow(s, d, 'cooking', 6); finish(s, d); return; }
-      if (t.act === 'farm') { const p = s.plots[t.plot]; t.resv = []; grow(s, d, 'farming', 6); if (p.st === 'ripe') { p.st = 'empty'; p.g = 0; d.carry = { veg: HARVEST }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; } p.st = 'grow'; p.g = 0; finish(s, d); return; }
-      if (A.use) { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } resAdd(s, 'food', -1, 'meal'); }
+      if (t.act === 'cook') { const st = facStage(s, t.fac); resAdd(s, 'veg', -2); t.phase = 'done'; const wat = s.res.water >= 1 ? 1 : 0; if (wat) { s.res.water -= 1; book(s, 'out', 'water', 1); } const yld = st.cookYield + cookBonus(d) + wat; /* v1.6 有井水多煮一份 */ onCook(s, d); resAdd(s, 'food', yld, 'kitchen'); log(s, `${d.name}在${st.name}煮好 ${yld} 份飯`); const meal = cookMedicatedMeal(s, d); if (meal) log(s, `${d.name}採藥入鍋，把其中一份升作${meal}。`); grow(s, d, 'cooking', 6); finish(s, d); return; }
+      if (t.act === 'farm') { const p = s.plots[t.plot]; t.resv = []; grow(s, d, 'farming', 6); stepWorkCondition(d, s, 'farm'); if (p.st === 'ripe') { p.st = 'empty'; p.g = 0; d.carry = { veg: HARVEST }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; } p.st = 'grow'; p.g = 0; finish(s, d); return; }
+      if (A.use) {
+        if (t.act === 'eat' && bodyConditionOn(s) && s.res.medFood > 0) { const meal = applyMedicatedMeal(d, s); if (meal) log(s, `${d.name}吃下${meal.name}，肌肉痠痛漸消，今日可完成 ${meal.cycles} 輪恢復。`); }
+        else { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } resAdd(s, 'food', -1, 'meal'); }
+      }
       if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) { d.needs.social = clamp(d.needs.social + b / 2, 0, 100); think(s, d, 'hallMeal'); } likeMeal(s, d, think); }
       let trainedArt = null;
       acquireWorkTool(d, t.act);
       finishTrainingWish(d,t.act);
       if (t.act === 'train' || t.act === 'spar') { const moves = d.moves.map((id) => MOVES.find((m) => m.id === id)).filter((m) => m && moveAvailable(d,m)); rehearse(s,d,moves,effDur*guidanceLearning(d),{partner:t.act === 'spar' ? byId(s,t.partner) : null}); }
       else if (['chop','quarry','water','farm','forage'].includes(t.act)) practiceWork(s,d,t.act,effDur);
+      if (['chop', 'quarry', 'water', 'forage', 'train'].includes(t.act)) stepWorkCondition(d, s, t.act);
       if (A.skill) for (const [k, v] of Object.entries(A.skill)) { const o = grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? (facStage(s, 'yard').trainMul || 1)*guidanceLearning(d) : 1), isWorkAct(t.act) ? 'labor' : 'train'); if (t.act === 'train' && o?.trained) trainedArt = o.trained; }
       if (A.skill) cliqueTrain(s, d, t.act, A.skill, grow); // loop20 小派同修
       if (t.act === 'train') coTrain(s, d, A.skill?.style || 0, grow, relAdd, log); // loop8 同修
@@ -565,7 +574,7 @@ function doTask(s,d,dt){
       if (A.fun) d.needs.fun = clamp((d.needs.fun ?? 60) + A.fun, 0, 100);
       if (t.act === 'leisure') think(s, d, 'idled');
       if (t.act === 'forage') d.needs.fun = clamp((d.needs.fun ?? 60) + (d.personality.includes('playful') ? 20 : 8), 0, 100);
-      if (t.act === 'eat' && s.res.food >= 8) think(s, d, 'wellFed');
+      if (t.act === 'eat' && readyMealCount(s) >= 8) think(s, d, 'wellFed');
       if (t.act === 'eat' && (t.mate || d.pendingMate)) { const p = byId(s, t.mate || d.pendingMate); d.pendingMate = undefined; if (p && (p.task?.act === 'eat' || p.lastAte === s.t) && (p.task?.mate === d.id || p.pendingMate === d.id || t.mate === p.id)) { d.needs.social = clamp(d.needs.social + PAIR.mealSocial, 0, 100); think(s, d, 'mealPair'); if (d.id < p.id) { relAdd(s, d, p, PAIR.mealRel); log(s, `${d.name}和${p.name}湊在一桌吃飯`, 'low'); } } }
       if (A.social) d.needs.social = clamp(d.needs.social + A.social, 0, 100);
       if (t.act === 'meditate') { const b = btReady(d, s.t); if (!b) for (let i = 0; i < (facStage(s, t.fac).medEase || 1); i++) easeWexin(s, d); const r = b && resolveBreak(d, b, s.t, rand(s) - ngBreak(d)); /* loop105 內力衝關：成功率 +btBonus，仍封頂 0.9；loop108 已達 0.9 不扣 */ if (r?.ok && r.stage <= 2) { growEnsure(d); settleGrowth(d, r.art, d.arts[r.art.id], { src: 'break', stage: r.stage }); } /* loop79 突破里程碑 */ const bTier = r?.ok && breakTier(s, d, r); if (r?.ok) breakDeed(s, d, r); if (r?.ok) { think(s, d, 'btWin'); log(s, `${d.name}打坐衝關成功：「${r.art.name}」${r.stage === 1 ? '踏入大成' : r.stage === 2 ? '臻至化境' : '返璞歸真'}！`, bTier || undefined); s.fx.push({ kind: 'break', pos: [...d.pos], ttl: 1.2 }); } else if (r) { think(s, d, 'btFail'); log(s, `${d.name}衝關「${r.art.name}」失敗，歇一天再試`); } }
@@ -600,7 +609,7 @@ function doTask(s,d,dt){
   }
   if (t.phase === 'return' && !d.path.length) {
     for (const [k, v] of Object.entries(d.carry)) { const nv = Math.min(s.cap[k] ?? 99, s.res[k] + v); book(s, 'in', k, nv - s.res[k], 'work'); s.res[k] = nv; }
-    const walk = d.walked - (t.walkStart || 0); d.skills.agility = Math.min(100, d.skills.agility + walk / 400); // 負重長路→腳力
+    const walk = d.walked - (t.walkStart || 0); if (!bodyConditionOn(s)) d.skills.agility = Math.min(100, d.skills.agility + walk / 400); // 舊局負重長路→腳力；出自 Phase 5 規格：隱居局體魄由疲勞結算防止繞過上限。
     d.carry = null; finish(s, d);
   }
 }
@@ -959,6 +968,7 @@ export function temperDaily29(s) { const W = (s.v29n ??= {}), B = (W.baseByTrait
     if (d.xiao29 && !d.xiao29c) { d.xiao29c = true; W.xiao = (W.xiao || 0) + 1; } if (d.ling29 && !d.ling29c) { d.ling29c = true; W.ling = (W.ling || 0) + 1; } if (temperOf(d).qing && !d.qing29c) { d.qing29c = true; W.qing = (W.qing || 0) + 1; } } }
 function injuryDaily(s) { for (const d of [...s.ds,...s.mons,...(s.band?.members||[])]) if (d.part||d.wounds?.length) partHeal(s,d,'day'); /* 新層1–4遊戲日；舊部位傷仍可遷移 */ for (const d of s.ds) { if (!d.qiInjury) continue; if (d.qiInjury >= DRIVE28.injHeavy) { d.hp = clamp(d.hp - DRIVE28.hp, 1, 100); d.mood = clamp((d.mood ?? 50) - DRIVE28.mood, 0, 100); } const a = mainOuterArt(d); if (!a || innerDrive28(d, a).tier !== 4) qiInjuryCure28(s, d, DRIVE28.rest); } }
 export function dailyPipeline(s) {
+  if (bodyConditionOn(s)) for (const d of s.ds) ensureBodyCondition(d, s.day); // 出自 Phase 5 規格：睡眠換日恢復並歸零每日週期。
   if (s.hermitage?.active) {
     const partner = s.ds.find((d) => d.id === (s.hermitage.partnerId === 'huangrong' ? 'partner-hr' : 'partner-xln'));
     const hero = s.ds.find((d) => d.id === 'hero');
@@ -1000,7 +1010,7 @@ export function tick(s, dt = 0.25) {
     if (d.task) { if(!(d.downUntil>s.t))moveStep(d,dt); tallyAct(d, d.task.act, dt); doTask(s, d, dt); } // M1 傳記：看得見的行為時間
     if (d.anim === 'strike' && d.cool < 0.6) d.anim = null;
   }
-  { const em = emergency(s); if (em !== !!s.emergency) { s.emergency = em; if (outers(s).length >= QUOTA.outerMin) log(s, em ? (s.res.food <= 0 ? '斷糧了！內門弟子暫時放下功課回來幫忙。' : '野豬下山！內門弟子暫時回來顧家。') : '危機解除，內門弟子回去練功。'); } }
+  { const em = emergency(s); if (em !== !!s.emergency) { s.emergency = em; if (outers(s).length >= QUOTA.outerMin) log(s, em ? (readyMealCount(s) <= 0 ? '斷糧了！內門弟子暫時放下功課回來幫忙。' : '野豬下山！內門弟子暫時回來顧家。') : '危機解除，內門弟子回去練功。'); } }
   huntStep(s, dt);
   for (const d of s.ds) {
     if (d.raging && d.task?.act === 'defend' && !d.rageHeld) {

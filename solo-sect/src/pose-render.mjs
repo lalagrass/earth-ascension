@@ -468,6 +468,12 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
     g.restore();
   }
 
+  // 出自 Phase 5 規格：藥膳溫養只在微距窗畫琥珀氣暈；45×80 對齊此窗人物輪廓，不改角色位置或碰撞。
+  if (ergo.laborDetail.herbalBuffActive && g.save && g.restore && g.ellipse && g.fill) {
+    g.save(); g.globalAlpha = 0.25; g.fillStyle = '#d99a45';
+    g.beginPath(); g.ellipse(focalActorX, groundY - 70, 45, 80, 0, 0, Math.PI * 2); g.fill(); g.restore();
+  }
+
   // 3. Ghost Silhouette (宗師淡墨重影)
   if (view.frame?.routine || focalActor?.task?.act === 'train' || view.poses) {
     if (g.save && g.restore) {
@@ -1044,6 +1050,14 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
   } else {
     headerText = `弟子日常・${focalActor.name || '弟子'}`;
     subText = `力氣 ${strength.toFixed(0)}・身法 ${agility.toFixed(0)}・氣息 ${ergo.buildProfile.breathRate.toFixed(1)}×`;
+  }
+
+  if (ergo.laborDetail.muscleFatigue >= 100) {
+    headerText = '💪 肌肉疲勞已滿';
+    subText = `今日成長週期 ${ergo.laborDetail.recoveryCycleLabel}・需歇息或藥膳調養`;
+  } else if (ergo.laborDetail.herbalBuffActive) {
+    headerText = `🍵 ${focalActor.herbalBuffName || '藥膳'}溫養中`;
+    subText = `疲勞消退・今日超量恢復週期 ${ergo.laborDetail.recoveryCycleLabel}`;
   }
 
   if (g.fillRect && g.fillText) {
