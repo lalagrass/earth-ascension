@@ -141,7 +141,7 @@ export function artsGrowHtml(d, now = 0, grow = true) {
     const nxt = r && !a.layered && !a.forms && t < TIERS.length - 1 ? `・距${TIERS[t + 1][1]} ${(TIERS[t + 1][0] - r.xp).toFixed(1)}` : '';
     const moves = r ? `・招式 ${(a.techs || []).filter((m) => d.moves.includes(m)).length}/${(a.techs || []).length}` : '';
     const why = []; if (r && grow && st.st === 'acc') { const ac = accelOf(d, a, r.xp); if (ac.mul > 1) why.push(`${CATS[ac.cat].name}底子：入門修練 ×${ac.mul.toFixed(2)}`); else if (a.grade >= 3 && ac.cat) why.push('精品以上：同類底子不加速'); }
-    if (r && d.pf && !r.guizhen) { const p = profOf(r.xp), nx = nextLvXp(r.xp); why.push(p.lv ? `熟練度：招式威力 +${((profMul(r.xp) - 1) * 100).toFixed(1)}%（每重 +${(PROF.perLv * 100).toFixed(1)}%）${p.stuck ? '，卡瓶頸，突破後才升階' : nx != null && p.lv < PROF.lvs ? `，第${PROF.cn[p.lv + 1]}重 xp ${nx.toFixed(1)}` : `，滿十重，xp ${nx} 升${TIERS[p.t + 1][1]}`}` : '熟練度：化境不分重'); }
+    if (r && d.pf && !r.guizhen) { const p = profOf(r.xp), nx = nextLvXp(r.xp); why.push(p.lv ? `熟練：${p.stuck ? '卡瓶頸，突破後才升階' : nx != null && p.lv < PROF.lvs ? `下一記名 xp ${nx.toFixed(1)}` : `xp ${nx} 升${TIERS[p.t + 1][1]}`}` : '熟練：化境，持續練手眼'); }
     if (r && rustOf(r, now) > 0.01) why.push(`荒疏 ${(rustOf(r, now) * 100).toFixed(0)}%`);
     if (r && Object.keys(ART_CAT[a.id] || {}).every((c) => supOf(c, d) === 'none')) why.push('門類尚未支援：不累積造詣');
     if (!!d && r && !isInner(a)) { const drv = innerDrive28(d, a); if (drv.tier === 1 && drv.root) why.push('根基加持'); else if (drv.tier === 3) why.push('內力虛浮'); else if (drv.tier === 4) why.push('⚠️異屬逆催'); } /* #405 催動不再乘品階，面板不列係數 */
@@ -161,8 +161,8 @@ export function artsGrowHtml(d, now = 0, grow = true) {
 /* loop85 規則說明：數字直接讀 GROW，不另寫 */
 export function rulesHtml(d) { const G = GROW, A = G.acc;
   const tail = !!d
-    ? `造詣進實戰：內功每點，內力上限與打坐、歇息回氣 ×(1+0.004)，加總後再封頂 ${NG2.total24}；身法每點，腳程 ×(1+0.002)、冷卻 ×(1−0.0015)；拳掌、腿法、劍法、棍棒每點，招式傷害 ×(1+0.0015)。`
-    : '造詣不加傷害。';
+    ? `出手共用前搖、反應與勁：技能與武學定可達下限，手眼熟往下限靠近；內功造詣仍只接內力上限與回復，身法造詣只接腳程。熟練十重、歸真星和外功造詣不再另乘傷害。`
+    : '出手強度只讀武學的勁目標，沒有熟練十重的第二層傷害。';
   return `<details class="grow-rules" data-keep="grow-rules"><summary>造詣怎麼算（本版規則）</summary><div class="k">`
     + `修練：熟練真的有長才算，每單位投入 ×${G.k}；對敵命中 ×${G.src.fight}（修練的 ${G.src.fight} 倍）；師父傳功每門一次 +${G.pass}。<br>`
     + `里程碑：自然練到小成 +${G.ms[0][1]}、打坐破大成 +${G.ms[1][1]}、破化境 +${G.ms[2][1]}。<br>`
@@ -199,7 +199,7 @@ export function neigongRules2Html(d) {
     + combat
     + `<div class="k">回復：打坐一次 +${!!d ? medQi(d) : NG.med}；歇息每秒 +${!!d ? restQi(d) : NG.rest}。衝關仍可扣 ${NG.btCost} 加成功率 +${Math.round(NG.btBonus * 100)}%。沒有運勁、運功療傷。</div></details>`; }
 export const neigongRulesHtml = neigongRules2Html; // loop142 一版說明淘汰
-export const growthHtml = (d, memo, day, now, grow) => powerHtml(d, memo, day, now) + catHtml(d) + artsGrowHtml(d, now, grow) + rulesHtml(d) + (d.pf ? profRulesHtml() : '') + (d.ng ? neigongRules2Html(d) : '');
+export const growthHtml = (d, memo, day, now, grow) => powerHtml(d, memo, day, now) + catHtml(d) + artsGrowHtml(d, now, grow) + rulesHtml(d) + (d.ng ? neigongRules2Html(d) : '');
 
 // ==== （原 jhui.mjs）====
 // loop34 介面可讀性（選用，s.jhui）：原型、同門小派、江湖事件三塊面板。純顯示：只讀狀態、不寫狀態、不抽亂數；golden 不變。

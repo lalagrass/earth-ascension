@@ -185,7 +185,7 @@ function bandClash(s, b, defs, dt) {
     if(combatTacticStep(s,d,dt,{help:(a,id)=>{const h=s.ds.find(x=>x.id===id);if(h){h.order='defend';cancelTask(s,h,`${a.name}喊援`);h.reason=`${a.name}喊援`; }}}))continue;
     if (d.bcool > 0 || (d.busyUntil || 0) > s.t) continue;
     const mine = live().filter((m) => m.ring === 1 && m.foe === d.id), tgt = (mine.length ? mine : live()).sort((x, y) => x.hp - y.hp)[0]; if (!tgt) break;if(distance(d.pos,tgt.pos)>Math.max(...combatMoves(d).map(m=>m.range||26)))continue;
-    const pick=chooseCombatMove(s,d,tgt,()=>R(s)),mv=pick?.move||fastestMove(d),wind=windOf(d,mv.id,mv.cd)+(pick?.seconds||0);d.bcool=BAND_CLASH.cd+(pick?.seconds||0);
+    const pick=chooseCombatMove(s,d,tgt,()=>R(s)),mv=pick?.move||fastestMove(d),wind=windOf(d,mv.id,mv.cd,s.t)+(pick?.seconds||0);d.bcool=BAND_CLASH.cd+(pick?.seconds||0);
     d.bswing = { mv: mv.id, tgt: tgt.uid, at: s.t + wind, wind, dmg: defenderDps(d, s) * sectDefenseFactor(s) * BAND_CLASH.cd, targetApproachingAtWindup:!!tgt.path?.length&&!tgt.swing&&!tgt.bswing };
     (s.fx ||= []).push({ kind: 'warn', from: [...d.pos], to: [...(tgt.pos || b.pos)], r: 30, dur: wind, ttl: wind, t0: s.t });
   }

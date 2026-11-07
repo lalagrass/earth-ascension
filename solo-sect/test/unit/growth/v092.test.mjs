@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, save, load } from '../../../src/sim.mjs';
-import { DAY, BREAK, GUIZHEN, RULES_VERSION } from '../../../src/data.mjs';
+import { DAY, BREAK, RULES_VERSION } from '../../../src/data.mjs';
 import { seedArts, gainArt, artById, stuckAt, resolveBreak, curCap, guizhenOk, chooseVariant, variantOf, moveMul, cdMul, rustOf, artTier } from '../../../src/arts.mjs';
 const mk = (root = 3, personality = []) => seedArts({ root, personality, style: 'palm', skills: { palm: 0, leg: 0 }, moves: ['fist'], mood: 70, needs: { energy: 80 } });
 const fist = () => artById('basicFist');
@@ -31,18 +31,18 @@ test('地圖上打坐衝關：心情精力夠才會去，結果寫入日誌', ()
   assert.ok(saw); assert.ok(s.log.some((l) => /衝關/.test(l.msg)));
 });
 test('失敗想法只是小小扣心情', async () => { const { THOUGHTS } = await import('../../../src/data.mjs'); assert.ok(THOUGHTS.btFail.v < 0 && THOUGHTS.btFail.v >= -6); });
-test('歸真：悟性低或勤奮、憨厚才能走；星數遞增成本、每星 +4%', () => {
+test('歸真：悟性低或勤奮、憨厚才能走；星數遞增成本，累積不再疊傷害', () => {
   assert.equal(guizhenOk(mk(3), fist()), false); assert.ok(guizhenOk(mk(3, ['honest']), fist())); assert.ok(guizhenOk(mk(2), fist())); assert.equal(guizhenOk(mk(1), artById('wavePalm')), false);
   const d = mk(1); Object.assign(d.arts.basicFist, { xp: 100, bt1: true, bt2: true }); assert.equal(stuckAt(d, fist()), 3);
   resolveBreak(d, 'basicFist', 0, 0); assert.ok(d.arts.basicFist.guizhen); const m0 = moveMul(d, 'fist');
   d.focus = 'basicFist'; for (let i = 0; i < 3000; i++) gainArt(d, 5); const n = d.arts.basicFist.stars; assert.ok(n >= 3, String(n));
-  assert.ok(Math.abs(moveMul(d, 'fist') / m0 - (1 + GUIZHEN.star * n)) < 1e-9);
+  assert.equal(moveMul(d, 'fist'), m0); // N42：星數保留為一生累積紀錄，不再有第二層傷害。
 });
 test('大成變式：可選、可重選但要等半天', () => {
   const d = mk(); assert.equal(chooseVariant(d, 'basicFist', 'gang'), false);
   Object.assign(d.arts.basicFist, { xp: 60, bt1: true }); assert.ok(chooseVariant(d, 'basicFist', 'gang', 0)); assert.equal(variantOf(d, 'basicFist', 0).id, 'gang');
   chooseVariant(d, 'basicFist', 'ling', 10); assert.equal(variantOf(d, 'basicFist', 20), null); assert.equal(variantOf(d, 'basicFist', 10 + BREAK.rechoose).id, 'ling');
-  assert.ok(cdMul(d, 'fist', 10 + BREAK.rechoose) < 0.8);
+  assert.equal(cdMul(d, 'fist', 10 + BREAK.rechoose), 0.8); // 迅捷變式原值恰為 0.8。
 });
 test('荒疏：久不練只減慢進度、不降階', () => {
   const a = mk(), b = mk(); a.arts.basicFist.xp = b.arts.basicFist.xp = 30; a.arts.basicFist.last = b.arts.basicFist.last = 0;

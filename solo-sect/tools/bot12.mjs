@@ -61,8 +61,9 @@ function bandProbe(s0) {
   BANDP.n++; if (r.fight === 'win') BANDP.won++; if (!r.broke) BANDP.fenceHeld++; BANDP.hurt += X.homeHurt - h0; BANDP.odds.push(odds ?? (r.fight === 'win' ? 1 : 0)); BANDP.winP.push(predicted); BANDP.witch.push((s.witchN || 0) - (s0.witchN || 0)); BANDP.rage.push((s.rageN || 0) - (s0.rageN || 0)); BANDP.breaks.push((s.breakN || 0) - (s0.breakN || 0));
 }
 const RAIDS = { n: 0, fights: 0, won: 0, hurt: 0, map: 0, predictions: [] };
+const insight = { self: 0, watch: 0, variant: 0, affix: 0, n35: 0 };
 let witchFirst10 = 0, naturalWitch = 0;
-const out0 = {}; const pts = [], wp = [], by = {}, famousBy = { yes: [], no: [] }, held = [];
+const out0 = {}; const pts = [], wp = [], by = {}, tierDetails = [], famousBy = { yes: [], no: [] }, held = [];
 const { ARTS } = await import(pathToFileURL(here).href + '/src/data.mjs');
 const FAMOUS = new Set(ARTS.filter((a) => a.secret && a.classic && !a.derived).map((a) => a.id));
 for (const seed of (seedArg ? [seedArg] : Array.from({ length: 12 }, (_, i) => 1001 + i))) {
@@ -77,6 +78,11 @@ for (const seed of (seedArg ? [seedArg] : Array.from({ length: 12 }, (_, i) => 1
   recruitmentRow.workDepartures=s.recruitment?.departures||0;
   huntProbe(s);
   naturalWitch += s.witchN || 0;
+  insight.self += s.compN?.self || 0;
+  insight.watch += s.compN?.watch || 0;
+  insight.variant += s.compN?.variant || 0;
+  insight.affix += s.v24n?.affix || 0;
+  insight.n35 += s.ds.reduce((n,d)=>n+(d.glimmer?.known?.length||0),0);
   for (const r of T.T(s).hist || []) { RAIDS.n++; if (r.fight) { RAIDS.fights++; if (r.fight === 'win') RAIDS.won++; if (r.map) RAIDS.map++; } if (r.hurt) RAIDS.hurt++; }
   const p = med(P.slice(-10)); const bd = T.threatBreakdown ? T.threatBreakdown(s) : null; (out0.cShare ??= []).push(bd ? bd.cPct : 0);
   pts.push(p); wp.push(T.winP(s, T.points(s)));
@@ -84,10 +90,11 @@ for (const seed of (seedArg ? [seedArg] : Array.from({ length: 12 }, (_, i) => 1
   for (const d of s.ds) { for (const id of Object.keys(d.arts || {})) if (FAMOUS.has(id)) n++; }
   held.push(n);
   (n > 0 ? famousBy.yes : famousBy.no).push(p);
-  for (const d of s.ds) { if (d.role === 'laborer') continue; const a = (A.mainOuterArt || A.mainOuter28)(d); const k = a ? fanRank(a.id).fanTier : 'none'; (by[k] ??= []).push(dpsOf(s, d)); }
+  for (const d of s.ds) { if (d.role === 'laborer') continue; const a = (A.mainOuterArt || A.mainOuter28)(d); const k = a ? fanRank(a.id).fanTier : 'none', dps = dpsOf(s, d); (by[k] ??= []).push(dps); tierDetails.push({ seed, id: d.id, art: a?.id || null, fan: k, xp: a ? d.arts?.[a.id]?.xp || 0 : null, dps: +dps.toFixed(1) }); }
 }
 const sum = (v) => v.reduce((a, b) => a + b, 0);
-const out = { recruitment:{definition:'第10/30日結束常住名俠，含舊版免費名角同伴，不含主角或暫訪師父',day10Med:med(recruitment.map(r=>r.day10)),day30Med:med(recruitment.map(r=>r.day30)),bySeed:recruitment},stepSeconds:.25, solo: { probes: HUNT1.kills.length, kills: sum(HUNT1.kills), escaped: sum(HUNT1.escaped), hurt: sum(HUNT1.hurt), hpLost: Math.round(sum(HUNT1.hpLost)) }, band: { n: BANDP.n, oddsMed: +med(BANDP.odds).toFixed(3), winPMed: +med(BANDP.winP).toFixed(3), won: BANDP.won, fenceHeld: BANDP.fenceHeld, hurt: BANDP.hurt, hurtPerRaid: BANDP.n ? +(BANDP.hurt / BANDP.n).toFixed(3) : 0 }, practiceOverlap, naturalWitch, witch: sum(HUNT.witch) + sum(HUNT1.witch) + sum(BANDP.witch), witchFirst10, rage: sum(HUNT.rage) + sum(HUNT1.rage) + sum(BANDP.rage), breaks: sum(HUNT.breaks) + sum(HUNT1.breaks) + sum(BANDP.breaks), hunt: { probes: HUNT.kills.length, kills: sum(HUNT.kills), escaped: sum(HUNT.escaped), hurt: sum(HUNT.hurt) }, raids: { n: RAIDS.n, fights: RAIDS.fights, won: RAIDS.won, hurt: RAIDS.hurt, map: RAIDS.map, winPMed: +med(RAIDS.predictions).toFixed(3), hurtPerRaid: RAIDS.n ? +(RAIDS.hurt / RAIDS.n).toFixed(3) : 0 }, cShareMed: med(out0.cShare), threat: med(pts), winP: +med(wp).toFixed(3), famousHeld: med(held), threatNoFamous: med(famousBy.no), threatFamous: med(famousBy.yes), nNoFamous: famousBy.no.length, tiers: {} };
+const out = { recruitment:{definition:'第10/30日結束常住名俠，含舊版免費名角同伴，不含主角或暫訪師父',day10Med:med(recruitment.map(r=>r.day10)),day30Med:med(recruitment.map(r=>r.day30)),bySeed:recruitment},stepSeconds:.25, insight, solo: { probes: HUNT1.kills.length, kills: sum(HUNT1.kills), escaped: sum(HUNT1.escaped), hurt: sum(HUNT1.hurt), hpLost: Math.round(sum(HUNT1.hpLost)) }, band: { n: BANDP.n, oddsMed: +med(BANDP.odds).toFixed(3), winPMed: +med(BANDP.winP).toFixed(3), won: BANDP.won, fenceHeld: BANDP.fenceHeld, hurt: BANDP.hurt, hurtPerRaid: BANDP.n ? +(BANDP.hurt / BANDP.n).toFixed(3) : 0 }, practiceOverlap, naturalWitch, witch: sum(HUNT.witch) + sum(HUNT1.witch) + sum(BANDP.witch), witchFirst10, rage: sum(HUNT.rage) + sum(HUNT1.rage) + sum(BANDP.rage), breaks: sum(HUNT.breaks) + sum(HUNT1.breaks) + sum(BANDP.breaks), hunt: { probes: HUNT.kills.length, kills: sum(HUNT.kills), escaped: sum(HUNT.escaped), hurt: sum(HUNT.hurt) }, raids: { n: RAIDS.n, fights: RAIDS.fights, won: RAIDS.won, hurt: RAIDS.hurt, map: RAIDS.map, winPMed: +med(RAIDS.predictions).toFixed(3), hurtPerRaid: RAIDS.n ? +(RAIDS.hurt / RAIDS.n).toFixed(3) : 0 }, cShareMed: med(out0.cShare), threat: med(pts), winP: +med(wp).toFixed(3), famousHeld: med(held), threatNoFamous: med(famousBy.no), threatFamous: med(famousBy.yes), nNoFamous: famousBy.no.length, tiers: {} };
 for (const [k, v] of Object.entries(by)) out.tiers[k] = { n: v.length, dps: +med(v).toFixed(1) };
+out.tierDetails = tierDetails;
 if (json) console.log(JSON.stringify(out));
 else { console.log('band', JSON.stringify(out.band)); console.log('solo', JSON.stringify(out.solo)); console.log('hunt', JSON.stringify(out.hunt), 'raids', JSON.stringify(out.raids)); console.log('threat', out.threat, 'winP', out.winP.toFixed(2), 'famousHeld', out.famousHeld); for (const [k, v] of Object.entries(out.tiers)) console.log(k, v.n, v.dps); }

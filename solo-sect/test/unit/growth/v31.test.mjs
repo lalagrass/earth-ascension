@@ -82,7 +82,7 @@ test('loop198 造詣：內功身法棍棒可加速，三品神功吃三成五底
   const g4 = { v24: true, arts: { basicSword: { xp: 10, gm: { e: 40 } }, bixie: { xp: 0 } } };
   assert.equal(A.accelOf(g4, A.artById('bixie'), 0).mul, 1);
 });
-test('loop198 造詣實戰：內力、回氣、內勁、腳程、冷卻、外功傷害', () => {
+test('造詣實戰：內力、回氣、內勁、腳程；冷卻與外功不再重複疊乘', () => {
   const body = { v24: true, v23: true, ng: 1, ng2: 1, qi: 10, sectId: 'wudang', skills: { agility: 0 }, personality: [], needs: { energy: 100 }, carry: 0, path: [] };
   const hi = { ...body, arts: { breath: { xp: 55, gm: { e: 20 } } } };
   const lo = { ...body, arts: { breath: { xp: 55 } } };
@@ -94,13 +94,13 @@ test('loop198 造詣實戰：內力、回氣、內勁、腳程、冷卻、外功
   const step = { ...body, arts: { breath: { xp: 55 }, wudangFist: { xp: 30 }, snowStep: { xp: 30, gm: { e: 20 } } } };
   const still = { ...body, arts: { breath: { xp: 55 }, wudangFist: { xp: 30 }, snowStep: { xp: 30 } } };
   const sh = A.mastery(step, 'shenfa'); assert.equal(sh, 20);
-  assert.ok(Math.abs(A.cdMul(step, 'wd1', 0) / A.cdMul(still, 'wd1', 0) - (1 - 0.0015 * sh)) < 1e-9);
+  assert.equal(A.cdMul(step, 'wd1', 0), A.cdMul(still, 'wd1', 0)); // N42：身法造詣不再疊一層冷卻倍率。
   assert.ok(Math.abs(speedOf(step) / speedOf(still) - (1 + 0.002 * sh)) < 1e-9);
   const armed = { ...body, arts: { breath: { xp: 55 }, wudangFist: { xp: 30, gm: { e: 40 } } } };
   const plain = { ...body, arts: { breath: { xp: 55 }, wudangFist: { xp: 30 } } };
   const fist = A.mastery(armed, 'quanzhang'); assert.equal(fist, 20); /* 一品造詣上限 20 */
   const qRatio = A.qiStrikeMul(armed, A.artById('wudangFist')) / A.qiStrikeMul(plain, A.artById('wudangFist'));
-  assert.ok(Math.abs(A.moveMul(armed, 'wd1', 0) / A.moveMul(plain, 'wd1', 0) - qRatio * (1 + 0.0015 * fist)) < 1e-9); /* loop202：外功造詣也抬高內勁有效值 */
+  assert.ok(Math.abs(A.moveMul(armed, 'wd1', 0) / A.moveMul(plain, 'wd1', 0) - qRatio) < 1e-9); // N42：造詣只經由內勁傳入，不再疊外功倍率。
 });
 test('loop196 本門正宗打坐 ×1.15，未大成不乘', () => {
   const [, d] = fresh('gaibang'); give(d, 'huntianGong', 60);

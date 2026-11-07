@@ -3,10 +3,11 @@ import {opponents,allies,loadFromForecast,coverFor,movementSpeed,distance,stepTa
 import {RING} from './combat-space.mjs';
 import {TECHNIQUES,TECHNIQUE_MOVES,learnFromLoss,applyTechnique,matchesTechnique} from './techniques.mjs';
 import {selectAction,recordChoice,desireTraining,witnessExchange} from './decision.mjs';
-import { PRACTICE, familiarReaction, practiceWindow, recordExchange } from './practice.mjs';
+import { PRACTICE, familiarReaction, practiceWindow, reactionFloor, recordExchange } from './practice.mjs';
+import { forceTarget } from './growth-core.mjs';
 import { bodyMove, moveAvailable, BODY_TIMING, FOE_ACTIONS, foeAction } from './starter-combat.mjs';
-import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, PERKS, VARIANTS, BREAK, GUIZHEN, RUST, TRAITS } from './data.mjs';
-import { stampCard, curveMulOf, BRANCHES } from './artcard.mjs';
+import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, VARIANTS, BREAK, GUIZHEN, RUST, TRAITS } from './data.mjs';
+import { stampCard, BRANCHES } from './artcard.mjs';
 import { strMul } from './economy.mjs';
 import { pipeline, log, chronOf } from './util.mjs';
 // ==== （原 growth.mjs）====
@@ -182,7 +183,8 @@ export function artMulParts(d, a, state = [], more = []) {
   const r = pipeline({ talent, state, ext }); r.gate = gated(d, a) ? ART_GAIN.gated : 1; r.total *= r.gate; r.outside = om; r.total *= om; return r; // v1.35 外門 ×0.7 是真乘數
 }
 export const artMul = (d, a) => artMulParts(d, a).total;
-export const artCap = (d, a) => (gated(d, a) ? ART_GAIN.gateCap : 100);
+const bookCeiling = (d, a) => a?.bookOnly && d.arts?.[a.id]?.source === 'book' ? TIERS[3][0] - (TIERS[2][0] - BREAK.caps[0]) : 100;
+export const artCap = (d, a) => Math.min(gated(d, a) ? ART_GAIN.gateCap : 100, bookCeiling(d, a));
 const hasMove24 = (a) => !!(a?.tech && MOVES.some((m) => m.id === a.tech));
 /* loop196：百毒譜等無招式圖譜不進主修，避免 autoFocus 空轉 */
 export function autoFocus(d) {
@@ -234,7 +236,7 @@ export const fits = (d, a) => ['fist', 'inner', 'step', d.style].includes(a.scho
 export const guizhenOk = (d, a) => a.grade <= 1 && ((d.wu ?? d.root ?? 3) <= GUIZHEN.rootMax || GUIZHEN.traits.some((t) => (d.personality || []).includes(t)));
 export const starCost = (r) => GUIZHEN.cost0 + GUIZHEN.costStep * (r.stars || 0);
 // 目前上限：悟性門檻 → 54.9；未破第一關 → 54.9；未破第二關 → 99.9
-export function curCap(d, a) { const r = d.arts[a.id]; if (gated(d, a)) return ART_GAIN.gateCap; if (!r.bt1) return BREAK.caps[0]; if (!r.bt2) return BREAK.caps[1]; return 100; }
+export function curCap(d, a) { const r = d.arts[a.id]; if (gated(d, a)) return ART_GAIN.gateCap; const ordinary = !r.bt1 ? BREAK.caps[0] : !r.bt2 ? BREAK.caps[1] : 100; return Math.min(ordinary, bookCeiling(d, a)); }
 // 卡在哪一關：1、2、3（歸真）；冷卻中或沒卡回 0
 export function stuckAt(d, a, now = 0) {
   const r = d.arts?.[a.id]; if (!r || gated(d, a) || (r.btCd || 0) > now) return 0;
@@ -495,19 +497,19 @@ function clampTrainXp(d, a, cur, next) {
   if (capped == null) return next;
   return Math.min(next, Math.max(cur, capped));
 }
-export function rustOf(r, now) { const idle = now - (r.last ?? now); return Math.min(RUST.max, Math.max(r.rust || 0, idle > RUST.after ? ((idle - RUST.after) / 600) * RUST.perDay : 0)); }
+export function rustOf(r, now, studiedArts = 1) { const idle = now - (r.last ?? now); return Math.min(RUST.max, Math.max(r.rust || 0, idle > RUST.after ? ((idle - RUST.after) / 600) * RUST.perDay * Math.sqrt(studiedArts) : 0)); }
 // 回傳 {next 可求學武學, moves 新招}
 /* g（loop79 成長分層，s.grow 時才傳）＝ { raw 原始投入, src 'train'|'fight' }：同類加速以結算前造詣計，造詣只吃原始投入 */
 export function gainArt(d, amt, mf = 1, now = 0, g = null) {
   const out = { next: null, moves: [], star: false };
   if (d.bare && !Object.keys(d.arts || {}).length) return out;
   const id = focusOf(d);
-  if (id) { out.trained = id; const a = artById(id), r = d.arts[id]; r.rust = rustOf(r, now); r.last = now; const xp0 = r.xp;
+  if (id) { out.trained = id; const a = artById(id), r = d.arts[id]; r.rust = rustOf(r, now, Object.keys(d.arts || {}).length); r.last = now; const xp0 = r.xp;
     const acc = g && !r.guizhen ? accelOf(d, a, r.xp) : null; out.acc = acc;
     const P = artMulParts(d, a, [['心情', mf], ['荒疏', 1 - r.rust]], acc && acc.mul > 1 ? [['同類底子', acc.mul]] : []); d.growMul = { art: id, total: P.total, talent: P.talent, state: P.state, ext: P.ext, gate: P.gate };
     const gx = amt * ART_GAIN.base * P.total;
     r.rust = Math.max(0, r.rust - RUST.shake);
-    if (r.guizhen) { r.sxp = (r.sxp || 0) + gx * 0.4; while (r.sxp >= starCost(r)) { r.sxp -= starCost(r); r.stars = (r.stars || 0) + 1; out.star = true; } }
+    if (r.guizhen) { r.sxp = (r.sxp || 0) + gx * 0.4; r.lifetime = (r.lifetime || 0) + gx * 0.4; while (r.sxp >= starCost(r)) { r.sxp -= starCost(r); r.stars = (r.stars || 0) + 1; out.star = true; } }
     else { const next = Math.min(curCap(d, a), r.xp + gx * (1 - r.xp / 130)); r.xp = clampTrainXp(d, a, r.xp, next); out.moves = unlockTechs(d, a); }
     if (g) out.gm = settleGrowth(d, a, r, { src: g.src || 'train', raw: g.raw ?? amt, xp0, xp1: r.xp });
     const feed = !r.guizhen && feedInner31(d, a, gx, g); if (feed) { out.feed = feed; d.growMul.feed = feed.label; } }
@@ -519,17 +521,14 @@ export function chooseVariant(d, id, v, now = 0) {
   if (r.variant && r.variant !== v) r.until = now + BREAK.rechoose; r.variant = v; return true;
 }
 export const variantOf = (d, id, now = 0) => { const r = d.arts?.[id], a = artById(id); if (!r?.variant || (r.until || 0) > now) return null; return VARIANTS[a.school].find((x) => x.id === r.variant); };
-const shenfaCd24 = (d) => (!!d ? 1 - 0.0015 * mastery(d, 'shenfa') : 1); /* loop198：身法造詣最多縮 15% 冷卻 */
-export const cdMul = (d, mvId, now = 0) => { const raw = artOfMove(mvId), a = raw && d.arts?.[raw.id] ? raw : null, sh = shenfaCd24(d), mc = modeMul31(d, a, 'cd'); if (!a) return swordCdMul(d, mvId) * sh * mc; const t = artTier(d, a.id); return (t >= 1 ? PERKS.small.cd : 1) * (variantOf(d, a.id, now)?.cd || 1) * swordCdMul(d, mvId) * affixMul(d, mvId, 'cd') * sh * mc; };
+export const cdMul = (d, mvId, now = 0) => { const raw = artOfMove(mvId), a = raw && d.arts?.[raw.id] ? raw : null, mc = modeMul31(d, a, 'cd'); if (!a) return swordCdMul(d, mvId) * mc; return (variantOf(d, a.id, now)?.cd || 1) * swordCdMul(d, mvId) * affixMul(d, mvId, 'cd') * mc; };
 export const visTier = (d, mvId) => { const a = artOfMove(mvId); return a && d.arts?.[a.id] ? artTier(d, a.id) : 0; };
 export const topTier = (d) => ARTS.reduce((m, a) => (artTier(d, a.id) > m.t ? { t: artTier(d, a.id), a } : m), { t: -1, a: null });
-export function learnArt(d, id, now = 0) { d.arts[id] ??= { xp: 0, last: now }; const a = artById(id); if (id === 'zixia' && !d.zixia) d.zixia = 1; /* loop172 氣宗本門領悟紫霞＝第一層 */ unlockTechs(d, a); if (d.pendingArt === id) d.pendingArt = null; return a; }
-const CATDMG24 = ['quanzhang', 'tuifa', 'jianfa', 'gunbang'];
-const catDmg24 = (d, a) => { if (!d || !a) return 1; const c = primaryCat(a.id); return CATDMG24.includes(c) ? 1 + 0.0015 * mastery(d, c) : 1; }; /* loop198：外功造詣每 20 點 +3% 招式傷害 */
+export function learnArt(d, id, now = 0) { d.arts[id] ??= { xp: 0, last: now }; const a = artById(id); if (d.arts[id].source === 'book') d.arts[id].source = 'teacher'; if (id === 'zixia' && !d.zixia) d.zixia = 1; /* loop172 氣宗本門領悟紫霞＝第一層 */ unlockTechs(d, a); if (d.pendingArt === id) d.pendingArt = null; return a; }
 export const moveMul = (d, mvId, now = 0) => strMul(d) * moveMul0(d, mvId, now) * harmonyMul(d) * affixMul(d, mvId, 'dmg') * (d.raging ? CLASH.fret.force : 1); /* loop161 v2.4 陰陽共鳴 */ // loop127 勞作練體
-const moveMul0 = (d, mvId, now = 0) => { const raw = artOfMove(mvId), a = raw && d.arts?.[raw.id] ? raw : null, q = qiStrikeMul(d, a) * swordDmgMul(d, mvId), md = modeMul31(d, a, 'dmg'); if (!a) return (d.powMul || 1) * (d.jhMul || 1) * q * styleDamage(d) * md; const t = artTier(d, a.id), r = d.arts[a.id]; return (curveMulOf(a.curve, t) / (a.bestDps || 1)) * (d.powMul || 1) * (d.jhMul || 1) * (variantOf(d, a.id, now)?.dmg || 1) * (1 + GUIZHEN.star * (r.stars || 0)) * (d.pf ? profMul(r.xp) : 1) * q * md * styleDamage(d) * innerDrive28(d, a).mul * catDmg24(d, a) /* #408 曲線是最強一招的每秒傷害，招式原傷害先除掉；悟性、性格、門派偏向與初學加成不進出手 */ /* loop201 武學 mode；loop198 外功造詣；loop181 四階內功催動 */ /* loop91 熟練度十重（d.pf 由 s.prof 設） */; };
+const moveMul0 = (d, mvId, now = 0) => { const raw = artOfMove(mvId), a = raw && d.arts?.[raw.id] ? raw : null, q = qiStrikeMul(d, a) * swordDmgMul(d, mvId), md = modeMul31(d, a, 'dmg'); if (!a) return (d.powMul || 1) * (d.jhMul || 1) * q * styleDamage(d) * md; const r = d.arts[a.id]; return forceTarget(a, r.xp) * (d.powMul || 1) * (d.jhMul || 1) * (variantOf(d, a.id, now)?.dmg || 1) * q * md * styleDamage(d) * innerDrive28(d, a).mul; };
 export const effectTier = (d, eff) => ARTS.filter((a) => a.effect === eff).reduce((m, a) => Math.max(m, artTier(d, a.id)), -1);
-export const effectMul = (d, eff, now = 0) => ARTS.filter((a) => a.effect === eff && d.arts?.[a.id]).reduce((m, a) => m * (variantOf(d, a.id, now)?.eff || 1) * (artTier(d, a.id) >= 3 ? PERKS.full.dmg : 1), 1);
+export const effectMul = (d, eff, now = 0) => ARTS.filter((a) => a.effect === eff && d.arts?.[a.id]).reduce((m, a) => m * (variantOf(d, a.id, now)?.eff || 1), 1);
 // 由舊招式／技能推出武學熟練（新建或舊檔）
 export function seedArts(d) {
   d.arts ??= {}; const moves = d.moves || ['fist'];
@@ -1212,11 +1211,16 @@ export const CLASH = {
 const clamp01 = (x, hi = 1) => Math.max(0, Math.min(hi, x));
 export const windFrac = (tier) => CLASH.windIn + (CLASH.windHua - CLASH.windIn) * Math.max(0, Math.min(4, tier | 0)) / 4;
 /* 一招的前搖秒數：cd × 前搖比例（看這招所屬武學的火候） */
-export function windOf(d, mvId, cd) {
+export function windOf(d, mvId, cd, now = null) {
   const body=bodyMove(mvId)||TECHNIQUE_MOVES.find(m=>m.id===mvId)||Object.values(FOE_ACTIONS).flatMap(p=>p.moves).find(m=>m.id===mvId), a = artOfMove(mvId) || artById(mvId), tier = a && d?.arts?.[a.id] ? artTier(d,a.id) : 0;
   const start = body?.wind ?? cd * windFrac(0) * (a?.tags?.includes('快') ? .75 : 1) * (a?.id === 'kuihua' && zjHas(d,'kuihua') ? .1 : 1);
   const skill = body?.skill === 'strength' || a?.weapon === 'staff' ? 'strength' : 'agility';
-  return practiceWindow(d,mvId,start,{tier,skill}).wind * woundWind(d,body||MOVES.find(m=>m.id===mvId)||{}) * (d?.part?.where === 'hand'&&!d.part.layer ? PART.hand : 1);
+  const move = MOVES.find((m) => m.id === mvId), previous = MOVES.find((m) => m.id === d?.lastCombatMove);
+  // 上式收勢就是本式起勢時，只少掉第一個架子的準備；離開一輪冷卻就得重新起架。
+  const flowing = a?.chainFromPose && previous?.fx === a.id && move?.poses?.[0] === previous.poses?.at(-1)
+    && now != null && d.lastCombatAt != null && now >= d.lastCombatAt && now - d.lastCombatAt <= cd;
+  const flow = flowing ? (move.poses.length - 1) / move.poses.length : 1;
+  return practiceWindow(d,mvId,start,{tier,skill,artReach:a?.fanR||1}).wind * flow * woundWind(d,body||move||{}) * (d?.part?.where === 'hand'&&!d.part.layer ? PART.hand : 1);
 }
 export function combatMoves(d,distance=0) {
   if(isMon(d)&&FOE_ACTIONS[d.k]){
@@ -1228,7 +1232,7 @@ export function combatMoves(d,distance=0) {
 export function chooseCombatMove(s,d,target,rnd,options={}) {
   const distance=options.distance??Math.hypot((d.pos?.[0]||0)-(target.pos?.[0]||0),(d.pos?.[1]||0)-(target.pos?.[1]||0));
   const facts=techniqueFacts(s,d,target);
-  const choices=(options.moves||combatMoves(d,distance)).filter(m=>!m.technique||matchesTechnique(TECHNIQUES.find(r=>r.id===m.id),facts)).map(m=>({...m,actualWind:windOf(d,m.id,m.cd),force:moveStats(d,m.id).force}));
+  const choices=(options.moves||combatMoves(d,distance)).filter(m=>!m.technique||matchesTechnique(TECHNIQUES.find(r=>r.id===m.id),facts)).map(m=>({...m,actualWind:windOf(d,m.id,m.cd,s?.t),force:moveStats(d,m.id).force}));
   return selectAction(s,d,target,choices,rnd,{distance,composure:composure(d),postureCapacity:postureMax(d),armor:moveStats(target).armor,...options});
 }
 export function fastestMove(d) {
@@ -1318,11 +1322,11 @@ export function clashTimes(s, atk, def, ctx = {}) {
   const load=assessLoad(s,def,atk,ctx).L;
   // 白身面對會護正面的人，走到側邊同拍接招較能保住出手；無手獸招則先截其起手。
   const preferStep=!!def.bare&&(FOE_ACTIONS[atk.k]?.hands??(isMon(atk)?0:2))>0;
-  return { wind: Math.max(0, wind - busy), reaction, jitter, strike, step, guard, busy,load,canCounter:load<1,preferStep };
+  return { wind: Math.max(0, wind - busy), reaction, floor: reactionFloor(def), jitter, strike, step, guard, busy,load,canCounter:load<1,preferStep };
 }
 // 平移 log-logistic：簡單反應 .2 秒為物理下限，其餘有正尾，不造勝率保底。
-export const drawReaction = (T, rnd) => { const u = rnd(); return PRACTICE.reactionFloor + (T.reaction - PRACTICE.reactionFloor) * (u / (1 - u)) ** T.jitter; };
-const reactionOdds = (T, action) => { const available = T.wind - action - PRACTICE.reactionFloor; if (!(available > 0)) return 0; return 1 / (1 + ((T.reaction - PRACTICE.reactionFloor) / available) ** (1 / T.jitter)); };
+export const drawReaction = (T, rnd) => { const u = rnd(), floor = T.floor ?? PRACTICE.reactionFloor; return floor + (T.reaction - floor) * (u / (1 - u)) ** T.jitter; };
+const reactionOdds = (T, action) => { const floor = T.floor ?? PRACTICE.reactionFloor, available = T.wind - action - floor; if (!(available > 0)) return 0; return 1 / (1 + ((T.reaction - floor) / available) ** (1 / T.jitter)); };
 /* 起手時先抽反應；截擊立即發生，其餘接法帶同一次抽樣等來招落下。 */
 export function interceptOpening(s, atk, def, rnd, ctx = {}) {
   const T = clashTimes(s, atk, def, ctx), reaction = drawReaction(T,rnd);
@@ -1451,6 +1455,7 @@ export function resolveSwing(s, atk, def, rnd, ctx = {}) {
   }
   if(result.counter){const response=fastestMove(def);result.counterContact=contactImpact(s,def,atk,{move:{...response,balanceImpulse:result.kind==='read'?0:response.balanceImpulse},force:result.counter,armor:moveStats(atk).armor,nearby});result.counterDamage=result.counter*result.counterContact.damageFactor;reportContact(s,def,atk,response,result.counterContact);}
   if(result.heavy&&result.why==='open'){const opened=def.balanceOpenUntil||0;def.posture=postureMax(def)*0.5;def.balanceOpenUntil=0;if(def.downUntil<=opened)def.downUntil=0;}
+  atk.lastCombatAt = s?.t ?? 0;
   return result;
 }
 
