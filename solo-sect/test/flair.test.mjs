@@ -1,9 +1,10 @@
+import { createState } from './harness/historical-party.mjs';
 /* 第四輪 #420 N16 招式名、首用、大成滑步、化境範圍逐個判、實戰紀錄。 */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NODES, MOVES } from '../src/data.mjs';
 import { handleTake, windOf, visTier, artOfMove } from '../src/arts.mjs';
-import { createState, tick, startHunt } from '../src/sim.mjs';
+import { tick, startHunt } from '../src/sim.mjs';
 import { powerHtml } from '../src/panel-ui.mjs';
 
 function onPost(seed = 11) {

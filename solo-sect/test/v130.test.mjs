@@ -1,6 +1,7 @@
+import { createState } from './harness/historical-party.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick } from '../src/sim.mjs';
+import { tick } from '../src/sim.mjs';
 import { ARTS, RULES_VERSION, DAY, JH } from '../src/data.mjs';
 import { artTier } from '../src/arts.mjs';
 import { join, XIA_PAIRS, xiaResolve } from '../src/wuxia.mjs';

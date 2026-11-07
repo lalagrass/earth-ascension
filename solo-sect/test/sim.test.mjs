@@ -1,5 +1,6 @@
+import { createState } from './harness/historical-party.mjs';
 import test from 'node:test'; import assert from 'node:assert/strict';
-import { createState, tick, startBuild, startHunt, setOrder, save, load, routeLength, relKey } from '../src/sim.mjs';
+import { tick, startBuild, startHunt, setOrder, save, load, routeLength, relKey } from '../src/sim.mjs';
 import { appetiteActMul31 } from '../src/arts.mjs';
 const run = (s, sec) => { for (let i = 0; i < sec * 4; i++) tick(s); };
 

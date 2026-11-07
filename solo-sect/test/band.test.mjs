@@ -1,9 +1,10 @@
+import { createState } from './harness/historical-party.mjs';
 /* 第五輪 #424 N18 山賊逐一交手：守柵者對圈內的人一招招出手，有接法；倒地的人沿山門那條路退走；柵破才進院交手。 */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NODES } from '../src/data.mjs';
 import { newBand, bandStep, FENCE } from '../src/threat.mjs';
-import { createState, tick } from '../src/sim.mjs';
+import { tick } from '../src/sim.mjs';
 
 test('山賊逐一交手：判接法、整夥血量＝每人加總、倒地者退走、柵破才進院', () => {
   const s = createState(11); for (let i = 0; i < 40; i++) tick(s, 0.25);

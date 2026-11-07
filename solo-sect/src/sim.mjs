@@ -68,7 +68,7 @@ export function createState(seed = 1, heroSpec = null) {
   s.hero = null; s.choices = []; s.encExclude = []; s.unlock = []; s.chapter = { done: false }; for (const d of s.ds) d.wu ??= d.root;
   if (withHero) applyHero(s, heroSpec, initPair);
   const originRows=originPeople(heroSpec?.kind==='template'?heroSpec.id:null,heroSpec?.answers?.[0]||0);
-  for(const row of originRows){const d=makeBare(mkDisciple(row,s.ds.length));Object.assign(d,{wu:row.wu,originRelation:row.originRelation,originRelationKind:row.relation,originInvented:row.invented,portrait:null,companion:true});s.ds.push(d);for(const o of s.ds)if(o!==d)initPair(s,d,o,o.id==='hero'?ORIGIN_RELATIONS[row.relation].aff:10);}
+  for(const row of originRows){const d=makeBare(mkDisciple(row,s.ds.length));Object.assign(d,{wu:row.wu,originRelation:row.originRelation,originRelationKind:row.relation,originInvented:row.invented,portrait:null,companion:true,best:0,insight:{},away:false});s.ds.push(d);for(const o of s.ds)if(o!==d)initPair(s,d,o,o.id==='hero'?ORIGIN_RELATIONS[row.relation].aff:10);}
   if(s.hero){s.hero.companion=originRows[0].id;s.hero.companions=originRows.map(r=>r.id);}
   // #390 part 2（擁有人 2026-11-02）：30 個規則開關已刪，所有局都是現行規則；spec 只剩主角與玩家選項（執事三項）。
   if (heroSpec?.steward) s.steward = true; /* loop30 執事自主 */ if (heroSpec?.stewyard) s.stewyard = true; /* loop95 執事立樁 */ if (heroSpec?.stewkit) s.stewkit = true; /* loop60 執事顧灶 */

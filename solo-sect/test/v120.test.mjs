@@ -1,7 +1,8 @@
+import { createState } from './harness/historical-party.mjs';
 import { openExp } from "../src/world.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick, startExpedition } from '../src/sim.mjs';
+import { tick, startExpedition } from '../src/sim.mjs';
 import { ARTS, MOVES, RULES_VERSION, DAY, DUGU } from '../src/data.mjs';
 import { learnArt, artTier } from '../src/arts.mjs';
 import { CARDS, card, hsResolve, hsStep, zxGate, zxUp, fengFit, formReady, learnDugu, bixie } from '../src/wuxia.mjs';

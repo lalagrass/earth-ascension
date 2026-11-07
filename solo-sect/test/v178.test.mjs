@@ -1,7 +1,8 @@
+import { createState } from './harness/historical-party.mjs';
 // v1.78：資源總量不變式（每筆 s.res 寫入都來自白名單管道，且期末＝期初＋Σ異動、永不為負）與「閉關不見客」
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick, startBuild, canRecruit, recruit, startExpedition } from '../src/sim.mjs';
+import { tick, startBuild, canRecruit, recruit, startExpedition } from '../src/sim.mjs';
 import { DAY, FACILITIES, ACTIVITIES } from '../src/data.mjs';
 import { canExpedition } from '../src/world.mjs';
 

@@ -1,7 +1,8 @@
+import { createState } from './harness/historical-party.mjs';
 // v1.85：月俸＋維護（超線性、封頂、寬限、兩次警告、最多一人離山、付清恢復）、市集限量遞增、丹藥販售／陳化、A10 義學、郭靖困難＋早期降龍掌
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick, canRecruit, recruit, startSchoolTrip } from '../src/sim.mjs';
+import { tick, canRecruit, recruit, startSchoolTrip } from '../src/sim.mjs';
 import { DAY, FACILITIES } from '../src/data.mjs';
 import { UPKEEP, wageBill, wageN, facBill, billDue, settle, E, MARKET, priceOf, marketDo, marketWhy, agePills, PILL_AGE, SCHOOL, schoolWhy, salaried, econHtml } from '../src/economy.mjs';
 import { HEROES } from '../src/data.mjs';

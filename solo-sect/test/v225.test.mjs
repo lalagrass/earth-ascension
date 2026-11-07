@@ -1,7 +1,7 @@
+import { createState } from './harness/historical-party.mjs';
 /* v2.25（loop148–）：盲測五項修正，全部只在 v22 新局生效 */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState } from '../src/sim.mjs';
 import { MARKET, marketDo, marketWhy, left, econHtml } from '../src/economy.mjs';
 const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, v22: true, ...o });
 // #390：舊規則開局已不存在，原本這裡的舊局對照組與各測試裡的舊局斷言一併刪除
