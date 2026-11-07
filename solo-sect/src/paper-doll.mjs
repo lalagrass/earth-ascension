@@ -77,22 +77,50 @@ function held(g, weapon, x, y) {
   g.save();g.translate(x,y);g.rotate(.24);g.imageSmoothingEnabled=false;g.drawImage(img,0,-reach);g.restore();
 }
 export function drawPaperDoll(g, d, view, geometry) {
-  const { hip, sink, lean, legs, arms, female } = geometry, p = dollProfile(d,female);
+  const { hip, sink, lean, legs, arms, female, ergo } = geometry, p = dollProfile(d,female);
+  const bp = ergo?.buildProfile;
+  const waistDelta = bp?.waistDelta || 0;
+  const shoulderDelta = bp?.shoulderDelta || 0;
   for (const [j,[kx,ky,fx,fy]] of legs.entries()) {
     const x=j?5:-5, y=-hip, kneeY=ky*hip/geometry.uprightHip;
     segment(g,piece('thigh',p),lean*.45+x,y,kx,kneeY,9);
     segment(g,piece('shin',p),kx,kneeY,fx,fy,8);
   }
   g.save();g.translate(0,sink);g.imageSmoothingEnabled=false;
-  g.drawImage(piece('torso',p),lean-10,-43);
+  if (waistDelta || shoulderDelta) {
+    g.drawImage(piece('torso',p),lean-10-waistDelta/2,-43,20+waistDelta,25);
+  } else {
+    g.drawImage(piece('torso',p),lean-10,-43);
+  }
+  if (bp && bp.breathRate > 1.2) {
+    const breath = Math.sin((view.clock || 0) * 5 * bp.breathRate) * 0.8;
+    g.fillStyle = 'rgba(255,255,255,0.15)';
+    g.fillRect(lean - 8, -40 + breath, 16, 8);
+  }
   for (const [j,[ex,ey,hx,hy]] of arms.entries()) {
-    const x=lean+(j?8:-8);
+    const x=lean+(j?8:-8)+(j?shoulderDelta/2:-shoulderDelta/2);
     segment(g,piece('upperArm',p),x,-39,ex,ey,8);
     segment(g,piece('foreArm',p),ex,ey,hx,hy,7);
     if(j)held(g,geometry.weapon,hx,hy);
     if(view.work==='water') { g.fillStyle='#6b4d30';g.fillRect(hx-5,hy+6,11,15);g.fillStyle='#9cb8bd';g.fillRect(hx-3,hy+8,7,3); }
   }
+  if (view.work === 'water' && ergo?.laborDetail?.poleBend) {
+    const bend = ergo.laborDetail.poleBend;
+    g.strokeStyle = '#856d46';
+    g.lineWidth = 2.5;
+    g.beginPath();
+    g.moveTo(lean - 22, -38);
+    g.quadraticCurveTo(lean, -38 + bend, lean + 22, -38);
+    g.stroke();
+  }
   g.drawImage(piece('head',p),lean-9,-59);
   g.drawImage(piece('hair',p),lean-9,-59);
+  if (bp && bp.sweatLevel > 0) {
+    g.fillStyle = '#6cb7db';
+    g.fillRect(lean + 8, -55, 2, 3);
+    if (bp.sweatLevel > 0.3) g.fillRect(lean - 10, -52, 2, 2);
+  }
   g.restore();
 }
+
+export { renderMicroStage } from './pose-render.mjs';

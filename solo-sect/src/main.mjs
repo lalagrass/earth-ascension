@@ -22,7 +22,7 @@ import { openStart, choiceUI, heroCard } from './start-ui.mjs';
 import { SFX, ambient, setMute, isMuted, cuesFrom } from './audio.mjs';
 import { threatHtml, rumorDays, buildFence, upgradeFence, startFenceSite } from './threat.mjs';
 import { routineFrame } from './routines.mjs';
-import { displayPose, dailyPose, drawPoseActor } from './pose-render.mjs';
+import { displayPose, dailyPose, drawPoseActor, renderMicroStage } from './pose-render.mjs';
 import { growthSnapshot, battleMetrics, recordAxisHistory, earlierAxisHistory } from './growth-adapter.mjs';
 import { mountChoiceButtons } from './choice-buttons.mjs';
 import { homeLabelCandidates, layoutLabels } from './label-layout.mjs';
@@ -403,7 +403,22 @@ let modalWant = null;
 function loop(now) { acc += Math.min(0.5, (now - last) / 1000) * speed; last = now;
   if (S) { const cur = $('alert') ? 'alert' : $('choice') ? 'choice' : $('chap') ? 'chap' : null, P = pending(S); modalWant = starting ? null : pickModal({ cur, ...P }); if (modalWant === 'choice' || !P.choice) choiceUI(S); }
   if (starting || S.alert || pending(S).choice) acc = 0; feed(); while (acc >= 0.25) { tick(S); acc -= 0.25; }
-  audioStep(); expToast(); fightWatch(); draw(); drawMinimap(); if (now - lastPanel > 400 && !window.__sect.freeze && !document.activeElement?.matches('select,input')) { panel(); lastPanel = now; } requestAnimationFrame(loop); }
+  audioStep(); expToast(); fightWatch(); draw(); drawMinimap(); drawMicroStage(); if (now - lastPanel > 400 && !window.__sect.freeze && !document.activeElement?.matches('select,input')) { panel(); lastPanel = now; } requestAnimationFrame(loop); }
+function drawMicroStage() {
+  const c = $('micro-stage'), wrap = $('micro-stage-wrap');
+  if (!c || !wrap || wrap.classList.contains('collapsed') || !S) return;
+  const ctx = c.getContext('2d');
+  const focal = S.ds.find((d) => d.id === window.__artsOf) || S.ds.find((d) => d.id === 'hero') || S.ds[0];
+  if (!focal) return;
+  const ergo = renderMicroStage(ctx, S, focal);
+  const cap = $('micro-caption');
+  if (cap && ergo) {
+    const act = focal.task ? (ACTIVITIES[focal.task.act]?.name || focal.task.act) : '待命';
+    const form = focal.task?.act === 'train' ? (focal.swing?.mv || '練武') : act;
+    const balance = ergo.jointSpring.isStumbling ? '⚠ 重心失衡' : '重心平穩';
+    cap.textContent = `【${focal.name}・${form}】${balance}・力氣 ${focal.skills?.strength?.toFixed(0) || 0}・身法 ${focal.skills?.agility?.toFixed(0) || 0}`;
+  }
+}
 function rbar(n, v, max, c) { const p = Math.max(0, Math.min(1, (v ?? 0) / (max || 1))); return `${n} <span style="display:inline-block;width:80px;height:8px;background:#ddd;vertical-align:middle"><span style="display:block;height:8px;width:${p * 80}px;background:${c}"></span></span> ${Math.max(0, Math.round(v ?? 0))}`; }
 const JH_FX = { anran: ['#7a8ca8', 'arc'], xuantie: ['#2a2a2a', 'heavy'], yunv: ['#eef', 'arc'], kongming: ['#bcb', 'arc'], kuihua: ['#d04050', 'needle'], huagu: ['#9a8aa8', 'arc'], qiankun: ['#e0a040', 'arc'], taiji: ['#ddd', 'arc'], shihou: ['#f0d070', 'ring'], tantui: ['#a07040', 'arc'], tiexian: ['#889', 'heavy'], bagua: ['#8a6a3a', 'arc'], hama: ['#6a8a3a', 'toad'] };
 function drawSect() { // v1.35 匾額＋旗幟（共用破道館地圖，只換字與色）
@@ -650,6 +665,16 @@ function bondsHtml(S) { const out = ['<h3 style="margin:6px 0 2px">師徒</h3>']
   return out.length > 2 || P.length ? out.join('') : out.join('') + '<div class="k">尚無師徒（內門與外門互有好感 30 才能收徒）</div>'; }
 // v1.8 畫像新舊開關（PB-15/16/18）
 try { bindPortraitSet(document, localStorage, document.getElementById('pset')); } catch (e) { console.warn('portrait set', e); }
+try {
+  const wrap = $('micro-stage-wrap');
+  if (wrap && localStorage.getItem('solo_sect_micro_stage_collapsed') === '1') {
+    wrap.classList.add('collapsed');
+  }
+  $('micro-caption')?.addEventListener('click', () => {
+    wrap?.classList.toggle('collapsed');
+    localStorage.setItem('solo_sect_micro_stage_collapsed', wrap?.classList.contains('collapsed') ? '1' : '0');
+  });
+} catch {}
 
 // v1.85 市集／義學按鈕
 document.addEventListener('click', (e) => { const m = e.target.closest('[data-mkt]'); if (m && S) { const r = marketDo(S, m.dataset.mkt); toast(r.ok ? `成交 ${r.p}` : r.why, !r.ok); return; } if (e.target.closest('[data-school]') && S) { const r = startSchoolTrip(S); toast(r.ok ? `${r.d.name}下山義學去了` : r.why, !r.ok); } });

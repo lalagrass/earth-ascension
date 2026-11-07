@@ -1,10 +1,11 @@
 import {impactVisual} from './contact-view.mjs';
 import { MOVES, ACTIVITIES } from './data.mjs';
-import { windOf, artTier } from './arts.mjs';
-import { playbackParams, PLAYBACK } from './growth-playback.mjs';
+import { windOf, artTier, artById, focusOf } from './arts.mjs';
+import { playbackParams, PLAYBACK, ergonomicFrame } from './growth-playback.mjs';
 import { POSTURES, COMBAT_POSES, DAILY_POSES, EXTRA_TASK_POSES, routineFrame } from './routines.mjs';
 import { isFemaleVisual } from './visual-gender.mjs';
 import { drawPaperDoll } from './paper-doll.mjs';
+import { handUses } from './practice.mjs';
 
 // 同一個骨架與補間器套在每名人物，人物只提供外觀色與朝向。
 const LEGS = {
@@ -90,7 +91,7 @@ export function drawPoseActor(g, d, view) {
   const lean = mix(a.lean, b.lean, u)+Math.sin((view.clock||0)*Math.PI*2)*p.sway, legsA = LEGS[a.legs], legsB = LEGS[b.legs], armsA = ARMS[a.arms], armsB = ARMS[b.arms];
   const female = isFemaleVisual(d);
   if (typeof document !== 'undefined' && typeof document.createElement === 'function') {
-    drawPaperDoll(g,d,view,{hip,sink,lean,legs:[0,1].map(j=>mixArray(legsA[j],legsB[j],u)),arms:[0,1].map(j=>mixArray(armsA[j],armsB[j],u)),female,uprightHip:PLAYBACK.uprightHip,weapon:b.weapon||a.weapon});
+    drawPaperDoll(g,d,view,{hip,sink,lean,legs:[0,1].map(j=>mixArray(legsA[j],legsB[j],u)),arms:[0,1].map(j=>mixArray(armsA[j],armsB[j],u)),female,uprightHip:PLAYBACK.uprightHip,weapon:b.weapon||a.weapon,ergo:view.ergo});
     return;
   }
   const color = female ? '#806375' : d.sprite === 'senior' ? '#796d91' : d.sprite === 'cousin' ? '#718963' : d.sprite === 'hero' ? '#647f92' : '#6a755e';
@@ -123,4 +124,318 @@ export function drawPoseActor(g, d, view) {
   if (female) { g.fillStyle = '#292529'; g.beginPath(); g.arc(lean + 6, -57, 5, 0, Math.PI * 2); g.fill(); g.beginPath(); g.moveTo(lean - 7, -53); g.lineTo(lean - 9, -38); g.lineTo(lean - 4, -40); g.lineTo(lean - 3, -53); g.fill(); g.beginPath(); g.moveTo(lean + 6, -53); g.lineTo(lean + 9, -39); g.lineTo(lean + 13, -41); g.lineTo(lean + 10, -56); g.fill(); }
   g.fillStyle = '#2f2929'; g.beginPath(); g.arc(lean + 3, -50, 1, 0, Math.PI * 2); g.fill();
   g.restore();
+}
+
+export function renderMicroStage(g, s = {}, focalActor = null, customView = null) {
+  if (!g) return null;
+  if (!focalActor && s?.ds?.length) {
+    focalActor = s.ds.find((d) => d.id === 'hero') || s.ds[0];
+  }
+  if (!focalActor) return null;
+
+  const focalArt = artById(focusOf(focalActor) || Object.keys(focalActor.arts || {})[0]);
+  const focalMove = MOVES.find((m) => m.id === (focalActor.swing?.mv || focalArt?.tech));
+  const baseView = customView || displayPose(s, focalActor, focalArt, focalMove);
+  const view = (focalActor?.carry?.water || focalActor?.task?.act === 'water') && baseView.work !== 'water'
+    ? { ...baseView, work: 'water' }
+    : baseView;
+  const ergo = ergonomicFrame(focalActor, s, { ...view, art: focalArt, move: focalMove?.id });
+  const p = ergo.playback;
+  const strength = focalActor?.skills?.strength || 0;
+  const agility = focalActor?.skills?.agility || 0;
+  const opponent = ergo.combatDetail.opponent;
+
+  if (g.save) g.save();
+
+  // 1. Clear background
+  if (g.fillRect) {
+    g.fillStyle = '#ebdcc0';
+    g.fillRect(0, 0, 360, 220);
+  }
+
+  // Ground baseline at y = 175
+  const groundY = 175;
+  if (g.fillRect) {
+    g.fillStyle = '#d8c7a6';
+    g.fillRect(0, groundY, 360, 220 - groundY);
+  }
+  if (g.beginPath && g.stroke) {
+    g.strokeStyle = '#b49f78';
+    g.lineWidth = 2;
+    g.beginPath();
+    g.moveTo(0, groundY);
+    g.lineTo(360, groundY);
+    g.stroke();
+  }
+
+  // 2. Micro-environment Props
+  if (view.work === 'water' || focalActor?.task?.act === 'water') {
+    // Stone steps
+    if (g.fillRect) {
+      g.fillStyle = '#baa380';
+      g.fillRect(20, groundY - 12, 60, 12);
+      g.fillRect(50, groundY - 24, 60, 12);
+      g.fillRect(80, groundY - 36, 60, 12);
+      // Well
+      g.fillStyle = '#8f7756';
+      g.fillRect(10, groundY - 60, 35, 60);
+    }
+    if (g.strokeRect) {
+      g.strokeStyle = '#5a462f';
+      g.strokeRect(10, groundY - 60, 35, 60);
+    }
+  } else if (view.work === 'chop' || focalActor?.task?.act === 'chop') {
+    // Chopping stump
+    if (g.ellipse && g.fill) {
+      g.fillStyle = '#6e4f30';
+      g.beginPath();
+      g.ellipse(250, groundY - 10, 22, 10, 0, 0, Math.PI * 2);
+      g.fill();
+    }
+    if (g.fillRect) {
+      g.fillStyle = '#6e4f30';
+      g.fillRect(228, groundY - 28, 44, 20);
+    }
+    if (g.ellipse && g.fill) {
+      g.fillStyle = '#876541';
+      g.beginPath();
+      g.ellipse(250, groundY - 28, 22, 8, 0, 0, Math.PI * 2);
+      g.fill();
+    }
+
+    if (ergo.laborDetail.isAxeStuck) {
+      // Stuck timber log & axe
+      if (g.fillRect) {
+        g.fillStyle = '#a6855b';
+        g.fillRect(240, groundY - 58, 20, 32);
+        g.fillStyle = '#839494';
+        g.fillRect(246, groundY - 50, 14, 8);
+      }
+      if (g.strokeRect) {
+        g.strokeStyle = '#322b29';
+        g.strokeRect(246, groundY - 50, 14, 8);
+      }
+      if (g.beginPath && g.stroke) {
+        g.strokeStyle = '#624631';
+        g.lineWidth = 3;
+        g.beginPath();
+        g.moveTo(250, groundY - 46);
+        g.lineTo(220, groundY - 65);
+        g.stroke();
+      }
+      if (g.fillText) {
+        g.fillStyle = '#8a3a2b';
+        g.font = '10px sans-serif';
+        g.fillText('卡斧・拔斧甩手中', 215, groundY - 68);
+      }
+    } else if (ergo.laborDetail.woodSplit) {
+      // Two split halves
+      if (g.fillRect) {
+        if (g.save && g.restore) {
+          g.save();
+          if (g.translate && g.rotate) {
+            g.translate(225, groundY - 25);
+            g.rotate(-0.35);
+          }
+          g.fillStyle = '#bda078';
+          g.fillRect(-8, -15, 16, 28);
+          g.restore();
+
+          g.save();
+          if (g.translate && g.rotate) {
+            g.translate(275, groundY - 25);
+            g.rotate(0.35);
+          }
+          g.fillStyle = '#bda078';
+          g.fillRect(-8, -15, 16, 28);
+          g.restore();
+        }
+        // Chips
+        g.fillStyle = '#dfc499';
+        for (let k = 0; k < 6; k++) {
+          g.fillRect(240 + (k % 3) * 8 - 8, groundY - 45 - k * 5, 3, 2);
+        }
+      }
+    } else {
+      if (g.fillRect) {
+        g.fillStyle = '#a6855b';
+        g.fillRect(240, groundY - 58, 20, 32);
+      }
+    }
+  } else if (view.frame?.routine || focalActor?.task?.act === 'train') {
+    // Wooden dummy
+    if (g.fillRect) {
+      g.fillStyle = '#835a34';
+      g.fillRect(266, groundY - 80, 12, 80);
+      g.fillRect(252, groundY - 62, 40, 6);
+      g.fillRect(256, groundY - 46, 32, 6);
+      g.fillRect(250, groundY - 25, 20, 6);
+    }
+  }
+
+  const scale = 2.4;
+  let focalActorX = opponent ? 110 : 180;
+  if (ergo.combatDetail.dodgeTier === 'scramble') {
+    focalActorX -= 25;
+  }
+  if (ergo.combatDetail.microShiverPx > 0) {
+    focalActorX += Math.sin((view.clock || 0) * 50) * ergo.combatDetail.microShiverPx;
+  }
+
+  // 3. Ghost Silhouette (宗師淡墨重影)
+  if (view.frame?.routine || focalActor?.task?.act === 'train' || view.poses) {
+    if (g.save && g.restore) {
+      g.save();
+      if (g.translate) g.translate(focalActorX, groundY);
+      if (g.scale) g.scale(scale, scale);
+      g.globalAlpha = 0.15;
+      const masterPlayback = {
+        ...p,
+        hipHeight: PLAYBACK.uprightHip * PLAYBACK.deepHipRatio,
+        sway: 0,
+        waterTilt: 0
+      };
+      const ghostView = { ...view, playback: masterPlayback, lean: 0 };
+      drawPoseActor(g, focalActor, ghostView);
+      g.restore();
+    }
+  }
+
+  // 4. Focal Actor
+  if (g.save && g.restore) {
+    g.save();
+    if (g.translate) g.translate(focalActorX, groundY);
+    if (g.scale) g.scale(scale, scale);
+    const actorView = { ...view, ergo, playback: p };
+    drawPoseActor(g, focalActor, actorView);
+    g.restore();
+  }
+
+  // Water Splash droplets
+  if (ergo.laborDetail.waterSplash && g.beginPath && g.fill) {
+    g.fillStyle = '#5d9ec7';
+    const bx1 = focalActorX - 25, bx2 = focalActorX + 25, by = groundY - 40;
+    for (let i = 0; i < 4; i++) {
+      g.beginPath();
+      if (g.arc) g.arc(bx1 - 5 + i * 4, by - 6 - i * 3, 2, 0, Math.PI * 2);
+      g.fill();
+      g.beginPath();
+      if (g.arc) g.arc(bx2 - 2 + i * 4, by - 5 - i * 4, 2, 0, Math.PI * 2);
+      g.fill();
+    }
+  }
+
+  // 5. Opponent in Duel
+  if (opponent && g.save && g.restore) {
+    g.save();
+    const oppX = 250;
+    if (g.translate) g.translate(oppX, groundY);
+    if (g.scale) g.scale(-scale, scale); // face left
+    const oppPose = displayPose(s, opponent, null, null, s?.t || 0, false);
+    drawPoseActor(g, opponent, oppPose);
+    g.restore();
+
+    if (ergo.combatDetail.dodgeTier === 'headSlip' && g.beginPath && g.stroke) {
+      g.strokeStyle = '#c0392b88';
+      g.lineWidth = 1.5;
+      g.beginPath();
+      g.moveTo(210, groundY - 95);
+      g.lineTo(135, groundY - 105);
+      g.stroke();
+      if (g.fillText) {
+        g.fillStyle = '#c0392b';
+        g.font = 'bold 11px sans-serif';
+        g.fillText('原地擺頭避刃！', focalActorX - 20, groundY - 120);
+      }
+    }
+  }
+
+  // 6. Witch Time Golden Frame
+  if (s?.witch) {
+    if (g.strokeRect) {
+      g.strokeStyle = '#e2b53c';
+      g.lineWidth = 3;
+      g.strokeRect(1.5, 1.5, 357, 217);
+    }
+    if (g.fillText) {
+      g.fillStyle = '#e2b53c';
+      g.font = 'bold 11px sans-serif';
+      g.fillText('⚡ 林克時間・慢動作特寫', 12, 16);
+    }
+  }
+
+  // 7. Top-Left Stance Stamp / Labor Status Badge
+  let headerText = '';
+  let subText = '';
+  if (view.frame?.routine) {
+    headerText = `《${view.frame.routine.name}》第 ${view.frame.form} 式：${view.frame.formName}`;
+    const uses = handUses(focalActor, view.move || 'bodyPunch');
+    subText = `手熟 ${uses} 次・前搖 ${(p.wind || 0.45).toFixed(2)}s・馬步深淺 ${p.hipHeight.toFixed(1)}px`;
+  } else if (view.work === 'water' || focalActor?.task?.act === 'water') {
+    headerText = `日課・挑水（水桶傾角 ${p.waterTilt.toFixed(1)}°）`;
+    subText = ergo.laborDetail.waterSplash ? '步伐晃動・水花飛濺・好沉…' : '四平八穩・扁擔共振・滴水不灑';
+  } else if (view.work === 'chop' || focalActor?.task?.act === 'chop') {
+    headerText = `日課・砍柴（停頓 ${p.chopPause.toFixed(2)}s）`;
+    subText = ergo.laborDetail.isAxeStuck ? '手生砍偏・卡斧拔斧甩手中' : (ergo.laborDetail.woodSplit ? '腰馬合一・一斧兩斷！' : '劈柴修整');
+  } else if (opponent) {
+    headerText = `微距對決・${focalActor.name || '弟子'} vs ${opponent.name || '敵人'}`;
+    subText = ergo.combatDetail.dodgeTier === 'headSlip' ? '眼疾手快・原地擺頭避刃' : (ergo.combatDetail.dodgeTier === 'scramble' ? '眾敵合圍・狼狽避閃' : '靈巧身法・側步避讓');
+  } else {
+    headerText = `弟子日常・${focalActor.name || '弟子'}`;
+    subText = `力氣 ${strength.toFixed(0)}・身法 ${agility.toFixed(0)}・氣息 ${ergo.buildProfile.breathRate.toFixed(1)}×`;
+  }
+
+  if (g.fillRect && g.fillText) {
+    g.fillStyle = '#8a2b1c';
+    g.fillRect(10, 8, 4, 15);
+    g.font = 'bold 13px sans-serif';
+    g.fillStyle = '#422a18';
+    g.fillText(headerText, 18, 20);
+    g.font = '11px sans-serif';
+    g.fillStyle = '#6e5239';
+    g.fillText(subText, 12, 36);
+  }
+
+  // 8. Balance & Posture Bar (重心平衡儀)
+  const barX = 80, barY = 194, barW = 200, barH = 10;
+  if (g.fillText) {
+    g.font = '11px sans-serif';
+    g.fillStyle = '#5c4532';
+    g.fillText('重心平衡儀', 12, 203);
+  }
+  if (g.fillRect) {
+    g.fillStyle = '#d1c0a0';
+    g.fillRect(barX, barY, barW, barH);
+    const safeHalf = (barW / 2) * 0.75;
+    g.fillStyle = '#b7cca8';
+    g.fillRect(barX + barW / 2 - safeHalf, barY, safeHalf * 2, barH);
+  }
+  if (g.beginPath && g.stroke) {
+    g.strokeStyle = '#624b33';
+    g.lineWidth = 1;
+    g.beginPath();
+    g.moveTo(barX + barW / 2, barY - 2);
+    g.lineTo(barX + barW / 2, barY + barH + 2);
+    g.stroke();
+  }
+  const knobX = barX + barW / 2 + (ergo.jointSpring.comOffset || 0) * (barW / 2);
+  if (g.beginPath && g.fill) {
+    g.fillStyle = ergo.jointSpring.isStumbling ? '#d0302a' : '#396b8e';
+    g.beginPath();
+    if (g.arc) g.arc(knobX, barY + barH / 2, 5, 0, Math.PI * 2);
+    g.fill();
+    if (g.stroke) {
+      g.strokeStyle = '#fff';
+      g.lineWidth = 1;
+      g.stroke();
+    }
+  }
+  if (g.fillText) {
+    g.fillStyle = ergo.jointSpring.isStumbling ? '#c0392b' : '#3b6140';
+    g.font = 'bold 11px sans-serif';
+    g.fillText(ergo.jointSpring.isStumbling ? '失衡踉蹌！' : '平衡穩健', barX + barW + 8, 203);
+  }
+
+  if (g.restore) g.restore();
+  return ergo;
 }

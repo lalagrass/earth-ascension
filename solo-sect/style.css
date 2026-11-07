@@ -102,3 +102,10 @@ label.btn { border:1px solid #888; padding:2px 8px; border-radius:4px; cursor:po
 #start input[type=text],#start input:not([type]){background:#fff2d4;border:1px solid #9e8051;color:#3d301f;padding:4px}
 #start .choice-more[open]{display:block;margin:5px 0}
 #start .choice-grid{width:min(640px,100%)}
+/* Phase 1: 微距武道與生活實況窗 (Micro-Stage Viewport) */
+#micro-stage-wrap{margin:6px 0;background:#ebdcc0;border:1px solid #b69c6d;border-radius:6px;overflow:hidden;box-shadow:0 2px 6px #54391c22}
+#micro-stage{display:block;width:100%;height:auto;background:#ebdcc0;image-rendering:pixelated}
+#micro-caption{padding:4px 8px;font-size:12px;background:#dfcca5;color:#432f1d;border-top:1px solid #b69c6d;cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:center}
+#micro-caption::after{content:' ▾';color:#7d5c36}
+#micro-stage-wrap.collapsed #micro-stage{display:none}
+#micro-stage-wrap.collapsed #micro-caption::after{content:' ▸'}
