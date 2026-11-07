@@ -635,6 +635,19 @@ CI 第三輪 quick 與 golden 全過，accept 296/301。五項逐項處置：
 | golden | Node 22 `node tools/golden.mjs --write --tier hermitage` 只重產[隱居兩線](test/golden/hermitage.json)，`--check --tier all` 核對 quick 4、full 32、舊存檔 6、隱居 2。原 quick/full/saves 檔未改。 |
 | 畫面 A/B | `python3 solo-sect/tools/phase5-visual.py --seed=17` 從正常 UI 開局後固定演示狀態；[盲測 A](artifacts/phase5/blind-A.png)、[盲測 B](artifacts/phase5/blind-B.png)、[另存答案](artifacts/phase5/blind-answers.json)。判準：一張顯示痠痛與笨拙挑水，另一張顯示藥膳光暈與俐落挑水；任選 seed 可重播。 |
 
+## Phase 6：由外而內、輕功與三階山崖（#511，規則 4.5）
+
+實作 grass／Codex Cloud；疊在 Phase 5 #515 的 `3fcab45`。規則與常數理由見[山崖與輕功](docs/systems/cliff-qinggong.md)。舊局武學選擇與平地路線不使用新崖點；舊 quick/full/舊存檔 golden 完全不變。舊 `feedInner31` → `feedInnerFromOuter`、`stepDrive28` → `stepDrive`，只是明名，原公式保持。
+
+| 類別 | 指令、門檻與預期輸出 |
+|---|---|
+| A 固定情境 | `bash solo-sect/test/run.sh smoke`：57/57；單一新測試 `test/unit/growth/phase6-awakening-cliff-qinggong.test.mjs`。純陽／羅漢 XP25＋臂力15 頓悟本路心法，練拳回饋本路心法，心法 XP25＋身法16 頓悟本路步法；未達門檻拒派崖任務，三崖門檻逐階開；真任務取草藥2、玉蜂漿1、寒潭水1，寒潭水藥膳真用飯補氣與心情，高崖石刻得全真劍；畫面只讀狀態且 Canvas 有崖壁及青色氣流。原 Phase 4 測試保留可學／不可學斷言，只補 Phase 6 所需的 XP／體魄前置資料。 |
+| B 隨機公式 | 本輪沒有新增隨機公式或抽樣。原 N62 6,000 次出獵公式測試仍在 smoke；期望 0.4926757803，觀察 0.4978333333，容差 0.021407701。 |
+| C 十日隱居 | Node 22 `node solo-sect/tools/phase6-check.mjs <checkout>/solo-sect --days=10 [--seed=1001]`：12 種子，0.25 秒步長，警示自動按「知道了」；無玩家新命令。[上一輪 base](artifacts/phase6/phase6-base.json)／[本輪 head](artifacts/phase6/phase6-head.json)。主角心法 6/12→12/12，後者全在第 6 日；步法 6/12→0/12，因新規則要求心法 XP25 且身法16，本窗主角身法僅 10–11.8。崖點 0/12→6/12 先由伴侶探索，主角 0/12。這是固定無指令日程報告，不代表玩家指派練功或做活後的可達日數；不為 C 調參。 |
+| bot12 舊局 | `docker run --rm -v "$PWD:/app" -w /app node:22-bookworm-slim node solo-sect/tools/bot12.mjs solo-sect --json`：同樣 12 種子第 30 日。[base](artifacts/phase6/bot12-base.json)／[head](artifacts/phase6/bot12-head.json)逐位元組相同：自然山賊勝場 53/62、柵欄探針 84/96 且守住 48/96、惱羞 1052、林克時間 149、`winP` 中位 0.985。自然與探針分母不混用；本輪僅在 `hermitage` 啟動。 |
+| golden | Node 22 `node solo-sect/tools/golden.mjs --write --tier hermitage` 僅重產兩線，再 `--check --tier all`：舊 quick4、full32、舊檔6 逐格相符，新隱居2 相符。規則 4.5 遷移只為已在隱居者補欄位；舊局不加狀態。 |
+| 畫面 A/B | `python3 solo-sect/tools/phase6-visual.py --seed=17`，正常 UI 開隱居局後固定展示未學／已學身法狀態。[盲測 A](artifacts/phase6/blind-A.png)／[盲測 B](artifacts/phase6/blind-B.png)，[答案另存](artifacts/phase6/blind-answers.json)。判準：一張平地挑水，一張身法縱躍且可見崖壁、飛瀑與青色氣流；`--seed` 可換圖序。 |
+
 bot12 同尺命令：分別在 Phase 4 與本輪 checkout 根目錄執行 `docker run --rm -v "$PWD:/app" -w /app node:22-bookworm-slim node solo-sect/tools/bot12.mjs solo-sect --json > solo-sect/artifacts/phase5/bot12-{base,head}.json`，一次只選一個輸出檔。base 原始輸出由 Phase 4 已驗證 head 複製，與當輪 head 比較。
 
 舊名 → 新名：本輪觸及的公開接口已具意義名稱，無編號名稱改動。最沒把握三處：① 採藥／市集購藥都能提供灶房原料，因實際判斷是 `res.herb >= 1`；② 自然 5 日樣本不會自己採藥，藥膳 A 驗收以實際煮／吃任務另驗；③ `+35%` 落在純陽拳／羅漢手外功 XP，沿原入內回饋傳遞，沒有另造內功悟性倍率。

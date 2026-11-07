@@ -75,7 +75,7 @@ export function displayPose(s, d, art, move, time=s.t, hitstop=true) {
     const w=d.swing||d.bswing, phase=w?.wind?Math.max(0,Math.min(1,(s.t-(w.at-w.wind))/w.wind)):0.5;
     return { poses,u:d.anim==='wind'?phase*.6:.8,key:move?.id||'attack',...extra };
   }
-  if (d.task?.act === 'train' && d.task.phase === 'do') {
+  if (['train', 'cliffTrain', 'waterfallTrain'].includes(d.task?.act) && d.task.phase === 'do') {
     const f = routineFrame(art,d,s.t,playback);
     return { poses:f.poses,u:f.phase,key:f.formName,frame:f,...extra };
   }
@@ -225,7 +225,7 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
   const focalMove = MOVES.find((m) => m.id === (focalActor.swing?.mv || focalArt?.tech));
   const defaultView = displayPose(s, focalActor, focalArt, focalMove);
   const baseView = customView ? { ...defaultView, ...customView } : defaultView;
-  const view = (focalActor?.carry?.water || focalActor?.task?.act === 'water') && baseView.work !== 'water'
+  const view = (focalActor?.carry?.water || focalActor?.carry?.coldWater || ['water', 'cliffWater'].includes(focalActor?.task?.act)) && baseView.work !== 'water'
     ? { ...baseView, work: 'water' }
     : baseView;
   const ergo = ergonomicFrame(focalActor, s, { ...view, art: focalArt, move: focalMove?.id });
@@ -242,11 +242,20 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
     g.fillRect(0, 0, 360, 220);
   }
 
-  // Ground baseline at y = 175
-  const groundY = 175;
+  // 出自 Phase 6 規格：崖上縱躍時讓人物頭頂仍留在 220px 微距窗內；舊局維持 175px 地線。
+  const groundY = ergo.cliffLeapStage ? 190 : 175;
   if (g.fillRect) {
     g.fillStyle = '#d8c7a6';
     g.fillRect(0, groundY, 360, 220 - groundY);
+  }
+  if (ergo.cliffLeapStage && g.fillRect) {
+    // 出自 Phase 6 規格：三階絕壁、飛瀑與雲霧只畫在崖上特寫，不影響舊局地圖。
+    g.fillStyle = '#7e8580'; g.fillRect(0, 42, 76, groundY - 42);
+    g.fillStyle = '#a1a8a3'; g.fillRect(56, 32, 38, groundY - 32);
+    g.fillStyle = '#62776b'; g.fillRect(284, 58, 76, groundY - 58);
+    g.fillStyle = '#94b9bd'; g.fillRect(306, 64, 14, groundY - 64);
+    g.fillStyle = '#d9e2db'; g.fillRect(94, 79, 84, 12); g.fillRect(168, 53, 116, 10);
+    g.fillStyle = '#3e684b'; g.fillRect(232, 109, 67, 6);
   }
   if (g.beginPath && g.stroke) {
     g.strokeStyle = '#b49f78';
@@ -279,7 +288,7 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
   }
 
   // 2. Micro-environment Props
-  if (view.work === 'water' || focalActor?.task?.act === 'water') {
+  if ((view.work === 'water' || focalActor?.task?.act === 'water') && !ergo.cliffLeapStage) {
     // Stone steps
     if (g.fillRect) {
       g.fillStyle = '#baa380';
@@ -467,6 +476,15 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
     drawPoseActor(g, synergy.partner, partnerPose);
     g.restore();
   }
+  if (ergo.cliffLeapStage && s.hermitage?.active && g.save && g.restore) {
+    const companion = s.ds?.find(d => d.id !== focalActor.id && d.at === focalActor.at && d.task?.node === focalActor.task?.node && !d.away);
+    if (companion && companion !== synergy?.partner) {
+      g.save(); g.translate(focalActorX - 64, groundY - ergo.leapArcY * .7);
+      g.scale(scale * .8, scale * .8);
+      drawPoseActor(g, companion, displayPose(s, companion, null, null, s.t, false));
+      g.restore();
+    }
+  }
 
   // 出自 Phase 5 規格：藥膳溫養只在微距窗畫琥珀氣暈；45×80 對齊此窗人物輪廓，不改角色位置或碰撞。
   if (ergo.laborDetail.herbalBuffActive && g.save && g.restore && g.ellipse && g.fill) {
@@ -496,11 +514,18 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
   // 4. Focal Actor
   if (g.save && g.restore) {
     g.save();
-    if (g.translate) g.translate(focalActorX, groundY);
+    if (g.translate) g.translate(focalActorX, groundY - ergo.leapArcY);
     if (g.scale) g.scale(scale, scale);
     const actorView = { ...view, ergo, playback: p };
     drawPoseActor(g, focalActor, actorView);
     g.restore();
+  }
+  if ((ergo.qinggongLeaping || ergo.cliffLeapStage) && g.beginPath && g.stroke) {
+    // 出自 Phase 6 規格：身法軌跡取角色當前位置，畫面殘影不回寫任何物理座標。
+    g.strokeStyle = '#6ab8ad'; g.lineWidth = 2;
+    g.beginPath(); g.moveTo(focalActorX - 28, groundY - 9);
+    g.quadraticCurveTo(focalActorX - 35, groundY - 32 - ergo.leapArcY, focalActorX - 11, groundY - 22 - ergo.leapArcY);
+    g.stroke();
   }
 
   // Water Splash droplets

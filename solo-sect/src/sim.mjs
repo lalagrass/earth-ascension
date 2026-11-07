@@ -2,7 +2,8 @@ import {originPeople,ORIGIN_RELATIONS} from './origins.mjs';
 import {HUNGER_PER_SECOND,admissionStatus,mentorFor,guidanceSeconds,clockActor,noteGuidance,guidanceLearning,guidanceDaily} from './admission.mjs';
 import {attraction,applicantAway,bookAdmissionWork,discipleCount,policyCap,recruitmentInit,recruitmentOf,returnFromWork,sendApplicantToWork,setRecruitPolicy} from './recruitment.mjs';
 export {attraction,policyCap,setRecruitPolicy} from './recruitment.mjs';
-import {transferredDamage,moveStats,checkPartnerAwakening} from './arts.mjs';
+import {transferredDamage,moveStats,checkPartnerAwakening,checkExteriorToInteriorAwakening,hermitageInnerActive,hermitageStepActive} from './arts.mjs';
+import { canLeapCliff, CLIFF_ACT_NODE } from './cliff.mjs';
 import {ringCapacity,attackTokenLimit,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} from './tactics.mjs';
 import {pickupDrop} from './techniques.mjs';
 import {forayChoice} from './foray-choice.mjs';
@@ -10,10 +11,10 @@ import {finishTrainingWish,TRAINING_CAUSES} from './decision.mjs';
 import { ensurePractice, rehearse, practiceWork, practiceWindow } from './practice.mjs';
 import { BODY_TIMING, BODY_MOVES, BODY_BASE, makeBare, acquireWorkTool, moveAvailable, foeAction, FOE_ACTIONS } from './starter-combat.mjs';
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { combatTacticStep, chooseCombatMove, fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuterArt, studyChart24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
-import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar, bodyConditionOn, ensureBodyCondition, stepWorkCondition, restBodyCondition, cookMedicatedMeal, applyMedicatedMeal } from './economy.mjs';
+import { combatTacticStep, chooseCombatMove, fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive, mastery, mainOuterArt, studyChart24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
+import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar, BODY_CONDITION, bodyConditionOn, ensureBodyCondition, stepWorkCondition, restBodyCondition, cookMedicatedMeal, applyMedicatedMeal } from './economy.mjs';
 import { SOURCES } from './data.mjs';
-import { RECRUIT_TRAIT_VARIATION, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, ROUTINE_DEFAULT, ROUTINE_MODES, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, FENCE_FAC, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, COMPANIONS, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST, ROUTE, ENEMIES } from './data.mjs';
+import { RECRUIT_TRAIT_VARIATION, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, ROUTINE_DEFAULT, ROUTINE_MODES, PLOT_GROW, HARVEST, NODES, EDGES, CLIFFS, FACILITIES, FENCE_FAC, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, COMPANIONS, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST, ROUTE, ENEMIES } from './data.mjs';
 import { chronOf, clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
 import { MENTOR, think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits, relStage, relAdd, compat, aff, initPair, coTrain, askStrong, pairBoost, drawBoost, pickChatMate, admire, archRecruit } from './social.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf, raidMul, popStep, POP, fogStep, unlockStep, chapterStep } from './world.mjs';
@@ -42,8 +43,10 @@ function rng(seed) { let s = seed >>> 0; return () => { s = (s + 0x6d2b79f5) >>>
 // ---- 路網 ----
 const ADJ = {};
 for (const [a, b] of EDGES) { const w = dist(NODES[a], NODES[b]); (ADJ[a] ||= []).push([b, w]); (ADJ[b] ||= []).push([a, w]); }
-export function route(from, to) {
-  const D = { [from]: 0 }, P = {}, Q = new Set(Object.keys(NODES));
+export function route(from, to, d = null) {
+  // 出自 Phase 6 規格：平地尋路沿舊圖；只有進出山崖時才納入已達門檻的崖點，避免舊局多一條捷徑。
+  const cliffTrip = !!(CLIFFS[from] || CLIFFS[to]);
+  const D = { [from]: 0 }, P = {}, Q = new Set(Object.keys(NODES).filter(id => id === from || !CLIFFS[id] || (cliffTrip && canLeapCliff(d, id))));
   while (Q.size) {
     let u = null; for (const q of Q) if (D[q] !== undefined && (u === null || D[q] < D[u])) u = q;
     if (u === null || u === to) break; Q.delete(u);
@@ -52,7 +55,7 @@ export function route(from, to) {
   const path = [to]; while (path[0] !== from) { const p = P[path[0]]; if (!p) return [from]; path.unshift(p); }
   return path;
 }
-export const routeLength = (a, b) => { const p = route(a, b); let L = 0; for (let i = 1; i < p.length; i++) L += dist(NODES[p[i - 1]], NODES[p[i]]); return L; };
+export const routeLength = (a, b, d = null) => { const p = route(a, b, d); let L = 0; for (let i = 1; i < p.length; i++) L += dist(NODES[p[i - 1]], NODES[p[i]]); return L; };
 
 export const facDef = (id) => (id === 'fence' ? FENCE_FAC : FACILITIES.find((f) => f.id === id)); // loop11 柵牆工地
 export const facStage = (s, id) => { const S = facDef(id).stages; return S[Math.min(s.fac[id]?.stage || 0, S.length - 1)]; };
@@ -77,6 +80,7 @@ export function createState(seed = 1, heroSpec = null) {
     const partnerId = heroSpec.partner === 'huangrong' ? 'huangrong' : 'xiaolongnv';
     s.hermitage = { active: true, partnerId, stage: 0, founded: false, livedDays: 0 }; // 出自 Phase 4 規格。
     s.res.medFood = 0; s.medFoodBatches = []; // 出自 Phase 5 規格：新模式才有藥膳存糧。
+    s.res.beeJelly = 0; s.res.coldWater = 0; s.hermitage.exploredCliffs = []; // 出自 Phase 6 規格：只在隱居路線新增山崖採集與探索帳。
     if (s.hero) s.hero.sect24 = 'quanzhen';
     const hero = byId(s, 'hero'), base = partnerId === 'huangrong' ? COMPANIONS.huangrong : {
       name: '小龍女', style: 'palm', adult: true, fem: true, sprite: 'senior', personality: ['gentle', 'diligent'], skills: { ...DISCIPLES[0].skills, herbal: 14, agility: 16 },
@@ -95,7 +99,7 @@ export function createState(seed = 1, heroSpec = null) {
       for (const [id, xp] of [['basicFist', 10], ['xiaoyaoStep', 10]]) { partner.arts[id] = { xp }; learnArt(partner, id, s.t); }
     }
     const starter = heroSpec.starterArt === 'luohanHands' ? 'luohanHands' : 'chunyangFist';
-    learnArt(hero, starter, s.t); hero.focus = starter;
+    learnArt(hero, starter, s.t); hero.focus = starter; hero.hermitageStarter = starter; // 出自 Phase 6 規格：兩條外入內路線依實際起手拳譜。
     s.ds.push(partner); initPair(s, hero, partner, 55); // 出自 Phase 4 規格：雙人初始好感 55。
     s.hero.companion = partner.id; s.hero.companions = [partner.id]; s.encExclude.push(partnerId);
     log(s, `【荒山隱居】${hero.name}與${partner.name}在終南茅廬安頓，先一起生活練功。`);
@@ -259,6 +263,7 @@ export function setForayPolicy(s, policy) { if (!['allow', 'forbid'].includes(po
 export function setOrder(s, id, order) {
   const d = byId(s, id); if (!d) return false;
   if (order && order !== 'hunt' && !ACTIVITIES[order]) return false;
+  if (CLIFF_ACT_NODE[order] && (!s.hermitage?.active || !canLeapCliff(d, CLIFF_ACT_NODE[order]))) return false; // 出自 Phase 6 規格：玩家指派前即擋掉爬不到的崖。
   d.order = order || null; cancelTask(s, d, '玩家改派');
   return true;
 }
@@ -345,6 +350,10 @@ export function scoreActs(s, d) {
   for (const R of SCORE) { if (R.gen) { for (const [act, A] of GEN_ACTS) { if (!offered(s, act).length) continue; const g = genOf(s, act, A); if (!g || !GEN_COND[g.cond]?.(s, d) || !dayOk(s, act, g.perDay)) continue; if (g.base > 0) out.push({ act, score: g.base, why: g.why, ...(g.layer ? { layer: g.layer } : {}) }); } continue; }
     if (R.when && !R.when.every((k) => PRED[k](c))) continue; const T = R.tiers ? R.tiers.find((x) => !x.if || PRED[x.if](c)) : R; if (!T) continue;
     const score = valOf(T.v, c); if (score > 0) out.push({ act: R.act, score, why: fillWhy(T.why, c), ...(T.layer || R.layer ? { layer: T.layer || R.layer } : {}) }); }
+  if (s.hermitage?.active) for (const [act, base] of Object.entries({ cliffForage1: 'forage', cliffTrain: 'train', cliffWater: 'water', waterfallTrain: 'train', cliffComprehend: 'meditate' })) {
+    const cliffId = CLIFF_ACT_NODE[act], source = out.find(o => o.act === base);
+    if (source && canLeapCliff(d, cliffId)) out.push({ act, score: source.score, why: `輕功可到${CLIFFS[cliffId].name}，${ACTIVITIES[act].name}` });
+  } // 出自 Phase 6 規格：解鎖後 AI 借原活動分數選崖上同類工作，不另立任意偏好常數。
   if (s.band && BAND.defendScore > 0 && canDefend(d)) out.push({ act: 'defend', score: BAND.defendScore, why: s.band.state === 'go' ? '山賊往菜園來了，去柵邊守著' : '山賊在撞柵，去打退他們' }); // loop3
   if (d.ng && qiMax(d) > 0 && qiOf(d) < qiMax(d) * NG23.medLow) for (const o of out) if (o.act === 'meditate') { o.score *= NG23.medBoost; o.why += '（內力不足，先打坐回氣）'; } /* loop153 */
   if (d.lspec && isLabor(d)) for (const o of out) if (o.act === d.lspec) { o.score *= LABOR23.specMul; o.why += '（拿手活）'; } /* loop155 */
@@ -374,6 +383,10 @@ export function scoreActs(s, d) {
 }
 
 function assign(s, d, act, why) {
+  if (CLIFF_ACT_NODE[act]) {
+    const cliffId = CLIFF_ACT_NODE[act]; if (!s.hermitage?.active || !canLeapCliff(d, cliffId)) return false;
+    d.task = { act, node: cliffId, phase: 'go' }; goto(d, cliffId); d.reason = why || `上${CLIFFS[cliffId].name}${ACTIVITIES[act].name}`; return true;
+  }
   if (act === 'foray' || act === 'patrol') {
     if ((act === 'foray' && !PRED.animalTracks({ s })) || d.needs.energy < 45 || d.needs.hunger < 30) return false;
     const motive = act === 'foray' ? 'food' : 'practice', choice = forayChoice(s, d, motive); if (!choice) return false;
@@ -427,7 +440,7 @@ function arrangeGuidance(s){
     goto(m,a.f.node,a.xy);goto(p,b.f.node,b.xy);m.reason=`花真時辰指點${p.name}`;p.reason=`請${m.name}糾正生招`;
   }
 }
-function goto(d, node, xy = null) { const p = route(d.at, node); d.path = p.slice(1).map((n) => ({ n, xy: NODES[n] })); if (!d.path.length) d.path = [{ n: node, xy: NODES[node] }]; if (xy) d.path.push({ n: node, xy }); }
+function goto(d, node, xy = null) { const p = route(d.at, node, d); d.path = p.slice(1).map((n) => ({ n, xy: NODES[n] })); if (!d.path.length) d.path = [{ n: node, xy: NODES[node] }]; if (xy) d.path.push({ n: node, xy }); }
 
 // ---- M3（loop148）結伴吃飯、送飯給忙碌／受傷的另一半；柵破避難 ----
 export const PAIR = { mealSocial: 6, mealRel: 1, hungry: 30, hurt: 50, feedHunger: 35, feedRel: 3, inviteMax: 70 };
@@ -492,7 +505,7 @@ function decide(s, d) {
   return false;
 }
 
-export function speedOf(d) { return BASE_SPEED * (1 + d.skills.agility / 100) * (d.carry ? 0.7 : 1) * (d.needs.energy < 30 ? 0.8 : 1) * (1 + (NG23.speedPerTier) * Math.max(0, effectTier(d, 'speed') + 1) * (stepDrive28(d))) * (1 + 0.002 * mastery(d, 'shenfa')) * (d.path?.length ? yuqiMul(d) : 1); } /* loop198：身法造詣每 10 點腳程 +2%；loop196 輕功催動 */
+export function speedOf(d) { return BASE_SPEED * (1 + d.skills.agility / 100) * (d.carry ? 0.7 : 1) * (d.needs.energy < 30 ? 0.8 : 1) * (1 + NG23.speedPerTier * Math.max(0, effectTier(d, 'speed') + 1) * stepDrive(d)) * (1 + 0.002 * mastery(d, 'shenfa')) * (d.path?.length ? yuqiMul(d) : 1) * (hermitageStepActive(d) ? 1.35 : 1); } /* 出自 Phase 6 規格：隱居主角悟輕功後腳程 +35%；舊角色沿原公式。 */
 
 function moveStep(d, dt) {
   if (d.path.length && yuqiOn(d)) d.qi = Math.max(qiMax(d) * NG23.yuqi.keep, qiOf(d) - NG23.yuqi.drain * dt); /* loop153 御氣耗氣，留三成底、不會力竭 */
@@ -510,9 +523,10 @@ function grow(s, d, sk, amt, src = 'train') {
   if (bodyConditionOn(s) && src === 'labor' && ['strength', 'agility'].includes(sk)) return; // 出自 Phase 5 規格：新局體魄由疲勞週期結算，不能從舊勞作通路繞過 18 點上限。
   const before = d.skills[sk]; d.skills[sk] = Math.min(100, before + amt * (d.traits.diligent || 1) * 0.3 * (1 - before / 130) * focusMul(d));
   if (src === 'labor' && sk === 'strength' && d.lg) d.skills[sk] = before + workStrCap(d, Math.floor(s.t / DAY), d.skills[sk] - before); // loop127 做活力氣每日軟上限
-  if (sk === d.style) { growEnsure(d); const o = gainArt(d, amt * (d.arts ? teachMul(s, d, focusOf(d)) : 1), focusMul(d), s.t, { raw, src }); /* #415 N12 師父傳授時段：這門名功練得快 */ if (o.feed) log(s, `${d.name}【${o.feed.label}】內功《${o.feed.name}》長進 ${o.feed.xp.toFixed(2)}`); if (o.next) log(s, `${d.name}功夫到了火候，可向師父求學「${o.next.name}」`); for (const m of o.moves) log(s, `${d.name}把已學套路的「${MOVES.find((x) => x.id === m).name}」練成了`); if (o.star) log(s, `${d.name}的基本功又添一顆星`); return o; }
+  if (sk === d.style) { growEnsure(d); const o = gainArt(d, amt * (d.arts ? teachMul(s, d, focusOf(d)) : 1), focusMul(d), s.t, { raw, src }); /* #415 N12 師父傳授時段：這門名功練得快 */ if (o.feed) log(s, `${d.name}【${o.feed.label}】內功《${o.feed.name}》長進 ${o.feed.xp.toFixed(2)}`); if (o.next) log(s, `${d.name}功夫到了火候，可向師父求學「${o.next.name}」`); for (const m of o.moves) log(s, `${d.name}把已學套路的「${MOVES.find((x) => x.id === m).name}」練成了`); if (o.star) log(s, `${d.name}的基本功又添一顆星`); if (s.hermitage?.active) checkExteriorToInteriorAwakening(d, s); return o; }
 }
 
+const CLIFF_TRAIN_MUL = Object.freeze({ cliffTrain: 1.25, waterfallTrain: 1.4 }); // 出自 Phase 6 規格：試劍崖／飛瀑外功練體速度。
 function doTask(s,d,dt){
   if(d.downUntil>s.t){d.anim='down';if(d.task?.act==='trial')trialStep(s,d,dt);return;}
   if(pickupDrop(s,d))return;
@@ -533,6 +547,7 @@ function doTask(s,d,dt){
   }
   if (t.phase === 'go' && !d.path.length) {
   if (t.partner) { const p = byId(s, t.partner); if (!p || p.task?.partner !== d.id) { d.task = null; return; } if (p.path.length) return; }
+    if (CLIFFS[t.node] && s.hermitage?.active && !s.hermitage.exploredCliffs?.includes(t.node)) { (s.hermitage.exploredCliffs ??= []).push(t.node); log(s, `${d.name}踏上${CLIFFS[t.node].name}，望見山路又開了一層。`); }
     t.phase = 'do'; t.timer = 0; d.anim = t.act;
   }
   if (t.phase === 'do') {
@@ -542,7 +557,7 @@ function doTask(s,d,dt){
     if (t.partner && !byId(s, t.partner)) { cancelTask(s, d, '對手不在了'); return; }
     if (t.act === 'spar' && t.partner && Math.floor(t.timer / 1.2) !== Math.floor((t.timer - dt) / 1.2)) { const p = byId(s, t.partner); const mv = MOVES.find((m) => m.id === d.moves[d.moves.length - 1]); s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...p.pos], r: 12, ttl: 0.6 }); d.face = p.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike'; }
     const effDur = durOf(s, t) / (laborSpeed(s, d, t.act)); /* loop155 幫工專長／清修 */
-    if (A.energy && effDur > 0) d.needs.energy = clamp(d.needs.energy + A.energy * dt / effDur, 0, 100);
+    if (A.energy && effDur > 0) d.needs.energy = clamp(d.needs.energy + A.energy * dt / effDur * (['water', 'chop', 'quarry', 'farm', 'forage', 'cliffForage1', 'cliffTrain', 'cliffWater', 'waterfallTrain'].includes(t.act) && hermitageInnerActive(d) ? 0.75 : 1), 0, 100); // 出自 Phase 6 規格：悟心法後做活精力消耗 −25%。
     if (t.act === 'rest' && d.ng) addQi(d, (restQi(d)) * dt); // loop103 歇息回內力
     if (t.act === 'rest') { const rate = (facStage(s, t.fac).restRate || 3) * (t.floor ? 0.6 : 1) * (1 + ART_GAIN.restPerTier * Math.max(0, effectTier(d, 'rest') + 1)) * effectMul(d, 'rest', s.t); if (t.timer < dt * 1.5) think(s, d, t.floor || (t.fac === 'hall' && s.fac.hall.stage === 0) ? 'floorSleep' : 'bedSleep'); d.needs.energy = clamp(d.needs.energy + rate * dt, 0, 100); d.hp = clamp(d.hp + 3 * dt, 0, 100); const night = phaseOf(s).id === 'night' && !s.hunt?.team.includes(d.id); if (!night && (d.needs.energy >= 100 || (d.order !== 'rest' && d.needs.energy >= CORE.wakeAt && t.timer > 4))) { restBodyCondition(d, s); finish(s, d); } return; }
     if (t.act === 'build') { const site = s.fac[t.fac].site; site.work += dt; d.needs.energy = clamp(d.needs.energy - dt, 0, 100); grow(s, d, 'strength', 0.2 * dt, 'labor'); if (site.work >= site.workNeed) { finishBuild(s, t.fac); finish(s, d); } else if (t.timer >= A.dur) finish(s, d); return; }
@@ -551,15 +566,19 @@ function doTask(s,d,dt){
       if (t.act === 'cook') { const st = facStage(s, t.fac); resAdd(s, 'veg', -2); t.phase = 'done'; const wat = s.res.water >= 1 ? 1 : 0; if (wat) { s.res.water -= 1; book(s, 'out', 'water', 1); } const yld = st.cookYield + cookBonus(d) + wat; /* v1.6 有井水多煮一份 */ onCook(s, d); resAdd(s, 'food', yld, 'kitchen'); log(s, `${d.name}在${st.name}煮好 ${yld} 份飯`); const meal = cookMedicatedMeal(s, d); if (meal) log(s, `${d.name}採藥入鍋，添做一份${meal}。`); grow(s, d, 'cooking', 6); finish(s, d); return; }
       if (t.act === 'farm') { const p = s.plots[t.plot]; t.resv = []; grow(s, d, 'farming', 6); stepWorkCondition(d, s, 'farm'); if (p.st === 'ripe') { p.st = 'empty'; p.g = 0; d.carry = { veg: HARVEST }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; } p.st = 'grow'; p.g = 0; finish(s, d); return; }
       if (A.use) { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } resAdd(s, 'food', -1, 'meal'); }
-      if (t.act === 'eat') { const meal = applyMedicatedMeal(d, s); if (meal) log(s, `${d.name}吃下${meal.name}，肌肉痠痛漸消，今日可完成 ${meal.cycles} 輪恢復。`); }
+      if (t.act === 'eat') { const meal = applyMedicatedMeal(d, s); if (meal) { if (meal.cold) { addQi(d, restQi(d)); d.mood = clamp(d.mood + PAIR.mealSocial, 0, 100); } log(s, `${d.name}吃下${meal.name}，肌肉痠痛漸消，今日可完成 ${meal.cycles} 輪恢復${meal.cold ? '；寒潭靈泉也回了內息與心情' : ''}。`); } }
       if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) { d.needs.social = clamp(d.needs.social + b / 2, 0, 100); think(s, d, 'hallMeal'); } likeMeal(s, d, think); }
       let trainedArt = null;
       acquireWorkTool(d, t.act);
       finishTrainingWish(d,t.act);
-      if (t.act === 'train' || t.act === 'spar') { const moves = d.moves.map((id) => MOVES.find((m) => m.id === id)).filter((m) => m && moveAvailable(d,m)); rehearse(s,d,moves,effDur*guidanceLearning(d),{partner:t.act === 'spar' ? byId(s,t.partner) : null}); }
-      else if (['chop','quarry','water','farm','forage'].includes(t.act)) practiceWork(s,d,t.act,effDur);
+      if (['train', 'spar', 'cliffTrain', 'waterfallTrain'].includes(t.act)) { const moves = d.moves.map((id) => MOVES.find((m) => m.id === id)).filter((m) => m && moveAvailable(d,m)); rehearse(s,d,moves,effDur*guidanceLearning(d)*(CLIFF_TRAIN_MUL[t.act] || 1),{partner:t.act === 'spar' ? byId(s,t.partner) : null}); }
+      else if (['chop','quarry','water','farm','forage', 'cliffForage1', 'cliffWater'].includes(t.act)) practiceWork(s,d,CLIFF_ACT_NODE[t.act] ? t.act === 'cliffWater' ? 'water' : 'forage' : t.act,effDur);
       if (['chop', 'quarry', 'water', 'forage', 'train'].includes(t.act)) stepWorkCondition(d, s, t.act);
-      if (A.skill) for (const [k, v] of Object.entries(A.skill)) { const o = grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? (facStage(s, 'yard').trainMul || 1)*guidanceLearning(d) : 1), isWorkAct(t.act) ? 'labor' : 'train'); if (t.act === 'train' && o?.trained) trainedArt = o.trained; }
+      if (t.act === 'cliffForage1') stepWorkCondition(d, s, 'forage');
+      if (t.act === 'cliffWater') stepWorkCondition(d, s, 'water');
+      if (t.act === 'cliffTrain') stepWorkCondition(d, s, 'train');
+      if (t.act === 'waterfallTrain') stepWorkCondition(d, s, 'train', BODY_CONDITION.workGain * CLIFF_TRAIN_MUL.waterfallTrain); // 出自 Phase 6 規格：沿 Phase 5 一次練體同尺乘 1.4。
+      if (A.skill) for (const [k, v] of Object.entries(A.skill)) { if (t.act === 'cliffWater' && k === 'strength') continue; const o = grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? (facStage(s, 'yard').trainMul || 1)*guidanceLearning(d) : 1) * (CLIFF_TRAIN_MUL[t.act] || 1), isWorkAct(t.act) ? 'labor' : 'train'); if (['train', 'cliffTrain', 'waterfallTrain'].includes(t.act) && o?.trained) trainedArt = o.trained; }
       if (A.skill) cliqueTrain(s, d, t.act, A.skill, grow); // loop20 小派同修
       if (t.act === 'train') coTrain(s, d, A.skill?.style || 0, grow, relAdd, log); // loop8 同修
       if (trainedArt) noteTrain31(d, artById(trainedArt)); /* 一次練功只記一次，同修再長的熟練不另計 */
@@ -585,6 +604,11 @@ function doTask(s,d,dt){
       if (t.act === 'pass' && t.lead && t.partner) { const p = byId(s, t.partner); if (p) passDo(s, d, p, t.art); }
       if (t.act === 'study') { const w = readStudy(s, d); if (w) log(s, `${d.name}在藏經閣讀了許久，忽然開竅——悟性長進了${d.rootKnown ? `（${w}）` : ''}。`); } // loop140 讀書長悟性
       if (t.act === 'study' && t.fac === 'library') { const page = readLuohanBook(d, effDur, s.t); if (page.learned) { log(s, `【拳譜】${d.name}對照身體起手，把《少林羅漢十八手》的二十二段讀完，開始依譜練掌。`); think(s, d, 'learned'); } else if (page.form) log(s, `${d.name}讀《羅漢十八手》到「${page.form}」，照著圖譜試擺。`, 'low'); }
+      if (t.act === 'cliffComprehend' && s.hermitage?.active) {
+        const candidates = d.hermitageStarter === 'luohanHands' ? ['shaolinArhat'] : ['quanzhenSword', 'xiantianGong'];
+        const next = candidates.find(id => !d.arts?.[id] && (id !== 'xiantianGong' || (d.arts?.quanzhenXinfa?.xp || 0) >= 55)); // 出自 Phase 6 規格：全真劍或先天功、羅漢路高階心法沿同崖逐次參悟。
+        if (next) { learnArt(d, next, s.t); log(s, `【絕頂石刻】${d.name}對照前人刻痕，悟出《${artById(next).name}》。`); }
+      }
       // 合參創派不由讀書或打坐的次數自動送出整門功夫。
       if (t.act === 'study') { const g = studyChart24(s, d, () => rand(s)); if (g) log(s, `【藏經閣】${d.name}在書堆裡翻出一卷《${g.art.name}》，從此略通${CATS[g.cat].name}。`); } // loop160 Batch 1.2
       /* loop181 v2.8 經脈內傷：練功／切磋逆催累積，打坐／醫館化解 */
@@ -970,6 +994,7 @@ export function dailyPipeline(s) {
     const hero = s.ds.find((d) => d.id === 'hero');
     if (hero && partner && !hero.away && !partner.away) s.hermitage.livedDays = (s.hermitage.livedDays || 0) + 1;
     checkPartnerAwakening(partner, hero, s);
+    checkExteriorToInteriorAwakening(hero, s);
   }
   fadeSocialThoughts(s);
   for (const x of returnFromWork(s)) log(s, `${x.id}下山做工攢足束脩，回到山門口等掌門決定。`);

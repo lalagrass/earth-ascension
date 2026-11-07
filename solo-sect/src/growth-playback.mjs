@@ -2,7 +2,8 @@
 import { handUses, practiceResidual, practiceWindow, familiarUses, familiarReaction } from './practice.mjs';
 import { bodyMove, FOE_ACTIONS } from './starter-combat.mjs';
 import { opponents, allies, backToBackPartner, coverFor } from './tactics.mjs';
-import { composure, assessLoad, postureMax, qiPow, topTier } from './arts.mjs';
+import { composure, assessLoad, postureMax, qiPow, topTier, hermitageStepActive } from './arts.mjs';
+import { CLIFFS } from './data.mjs';
 
 export const PLAYBACK = Object.freeze({ pause: .5, uprightHip: 17, deepHipRatio: .5, tilt: 30, sway: 4, bodyScale: 10, legacyStart: .5 });
 // 出自 Phase 5 規格：12／16／18 對應生疏、漸熟、保健圓滿、藥膳破限四種雜務表現。
@@ -10,6 +11,21 @@ export function choreFluencyTier(d, act = 'water') {
   const strength = d?.skills?.strength || 0, agility = d?.skills?.agility || 0;
   const body = act === 'water' ? Math.min(strength, agility) : ['chop', 'quarry'].includes(act) ? strength : agility;
   return body < 12 ? 0 : body < 16 ? 1 : body <= 18 ? 2 : 3;
+}
+// 出自 Phase 6 規格：已悟金雁／少林身法者做活時的垂直軌跡，24px 對齊微距窗 220px 高度；只讀時間。
+export function qinggongChoreBounds(d, s = {}, view = {}) {
+  const act = view.work === 'walk' ? d?.task?.act : view.work || d?.task?.act;
+  const active = hermitageStepActive(d) && ['water', 'chop', 'forage', 'deliver', 'cliffForage1', 'cliffWater', 'cliffTrain', 'waterfallTrain'].includes(act);
+  const clock = view.clock ?? s.t ?? 0;
+  const onCliff = !!(CLIFFS[d?.task?.node] || CLIFFS[d?.at]);
+  const phase = onCliff ? ((clock % 3) + 3) % 3 : ((clock % 2) + 2) % 2;
+  return { qinggongLeaping: active, leapArcY: active ? 24 * Math.sin(Math.PI * phase / (onCliff ? 3 : 2)) : 0 }; // 出自 Phase 6 規格：崖上三段動作的空中段最高，平地做活兩段往復。
+}
+export function cliffLeapStage(d, s = {}, view = {}) {
+  const id = CLIFFS[d?.task?.node] ? d.task.node : CLIFFS[d?.at] ? d.at : null;
+  if (!id) return null;
+  const clock = view.clock ?? s.t ?? 0;
+  return { id, phase: ['pushOff', 'air', 'land'][Math.floor(((clock % 3) + 3) % 3)] }; // 出自 Phase 6 規格：蹬壁、提縱、落松枝三段純畫面。
 }
 export function playbackParams(d, art=null, timing={}) {
   const move=art?.tech || (d?.bare?'bodyPunch':d?.moves?.[0]) || 'bodyPunch';
@@ -708,6 +724,7 @@ export function ergonomicFrame(d, s = {}, view = {}) {
   const woodSplit = isChop && (bodyMode ? fluencyTier >= 2 : chopResidual <= 0.7) && isImpact;
   const herbalBuffActive = bodyMode && (d?.herbalDietUntil || 0) > (s?.t || 0);
   const recoveryCycleLabel = bodyMode ? `${Math.min(d?.maxCyclesToday || 1, (d?.recoveryCyclesToday || 0) + 1)}/${d?.maxCyclesToday || 1}` : null;
+  const qinggong = qinggongChoreBounds(d, s, view), cliffStage = cliffLeapStage(d, s, view);
 
   const laborDetail = {
     poleBend,
@@ -718,7 +735,9 @@ export function ergonomicFrame(d, s = {}, view = {}) {
     choreFluencyTier: bodyMode ? fluencyTier : null,
     muscleFatigue: bodyMode ? d?.muscleFatigue || 0 : null,
     herbalBuffActive,
-    recoveryCycleLabel
+    recoveryCycleLabel,
+    ...qinggong,
+    cliffLeapStage: cliffStage
   };
 
   // 4. Combat Detail
@@ -766,6 +785,8 @@ export function ergonomicFrame(d, s = {}, view = {}) {
     muscleFatigue: laborDetail.muscleFatigue,
     herbalBuffActive,
     recoveryCycleLabel,
+    ...qinggong,
+    cliffLeapStage: cliffStage,
     combatDetail,
     duel: combatDetail,
     crowdDetail,

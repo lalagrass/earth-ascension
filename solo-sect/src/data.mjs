@@ -129,6 +129,7 @@ export const NODES = {
   den: [1475, 22],
   quarry: [560, 770],
   shed: [1080, 486],
+  cliff1: [335, 595], cliff2: [800, 455], cliff3: [900, 145], // 出自 Phase 6 規格：三階山崖在 1600×900 既有地圖上的可見節點。
 };
 export const EDGES = [['hall', 'court'], ['court', 'yard'], ['court', 'dormP'], ['dormP', 'dorm'], ['court', 'mid'], ['mid', 'kitchen'], ['mid', 'south'], ['south', 's1'], ['s1', 's2'], ['s2', 's3'], ['s3', 'g1'], ['g1', 'g2'], ['g2', 'g3'], ['g3', 'forest'], ['forest', 'g4'], ['g4', 'g5'], ['g5', 'g6'], ['g6', 'herb'], ['forest', 'forest2'], ['s1', 'e1'], ['e1', 'e2'], ['e2', 'e3'], ['e3', 'e4'], ['e4', 'e5'], ['e5', 'v1'], ['v1', 'v2'], ['v2', 'gate'], ['e2', 'veg'], ['e5', 'e6'], ['e6', 'trail1'], ['trail1', 't2a'], ['t2a', 'trail2'], ['trail2', 't3'], ['t3', 't4'], ['t4', 'guard'], ['guard', 't5'], ['t5', 't6'], ['t6', 'den'], ['g3', 'quarry'], ['south', 'shed']];
 
@@ -194,6 +195,11 @@ export const ACTIVITIES = {
   farm:   { name: '種菜', dur: 8, pose: 'crouch', energy: -8, skill: { farming: 6 } }, // 播種或收成，見 sim plots
   cook:   { name: '煮飯', dur: 0, pose: 'sit', energy: -3, skill: { cooking: 6 } }, // dur 由灶階段決定
   forage: { name: '採藥', dur: 8, pose: 'pick', energy: -6, skill: { herbal: 6 }, carry: { herb: 1 } },
+  cliffForage1: { name: '低崖採靈草', dur: 8, pose: 'pick', energy: -6, skill: { herbal: 6 }, carry: { herb: 2, beeJelly: 1 } }, // 出自 Phase 6 規格：沿採藥工時，帶回藥材×2與玉蜂漿。
+  cliffTrain: { name: '試劍崖練功', dur: 10, pose: 'stand', energy: -10, skill: { style: 5 } }, // 出自 Phase 6 規格：沿練功工時，外功經驗×1.25。
+  cliffWater: { name: '寒潭挑靈泉', dur: 8, pose: 'carry', energy: -7, skill: { strength: 4 }, carry: { coldWater: 1 } }, // 出自 Phase 6 規格：沿挑水工時，帶回一份寒潭靈泉。
+  waterfallTrain: { name: '飛瀑練體', dur: 10, pose: 'stand', energy: -10, skill: { style: 5 } }, // 出自 Phase 6 規格：沿練功工時，體魄與外功經驗×1.4。
+  cliffComprehend: { name: '絕頂參悟石刻', dur: 12, pose: 'sit', energy: -8 }, // 出自 Phase 6 規格：沿打坐工時，絕頂才有參悟機會。
   quarry: { name: '採石', dur: 10, pose: 'chop', energy: -9, skill: { strength: 6 }, carry: { stone: 1 } },
   chop:   { name: '砍柴', dur: 8, pose: 'chop', energy: -8, skill: { strength: 5 }, carry: { wood: 1 } },
   train:  { name: '練功', dur: 10, pose: 'stand', energy: -10, skill: { style: 5 } }, // style＝弟子主修路數；做功時由 routineFrame 覆蓋
@@ -366,7 +372,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '4.4'; /* Phase 5 規格：隱居勞作疲勞與藥膳調養 */
+export const RULES_VERSION = '4.5'; /* Phase 6 規格：由外而內與三階山崖 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -824,6 +830,13 @@ for (const [k, e] of Object.entries(ENEMIES)) if (e.home) MONSTERS[k] = { name: 
 // eff 鍵：res{k:+n} 入庫（受 cap 限）、use{k:n} 消耗（不夠就不做）、hp、mood、rep、wexin（−層數）、allMood（全派心情）、alt（use 不夠時改用的效果）
 Object.assign(NODES, { library: [1235, 300], quiet: [1265, 395], shrine: [1110, 255], alchemy: [705, 335], clinic: [870, 470], guest: [860, 290], well: [1035, 655], bell: [1040, 325], sig: [1290, 480] });
 EDGES.push(['hall', 'library'], ['yard', 'quiet'], ['hall', 'shrine'], ['kitchen', 'alchemy'], ['mid', 'clinic'], ['dormP', 'guest'], ['s1', 'well'], ['court', 'bell'], ['yard', 'sig']);
+// 出自 Phase 6 規格：低崖連藥圃與林場，中崖連井與低崖，高崖只連中崖；尋路另驗輕功門檻。
+EDGES.push(['herb', 'cliff1'], ['forest2', 'cliff1'], ['well', 'cliff2'], ['cliff1', 'cliff2'], ['cliff2', 'cliff3']);
+export const CLIFFS = Object.freeze({
+  cliff1: { name: '斷木試劍崖', height: '三丈', agility: 16, tier: 0, acts: ['cliffForage1', 'cliffTrain'] },
+  cliff2: { name: '飛瀑寒潭崖', height: '七丈', agility: 24, tier: 1, acts: ['cliffWater', 'waterfallTrain'] },
+  cliff3: { name: '終南絕頂・古墓石室崖', height: '十五丈', agility: 32, tier: 2, acts: ['cliffComprehend'] },
+}); // 出自 Phase 6 規格：身法 16／24／32 及火候初學／小成／大成依序解鎖。
 const B = (id, name, node, built, cost, work, offers, extra = {}, rep = 0) => ({ id, name, node, v16: true, stages: [{ name: '空地', sprite: null, offers: [] }, { name: built, sprite: null, offers, cost, work, rep: rep || undefined, ...extra }] });
 FACILITIES.push(
   B('library', '藏經閣', 'library', '藏經閣', { wood: 10, stone: 6, coin: 6 }, 26, ['study'], { slots: { study: 2 } }, 15),
@@ -895,6 +908,7 @@ export const SIG_ACTS = {
   wuming:    { name: '祖師堂祭祖', dur: 6, energy: -1, perDay: 2, why: '祖師堂：祭拜開山祖師', eff: { rep: 0.5, mood: 3 } },
 };
 RES_NAMES.water = '水'; RES_NAMES.pill = '療傷丹'; RES_NAMES.medFood = '藥膳'; // 出自 Phase 5 規格：新路線藥膳存糧名稱。
+RES_NAMES.beeJelly = '玉蜂漿'; RES_NAMES.coldWater = '寒潭靈泉'; // 出自 Phase 6 規格：山崖專屬採集物。
 
 // v1.65 傳功（夥伴活動，由 bonds.mjs 判斷誰傳誰）
 // ---- v1.7 四大武道相剋環（ADOPTION A17）：破綻→蓄力→卸力→歸真→破綻（前者剋後者）----
@@ -932,6 +946,12 @@ ARTS.push(...[
   { id: 'quanzhenSword', name: '全真劍法', school: 'palm', grade: 3, tags: ['巧', '剛'], weapon: 'sword', attr: 'yang', req: [{ art: 'chunyangFist', tier: 1 }], alt24: [{ art: 'basicSword', tier: 1 }], techs: ['qz1', 'qz2'], tech: 'qz1', mode: 'lian', qiScale: 0.4, v24: true, classic: true, own24: 'quanzhen', isPublic: false, cats: { jianfa: 1 } },
   { id: 'xiantianGong', name: '先天功', school: 'inner', grade: 3, tags: ['柔', '剛'], attr: 'he', req: [{ art: 'quanzhenXinfa', tier: 2 }], tech: null, techs: ['返先天', '抱一'], effect: 'rest', secret: true, hint: '高崖絕頂參悟石刻；山崖路線由 Phase 6 開通', v24: true, classic: true, own24: 'quanzhen', isPublic: false, cats: { neigong: 1 } },
 ].map((art) => ({ ...art, hermitageLineage: true })));
+// 出自 Phase 6 規格：羅漢路線的心法與身法只進隱居羅漢主角候選，不改舊局武學池。
+ARTS.push(
+  { id: 'shaolinXinfa', name: '少林心法', school: 'inner', grade: 2, tags: ['剛', '拙'], attr: 'yang', req: [], tech: null, techs: ['調息', '守心'], effect: 'rest', classic: true, own24: 'shaolin', phase6Only: true, isPublic: false, cats: { neigong: 1 } }, // 羅漢拳是秘密拳譜，沿既有 schema 規則由確定性頓悟檢核它，不在通用 req 表引用秘密武學。
+  { id: 'shaolinStep', name: '少林身法', school: 'step', grade: 2, tags: ['拙', '巧'], attr: 'yang', req: [{ art: 'shaolinXinfa', tier: 1 }], tech: null, techs: ['提氣', '疾行'], effect: 'speed', mode: 'lian', qiScale: 0.4, classic: true, own24: 'shaolin', phase6Only: true, isPublic: false, cats: { shenfa: 1 } },
+  { id: 'shaolinArhat', name: '羅漢養氣訣', school: 'inner', grade: 3, tags: ['剛', '拙'], attr: 'yang', req: [{ art: 'shaolinXinfa', tier: 1 }], tech: null, techs: ['調息', '貫頂'], effect: 'rest', classic: true, secret: true, own24: 'shaolin', phase6Only: true, isPublic: false, cats: { neigong: 1 } }, // 出自 Phase 6 規格：絕頂石壁的高階少林分路，不借外作招式資料。
+);
 // 出自 Phase 4 規格的招式名稱；秒數、射程與勁沿用同階既有拳掌／基礎劍，不另造平衡常數。
 const lineageMove = (base, id, name) => ({ ...MOVES.find((m) => m.id === base), id, name });
 MOVES.push(

@@ -44,7 +44,7 @@ test('loop196 四階催動：本門正宗、同源、虛浮、逆催；純內功
 
 test('loop196 輕功身法的腳程與閃避乘同一催動係數', () => {
   const [, d] = fresh('xingxiu'); give(d, 'shenmuGong', 30); give(d, 'zhaixingStep', 30);
-  const mul = A.stepDrive28(d); assert.equal(mul, drive(d, 'zhaixingStep').mul); assert.equal(drive(d, 'zhaixingStep').tier, 1);
+  const mul = A.stepDrive(d); assert.equal(mul, drive(d, 'zhaixingStep').mul); assert.equal(drive(d, 'zhaixingStep').tier, 1);
   const tierPts = Math.max(0, A.effectTier(d, 'speed') + 1) * EVADE.tierPts;
   const lazy = (d.personality || []).includes('lazy') ? EVADE.lazyBonus : 0;
   assert.equal(evadeScore(d), d.skills.agility + tierPts * mul + lazy);

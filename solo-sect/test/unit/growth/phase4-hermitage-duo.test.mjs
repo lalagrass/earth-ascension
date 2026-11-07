@@ -18,6 +18,10 @@ test('Phase 4：終南隱居只生成主角與帶入門功夫的小龍女，無�
   assert.equal(s.ds[1].arts.stepFeather.xp, 10);
   assert.equal(s.ds[1].arts.basicSword.xp, 15);
   s.ds.forEach((d) => { d.sectId = s.sect.id; });
+  // Phase 6：心法的可學條件改為外功小成且體魄達標；仍驗原本的可學／不可學分路。
+  assert.equal(artOk(s.ds[0], ARTS.find((a) => a.id === 'quanzhenXinfa')), false);
+  s.ds[0].skills.strength = 15;
+  s.ds[0].arts.chunyangFist.xp = 25;
   assert.equal(artOk(s.ds[0], ARTS.find((a) => a.id === 'quanzhenXinfa')), true);
   assert.equal(artOk(s.ds[1], ARTS.find((a) => a.id === 'quanzhenXinfa')), false);
   assert.equal(s.aff[affKey('hero', 'partner-xln')], 55);
