@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, setOrder, tick } from '../../../src/sim.mjs';
-import { BODY_CONDITION, stepWorkCondition, restBodyCondition, ensureBodyCondition, cookMedicatedMeal } from '../../../src/economy.mjs';
+import { BODY_CONDITION, stepWorkCondition, restBodyCondition, ensureBodyCondition, cookMedicatedMeal, applyMedicatedMeal } from '../../../src/economy.mjs';
 import { choreFluencyTier, ergonomicFrame } from '../../../src/growth-playback.mjs';
 import { renderMicroStage } from '../../../src/pose-render.mjs';
 import { gainArt } from '../../../src/arts.mjs';
@@ -39,6 +39,11 @@ test('Phase 5：黃蓉煮飯和用飯走真任務，藥膳消疲勞、四週期�
   assert.equal(s.res.medFood, 0); assert.equal(d.muscleFatigue, 35);
   assert.equal(d.maxCyclesToday, 4); assert.equal(d.recoveryCyclesToday, 1);
   stepWorkCondition(d, s, 'chop'); assert.ok(d.skills.strength > 18 && d.skills.strength <= 36);
+  for (let i = 0; i < 12; i++) { stepWorkCondition(d, s, 'chop'); if (d.soreness) restBodyCondition(d, s); }
+  assert.ok(d.bodyGainToday > BODY_CONDITION.dailyGain, '藥膳容許當日第二輪以上成長');
+  assert.ok(d.bodyGainToday <= BODY_CONDITION.dailyGain * 4);
+  const ordinary = createState(19, { hermitage: true }), cook = ordinary.ds[0]; ordinary.res.herb = 1;
+  cookMedicatedMeal(ordinary, cook); assert.equal(applyMedicatedMeal(cook, ordinary).cycles, 3);
   const plain = createState(17, { hermitage: true }).ds[0], warmed = createState(17, { hermitage: true }).ds[0];
   warmed.herbalDietUntil = 600;
   gainArt(plain, 5, 1, 0, { raw: 5, src: 'train' });
