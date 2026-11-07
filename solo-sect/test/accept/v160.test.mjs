@@ -12,8 +12,8 @@ const NEW = ['library', 'quiet', 'shrine', 'alchemy', 'clinic', 'guest', 'well',
 const built = (seed = 3) => { const s = createState(seed); tick(s); for (const id of NEW) s.fac[id].stage = 1; return s; };
 const dis = (s) => s.ds.find((d) => d.role !== 'laborer');
 
-test('v1.6 九座新建築都是資料：兩階段、有造價或聲望、建成後才登記活動', () => {
-  for (const id of NEW) { const f = FACILITIES.find((x) => x.id === id); assert.ok(f && f.v16 && f.stages.length === 2, id); assert.equal(f.stages[0].offers.length, 0); assert.ok(f.stages[1].offers.length >= 1); }
+test('v1.6 九座新建築都是資料：N47 四階、有造價或聲望、建成後才登記活動', () => {
+  for (const id of NEW) { const f = FACILITIES.find((x) => x.id === id); assert.ok(f && f.v16 && f.stages.length === 4, id); assert.equal(f.stages[0].offers.length, 0); for (const stage of f.stages.slice(1)) assert.ok(stage.offers.length >= 1); }
   const s0 = createState(1); assert.ok(!registry(s0).some((r) => NEW.includes(r.fac)), '未建不登記');
   const s = built(); const R = registry(s);
   for (const [fac, act, cap] of [['library', 'study', 2], ['quiet', 'meditate', 2], ['alchemy', 'brew', 1], ['clinic', 'heal', 2], ['guest', 'host', 1], ['well', 'water', 2], ['bell', 'bell', 1], ['watch', 'watch', 1]])
