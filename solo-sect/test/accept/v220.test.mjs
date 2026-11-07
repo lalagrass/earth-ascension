@@ -8,7 +8,7 @@ import { load, BASELINE_V22 } from '../../src/save.mjs';
 import { RULES, buildSpec } from '../../src/start-ui.mjs';
 import { defaultStats } from '../../src/hero.mjs';
 import { DAY, RULES_VERSION } from '../../src/data.mjs';
-const FIX = new URL('../fixtures', import.meta.url);
+const FIX = new URL('../fixtures/', import.meta.url);
 const FLAG = { comprehend: 'wu7', peace: 'm9' };
 const base = (tab) => ({ tab, hero: 'guojing', comp: null, name: '測', stats: defaultStats(), ans: Array(9).fill(0), ask: true });
 export const V22_GOLDEN_SPEC = { kind: 'template', id: 'guojing', askMajor: false, xiaStyle: 'all', v22: true, steward: true, stewkit: true, stewyard: true };

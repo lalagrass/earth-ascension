@@ -1,14 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { openExp } from '../../../src/world.mjs';
-import { createState, tick, startExpedition, scoreActs } from '../../../src/sim.mjs';
-import { DAY } from '../../../src/data.mjs';
-import { learnArt, artTier } from '../../../src/arts.mjs';
-import { xiaPool } from '../../../src/wuxia.mjs';
-import { applyHero } from '../../../src/hero.mjs';
-import { aff, initPair } from '../../../src/social.mjs';
-import { save, load } from '../../../src/save.mjs';
-import { addMem, memsOf, chatLine, MEM, styleOk, srcOf, passPick, passDo, PASS, takePupil, apprCands, apprDaily, apprMul, APPR, pupilsOf } from '../../../src/bonds.mjs';
+import { openExp } from '../../src/world.mjs';
+import { createState, tick, startExpedition, scoreActs } from '../../src/sim.mjs';
+import { DAY } from '../../src/data.mjs';
+import { learnArt, artTier } from '../../src/arts.mjs';
+import { xiaPool } from '../../src/wuxia.mjs';
+import { applyHero } from '../../src/hero.mjs';
+import { aff, initPair } from '../../src/social.mjs';
+import { save, load } from '../../src/save.mjs';
+import { addMem, memsOf, chatLine, MEM, styleOk, srcOf, passPick, passDo, PASS, takePupil, apprCands, apprDaily, apprMul, APPR, pupilsOf } from '../../src/bonds.mjs';
 const st = (seed = 3) => { const s = createState(seed); tick(s); return s; };
 const runDays = (s, n) => { for (let i = 0; i < n * DAY * 4; i++) tick(s); };
 // #390：現行規則開局第 1 刻同門常在聊天（有對象就不能被傳功），先等到有人有空

@@ -1,13 +1,13 @@
 // v2.1：照舊開局無名主線、plain 香火曲線、第 30 日後對數威脅、山門重傷冷卻、丹藥只計數
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick, incenseOf, applyEff, payday } from '../../../src/sim.mjs';
-import { DAY, ECON, PLAIN, ACTIVITIES } from '../../../src/data.mjs';
-import { jhStep, jhResolve, card } from '../../../src/jianghu.mjs';
-import { artTier } from '../../../src/arts.mjs';
-import { RAID, T, dayMul, threatDaily, raidResolve } from '../../../src/threat.mjs';
-import { agePills, marketDo } from '../../../src/economy.mjs';
-import { TREES } from '../../../src/data.mjs';
+import { createState, tick, incenseOf, applyEff, payday } from '../../src/sim.mjs';
+import { DAY, ECON, PLAIN, ACTIVITIES } from '../../src/data.mjs';
+import { jhStep, jhResolve, card } from '../../src/jianghu.mjs';
+import { artTier } from '../../src/arts.mjs';
+import { RAID, T, dayMul, threatDaily, raidResolve } from '../../src/threat.mjs';
+import { agePills, marketDo } from '../../src/economy.mjs';
+import { TREES } from '../../src/data.mjs';
 
 const hero = (s) => s.ds.find((d) => d.id === 'hero');
 const H = { think: () => {} };

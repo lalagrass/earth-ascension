@@ -1,10 +1,10 @@
-import { createState } from '../../harness/historical-party.mjs';
+import { createState } from '../harness/historical-party.mjs';
 // v1.78：資源總量不變式（每筆 s.res 寫入都來自白名單管道，且期末＝期初＋Σ異動、永不為負）與「閉關不見客」
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { tick, startBuild, canRecruit, recruit, startExpedition } from '../../../src/sim.mjs';
-import { DAY, FACILITIES, ACTIVITIES } from '../../../src/data.mjs';
-import { canExpedition } from '../../../src/world.mjs';
+import { tick, startBuild, canRecruit, recruit, startExpedition } from '../../src/sim.mjs';
+import { DAY, FACILITIES, ACTIVITIES } from '../../src/data.mjs';
+import { canExpedition } from '../../src/world.mjs';
 
 // 3 seeds × 7 開局 × 40 日 稽核得出的全部管道（artifacts/v178/BALANCE-v178.md 有對照帳本缺口）
 // #390：新局一律現行規則後，v2.2–v3.x 的管道（商隊、圍山、送飯、欠款寬限等）也進白名單；帳本對帳照驗

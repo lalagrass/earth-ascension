@@ -1,10 +1,10 @@
 /* v2.4–v2.5（loop159–，擁有人 t189）。#390 起所有局都適用，舊存檔讀入即升級 */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick } from '../../../src/sim.mjs';
-import * as EC from '../../../src/economy.mjs';
-import * as A from '../../../src/arts.mjs';
-import { dpsOf, LS_FIRST24 } from '../../../src/world.mjs';
+import { createState, tick } from '../../src/sim.mjs';
+import * as EC from '../../src/economy.mjs';
+import * as A from '../../src/arts.mjs';
+import { dpsOf, LS_FIRST24 } from '../../src/world.mjs';
 export const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, v22: true, ...o });
 // #390：舊規則開局已不存在，原本的舊局對照組（OLD）與各測試裡的舊局斷言一併刪除
 export const hero = (s) => s.ds.find((d) => d.id === 'hero');
@@ -35,7 +35,7 @@ test('loop159 isSwordArt：劍法門類、三門經典劍法；掌法不是；sw
 });
 
 // ---- loop160 Batch 1 ----
-import { ARTS, MOVES } from '../../../src/data.mjs';
+import { ARTS, MOVES } from '../../src/data.mjs';
 const NEW24 = ['basicSword', 'huashanSword', 'sanxianSword', 'wuhuBlade', 'shaolinStaff', 'tuinaHand', 'stepFeather', 'stepEight'];
 test('loop160 Batch1：8 門公共武學存在、招式齊全、有門類與屬性', () => {
   for (const id of NEW24) { const a = ARTS.find((x) => x.id === id); assert.ok(a?.v24, id); assert.ok(A.ART_CAT[id], id); assert.ok(['yin', 'yang', 'he'].includes(a.attr), id);
@@ -74,8 +74,8 @@ test('loop162 Batch3：頓悟詞綴——大成時依雜湊得字訣，只得一
 });
 
 // ---- loop163 Batch 4 ----
-import { SECTS } from '../../../src/data.mjs';
-import { sgainOf } from '../../../src/sect.mjs';
+import { SECTS } from '../../src/data.mjs';
+import { sgainOf } from '../../src/sect.mjs';
 test('loop163 Batch4：五個新門派只在 v2.4 新局可指定；舊局給 sect24 仍走原門派', () => {
   for (const k of ['emei', 'wudang', 'taohua', 'gumu', 'xingxiu']) { assert.ok(SECTS[k].v24); const s = V({ sect24: k }); assert.equal(s.sect.id, k);
     for (const a of SECTS[k].tree) assert.ok(ARTS.find((x) => x.id === a), a); }
@@ -90,12 +90,12 @@ test('loop163 Batch4：古墓寒玉床——門人 ≤5 才 ×1.5', () => {
 // ---- loop164 Batch 5 ----
 import { execFileSync } from 'node:child_process';
 test('loop164 Batch5：diag-v24-v25 四種策略各跑 1 局 2 日，不崩潰、欄位齊全', () => {
-  for (const st of ['idle', 'bot', 'farm', 'exp']) { const out = execFileSync(process.execPath, [new URL('../../../tools/diag/diag-v24-v25.mjs', import.meta.url).pathname, st, '1', '1004', '2'], { env: { ...process.env, SS_DT: '6' } }).toString().trim();
+  for (const st of ['idle', 'bot', 'farm', 'exp']) { const out = execFileSync(process.execPath, [new URL('../../tools/diag/diag-v24-v25.mjs', import.meta.url).pathname, st, '1', '1004', '2'], { env: { ...process.env, SS_DT: '6' } }).toString().trim();
     const r = JSON.parse(out); assert.equal(r.crash, 0, r.err); assert.equal(r.strat, st); for (const k of ['coin', 'pow', 'produce', 'affix', 'fengxue', 'formation', 'chart', 'lsFirst', 'new24']) assert.ok(k in r, k); }
 });
 
 // ---- loop164 Batch 4.1⑥／4.2／4.3 ----
-import { sectBiasMul, WUMING_KIT24 } from '../../../src/data.mjs';
+import { sectBiasMul, WUMING_KIT24 } from '../../src/data.mjs';
 test('loop164 Batch4.1⑥：v24 華山劍宗、氣宗補華山劍法線；舊局樹不變', () => {
   for (const id of ['linghuchong', 'yuebuqun']) { const s = createState(7, { kind: 'template', id, askMajor: false, v22: true }); for (const k of ['basicSword', 'huashanSword', 'sanxianSword']) assert.ok(s.sect.tree.includes(k), id + k); }
 });
@@ -130,7 +130,7 @@ test('loop165 Batch5.1：一般外門弟子不推演（只限掌門、內門、�
 });
 
 // ---- loop166 Batch 5.2 山門大比、天下會武 ----
-import * as SE from '../../../src/sect.mjs';
+import * as SE from '../../src/sect.mjs';
 test('loop166 Batch5.2：山門大比第 10、20 日各一次；魁首心情 +15 並得親傳或熟練；舊局沒有', () => {
   assert.deepEqual(SE.BISAI24.days, [10, 20]); const s = V(); tick(s, 0.1); while (s.ds.filter((d) => d.role !== 'laborer').length < 3) s.ds.push({ ...hero(s), id: 'x' + s.ds.length, name: '甲' + s.ds.length, role: 'outer', arts: { ...hero(s).arts }, mood: 50 });
   const c = SE.bisai24(s); assert.ok(c); assert.equal(s.v24n.bisai, 1); assert.ok(s.log.some((e) => /山門大比/.test(e.msg)));

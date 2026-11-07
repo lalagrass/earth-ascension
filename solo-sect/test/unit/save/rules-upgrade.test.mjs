@@ -7,7 +7,7 @@ import { load, save, BASELINE_V22 } from '../../../src/save.mjs';
 import { DAY, RULES_VERSION } from '../../../src/data.mjs';
 import { botDaily } from '../../harness/bot.mjs';
 
-const DIR = new URL('../../golden/saves', import.meta.url);
+const DIR = new URL('../../golden/saves/', import.meta.url);
 const FROM = { 'v1.0.json': 'legacy', 'v1.5.json': 'legacy', 'v1.95.json': 'legacy', 'v2.2.json': 'v2.2', 'v2.3.json': 'v2.3', 'v2.4.json': null };
 // 存讀比對：比內容不比鍵順序（讀檔遷移會改鍵的插入順序）；migSteps 是「這次讀檔做了哪幾步」，第二次讀本來就是空的。
 const noSteps = (s) => { const o = JSON.parse(save(s)); delete o.migSteps; return o; };

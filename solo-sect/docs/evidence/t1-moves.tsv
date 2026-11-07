@@ -104,3 +104,16 @@ test/harness/diag-v24-v25.mjs	tools/diag/diag-v24-v25.mjs	診斷腳本，不屬�
 test/harness/diag-wage.mjs	tools/diag/diag-wage.mjs	診斷腳本，不屬測試入口
 test/harness/par-8p.mjs	tools/diag/par-8p.mjs	diag-8p 的分段啟動器
 test/accept/v225.test.mjs#loop148 marriage replay	test/archive/loop148-marriage-replay.test.mjs	固定舊 seed 26 日 bug 重現退出 quick，完整 all 保留原斷言
+test/unit/economy/v08.test.mjs	test/accept/v08.test.mjs	先前 Node 22 CI 原檔測試耗時逾 2 秒，移入完整套件保留原斷言
+test/unit/social/v165.test.mjs	test/accept/v165.test.mjs	先前 Node 22 CI 原檔測試耗時逾 2 秒，移入完整套件保留原斷言
+test/unit/social/sim.test.mjs	test/accept/sim.test.mjs	先前 Node 22 CI 原檔測試耗時逾 2 秒，移入完整套件保留原斷言
+test/unit/interface/v085.test.mjs	test/accept/v085.test.mjs	先前 Node 22 CI 原檔測試耗時逾 2 秒，移入完整套件保留原斷言
+test/unit/economy/v160.test.mjs	test/accept/v160.test.mjs	先前 Node 22 CI 原檔測試耗時逾 2 秒，移入完整套件保留原斷言
+test/unit/threat/v210.test.mjs	test/accept/v210.test.mjs	先前 Node 22 CI 原檔測試耗時逾 2 秒，移入完整套件保留原斷言
+test/unit/economy/v150.test.mjs	test/accept/v150.test.mjs	先前 Node 22 CI 原檔測試耗時逾 2 秒，移入完整套件保留原斷言
+test/unit/economy/v178.test.mjs	test/accept/v178.test.mjs	先前 Node 22 CI 原檔測試耗時逾 2 秒，移入完整套件保留原斷言
+test/unit/growth/v09.test.mjs	test/accept/v09.test.mjs	先前 Node 22 CI 原檔測試耗時逾 2 秒，移入完整套件保留原斷言
+test/unit/economy/v24.test.mjs	test/accept/v24.test.mjs	先前 Node 22 CI 原檔測試耗時逾 2 秒，移入完整套件保留原斷言
+test/unit/social/v222.test.mjs	test/accept/v222.test.mjs	先前 Node 22 CI 原檔測試耗時逾 2 秒，移入完整套件保留原斷言
+test/unit/growth/ring.test.mjs	test/accept/ring.test.mjs	先前 Node 22 CI 原檔測試耗時逾 2 秒，移入完整套件保留原斷言
+test/unit/economy/n57-food-ledger.test.mjs	test/accept/n57-food-ledger.test.mjs	先前 Node 22 CI 原檔測試耗時逾 2 秒，移入完整套件保留原斷言

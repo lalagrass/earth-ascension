@@ -1,10 +1,10 @@
 // v2.22 Batch 3：M1 傳記／大事紀、M2 山賊餘黨反撲、M3 結伴吃飯・送飯・柵破避難（皆只在 v22 基準下啟動，無新開關）
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick, save, pairOf, PAIR } from '../../../src/sim.mjs';
-import { bioLine, bioLean, chronHtml, tallyAct, recordDeed } from '../../../src/util.mjs';
-import { T, points, threatDaily, BOSS, bossEnd, shelterOnBreak, timid, SHELTER } from '../../../src/threat.mjs';
-import { DAY } from '../../../src/data.mjs';
+import { createState, tick, save, pairOf, PAIR } from '../../src/sim.mjs';
+import { bioLine, bioLean, chronHtml, tallyAct, recordDeed } from '../../src/util.mjs';
+import { T, points, threatDaily, BOSS, bossEnd, shelterOnBreak, timid, SHELTER } from '../../src/threat.mjs';
+import { DAY } from '../../src/data.mjs';
 
 const V22 = { kind: 'template', id: 'guojing', askMajor: false, v22: true, steward: true, stewkit: true, stewyard: true };
 const mk = (seed = 11) => createState(seed, { ...V22 });

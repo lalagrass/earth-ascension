@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { casesOf, runCase, replaySave } from '../golden/scenarios.mjs';
 
-const G = new URL('../golden', import.meta.url), read = (f) => JSON.parse(fs.readFileSync(new URL(f, G), 'utf8'));
+const G = new URL('../golden/', import.meta.url), read = (f) => JSON.parse(fs.readFileSync(new URL(f, G), 'utf8'));
 const quick = read('quick.json').runs, saves = read('saves.json');
 
 for (const c of casesOf('quick')) test(`golden quick：${c.key}`, () => assert.deepEqual(runCase(c), quick[c.key]));

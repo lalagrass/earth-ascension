@@ -1,8 +1,8 @@
-import { createState, prepareHistoricalMentor } from '../../harness/historical-party.mjs';
+import { createState, prepareHistoricalMentor } from '../harness/historical-party.mjs';
 import test from 'node:test'; import assert from 'node:assert/strict';
-import { tick, startBuild, startHunt, setOrder, save, load, routeLength, relKey } from '../../../src/sim.mjs';
-import { appetiteActMul31 } from '../../../src/arts.mjs';
-import { ACTIVITIES } from '../../../src/data.mjs';
+import { tick, startBuild, startHunt, setOrder, save, load, routeLength, relKey } from '../../src/sim.mjs';
+import { appetiteActMul31 } from '../../src/arts.mjs';
+import { ACTIVITIES } from '../../src/data.mjs';
 const run = (s, sec) => { for (let i = 0; i < sec * 4; i++) tick(s); };
 
 test('長山路比院內路遠（保留通勤距離）', () => { assert.ok(routeLength('court', 'guard') > 2 * routeLength('court', 'kitchen')); });
@@ -39,8 +39,8 @@ test('存檔往返與壞檔拒絕', () => {
 });
 
 // v0.2
-import { phaseOf } from '../../../src/sim.mjs';
-import { stockReserved } from '../../../src/core.mjs'; // v1.7：s.vegRes → 預約表
+import { phaseOf } from '../../src/sim.mjs';
+import { stockReserved } from '../../src/core.mjs'; // v1.7：s.vegRes → 預約表
 test('菜畦→收菜→煮飯：菜與預約不為負，飯會增加', () => {
   const s = createState(11); s.res.food = 2; let maxFood = 0;
   for (let i = 0; i < 4 * 900; i++) { tick(s); const vr = stockReserved(s, 'veg'); assert.ok(s.res.veg >= 0 && vr >= 0 && vr <= s.res.veg, `veg ${s.res.veg} res ${vr}`); maxFood = Math.max(maxFood, s.res.food); }
@@ -66,7 +66,7 @@ test('木樁場建成後會切磋，並加速練功', () => {
 });
 
 // v0.4
-import { setPost } from '../../../src/sim.mjs';
+import { setPost } from '../../src/sim.mjs';
 test('狩獵取走真個體：擊退的獸從族群扣掉，之後會慢慢繁衍回來', () => {
   const s = createState(31); s.ds[0].skills.palm = 50; s.ds[0].moves.push('push', 'wave'); s.ds[1].skills.leg = 40; s.ds[1].moves.push('kick');
   const before = s.eco.dog.n + s.eco.boar.n; startHunt(s, ['hero', 'senior']); let i = 0; while (s.hunt && i++ < 4 * 600) tick(s);
@@ -84,7 +84,7 @@ test('野豬下山拱菜後回山，族群數不變', () => {
 });
 
 // v0.5
-import { recruit, canRecruit, capacity, mapStage } from '../../../src/sim.mjs';
+import { recruit, canRecruit, capacity, mapStage } from '../../src/sim.mjs';
 test('招收受名聲、床位、存糧與師父真空檔約束；成功扣糧且新人從村路上山', () => {
   const s = createState(41); s.res.food = 10; assert.equal(canRecruit(s).ok, false); s.rep = 100;
   const cap = capacity(s); assert.equal(cap, 3); assert.match(canRecruit(s).why, /床位/);
@@ -98,7 +98,7 @@ test('大廳擴建需名聲；母版階段隨建設 S0→S1→S2', () => {
 });
 
 // v0.6 性格與心情
-import { think, moodTarget, moodMul, traitMul, scoreActs } from '../../../src/sim.mjs';
+import { think, moodTarget, moodMul, traitMul, scoreActs } from '../../src/sim.mjs';
 test('性格乘數：貪玩的人練功分數比勤奮的人低', () => {
   const s = createState(51); const [hero, , cousin] = s.ds; assert.ok(traitMul(hero, 'train') > 1 && traitMul(cousin, 'train') < 1);
 });
@@ -116,8 +116,8 @@ test('舊（v0.5）存檔缺心情欄位也能讀入並補預設', () => {
 });
 
 // v0.7 心智與社交
-import { relAdd, compat, aff, seasonOf, defaultAnswers, personalityFrom, recruit as recruit7, canRecruit as canRec7, migrate, moodParts } from '../../../src/sim.mjs';
-import { RULES_VERSION, RECRUIT_POOL, DAY, SEASON_DAYS } from '../../../src/data.mjs';
+import { relAdd, compat, aff, seasonOf, defaultAnswers, personalityFrom, recruit as recruit7, canRecruit as canRec7, migrate, moodParts } from '../../src/sim.mjs';
+import { RULES_VERSION, RECRUIT_POOL, DAY, SEASON_DAYS } from '../../src/data.mjs';
 const run7 = (s, sec) => { for (let i = 0; i < sec * 4; i++) tick(s); };
 test('決策可解釋：最高分＝（基礎×作息×乘數總和×厭倦＋雜訊）×偏好', () => { /* #390：現行規則多了天賦／狀態／外部分組（f.total）與 loop203 偏好乘數 */
   const s = createState(71); tick(s); const d = s.ds[0], w = d.why[0]; assert.ok(w && w.f);

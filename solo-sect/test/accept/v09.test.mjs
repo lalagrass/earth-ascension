@@ -1,9 +1,9 @@
-import { createState } from '../../harness/historical-party.mjs';
+import { createState } from '../harness/historical-party.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { tick, save, load, setOrder } from '../../../src/sim.mjs';
-import { ARTS, TIERS, RULES_VERSION } from '../../../src/data.mjs';
-import { tierOf, artMul, artMulParts, artById, gainArt, learnArt, artState, artTier, seedArts, moveMul, setFocus, artsSvg } from '../../../src/arts.mjs';
+import { tick, save, load, setOrder } from '../../src/sim.mjs';
+import { ARTS, TIERS, RULES_VERSION } from '../../src/data.mjs';
+import { tierOf, artMul, artMulParts, artById, gainArt, learnArt, artState, artTier, seedArts, moveMul, setFocus, artsSvg } from '../../src/arts.mjs';
 const run = (s, sec) => { for (let i = 0; i < sec * 10; i++) tick(s, 0.1); };
 const mk = (root, personality = []) => seedArts({ root, personality, style: 'palm', skills: { palm: 0, leg: 0 }, moves: ['fist'] });
 

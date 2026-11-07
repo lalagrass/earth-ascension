@@ -1,14 +1,14 @@
 // v1.5 新模擬核心：登錄表、統一預約、工序、遲滯/厭倦、巡山召回、結構化狀態、解鎖守門
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick, startExpedition, recallExpedition, cancelTask } from '../../../src/sim.mjs';
-import { RULES_VERSION, DAY, NODES } from '../../../src/data.mjs';
-import { registry, slotCap, freeSlot, stepsOf, nextStep, CORE, boredMul } from '../../../src/core.mjs';
-import { invariants } from '../../../src/core.mjs';
-import { statusOf } from '../../../src/panel-ui.mjs';
-import { canExpedition } from '../../../src/world.mjs';
-import { openExp } from '../../../src/world.mjs';
-import { migrate, save, load } from '../../../src/save.mjs';
+import { createState, tick, startExpedition, recallExpedition, cancelTask } from '../../src/sim.mjs';
+import { RULES_VERSION, DAY, NODES } from '../../src/data.mjs';
+import { registry, slotCap, freeSlot, stepsOf, nextStep, CORE, boredMul } from '../../src/core.mjs';
+import { invariants } from '../../src/core.mjs';
+import { statusOf } from '../../src/panel-ui.mjs';
+import { canExpedition } from '../../src/world.mjs';
+import { openExp } from '../../src/world.mjs';
+import { migrate, save, load } from '../../src/save.mjs';
 const run = (s, n) => { for (let i = 0; i < n; i++) tick(s); };
 
 test('登錄表：設施階段宣告 offers/容量/時長；床位＝beds、灶位 1', () => {
@@ -61,7 +61,7 @@ test('巡山召回（A2）：從目前距離往回走、戰利品保留、決定
 });
 test('狀態層讀結構化 decision；v1.45 事件誤分級修正', async () => {
   const s = createState(9); run(s, 40); const d = s.ds.find((x) => x.task && x.decision); const x = statusOf(s, d); assert.ok(x.layer); d.reason = '精力 累 餓 入夜（亂寫）'; d.decision = { layer: 'trait', act: d.task.act }; assert.equal(statusOf(s, d).layer, '性格');
-  const { tierOf } = await import('../../../src/util.mjs'); assert.equal(tierOf('本門新紀錄 300 步'), 'mid'); assert.equal(tierOf('重傷倒地'), 'mid'); assert.equal(tierOf('名俠來訪'), 'top');
+  const { tierOf } = await import('../../src/util.mjs'); assert.equal(tierOf('本門新紀錄 300 步'), 'mid'); assert.equal(tierOf('重傷倒地'), 'mid'); assert.equal(tierOf('名俠來訪'), 'top');
 });
 test('1.5 版本＋1.45 舊檔一步遷移：菜畦 busy → 預約表；歇息補床位', () => {
   assert.ok(['1.5', '1.8', '1.85', '1.9', '1.95', '2.4', '2.5', '2.6', '2.7', '2.8', '2.9', '3.0', '3.1', '3.2', '3.3', '3.4', '3.5', '3.6', '3.7'].includes(RULES_VERSION)); const s = createState(10); run(s, 20); const o = JSON.parse(save(s)); o.rules = '1.45'; delete o.resv;

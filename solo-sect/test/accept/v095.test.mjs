@@ -8,7 +8,7 @@ import { tick, save, load, MIGRATIONS, scoreActs, startExpedition, canExpedition
 import { RULES_VERSION, ROUTE, ENEMIES, DAY, PHASES } from '../../src/data.mjs';
 import { pipeline, MUL_CLAMP } from '../../src/util.mjs';
 import { artMulParts, artById, seedArts, gainArt } from '../../src/arts.mjs';
-const FIX = new URL('../fixtures', import.meta.url);
+const FIX = new URL('../fixtures/', import.meta.url);
 const runDays = (s, n) => { for (let i = 0; i < n * DAY * 4; i++) tick(s); };
 const hash = (s) => crypto.createHash('sha256').update(save(s)).digest('hex').slice(0, 16);
 

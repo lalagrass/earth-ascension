@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick, migrate } from '../../../src/sim.mjs';
-import { ALL_ON, botDaily } from '../../harness/bot.mjs';
+import { createState, tick, migrate } from '../../src/sim.mjs';
+import { ALL_ON, botDaily } from '../harness/bot.mjs';
 
 test('N57 每日糧食類別合計與原帳本及實際倉存相等', () => {
   const s = createState(1001, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...ALL_ON, v22: true });

@@ -1,10 +1,10 @@
 /* 第四輪 #419 N15 敵人從哪來、交戰圈與應接、山賊拆成個人。 */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { SOURCES, srcOk, NODES, MONSTERS } from '../../../src/data.mjs';
-import { RING, handleTake, handleThroughput } from '../../../src/arts.mjs';
-import { bandMembers, syncMembers, newBand } from '../../../src/threat.mjs';
-import { createState, tick, startHunt } from '../../../src/sim.mjs';
+import { SOURCES, srcOk, NODES, MONSTERS } from '../../src/data.mjs';
+import { RING, handleTake, handleThroughput } from '../../src/arts.mjs';
+import { bandMembers, syncMembers, newBand } from '../../src/threat.mjs';
+import { createState, tick, startHunt } from '../../src/sim.mjs';
 
 const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
 function onPost(seed = 11, n = 1) {

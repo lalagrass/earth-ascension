@@ -1,6 +1,6 @@
 import test from 'node:test'; import assert from 'node:assert/strict';
-import { createState, tick, startBuild, togglePause, setOrder, save, load, hire, canHire, invite, canInvite, laborers, disciples, scoreActs, payday, capacity, MATS } from '../../../src/sim.mjs';
-import { ECON, PLAIN, ROOT, RULES_VERSION, DAY } from '../../../src/data.mjs';
+import { createState, tick, startBuild, togglePause, setOrder, save, load, hire, canHire, invite, canInvite, laborers, disciples, scoreActs, payday, capacity, MATS } from '../../src/sim.mjs';
+import { ECON, PLAIN, ROOT, RULES_VERSION, DAY } from '../../src/data.mjs';
 const run = (s, sec) => { for (let i = 0; i < sec * 4; i++) tick(s); };
 const withShed = (seed) => { const s = createState(seed); s.fac.shed.stage = 1; s.res.food = 60; s.res.coin = 20; return s; };
 
