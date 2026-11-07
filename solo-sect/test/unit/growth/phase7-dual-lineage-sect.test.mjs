@@ -5,8 +5,25 @@ import { artById, ownLineageArt } from '../../../src/arts.mjs';
 import { sectBiasMul, DAY } from '../../../src/data.mjs';
 import { E as econOf, UPKEEP } from '../../../src/economy.mjs';
 import { assignDiscipleHall, sectRecruit, twinSwordsDamageFactor } from '../../../src/sect.mjs';
+import { startMapBout, stepMapBout } from '../../../src/exp-map-combat.mjs';
 
 const hermit = (partner = 'xiaolongnv', starterArt = 'chunyangFist') => createState(42, { kind: 'custom', answers: Array(9).fill(0), askMajor: true, hermitage: true, partner, starterArt });
+const mapSwordDamage = (gap, partnerFights = true) => {
+  const s = hermit(); foundHermitageSect(s, 'dualHall'); s.t = 10;
+  const h = s.ds.find(d => d.id === 'hero'), p = s.ds.find(d => d.id === 'partner-xln');
+  h.arts.quanzhenSword = { xp: 25 }; p.arts.yunvSword = { xp: 25 };
+  const owner = s.exp = { team: [h.id, p.id], n: 0, encN: 0 };
+  const B = startMapBout(s, owner, 'bandit', { id: 'foot', from: 0, scale: 1 }, [h, p], [150, 100], [0, 100]);
+  p.pos = [h.pos[0] + gap, h.pos[1]];
+  if (!partnerFights) B.team = [h.id]; // 遠征名冊仍有伴侶，這一場實際交手沒有。
+  B.foes[0].pos = [h.pos[0] + 25, h.pos[1]];
+  h.swing = { move: 'qz1', target: B.foes[0].uid, at: s.t, wind: .4, range: 56, damage: 20, opening: null };
+  h.cool = p.cool = B.foes[0].cool = s.t + 20;
+  const before = B.foes[0].hp;
+  stepMapBout(s, owner, .25, { rand: () => .5, guardOf: () => 1 });
+  assert.equal(B.strikes[0]?.reaction, 'hit');
+  return before - B.foes[0].hp;
+};
 
 test('Phase 7：固定武道里程碑出三選一卡，雙堂開山保留雙脈正宗與十日俸期', () => {
   const s = hermit(), h = s.ds.find(d => d.id === 'hero'), p = s.ds.find(d => d.id === 'partner-xln');
@@ -33,10 +50,15 @@ test('Phase 7：固定武道里程碑出三選一卡，雙堂開山保留雙脈�
   assert.equal(yin.hall, 'yin'); assert.equal(yin.master, p.id); assert.equal(yang.hall, 'yang'); assert.equal(yang.master, h.id);
   assert.equal(s.sect.firstDiscipleId, yin.id);
   h.arts.quanzhenSword = { xp: 25 }; p.arts.yunvSword = { xp: 25 };
-  h.task = { act: 'defend' }; p.task = { act: 'defend' }; h.at = p.at = 'veg'; s.band = {};
-  assert.equal(twinSwordsDamageFactor(s, h, 'qz1'), 1.35);
-  assert.equal(twinSwordsDamageFactor(s, h, 'fist'), 1);
-  p.away = true; assert.equal(twinSwordsDamageFactor(s, h, 'qz1'), 1);
+  h.pos = [100, 100]; p.pos = [124, 100];
+  assert.equal(twinSwordsDamageFactor(s, h, 'qz1', [h, p]), 1.35);
+  assert.equal(twinSwordsDamageFactor(s, h, 'fist', [h, p]), 1);
+  p.pos = [1100, 100]; assert.equal(twinSwordsDamageFactor(s, h, 'qz1', [h, p]), 1, '同隊但遠距不算並肩');
+  p.pos = [124, 100]; assert.equal(twinSwordsDamageFactor(s, h, 'qz1', [h]), 1, '同隊名冊尚在但未實際參戰不加成');
+  p.downUntil = s.t + 1; assert.equal(twinSwordsDamageFactor(s, h, 'qz1', [h, p]), 1, '倒地者不能合擊');
+  const soloDamage = mapSwordDamage(24, false);
+  assert.ok(Math.abs(mapSwordDamage(24) / soloDamage - 1.35) < 1e-9, '近身同場真傷害 ×1.35');
+  assert.ok(Math.abs(mapSwordDamage(1000) - soloDamage) < 1e-9, '同隊遠距真傷害不變');
   h.skills.agility = 16; assert.equal(setOrder(s, h.id, 'cliffForage1'), true);
 });
 

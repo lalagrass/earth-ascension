@@ -11,7 +11,7 @@ export { FENCE_FAC };
 import { noteFret, interceptOpening, breakWindup, taijiReturn, zjHas, zjMark, zjIntercept, ZJ, partHit, resolveSwing, postureOf, postureRegen, postureHit, handleTake, topTierOf, windFrac, CLASH, perfectDodge, witchK, lightCross, WITCH } from './arts.mjs';
 import { qiInjuryFight28, qiInjuryAdd28, innerDrive28, mainOuterArt, CHAMP28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
 import { power } from './jianghu.mjs';
-import { valorAdd, valorThreatMul, valorHtml, VALOR, def24Of as sectDefenseFactor } from './sect.mjs';
+import { valorAdd, valorThreatMul, valorHtml, VALOR, def24Of as sectDefenseFactor, twinSwordsDamageFactor } from './sect.mjs';
 import { peaceDelay } from './economy.mjs';
 import { mates } from './bonds.mjs';
 import { cancelTask } from './core.mjs';
@@ -189,7 +189,7 @@ function bandClash(s, b, defs, dt) {
     if (d.bswing) { if (s.t + 1e-9 < d.bswing.at) continue; const w = d.bswing; d.bswing = null; const m = b.members.find((x) => x.uid === w.tgt && x.hp > 0); if (!m) continue;
       const r = resolveSwing(s, d, m, () => R(s), { depth: topTierOf(d) + 1, move: w.mv, wind: w.wind, map: true, targetApproachingAtWindup:w.targetApproachingAtWindup }); (b.cl ??= {})[r.kind] = (b.cl[r.kind] || 0) + 1;
       if(r.counter)d.hp=Math.max(1,d.hp-r.counterDamage);
-      if (r.kind === 'hit') { breakWindup(s, d, m, w.mv, w.wind, r.contact); bandHit(s, b, m, w.dmg * (r.heavy ? CLASH.heavy : 1) * r.contact.damageFactor, d); } else (s.fx ||= []).push({ kind: 'clash', word: r.kind === 'dodge' ? '閃' : r.kind === 'parry' ? '架' : '破', color: '#ddd', pos: [...(m.pos || b.pos)], ttl: 0.6 });
+      if (r.kind === 'hit') { breakWindup(s, d, m, w.mv, w.wind, r.contact); bandHit(s, b, m, w.dmg * twinSwordsDamageFactor(s, d, w.mv, fight) * (r.heavy ? CLASH.heavy : 1) * r.contact.damageFactor, d); } else (s.fx ||= []).push({ kind: 'clash', word: r.kind === 'dodge' ? '閃' : r.kind === 'parry' ? '架' : '破', color: '#ddd', pos: [...(m.pos || b.pos)], ttl: 0.6 });
       continue; }
     if(combatTacticStep(s,d,dt,{help:(a,id)=>{const h=s.ds.find(x=>x.id===id);if(h){h.order='defend';cancelTask(s,h,`${a.name}喊援`);h.reason=`${a.name}喊援`; }}}))continue;
     if (d.bcool > 0 || (d.busyUntil || 0) > s.t) continue;

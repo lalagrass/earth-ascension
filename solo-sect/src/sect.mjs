@@ -8,6 +8,7 @@ import { UPKEEP, E as econOf } from './economy.mjs';
 import { affKey, relKey, log, resAdd, resSet, recordDeed } from './util.mjs';
 import { removeActor, cancelTask } from './core.mjs';
 import { addWexin } from './hero.mjs';
+export { TWIN_SWORDS_DAMAGE, twinSwordsPartner, twinSwordsDamageFactor } from './twin-swords.mjs';
 import { xidOf } from './wuxia.mjs';
 // ==== （原 gen.mjs）====
 // v1.4 第二代（ROADMAP §9.2 G、§4 v1.4；擁有人決定：後代只做收養，不做生育）
@@ -161,15 +162,6 @@ export function assignDiscipleHall(s, d) {
   const mentor = d.hall === 'yin' ? partner : hero; if (mentor && mentor !== d && d.id !== S.partnerDiscipleId) setMaster(s, d, mentor);
   return d.hall; // 出自 Phase 7 規格：憨厚剛健隨外堂，輕靈聰穎隨內堂；同分依根骨。
 }
-export const TWIN_SWORDS_DAMAGE = 1.35; // 出自 Phase 7 規格：全真劍與玉女劍同隊合擊威力倍率，沿 Phase 3 畫面標示。
-export function twinSwordsPartner(s, d) {
-  if (!d) return null;
-  const team = [s.exp?.team, s.hunt?.team].find((ids) => Array.isArray(ids) && ids.includes(d.id));
-  if (!s.hermitage?.founded || s.sect?.doctrine !== 'dualHall' || d.hp <= 25 || d.faintUntil > s.t || d.away && !team) return null;
-  const ally = s.ds.find((p) => p !== d && (!p.away || team?.includes(p.id)) && p.hp > 25 && !(p.faintUntil > s.t) && !!p.fem !== !!d.fem && ((d.arts?.quanzhenSword && p.arts?.yunvSword) || (d.arts?.yunvSword && p.arts?.quanzhenSword)) && (team ? team.includes(p.id) : s.band && d.task?.act === 'defend' && p.task?.act === 'defend' && d.at === p.at));
-  return ally || null;
-}
-export const twinSwordsDamageFactor = (s, d, moveId = null) => (!moveId || ['qz1', 'qz2', 'ys1', 'ys2'].includes(moveId)) && twinSwordsPartner(s, d) ? TWIN_SWORDS_DAMAGE : 1;
 export function foundHermitageSect(s, doctrine = 'dualHall', customPlaque = '') {
   const ready = canFoundHermitageSect(s, true); if (!ready.ok) return ready;
   if (!['dualHall', 'orthodox', 'wuming'].includes(doctrine)) return { ok: false, why: '未知道統' };

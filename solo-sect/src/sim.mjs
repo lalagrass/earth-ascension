@@ -754,7 +754,8 @@ function dStrike(s, h, d, live, w) {
   const mv = MOVES.find((x) => x.id === w.mv), tgt = live.find((m) => m.uid === w.tgt);
   if (!mv || !tgt || dist(tgt.pos, d.pos) > w.reach * 1.25) { d.anim = null; return null; } /* 目標走遠或已倒：招落空 */
   const lv = d.skills[mv.skill];
-  let power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id, s.t) * twinSwordsDamageFactor(s, d, mv.id); /* 出自 Phase 7 規格：同隊異脈雙劍合璧 ×1.35，其他招／舊局倍率 1。 */
+  const fighters = s.ds.filter((p) => h.team.includes(p.id) && p.task?.act === 'hunt' && p.at === h.post && !p.path?.length && p.hp > 25);
+  let power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id, s.t) * twinSwordsDamageFactor(s, d, mv.id, fighters); /* 出自 Phase 7 規格：只有同一波真參戰、肩距內的異脈雙劍合璧 ×1.35。 */
   const ar = mv.aoe ? mv.aoe + qiAoeAdd(d, mv) : 0, hitList = mv.aoe ? live.filter(m=>dist(m.pos,mv.aoeCenter==='actor'?d.pos:tgt.pos)<=ar) : [tgt];
   const r = resolveSwing(s, d, tgt, () => rand(s), { depth: depthOf(d, mv.id), wind: w.wind, move: mv.id, force: w.force, map: true, targetApproachingAtWindup:w.targetApproachingAtWindup, dodgeAtWindup:w.dodgeAtWindup });
   if(r.counter){d.hp=Math.max(0,d.hp-r.counterDamage);clashFx(s,tgt,'read');}
@@ -1096,7 +1097,7 @@ function trialStep(s,d,dt){
   if(d.swing){if(s.t+1e-9<d.swing.at)return;const w=d.swing;d.swing=null;const mv=MOVES.find(x=>x.id===w.mv);if(!mv||dist(m.pos,d.pos)>mv.range*1.3)return;
     const r=resolveSwing(s,d,m,()=>rand(s),{move:mv.id,wind:w.wind,opening:w.opening,targetApproachingAtWindup:w.targetApproachingAtWindup,dodgeAtWindup:w.dodgeAtWindup});d.anim='strike';
     if(r.counter)d.hp=Math.max(30,d.hp-r.counterDamage);
-    if(r.kind==='hit'){m.hp-=landOn(s,d,m,mv,mv.dmg*(1+d.skills[mv.skill]/50)*moveMul(d,mv.id,s.t)*twinSwordsDamageFactor(s,d,mv.id),MONSTERS[m.k].name)*(r.heavy?CLASH.heavy:1)*r.contact.damageFactor;breakWindup(s,d,m,mv.id,w.wind,r.contact);}
+    if(r.kind==='hit'){m.hp-=landOn(s,d,m,mv,mv.dmg*(1+d.skills[mv.skill]/50)*moveMul(d,mv.id,s.t),MONSTERS[m.k].name)*(r.heavy?CLASH.heavy:1)*r.contact.damageFactor;breakWindup(s,d,m,mv.id,w.wind,r.contact);}
     else clashFx(s,m,r.kind==='parry'?(r.jolt?'jolt':null):r.kind);
     s.fx.push({kind:'move',mfx:mv.fx,name:mv.name,color:mv.color,from:[...d.pos],to:[...m.pos],r:16,ttl:.6,tier:visTier(d,mv.id),sprite:d.sprite,face:d.face});
     if(m.hp<=0)finishTrial(s,d,m,mv);return;

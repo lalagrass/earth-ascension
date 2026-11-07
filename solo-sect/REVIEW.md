@@ -6,7 +6,7 @@
 
 | 類 | 指令（repo 根目錄） | 門檻與預期輸出 |
 |---|---|---|
-| A 固定情境 | Node 22：`bash solo-sect/test/run.sh smoke` | exit 0，Phase 7 小測試驗三選一卡、雙堂兩脈 `ownLineageArt=true` 且外門倍率 1、弟子按根骨性格分堂、俸期從開山日＋10、正宗秘傳只給掌門／伴侶／首徒、雙劍成對 ×1.35 且離隊變回 1、無名匾。|
+| A 固定情境 | Node 22：`bash solo-sect/test/run.sh smoke` | exit 0，Phase 7 小測試驗三選一卡、雙堂兩脈 `ownLineageArt=true` 且外門倍率 1、弟子分堂、俸期＋10、正宗秘傳資格與無名匾。固定抽樣的巡山小地圖真命中傷害：相距 24 px 且同場參戰為單人 ×1.35；距 1000 px 或雖在遠征名冊、卻未參加該場交手時與單人相等。倒地者的倍率亦回 1。|
 | A 真畫面盲測 | `python3 solo-sect/tools/phase7-visual.py --seed=17`，`--seed` 可換整數 | `pageerror=[]`、兩張 1600×900 正常 UI 截圖；先辨 [A](artifacts/phase7/blind-A.png)、[B](artifacts/phase7/blind-B.png)，後讀獨立 [答案](artifacts/phase7/blind-answers.json)。畫面可點固定欄立匾、看三種道統及開山牌匾；同工具再開一局點伴侶主脈正宗，核對 `gumu`、自訂匾與秘傳。|
 | A golden／遷移 | Node 22：`node solo-sect/tools/golden.mjs --check --tier all`；CI 山門紀 quick＋golden＋accept | quick 4、full 32、舊存檔 6、隱居 2 皆過；非隱居 golden 三檔逐欄不變，新增 4.6 遷移僅更新隱居欄位。|
 | B 公式 | `bash solo-sect/test/run.sh smoke` | 本 Phase 沒新增隨機抽樣公式；雙劍傷害是固定 1.35，已在 A 查是否成對及失效。|
