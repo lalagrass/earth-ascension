@@ -25,6 +25,7 @@
 * [`plans/NEXT-MILESTONES.md`](plans/NEXT-MILESTONES.md)：下一階段提案（武無第二、少跑測試），含開源資料查證與交接提示詞（#401）。
 * [`plans/ARTS-REFERENCES.md`](plans/ARTS-REFERENCES.md)：名功榜三方交叉與各派武學樹參考（金群名次、北大俠客行、社群、金X）。
 * [`plans/PHASE1-ERGONOMIC-MICRO-STAGE.md`](plans/PHASE1-ERGONOMIC-MICRO-STAGE.md)：Phase 1 微距武道與生活實況窗（Micro-Stage Viewport）× 人體工學物理演繹設計與交接規格書。
+* [`plans/PHASE2-COMBAT-EXCHANGE-DUEL-STAGE.md`](plans/PHASE2-COMBAT-EXCHANGE-DUEL-STAGE.md)：Phase 2 硬核武俠接招拆招 × 微距交鋒特寫（菜雞互啄、高手看破、原地擺頭反掌、多敵鎖角與心性崩潰）設計與交接規格書。
 
 ---
 
