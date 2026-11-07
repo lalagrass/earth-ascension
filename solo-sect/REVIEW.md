@@ -385,6 +385,39 @@ DPS 下降的主要規則原因是撤去十重、星數、同類造詣及小成�
 
 舊名 → 新名：`shenfaCd24` → N33 `practiceWindow` 的時間下限；`catDmg24` → `forceTarget` 的單一勁目標；`profMul` 和 `GUIZHEN.star` 不再進出手傷害，但保留舊檔讀取。最沒把握的三處：名門 head 只有一個樣本；整門自悟拿掉後 N35 在自動日程沒有自然發生；各段 DPS 降幅大，但公式重複倍率已撤，不為接近 C 數字補第二層係數。N40 只借指定的 22 段名稱，不使用未確認授權的圖或現代說明文字。
 
+## N35 自然悟招逐日查因（#488／#499 review 後續）
+
+實際主筆 grass／Codex Cloud；承接 #501。只加診斷帳本與離線圖，`RULES_VERSION` 3.9、悟招難度／`w`、模擬及 golden 不變。[30 日 12 種子](artifacts/n35-natural/default-30.json)、[60 日 12 種子](artifacts/n35-natural/default-60.json)、[30 日合法巡獵 seed 1001](artifacts/n35-natural/hunt-every-3-seed1001.json)、[悟性 3 對照](artifacts/n35-natural/wu3-30.json)均為 Node 22 原始輸出；[對照圖](artifacts/n35-natural/ledger.png)由同一資料生成。
+
+| 類別 | 指令＋門檻 | 預期輸出 |
+|---|---|---|
+| A 逐日對帳 | 在 `solo-sect/` 執行 `node tools/glimmer-metrics.mjs --seed=17 --days=30 > /tmp/n35-17.json`；任意整數 seed；`bash test/run.sh smoke` | 工具正常退出，`rows[0].daily.length===30`；六招每日 `seen/lost/heroSeen/heroLost` 加總精確等於末日 `contexts`；主角逐日 `gains.heroW` 之和與保存的所有 `progress` 相等，差低於 `1e-8`；原 N35 smoke 仍驗失手才加 `4p(1−p)`。對帳不成立則工具直接 throw。 |
+| A 正常玩法對照 | `node tools/glimmer-metrics.mjs --seed=1001 --days=30 --hunt-every=3 > /tmp/n35-hunt.json` | `hunts=10`、野豬衝撞 `boarCharges=52`、擲石開場匹配 `contexts.stoneOpening.seen=15`、主角失手 1；無 debug 注入敵人或進度。此行是固定 seed 的記錄，其他 seed 只要求逐日對帳。 |
+| B 原公式 | `bash test/run.sh smoke`，原 N35 小測試；對任意 seed 查看 `daily[*].gains` | 成功不加權，真失手每次 `w=4p(1−p)`；本 PR 沒新增概率或遊戲公式。 |
+| C 自然 30／60 日 | `node tools/glimmer-metrics.mjs --days=30`、`--days=60`，Node 22；原始檔如上 | 30／60 日首悟均 0/12；六招匹配／失手見下表，逐日已存在人物的進度回退均為 0。C 參考 5–15 次僅列數字，不當規則門檻。 |
+| C 悟性對照 | `node tools/glimmer-metrics.mjs --days=30 --wu=3`，Node 22 | 12 種子首悟仍 0/12；最高全門單招進度比 50.3%。此樣本驗悟性 3 不自動跨線，不冒充一般玩家所有玩法。 |
+| C bot12 對照 | 從 repo 根目錄 `docker run --rm -v "$PWD:/work" -w /work node:22-bookworm-slim node solo-sect/tools/bot12.mjs solo-sect --json` | [#501 base](artifacts/n35-natural/bot12-base.json)／[N35 head](artifacts/n35-natural/bot12-head.json) 同 12 種子、同 Node 22，原始 JSON 逐位相同；因只改工具及文件。 |
+
+| 真情境（全體匹配／失手） | 自然 30 日 | 自然 60 日 |
+|---|---:|---:|
+| 奪械 | 521／251 | 1452／853 |
+| 側身打肋 | 0／0 | 0／0 |
+| 掃 | 99／51 | 265／111 |
+| 摔 | 74／19 | 94／26 |
+| 撒土 | 162／119 | 541／407 |
+| 擲石開場 | 0／0 | 0／0 |
+
+| bot12 C 指標 | #501 base | N35 head |
+|---|---:|---:|
+| N35 自然悟招 | 0 | 0 |
+| 自然山賊勝場／交手 | 65／73 | 65／73 |
+| 惱羞次數 | 282 | 282 |
+| `winP` | 0.933 | 0.933 |
+
+逐日結果：自然 bot 每日僅建寢舍、可收則收，無玩家下達巡獵，所以野豬衝撞與擲石開場為零。其餘情境並非零，但進度分散到不同人物／招式，且極端勝算的失手一次 `w` 很小。30 日全門最高單招為門檻 16.2%；60 日最高 `19.756/24=82.3%`，主角最高單招只 `4.464`；逐日帳無重置。合法巡獵 seed 1001 的擲石情境匹配 15 次、主角失手 1 次，進度 `0.842/24`；側擊的 `afterDodge` 和 `opponentCharge` 分別出現，但同一拍未同時成立。這是規則組合造成的 C 結果，不調難度、概率、敵人來源。規則理由及參考見 [combat.md](docs/systems/combat.md#n35-自然首悟逐日查因488規則-39-不變)。
+
+圖重產：在 `solo-sect/` 設 `PW=/path/to/playwright-core/index.mjs` 執行 `node tools/n35-ledger-chart.mjs`；它只在本機把已有 JSON 畫成 PNG，遊戲不載入 Playwright。舊名 → 新名：本次觸及的函式與欄位無帶輪次編號舊名；新增 `daily`、`heroProgress`、`gains` 語意欄位。最沒把握三處：① 12 種子自然 bot 不代表玩家主動巡獵，故另外公開正常狩獵對照；② 60 日全門最高者已達 82.3%，更長日程可能悟招，不能聲稱永遠不可達；③ 側擊合取條件在這一個狩獵 seed 仍未同拍成立，需更多真實走位樣本才能估 C 頻率。
+
 ## N61 六軸人物卡（#493）
 
 實際主筆 grass／Codex Cloud。承接已合併 #500；只讀 UI 成長資料，規則 3.9、模擬與 golden 不變。六軸的物理含義、尺度與素材見 [可見成長 UI](docs/systems/visible-growth-ui.md)和 [素材授權](assets/ui/LICENSES.md)。遊戲首日[人物卡實拍](artifacts/n61/live-card.png)、[滑過同門疊圖](artifacts/n61/compare-card.png)，第 1／60 日[遮名盲板](artifacts/n61/blind.png)及[分離答案](artifacts/n61/blind-answer.json)。
