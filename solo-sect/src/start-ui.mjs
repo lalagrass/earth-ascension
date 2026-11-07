@@ -28,13 +28,14 @@ export const ruleOn = (st, k, on) => (on ? st[k] !== false : !!st[k]);
 export const ruleSpec = (st) => ({ v22: true, ...Object.fromEntries(STEWARD_KEYS.map((k) => [k, ruleOn(st, 'steward', true)])) });
 export function buildSpec(st, bonus = 0) {
   const R = ruleSpec(st);
+  if (st.tab === 'hermitage') return { kind: 'custom', name: st.name || '無名', stats: st.stats, answers: st.ans, hermitage: true, partner: st.hermitPartner === 'huangrong' ? 'huangrong' : 'xiaolongnv', starterArt: st.starterArt === 'luohanHands' ? 'luohanHands' : 'chunyangFist', askMajor: st.ask, ...R };
   if (st.tab === 'bare') return { kind: 'bare', name: st.name || '無名', stats: st.stats, answers: st.ans, ...(st.mbti?{mbti:st.mbti}:{}), ...R, askMajor: st.ask };
   if (st.tab === 'classic') return { kind: 'template', id: st.hero, companion: st.comp, askMajor: st.ask, xiaStyle: st.xia || 'all', ...R };
   if (st.tab === 'custom') return { kind: 'custom', name: st.name, ...(st.sect24 && st.sect24 !== 'wuming' ? { sect24: st.sect24 } : {}), stats: st.stats, answers: st.ans, ...(st.mbti ? { mbti: st.mbti } : {}), ...(st.arch ? { arch: st.arch } : {}), ...R, companion: st.comp, askMajor: st.ask, bonus, xiaStyle: st.xia || 'all' };
   return null;
 }
 const SUHUI = (() => { try { return legacyBest(localStorage); } catch { return 0; } })(); // v1.7 也讀存檔裡的宿慧
-const st = { tab: 'bare', hero: 'guojing', comp: null, name: '無名', stats: defaultStats(), ans: Array(9).fill(0), ask: true, mbti: '', draw: true, mbtiMode: 'none', mq: Array(MBTI_Q.length).fill(null) };
+const st = { tab: 'bare', hero: 'guojing', comp: null, name: '無名', stats: defaultStats(), ans: Array(9).fill(0), ask: true, mbti: '', draw: true, mbtiMode: 'none', mq: Array(MBTI_Q.length).fill(null), hermitPartner: 'xiaolongnv', starterArt: 'chunyangFist' };
 const tn = (t) => TRAITS[t]?.name || NEW_TRAITS[t]?.name || t;
 const STAT_DESC = { wu: '領悟與讀譜的能力', gen: '練武的根基與耐力', li: '出手與搬運的力氣', shen: '移步和避開來招的速度', ding: '面對壓力維持鎮定', fu: '奇遇與偶然所得' };
 const statLine = (s) => STATS.map(([k, n]) => `<span title="${STAT_DESC[k]}">${n}${s?.[k] ?? '—'}</span>`).join(' ');
@@ -44,8 +45,9 @@ function compCards(heroId) {
   return `<h3>出身同行者（普通人，白身成長）</h3><div class="comp">${rows.map(c=>`<div class="card"><b>${c.name}</b><div class="small">${c.originRelation}</div>${c.invented?'<div class="small">原創背景同行，非額外贈送名俠</div>':''}</div>`).join('')}</div>`;
 }
 function render(el) {
-  let h = `<div class="box"><h1>山門紀・新局：誰來開山？</h1><div class="tabs"><button data-tab="bare" class="${st.tab === 'bare' ? 'on' : ''}">白身開局</button><button data-tab="classic" class="${st.tab === 'classic' ? 'on' : ''}">經典人物</button><button data-tab="custom" class="${st.tab === 'custom' ? 'on' : ''}">自創主角（12 點＋九問問心）</button><button data-tab="plain">照舊（無名主角）</button></div>`;
-  if (st.tab === 'bare') h += '<p>不會任何武學，只有揮拳、踢、推抱與做活的工具。第一個對手是沿山路走來的野狗；練過的手熟、見過的眼熟都會留下來。</p>'+compCards(null)+mbtiBlock(st);
+  let h = `<div class="box"><h1>山門紀・新局：誰來開山？</h1><div class="tabs"><button data-tab="bare" class="${st.tab === 'bare' ? 'on' : ''}">白身開局</button><button data-tab="classic" class="${st.tab === 'classic' ? 'on' : ''}">經典人物</button><button data-tab="custom" class="${st.tab === 'custom' ? 'on' : ''}">自創主角（12 點＋九問問心）</button><button data-tab="hermitage" class="${st.tab === 'hermitage' ? 'on' : ''}">終南荒山隱居</button><button data-tab="plain">照舊（無名主角）</button></div>`;
+  if (st.tab === 'hermitage') h += `<p>只有主角與伴侶，在終南茅廬一起做活、練功；門派制度待開山後啟用。</p><div class="q">名字 <input id="st-name" value="${st.name}" maxlength="6"></div><div class="q">伴侶 <select id="st-hermit-partner"><option value="xiaolongnv" ${st.hermitPartner === 'xiaolongnv' ? 'selected' : ''}>小龍女</option><option value="huangrong" ${st.hermitPartner === 'huangrong' ? 'selected' : ''}>黃蓉</option></select></div><div class="q">入門拳譜 <select id="st-starter-art"><option value="chunyangFist" ${st.starterArt === 'chunyangFist' ? 'selected' : ''}>全真・純陽拳</option><option value="luohanHands" ${st.starterArt === 'luohanHands' ? 'selected' : ''}>少林・羅漢拳</option></select></div>`;
+  else if (st.tab === 'bare') h += '<p>不會任何武學，只有揮拳、踢、推抱與做活的工具。第一個對手是沿山路走來的野狗；練過的手熟、見過的眼熟都會留下來。</p>'+compCards(null)+mbtiBlock(st);
   else if (st.tab === 'classic') {
     h += `<div class="cards" style="margin-top:8px">${HEROES.map((x) => `<div class="card ${st.hero === x.id ? 'on' : ''}" data-hero="${x.id}"><img src="assets/portraits/${x.id}.png"><b>${x.name}</b>${x.hard ? ' <b class="hard-tag" style="color:#b33">困難</b>' : ''} <span class="small">難度${'★'.repeat(x.diff)}</span><div class="small">${statLine(x.stats)}</div><div class="small">${x.personality.map(tn).join('/')}・${valLine(x.values)}</div><div class="small">${x.tag}</div><div class="small" style="color:#67451f">門派：${SECTS[HERO_SECT[x.id]].plaque}</div></div>`).join('')}</div>`;
     h += compCards(st.hero);
@@ -62,7 +64,7 @@ function render(el) {
   h += `<fieldset class="rules"><legend>江湖規則（新局選用，舊局不受影響）</legend>`;
   h += RULES.map(([id, k, , on, label]) => `<div><label><input type="checkbox" id="st-${id}" ${ruleOn(st, k, on) ? 'checked' : ''}> ${label}</label></div>`).join('');
   h += `<div>名俠池畫風 <select id="st-xia">${[['all', '全明星'], ['jin', '純金庸'], ['zhou', '純周星馳']].map(([k, n]) => `<option value="${k}" ${(st.xia || 'all') === k ? 'selected' : ''}>${n}</option>`).join('')}</select></div>`;
-  h += `<div><label><input type="checkbox" id="st-ask" ${st.ask ? 'checked' : ''}> 重大抉擇每次詢問我（取消則依價值觀自動決定）</label></div></fieldset><button class="go" id="st-go" ${ok ? '' : 'disabled'}>開山立派</button></div>`;
+  h += `<div><label><input type="checkbox" id="st-ask" ${st.ask ? 'checked' : ''}> 重大抉擇每次詢問我（取消則依價值觀自動決定）</label></div></fieldset><button class="go" id="st-go" ${ok ? '' : 'disabled'}>${st.tab === 'hermitage' ? '開始隱居' : '開山立派'}</button></div>`;
   el.innerHTML = h;
   mountChoiceButtons(el);
 }
@@ -89,7 +91,7 @@ export function openStart(onStart) {
     if (t.id === 'st-ask') st.ask = t.checked;
     if (t.id === 'st-go') { const spec = buildSpec(st, SUHUI); el.remove(); onStart(spec); return; }
     render(el); });
-  el.addEventListener('change', (e) => { { const r = RULES.find(([id]) => e.target.id === `st-${id}`); if (r) st[r[1]] = e.target.checked; } if (e.target.dataset.q9 !== undefined) { st.ans[+e.target.dataset.q9] = +e.target.value; render(el); } if (e.target.id === 'st-name') st.name = e.target.value || '無名'; if (e.target.id === 'st-arch') { st.arch = e.target.value || ''; if (ARCH[st.arch]) st.stats = { ...ARCH[st.arch].stats }; render(el); } if (e.target.id === 'st-xia') st.xia = e.target.value; if (e.target.id === 'custom-sect24') st.sect24 = e.target.value; if (e.target.dataset.mm) { st.mbtiMode = e.target.dataset.mm; st.mbti = st.mbtiMode === 'quiz' ? quizResult(st.mq) || '' : st.mbtiMode === 'pick' ? st.mbti : ''; render(el); } if (e.target.dataset.mq !== undefined) { st.mq[+e.target.dataset.mq] = e.target.value === '' ? null : +e.target.value; st.mbti = quizResult(st.mq) || ''; render(el); } if (e.target.id === 'st-mbti') { st.mbti = e.target.value; render(el); } });
+  el.addEventListener('change', (e) => { { const r = RULES.find(([id]) => e.target.id === `st-${id}`); if (r) st[r[1]] = e.target.checked; } if (e.target.dataset.q9 !== undefined) { st.ans[+e.target.dataset.q9] = +e.target.value; render(el); } if (e.target.id === 'st-name') st.name = e.target.value || '無名'; if (e.target.id === 'st-hermit-partner') st.hermitPartner = e.target.value; if (e.target.id === 'st-starter-art') st.starterArt = e.target.value; if (e.target.id === 'st-arch') { st.arch = e.target.value || ''; if (ARCH[st.arch]) st.stats = { ...ARCH[st.arch].stats }; render(el); } if (e.target.id === 'st-xia') st.xia = e.target.value; if (e.target.id === 'custom-sect24') st.sect24 = e.target.value; if (e.target.dataset.mm) { st.mbtiMode = e.target.dataset.mm; st.mbti = st.mbtiMode === 'quiz' ? quizResult(st.mq) || '' : st.mbtiMode === 'pick' ? st.mbti : ''; render(el); } if (e.target.dataset.mq !== undefined) { st.mq[+e.target.dataset.mq] = e.target.value === '' ? null : +e.target.value; st.mbti = quizResult(st.mq) || ''; render(el); } if (e.target.id === 'st-mbti') { st.mbti = e.target.value; render(el); } });
 }
 export function choiceUI(S) {
   let el = document.getElementById('choice'); const ch = S.hero?.askMajor && S.choices?.[0];

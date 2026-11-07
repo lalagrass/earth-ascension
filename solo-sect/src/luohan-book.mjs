@@ -2,7 +2,7 @@
 import { ACTIVITIES } from './data.mjs';
 import { artById, learnArt } from './arts.mjs';
 import { handUses, practiceResidual, PRACTICE, ensurePractice } from './practice.mjs';
-import { LUOHAN_EIGHTEEN_HANDS } from './routines.mjs';
+import { LUOHAN_EIGHTEEN_HANDS, CHUNYANG_FORMS } from './routines.mjs';
 import { ensureSelection } from './decision.mjs';
 
 // 22 段的分組以圖譜所示的拳、掌、格、步和白身起手對照。起收與換架另學。
@@ -45,4 +45,28 @@ export function readLuohanBook(d, seconds = ACTIVITIES.study.dur, now = 0) {
     selection.priors[moveIds[k]] = { win: LUOHAN_READING.filter((row) => row.kind === 'recognize' && Math.floor(row.index * moveIds.length / LUOHAN_READING.length) === k).length, loss: 0 };
   if (d.bare) { d.bare = false; d.focus = art.id; }
   return { done: true, learned: true, form, index: state.index };
+}
+
+// 出自 Phase 4 規格：每段研讀與現有 study 活動共用時長；羅漢譜原流程不改。
+export function readChunyangBook(d, seconds = ACTIVITIES.study.dur, now = 0) {
+  if (d.arts?.chunyangFist) return { done: true, learned: false, form: null };
+  const state = (d.chunyangRead ??= { index: 0, credit: 0 });
+  let time = seconds, form = null;
+  const perForm = ACTIVITIES.study.dur;
+  while (time > 0 && state.index < CHUNYANG_FORMS.length) {
+    const left = perForm - state.credit;
+    if (time < left) { state.credit += time; break; }
+    time -= left; form = CHUNYANG_FORMS[state.index++].name; state.credit = 0;
+  }
+  if (state.index < CHUNYANG_FORMS.length) return { done: false, learned: false, form, index: state.index };
+  const art = learnArt(d, 'chunyangFist', now);
+  d.arts[art.id].source = 'book';
+  if (d.bare) { d.bare = false; d.focus = art.id; }
+  return { done: true, learned: true, form, index: state.index };
+}
+
+export function readStarterBook(d, artId, seconds = ACTIVITIES.study.dur, now = 0) {
+  if (artId === 'luohanHands') return readLuohanBook(d, seconds, now);
+  if (artId === 'chunyangFist') return readChunyangBook(d, seconds, now);
+  throw new Error(`未知入門拳譜 ${artId}`);
 }

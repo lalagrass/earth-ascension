@@ -75,7 +75,13 @@ export const LUOHAN_EIGHTEEN_HANDS = [
 ];
 
 const generic = (names, frames) => names.map((name, i) => form(name, frames[i]));
+// 出自 Phase 4 規格：純陽拳十二段畫面姿勢，沿用本專案自繪骨架，不讀外部拳譜圖。
+export const CHUNYANG_FORMS = generic(
+  ['守一立架', '抱元沉肩', '左步護中', '右步護中', '純陽直進', '轉身回護', '三花起勢', '左掌開門', '右掌開門', '沉身蓄勁', '雙拳貫出', '收勢歸一'],
+  [['ready', 'salute', 'sink', 'ready'], ['ready', 'sink', 'block', 'sink'], ['sink', 'leftStep', 'block', 'leftFist'], ['sink', 'rightStep', 'block', 'rightFist'], ['ready', 'rightStep', 'rightFist', 'leftFist'], ['leftStep', 'block', 'rightStep', 'ready'], ['sink', 'doubleUp', 'wing', 'doubleFist'], ['leftStep', 'leftPalm', 'leftFist', 'block'], ['rightStep', 'rightPalm', 'rightFist', 'block'], ['ready', 'sink', 'downFist', 'doubleUp'], ['rightStep', 'rightFist', 'leftFist', 'doubleFist'], ['doubleFist', 'block', 'ready', 'salute']],
+);
 export const ROUTINES = {
+  chunyang: { name: '純陽拳十二式', forms: CHUNYANG_FORMS, generic: false },
   luohan18: { name: '羅漢十八手', forms: LUOHAN_EIGHTEEN_HANDS, generic: false },
   fist: { name: '拳', forms: generic(['立架', '直拳', '回護'], [['ready', 'sink', 'leftFist', 'rightFist'], ['rightStep', 'rightFist', 'leftStep', 'leftFist'], ['block', 'leftElbow', 'ready', 'sink']]), generic: true },
   palm: { name: '掌', forms: generic(['開掌', '推掌', '收掌'], [['ready', 'wing', 'leftPalm', 'rightPalm'], ['leftStep', 'leftPalm', 'rightStep', 'doublePalm'], ['block', 'lowPalm', 'ready', 'salute']]), generic: true },

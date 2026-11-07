@@ -14,7 +14,7 @@ export const wageBill = (s) => Math.min(UPKEEP.cap, Math.round(UPKEEP.wageC * wa
 export const facBill = (s) => Math.min(UPKEEP.facCap, Object.entries(s.fac || {}).reduce((a, [k, f]) => a + (f.stage || 0) * UPKEEP.facPer * (UPKEEP.facHigh[k] || 1), 0));
 export const econInit = () => ({ warn: 0, left: 0, misses: 0, paid: 0, disrepair: false, lastBill: null, market: { cycle: -1, sold: {} }, school: null, schoolN: 0, pool: [] });
 export const E = (s) => (s.econ ??= econInit());
-export const billDue = (s, day = s.day) => day >= Math.max(UPKEEP.graceDay, E(s).graceUntil || 0) && day % UPKEEP.every === 0;
+export const billDue = (s, day = s.day) => !s.hermitage?.active && day >= Math.max(UPKEEP.graceDay, E(s).graceUntil || 0) && day % UPKEEP.every === 0; // 出自 Phase 4 規格：隱居期無月俸與建築維護催繳。
 export function settle(s, H) {
   const X = E(s), w = wageBill(s), f = facBill(s);
   while (w && s.res.coin < w && !marketWhy(s, 'pill')) marketDo(s, 'pill'); /* loop71 欠俸先賣丹：月俸不夠時先把療傷丹賣給藥舖（照市價、受每期上限），不用亂數 */

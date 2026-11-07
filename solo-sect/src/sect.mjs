@@ -118,11 +118,12 @@ export function sectOf(hero) {
   if (id === 'wuming' && hero?.kind === 'custom') { const [tag, rule] = CUSTOM_BY_VALUE[hero.main] || ['拙', 'rescue']; o.bias = { [tag]: SECT_K.biasCap }; o.rules = [rule]; o.rivals = [CUSTOM_RIVALS[(hero.name || '').length % CUSTOM_RIVALS.length]]; o.plaque = `${hero.name || '無名'}派`; o.name = o.plaque; }
   return o;
 }
-export const sectInit = (s) => { s.sect = sectOf(s.hero); sectRoots24(s); return s.sect; };
+export const sectInit = (s) => { s.sect = sectOf(s.hero); grantSectRoots(s); return s.sect; };
 /* loop164 v2.4 Batch 4.1⑥／4.2：華山劍宗、氣宗補華山劍法線；掌門開局自帶本門 T1 根基（無前置的入門內功＋外功）；自創無名派依主價值帶家傳三件套並納入本門樹 */
 export const T1_XP24 = 12;
-export function sectRoots24(s) {
+export function grantSectRoots(s) {
   const S = s.sect, B = SECTS[S.id], h = s.ds.find((d) => d.id === 'hero'); for (const id of B.tree24 || []) if (!S.tree.includes(id)) S.tree.push(id);
+  if (s.hermitage?.active) return; // 出自 Phase 4 規格：尚未開山，不發掌門本門根基禮包。
   if (!h) return; const give = (id) => { if (!artById(id)) return; const had = !!h.arts?.[id]; h.arts ??= {}; learnArt(h, id, s.t); if (!had) h.arts[id].xp = Math.max(h.arts[id].xp, T1_XP24); };
   if (S.id === 'wuming' && s.hero?.kind === 'custom') { const kit = WUMING_KIT24[s.hero.main] || WUMING_KIT24.wu; for (const id of kit) { give(id); if (!S.tree.includes(id)) S.tree.push(id); } S.kit24 = kit; return; }
   const t1 = S.tree.map(artById).filter((a) => a && !a.secret && !a.signature && !(a.req || []).length);
@@ -226,6 +227,7 @@ export function favSort(s, keys) { const f = SECTS[s.sect?.id]?.fav || []; retur
 export function sectStep(s) {
   if (!s.sect) return; const S = s.sect;
   for (const d of s.ds) { d.sbias = S.bias; d.stree = S.tree; d.sgain = S.fac ? sgainOf(s) : 1; }
+  if (s.hermitage?.active) return; // 出自 Phase 4 規格：門規與門派會武延後到開山。
   { const F = sectFac(s), on = S.fac && F; const mk = on && F.med24 && sgainOf(s) > 1 ? F.med24 : 1; for (const d of s.ds) d.medK24 = mk; s.psnK24 = on && F.psn24 ? F.psn24 : 1; } /* loop168 寒玉床打坐 ×1.5、神木王鼎毒傷 ×1.35 */
   if (s.day === S.day) return; S.day = s.day; checkRules(s); checkArts(s); facDaily(s); luoyingDaily(s);
   bisaiDaily24(s); /* loop166 Batch 5.2 */

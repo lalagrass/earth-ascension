@@ -6,7 +6,7 @@ import {selectAction,recordChoice,desireTraining,witnessExchange} from './decisi
 import { PRACTICE, familiarReaction, practiceWindow, reactionFloor, recordExchange } from './practice.mjs';
 import { forceTarget } from './growth-core.mjs';
 import { bodyMove, moveAvailable, BODY_TIMING, FOE_ACTIONS, foeAction } from './starter-combat.mjs';
-import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, VARIANTS, BREAK, GUIZHEN, RUST, TRAITS } from './data.mjs';
+import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, VARIANTS, BREAK, GUIZHEN, RUST, TRAITS, ACTIVITIES } from './data.mjs';
 import { stampCard, BRANCHES } from './artcard.mjs';
 import { strMul } from './economy.mjs';
 import { pipeline, log, chronOf, affKey } from './util.mjs';
@@ -100,7 +100,7 @@ export const nextLvXp = (xp) => { const p = profOf(xp); if (!p.lv) return null; 
 // v0.9 武學骨架：每門武學各自熟練、五階、前置、悟性門檻、笨功夫倍率
 export const artById = (id) => ARTS.find((a) => a.id === id);
 /* loop160：v2.4 新武學只對 v2.4 新局的人開放（舊局、舊存檔看不到） */
-export const artOk = (d, a) => !a?.v24 || !!d;
+export const artOk = (d, a) => (!a?.v24 || !!d) && (!a?.hermitageLineage || (!d?.hermitagePartner && ['quanzhen', 'zhongnan'].includes(d?.sectId))); // 出自 Phase 4 規格：舊門派與古墓伴侶的候選池不得混入全真路線。
 /* loop164 v2.4 Batch 4.3 本門傳承鎖：他派專屬（名門 classic、非名俠招牌、在某派 tree 而不在本門 d.stree）預設不可自悟／自選；
    【宗師觸類旁通】該武學主門類造詣 ≥ LOCK24.master 時解鎖他派 grade ≤2 武學。 */
 export const LOCK24 = { master: 40, maxGrade: 2 };
@@ -192,7 +192,7 @@ export function autoFocus(d) {
   const own = Object.keys(d.arts || {}).map(artById).filter((a) => a && d.arts[a.id].xp < artCap(d, a) && (isInner(a) || a.school === 'step' || hasMove24(a)));
   const pref = own.filter((a) => a.school === d.style || a.school === 'fist');
   const pool = pref.length ? pref : own; if (!pool.length) return null;
-  const sectish = (a) => (own28(d, a) || !!d.stree?.includes(a.id)) ? 1 : 0; /* loop193：本門／本門樹優先於外門 */
+  const sectish = (a) => (ownLineageArt(d, a) || !!d.stree?.includes(a.id)) ? 1 : 0; /* loop193：本門／本門樹優先於外門 */
   const byDefault = (a, b) => sectish(b) - sectish(a) || (b.grade || 1) - (a.grade || 1) || d.arts[a.id].xp - d.arts[b.id].xp;
   const dflt = () => [...pool].sort(byDefault)[0].id;
   { const T = temperOf(d); /* loop187 v2.9 四種練武習性 */
@@ -202,10 +202,10 @@ export function autoFocus(d) {
       if (!armed) { const c = own.filter((a) => combat(a) && artTier(d, a.id) < 1); if (c.length) return [...c].sort((a, b) => sectish(b) - sectish(a) || (a.grade || 1) - (b.grade || 1) || d.arts[b.id].xp - d.arts[a.id].xp)[0].id; } }
     const Ap = appetite31(d); /* 舊檔沒有 bore31 視作 0。門檻 6−|A| */
     if (Ap && (d.bore31 || 0) >= 6 - Math.abs(Ap)) {
-      const pick = Ap > 0 ? own.filter((a) => a.mode === 'da') : own.filter((a) => a.mode === 'base' || a.mode === 'lian' || (a.school === 'inner' && own28(d, a)));
+      const pick = Ap > 0 ? own.filter((a) => a.mode === 'da') : own.filter((a) => a.mode === 'base' || a.mode === 'lian' || (a.school === 'inner' && ownLineageArt(d, a)));
       if (pick.length) return [...pick].sort(byDefault)[0].id; }
     if (T.zheng) { const b = baseInner28(d); if (b && d.arts[b.id] && d.arts[b.id].xp < ROOT28.baseXp && d.arts[b.id].xp < artCap(d, b)) { d.base28 = true; return b.id; } }
-    if (T.xiao) { const f = own.filter((a) => !isInner(a) && (a.grade || 1) >= 2 && !PUBLIC28.includes(a.id) && (BAN28.includes(a.id) || (!own28(d, a) && (a.own24 || a.classic)))).sort((a, b) => (b.grade || 1) - (a.grade || 1) || d.arts[b.id].xp - d.arts[a.id].xp)[0]; if (f) { d.xiao29 = true; return f.id; } }
+    if (T.xiao) { const f = own.filter((a) => !isInner(a) && (a.grade || 1) >= 2 && !PUBLIC28.includes(a.id) && (BAN28.includes(a.id) || (!ownLineageArt(d, a) && (a.own24 || a.classic)))).sort((a, b) => (b.grade || 1) - (a.grade || 1) || d.arts[b.id].xp - d.arts[a.id].xp)[0]; if (f) { d.xiao29 = true; return f.id; } }
     if (T.ling) { const f = [...own].sort((a, b) => (b.grade || 1) - (a.grade || 1) || d.arts[b.id].xp - d.arts[a.id].xp)[0]; if (f) { if (f.id !== dflt()) d.ling29 = true; return f.id; } } }
   const pick = [...pool].sort(byDefault)[0];
   if (pick && isInner(pick)) { const fav = preferInner29(d); if (fav && pool.some((a) => a.id === fav)) return fav; }
@@ -526,6 +526,33 @@ export const cdMul = (d, mvId, now = 0) => { const raw = artOfMove(mvId), a = ra
 export const visTier = (d, mvId) => { const a = artOfMove(mvId); return a && d.arts?.[a.id] ? artTier(d, a.id) : 0; };
 export const topTier = (d) => ARTS.reduce((m, a) => (artTier(d, a.id) > m.t ? { t: artTier(d, a.id), a } : m), { t: -1, a: null });
 export function learnArt(d, id, now = 0) { d.arts[id] ??= { xp: 0, last: now }; const a = artById(id); if (d.arts[id].source === 'book') d.arts[id].source = 'teacher'; if (id === 'zixia' && !d.zixia) d.zixia = 1; /* loop172 氣宗本門領悟紫霞＝第一層 */ unlockTechs(d, a); if (d.pendingArt === id) d.pendingArt = null; return a; }
+// 出自 Phase 4 規格：伴侶各四階頓悟。只在隱居雙人開局啟動；階段是存檔狀態，不抽亂數。
+const PARTNER_AWAKENING = {
+  xiaolongnv: [
+    { arts: ['tianluoPalm'], ready: (d, h, s, shared) => s.hermitage.livedDays >= 2 || shared('spar') }, // 同住滿兩日或切磋一次，出自 Phase 4 規格。
+    { arts: ['yunvJian', 'meinvFist'], ready: (d) => artTier(d, 'tianluoPalm') >= 1 },
+    { arts: ['yunvSword'], ready: (d, h, s, shared) => artTier(d, 'yunvJian') >= 1 && ((s.aff?.[affKey(d.id, h.id)] ?? 0) >= 60 || shared('patrol', 'surrounded')) }, // 好感 60 出自 Phase 4 規格。
+    { arts: ['yunv'], ready: (d, h) => artTier(h, 'quanzhenXinfa') >= 1 && artTier(d, 'yunvSword') >= 1 },
+  ],
+  huangrong: [
+    { arts: ['luoyingPalm'], ready: (d, h, s, shared) => s.hermitage.livedDays >= 2 || shared('spar') },
+    { arts: ['lanhuaHand'], ready: (d) => artTier(d, 'luoyingPalm') >= 1 },
+    { arts: ['yuxiaoSword'], ready: (d, h, s, shared) => artTier(d, 'lanhuaHand') >= 1 && ((s.aff?.[affKey(d.id, h.id)] ?? 0) >= 60 || shared('patrol', 'surrounded')) },
+    { arts: ['biboXinfa'], ready: (d) => artTier(d, 'yuxiaoSword') >= 1 },
+  ],
+};
+export function checkPartnerAwakening(d, hero, s) {
+  if (!s?.hermitage?.active || !d || !hero || d.xia !== s.hermitage.partnerId) return null;
+  const stage = d.partnerStage || 0, row = PARTNER_AWAKENING[d.xia]?.[stage];
+  if (!row) return null;
+  const shared = (...kinds) => (s.mem || []).some((m) => m.p === [d.id, hero.id].sort().join('|') && kinds.includes(m.k)) || (kinds.includes('surrounded') && (s.socialThoughts || []).some((e) => e.kind === 'surrounded' && [d.id, hero.id].includes(e.actor) && [d.id, hero.id].includes(e.target)));
+  if (!row.ready(d, hero, s, shared)) return null;
+  for (const id of row.arts) if (!d.arts?.[id]) learnArt(d, id, s.t);
+  d.partnerStage = stage + 1; s.hermitage.stage = d.partnerStage;
+  if (d.xia === 'xiaolongnv' && d.partnerStage === 4) s.hermitage.contemplateUntil = s.t + ACTIVITIES.meditate.dur; // Phase 4：合參只改畫面，沿用既有打坐時長。
+  log(s, `【雙人領悟・${d.partnerStage}/4】${d.name}與${hero.name}共修，領悟${row.arts.map((id) => `《${artById(id).name}》`).join('與')}。`);
+  return row.arts;
+}
 export const moveMul = (d, mvId, now = 0) => strMul(d) * moveMul0(d, mvId, now) * harmonyMul(d) * affixMul(d, mvId, 'dmg') * (d.raging ? CLASH.fret.force : 1); /* loop161 v2.4 陰陽共鳴 */ // loop127 勞作練體
 const moveMul0 = (d, mvId, now = 0) => { const raw = artOfMove(mvId), a = raw && d.arts?.[raw.id] ? raw : null, q = qiStrikeMul(d, a) * swordDmgMul(d, mvId), md = modeMul31(d, a, 'dmg'); if (!a) return (d.powMul || 1) * (d.jhMul || 1) * q * styleDamage(d) * md; const r = d.arts[a.id]; return forceTarget(a, r.xp) * (d.powMul || 1) * (d.jhMul || 1) * (variantOf(d, a.id, now)?.dmg || 1) * q * md * styleDamage(d) * innerDrive28(d, a).mul; };
 export const effectTier = (d, eff) => ARTS.filter((a) => a.effect === eff).reduce((m, a) => Math.max(m, artTier(d, a.id)), -1);
@@ -889,7 +916,7 @@ const cls24 = (a) => (!a || typeof a !== 'object' ? null : isInner(a) ? 'inner' 
 const ownCombat28 = (a) => !!(a && !isInner(a) && (a.school === 'step' || a.school === 'fist' || a.school === 'palm' || a.school === 'leg'));
 export function orthodox28(d) {
   if (!d || ownMaxTier28(d) < 2) return false;
-  return Object.keys(d.arts || {}).some((id) => { const a = artById(id); return ownCombat28(a) && own28(d, a) && artTier(d, id) >= 1; });
+  return Object.keys(d.arts || {}).some((id) => { const a = artById(id); return ownCombat28(a) && ownLineageArt(d, a) && artTier(d, id) >= 1; });
 }
 export function sectClasses24(d) { return orthodox28(d) ? 3 : 0; }
 /* 同門前階帶後階：修本門樹武學，已會本門前置（達 req 階）或本門內功小成 → 同門根基；本門內功與本門外功皆大成 → 一脈相承 */
@@ -1026,7 +1053,7 @@ export function normalizeArts(list = ARTS) {
 normalizeArts();
 export const BAN28 = ['jiuyinClaw', 'qishangFist'];
 /* 本門專屬：own24＝本門；或沒有 own24 的本門樹名門 classic（如華山紫霞） */
-export const own28 = (d, a) => !!(a && d && !PUBLIC28.includes(a.id) && (a.own24 ? a.own24 === d.sectId : !!(a.classic && d.stree?.includes(a.id))));
+export const ownLineageArt = (d, a) => !!(a && d && !PUBLIC28.includes(a.id) && (a.own24 ? a.own24 === d.sectId || (d.sectId === 'zhongnan' && ['quanzhen', 'gumu'].includes(a.own24) && d.stree?.includes(a.id)) : !!(a.classic && d.stree?.includes(a.id)))); // 出自 Phase 4 規格：終南雙脈在本門正統判定上可共存，開山仍待 Phase 7。
 /* loop183（t194 addendum）主修內功＝有效分最高 */
 export const innerScore28 = (d, m) => artTier(d, m.id) * 30 + (m.grade || 1) * 15 + (d.arts?.[m.id]?.xp || 0) * 0.2 + (m.own24 === d.sectId ? 20 : 0);
 /* loop202：練法把本次 gx 的 30% 回饋內功，築基回饋 15%。打法不回饋。只在有修練結算時 */
@@ -1034,7 +1061,7 @@ const FEED31 = { lian: 0.3, base: 0.15, lianLabel: '練招養氣', baseLabel: '�
 function feedTarget31(d, mode) {
   if (mode === 'base') return baseInner28(d);
   const M = mainInner28(d);
-  if (M && own28(d, M)) return M;
+  if (M && ownLineageArt(d, M)) return M;
   return ownInners28(d).sort((x, y) => innerScore28(d, y) - innerScore28(d, x))[0] || null;
 }
 export function feedInner31(d, a, gx, g) {
@@ -1055,7 +1082,7 @@ export function mainInner28(d) {
   for (const id of Object.keys(d.arts)) { const a = artById(id); if (!a || !isInner(a)) continue; const v = innerScore28(d, a); if (v > bs) { best = a; bs = v; } }
   return best;
 }
-const ownInners28 = (d) => Object.keys(d?.arts || {}).map(artById).filter((a) => a && isInner(a) && own28(d, a));
+const ownInners28 = (d) => Object.keys(d?.arts || {}).map(artById).filter((a) => a && isInner(a) && ownLineageArt(d, a));
 /* 本門內功最高火候（學新高階內功不掉功力） */
 export const ownMaxTier28 = (d) => ownInners28(d).reduce((m, a) => Math.max(m, artTier(d, a.id)), -1);
 /* 根基：本門一品內功火候 */
@@ -1064,15 +1091,15 @@ const bxp28 = (d, a) => d.arts[a.id].xp;
 export function baseInner28(d) {
   const own = ownInners28(d), g1 = own.filter((a) => (a.grade || 1) <= 1).sort((a, b) => bxp28(d, b) - bxp28(d, a))[0]; if (g1) return g1;
   const lo = own.filter((a) => d.stree?.includes(a.id) || a.own24 === d.sectId).sort((a, b) => (a.grade || 1) - (b.grade || 1) || bxp28(d, b) - bxp28(d, a))[0] || null;
-  const br = d.arts?.breath && (d.stree?.includes('breath') || (d.stree || []).some((id) => { const x = artById(id); return isInner(x) && own28(d, x) && x.req.some((r) => r.art === 'breath'); })) ? artById('breath') : null;
+  const br = d.arts?.breath && (d.stree?.includes('breath') || (d.stree || []).some((id) => { const x = artById(id); return isInner(x) && ownLineageArt(d, x) && x.req.some((r) => r.art === 'breath'); })) ? artById('breath') : null;
   if (!br) return lo; if (!lo) return br; return artTier(d, br.id) > artTier(d, lo.id) ? br : lo;
 }
 export const ROOT28 = { train: [1, 1, 1.15, 1.28, 1.40], move: [0, 0, 0.06, 0.12, 0.18], baseXp: 55, traits: ['honest', 'diligent', 'stubborn', 'rigid'], breathMove: [0, 0, 0.06, 0.10, 0.10] };
 export function rootFoundation28(d) { const b = baseInner28(d); return b ? Math.max(0, artTier(d, b.id)) : 0; }
 /* 練功加速：根基 b 練到大成以上，修更高品本門內功（吐納根基：修二品以上本門內功） */
-export function rootTrain28(d, a) { const b = baseInner28(d); if (!b || b.id === a.id || !isInner(a) || !own28(d, a)) return 1; const t = artTier(d, b.id); if (t < 2) return 1; if (b.id !== 'breath' && (a.grade || 1) <= (b.grade || 1)) return 1; return ROOT28.train[Math.min(4, t)]; }
+export function rootTrain28(d, a) { const b = baseInner28(d); if (!b || b.id === a.id || !isInner(a) || !ownLineageArt(d, a)) return 1; const t = artTier(d, b.id); if (t < 2) return 1; if (b.id !== 'breath' && (a.grade || 1) <= (b.grade || 1)) return 1; return ROOT28.train[Math.min(4, t)]; }
 const rootMove28 = (d) => { const b = baseInner28(d); if (!b) return 0; const t = artTier(d, b.id); if (t < 2) return 0; const hi = ownInners28(d).some((a) => a.id !== b.id && (a.grade || 1) >= Math.max(2, (b.id === 'breath' ? 2 : (b.grade || 1) + 1)) && artTier(d, a.id) >= 1);
-  if (b.id === 'breath') return hi ? ROOT28.breathMove[Math.min(4, t)] : 0; return hi || ((b.grade || 1) >= 2 && Object.keys(d.arts).some((id) => { const x = artById(id); return x && !isInner(x) && own28(d, x) && (x.grade || 1) > (b.grade || 1) && artTier(d, id) >= 1; })) ? ROOT28.move[Math.min(4, t)] : 0; };
+  if (b.id === 'breath') return hi ? ROOT28.breathMove[Math.min(4, t)] : 0; return hi || ((b.grade || 1) >= 2 && Object.keys(d.arts).some((id) => { const x = artById(id); return x && !isInner(x) && ownLineageArt(d, x) && (x.grade || 1) > (b.grade || 1) && artTier(d, id) >= 1; })) ? ROOT28.move[Math.min(4, t)] : 0; };
 const clash28 = (x, y) => (x === 'yang' && y === 'yin') || (x === 'yin' && y === 'yang');
 /* #408 回 { tier, mul }。正宗的 1.25 與虛浮的 0.78 仍不乘。第四階是硬催別派武學，威力代價恢復 0.65。根基那一截另算。 */
 const ownInnerHolds28 = (d, g) => ownInners28(d).some((x) => (x.grade || 1) >= g - 1 && artTier(d, x.id) >= Math.max(1, g - 1));
@@ -1084,8 +1111,8 @@ export function innerDrive28(d, a) {
   const root = rb > 1 ? { root: true } : {};
   if (a.id === 'qishangFist' && !conv && artTier(d, 'shenghuoXinfa') < 2 && artTier(d, 'jiuyang') < 2) return { tier: 4, mul: DRIVE28.t4 }; /* 一練七傷：第四階，並吃逆催的威力代價 */
   if (a.id === 'jiuyinClaw' && !conv && (!M || (M.grade || 1) < 2 || artTier(d, M.id) < 2)) return { tier: 4, mul: DRIVE28.t4 }; /* 強練禁術：第四階，並吃逆催的威力代價 */
-  if (own28(d, a) && ownInnerHolds28(d, g)) return { tier: 1, mul: rb, ...root };
-  const foreign = (a.own24 && a.own24 !== d.sectId) || (BAN28.includes(a.id) && !own28(d, a));
+  if (ownLineageArt(d, a) && ownInnerHolds28(d, g)) return { tier: 1, mul: rb, ...root };
+  const foreign = (a.own24 && a.own24 !== d.sectId) || (BAN28.includes(a.id) && !ownLineageArt(d, a));
   if (foreign && !conv) {
     /* 第四階只在真陰陽相沖，或名門沒有二品內功卻硬催三品陰／陽外功。威力代價是 0.65，內傷另記。 */
     const clash = !!(M && clash28(attrOf(M), attrOf(a)));

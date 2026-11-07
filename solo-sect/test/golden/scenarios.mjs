@@ -9,7 +9,12 @@ import * as EC from '../../src/economy.mjs';
 import { DAY } from '../../src/data.mjs';
 import { ALL_ON, botDaily } from '../harness/bot.mjs';
 
-export const hash = (s) => crypto.createHash('sha256').update(save(s)).digest('hex').slice(0, 16);
+export const hash = (s) => {
+  const state = JSON.parse(save(s));
+  // Phase 4：舊局行為 golden 仍逐欄比較；僅排除 4.2→4.3 的存檔版號與空遷移步。
+  if (!state.hermitage?.active) { state.rules = '4.2'; if (state.migSteps) state.migSteps = state.migSteps.filter((step) => step !== '4.3'); }
+  return crypto.createHash('sha256').update(JSON.stringify(state)).digest('hex').slice(0, 16);
+};
 export const STRATS = ['idle', 'bot', 'farm', 'exp'];
 export const SECTS = ['emei', 'wudang', 'taohua', 'gumu', 'xingxiu', null]; // null＝無名（自創，不指定 sect24）
 export const sectOfSeed = (seed) => SECTS[((seed - 1001) % SECTS.length + SECTS.length) % SECTS.length];
@@ -31,9 +36,9 @@ function exp(s) {
 const EXTRA = { farm, exp };
 
 // 新局（v22＋v23＋v24 全開，與玩家從開局畫面開的新局同一套規則）。checkpoints：在這些日數結束時記雜湊。
-export function runCase({ strat, seed, days, dt, checkpoints = [days] }) {
+export function runCase({ strat, seed, days, dt, checkpoints = [days], hermitage = null }) {
   const sect = sectOfSeed(seed);
-  const s = createState(seed, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...ALL_ON, v22: true, ...(sect ? { sect24: sect } : {}) });
+  const s = createState(seed, hermitage ? { kind: 'custom', answers: Array(9).fill(0), askMajor: false, hermitage: true, partner: hermitage.partner, starterArt: hermitage.starterArt } : { kind: 'custom', answers: Array(9).fill(0), askMajor: false, ...ALL_ON, v22: true, ...(sect ? { sect24: sect } : {}) });
   // 呼叫次序與 diag 相同：tick → 換日時 farm／exp（第一個 tick 也算換日）→ 換日時 botDaily（idle 不跑）。
   const per = Math.round(DAY / dt), extra = EXTRA[strat], out = {}; let dayA = 0, dayB = s.day;
   for (let i = 1; i <= days * per; i++) {
@@ -57,5 +62,9 @@ export function replaySave(text, { days = 5, dt = 1 } = {}) {
 export const TIERS = {
   quick: { days: 10, dt: 6, checkpoints: [5, 10], seeds: [1001] },
   full: { days: 30, dt: 0.5, checkpoints: [10, 20, 30], seeds: [1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008] },
+  hermitage: { days: 5, dt: 6, checkpoints: [1, 3, 5], seeds: [42] }, // 出自 Phase 4 規格：雙人模式另立 golden，不碰舊局矩陣。
 };
-export const casesOf = (tier) => { const T = TIERS[tier]; return T.seeds.flatMap((seed) => STRATS.map((strat) => ({ key: `${strat}-${seed}-${sectOfSeed(seed) || 'wuming'}`, strat, seed, days: T.days, dt: T.dt, checkpoints: T.checkpoints }))); };
+export const casesOf = (tier) => { const T = TIERS[tier]; if (tier === 'hermitage') return [
+  { key: 'xln-chunyang-42', strat: 'idle', seed: 42, days: T.days, dt: T.dt, checkpoints: T.checkpoints, hermitage: { partner: 'xiaolongnv', starterArt: 'chunyangFist' } },
+  { key: 'hr-luohan-42', strat: 'idle', seed: 42, days: T.days, dt: T.dt, checkpoints: T.checkpoints, hermitage: { partner: 'huangrong', starterArt: 'luohanHands' } },
+]; return T.seeds.flatMap((seed) => STRATS.map((strat) => ({ key: `${strat}-${seed}-${sectOfSeed(seed) || 'wuming'}`, strat, seed, days: T.days, dt: T.dt, checkpoints: T.checkpoints }))); };
