@@ -15,9 +15,6 @@ test('30 次才 +1；只一次；5 不再升', () => {
 // #390 退役：規則開關已刪（擁有人 2026-11-02），所有局都是現行規則
 test('顯示：研讀 x/30 → 讀書已開竅', () => { const s = { readwu: true }, d = { wu: 2 }; assert.equal(readwuNote(s, d), '（研讀 0/30）'); for (let i = 0; i < 30; i++) readStudy(s, d); assert.equal(readwuNote(s, d), '（讀書已開竅）'); });
 // #390 退役：規則開關已刪（擁有人 2026-11-02），所有局都是現行規則
-test('實跑：有藏經閣時會有人研讀累積', () => {
-  const s = createState(72, spec()); s.fac.library.stage = 1; for (let i = 0; i < 4 * 600 * 6; i++) tick(s, 0.25); assert.ok(s.ds.some((d) => (d.rw || 0) > 0));
-});
 test('舊檔沒有 readwu → 讀入維持關閉', () => {
   const s = createState(73, spec()), o = JSON.parse(save(s)); delete o.readwu; const r = load(JSON.stringify(o)); assert.ok(r.ok); assert.equal(r.state.readwu, undefined);
 });

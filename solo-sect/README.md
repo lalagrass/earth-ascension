@@ -40,9 +40,9 @@ open http://localhost:8000/solo-sect/index.html
 ### 執行單元與確定性回歸測試
 ```bash
 cd solo-sect
-node --test test/*.test.mjs
+bash test/run.sh quick
 ```
-*(量測於 #390 完成時：快速套件 545 項全過，4 核約 90 秒；`bash test/run.sh all` 另含 archive 與長跑驗收。涵蓋數值邊界、存檔跨版遷移、長跑確定性)*
+短測試依系統放在 `test/unit/`；PR CI 依序跑 `quick`、`golden`、`accept`。`test/archive/` 留已通過的歷史重現，`test/parked/` 保留 #496 追蹤的 20 個原斷言，兩者不進 PR CI；`bash test/run.sh all` 仍可手動跑 unit、archive、accept。快速套件耗時屬 C 類報告。
 
 ### 玩法 PR 最小驗證
 
@@ -53,7 +53,7 @@ cd solo-sect
 bash test/run.sh smoke
 ```
 
-它做三件事：`test/golden/saves/` 每個存檔讀入後跑 3 日；種子 1001、1002 的新局各跑 10 日，不得有 NaN 或例外；`test/schema-invariants.test.mjs`。步長用 6 秒（與測試框架預設相同，遊戲內一日仍是 600 秒），才能卡在時限裡。該步新寫的測試另跑，不取代這道。
+它做三件事：`test/golden/saves/` 每個存檔讀入後跑 3 日；種子 1001、1002 的新局各跑 10 日，不得有 NaN 或例外；`test/unit/save/schema-invariants.test.mjs`。步長用 6 秒（與測試框架預設相同，遊戲內一日仍是 600 秒），才能卡在時限裡。該步新寫的測試另跑，不取代這道。
 
 ### 行為鎖定（golden，#388）
 重構前後遊戲行為必須一字不差。快速層已含在上面的 `node --test`；完整矩陣（新局 idle／bot／farm／exp × 8 種子 × 30 日，加 6 份 v1.0–v2.4 舊存檔回放）：
@@ -73,7 +73,7 @@ node tools/golden.mjs --check   # 或 bash test/run.sh golden；4 核約 5 分�
 | **資料層** | `src/data.mjs` | 路網節點、設施階段、活動、88 門武學、主角模板與門派、平衡常數。 |
 | **模擬層** | `src/sim.mjs`（`tick` 編排）＋規則模組 `arts`、`economy`、`threat`、`world`、`social`、`bonds`、`sect`、`hero`、`jianghu`、`wuxia`、`core`、`util`；存檔 `save.mjs` | 單一權威 `tick(state, dt)` 推進；狀態是可序列化 JSON，固定種子可重放。不碰 DOM，可在 Node 測。 |
 | **繪製與介面層** | `src/main.mjs`（Canvas、鏡頭、面板接線）、`src/panel-ui.mjs`、`src/start-ui.mjs`、`src/audio.mjs`；`index.html`、`style.css` | 讀 state 畫圖與產生面板 HTML。 |
-| **測試層** | `test/*.test.mjs`、`test/archive/`、`test/accept/`、`test/harness/` | Node 原生測試執行器，零依賴。 |
+| **測試層** | `test/unit/<系統>/`、`test/archive/`、`test/accept/`、`test/parked/`、`test/harness/`、`tools/diag/` | Node 原生測試執行器，零依賴；parked 原斷言追蹤於 #496。 |
 
 各模組職責、目前的依賴問題與 loop144 前舊檔名對照，見 [模組地圖 (MODULES.md)](docs/architecture/MODULES.md)。
 

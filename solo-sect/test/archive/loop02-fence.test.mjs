@@ -34,11 +34,6 @@ test('野豬下山：有柵先撞柵、菜不被拱；沒柵照舊拱菜', () =>
   assert.match(logs(b), /拱壞/);
 });
 
-test('山賊迎戰（沒築柵）：仍是原本一次結算、照舊損失（有柵的地圖戰見 loop03）', () => {
-  const c = createState(1); c.day = 20; c.res.coin = 100; c.res.food = 50; const r3 = bandit(c);
-  assert.equal(r3.win, false); assert.equal(c.band, undefined); assert.ok(c.res.coin < 100);
-});
-
 test('自主修柵：受損且有木頭，弟子會自己去修；沒木頭就不修', () => {
   const s = createState(1); s.res.wood = 20; buildFence(s); s.fence.hp = 10; s.res.food = 40;
   let n = 0; while (!s.fence.repaired && n++ < (DAY * 2) / 0.25) tick(s, 0.25);

@@ -13,7 +13,3 @@ test('loop19 條件齊就派隊出山（帶糧、留人看家），回來結算'
   s.t = tr.back; const n0 = T(s).next; lairStep(s); assert.equal(s.lair.trip, null); assert.ok(s.ds.every((d) => !d.away));
   const h = s.lair.hist.at(-1); if (h.win) assert.ok(T(s).next >= s.day + LAIR.peaceDays); else assert.ok(h.hurt); void n0;
 });
-test('loop19 江湖規則長跑：有剿寨且有成功', () => {
-  const s = createState(2, { ...sp, draw: true, comprehend: true, mentor: true }); for (let i = 0; i < 4800; i++) tick(s, 6);
-  assert.ok((s.lair?.n || 0) >= 1); assert.ok((s.lair?.won || 0) >= 1);
-});

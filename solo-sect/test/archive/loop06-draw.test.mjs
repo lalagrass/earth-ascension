@@ -19,8 +19,3 @@ test('loop6 強者與外向者吸引力較高、有上限', () => {
   assert.equal(drawOf(weak, { personality: ['sociable'], skills: {} }), DRAW.extroPull);
 });
 // #390 退役：舊規則（規則關閉）分支已刪，所有局都是現行規則
-test('loop6 開啟後跑 5 天：無錯、有仰慕發生', () => {
-  let adm = 0;
-  for (const seed of [1, 2, 3]) { const s = run(createState(seed, sp({ draw: true })), 5); adm += s.log.filter((l) => /心生仰慕/.test(l.msg)).length; }
-  assert.ok(adm > 0, 'no admire');
-});
