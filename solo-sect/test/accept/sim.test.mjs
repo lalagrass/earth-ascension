@@ -21,8 +21,9 @@ test('取消搬料歸還木頭', () => {
 test('練掌到門檻後向師父學到新招', () => {
   const s = createState(5); const h = s.ds[0]; setOrder(s, 'hero', 'train'); s.res.food = 50; run(s, 400);
   assert.ok(h.skills.palm >= 25); setOrder(s, 'hero', null);
-  // 第八輪晨課會讓弟子先練功，隔天自由時段仍須向師父學會掌招。
-  run(s, 360); assert.ok(h.moves.includes('push'), h.moves.join());
+  // N42 後整門武學只由師父傳，不再在日課中自悟；留足師父逐門傳授的時間。
+  run(s, 600); assert.ok(h.moves.includes('push'), h.moves.join());
+  assert.ok(s.log.some((l) => l.msg.includes('師父傳授主角「推山掌」！')));
 });
 test('聊天提升關係；未成年不會成道侶', () => {
   const s = createState(6); s.res.food = 999; run(s, 3000);
@@ -57,8 +58,9 @@ test('膳房可建且升級後每鍋產量提高', () => {
 
 // v0.3
 test('腿法路數練到門檻學到掃堂腿，不會誤學掌法招', () => {
-  const s = createState(21); s.res.food = 99; setOrder(s, 'senior', 'train'); run(s, 500); setOrder(s, 'senior', null); run(s, 200);
+  const s = createState(21); s.res.food = 99; setOrder(s, 'senior', 'train'); run(s, 500); setOrder(s, 'senior', null); run(s, 400);
   const d = s.ds[1]; assert.ok(d.moves.includes('kick'), d.moves.join()); assert.ok(!d.moves.includes('push'));
+  assert.ok(s.log.some((l) => l.msg.includes('師父傳授林師姐「掃堂腿」！')));
 });
 test('木樁場建成後會切磋，並加速練功', () => {
   const s = createState(22); s.res.food = 99; s.res.wood = 6; startBuild(s, 'yard'); run(s, 1500);
