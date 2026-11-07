@@ -8,7 +8,7 @@ import { BRANCHES } from './artcard.mjs';
 import { chiefLocked24, styleBadges24, lockedArt24, harmonyOf, harmonyMul, affixOf, readwuNote, artsSvg, artHintsHtml, setFocus, focusOf, artById, artMul, artState, topTier, chooseVariant, rechooseBranch, variantOf, stuckAt, breakChance, rustOf, starCost, guizhenOk, compProgress, blowWhy } from './arts.mjs';
 import { lifeLabel } from './life-study.mjs';
 import { HOME, HOME_VIEW, CHUNK, CHUNK_CAP, lruGet, chunkKey, chunksInView, paintChunk, clampCam, camBounds, partyPos, partyDist, trailAt, SPOTS, styledPos, fogged, inVision, leftovers, FOG_W, FOG_H, WORLD, cellColor, STYLE_PATH, cloudAt, cloudPos, cloudSpots, partyCloud, CLOUD_MAP, ZOOMS, lodOf, TRAIL_END, raidDescent, RINGS, TRAIL, POP, capOf, denDown, raidMul, milestones, styleOf, teamStyle, UNLOCKS, ALL_SECS, secOpen, CHAPTER1, AUTO, autoDue, autosave, autoList, autoGet, suhuiOf, syncLegacy, routeSeg, segIndex, campsOpen, scoutOf, peaceOf, suggestTeam } from './world.mjs';
-import { laborNote, statusHtml, jhuiHtml, archLine, pickModal, pending, isFolded, foldKey, setAll, dsum, growthHtml, teachingBadge } from './panel-ui.mjs';
+import { laborNote, statusHtml, jhuiHtml, archLine, pickModal, pending, isFolded, foldKey, setAll, dsum, growthHtml, teachingBadge, battleRadarSvg } from './panel-ui.mjs';
 import { sideCards, bioLine, chronHtml } from './util.mjs';
 import { memsOf, apprCands, takePupil, pupilsOf, XIA_STYLES, MANUALS, canAssemble, assemble, learnManual, likesOf, menuOf, aspOf, ASPIRATIONS } from './bonds.mjs';
 import { ARC13 } from './jianghu.mjs';
@@ -23,7 +23,7 @@ import { SFX, ambient, setMute, isMuted, cuesFrom } from './audio.mjs';
 import { threatHtml, rumorDays, buildFence, upgradeFence, startFenceSite } from './threat.mjs';
 import { routineFrame } from './routines.mjs';
 import { displayPose, dailyPose, drawPoseActor } from './pose-render.mjs';
-import { growthSnapshot } from './growth-adapter.mjs';
+import { growthSnapshot, battleMetrics, recordAxisHistory, earlierAxisHistory } from './growth-adapter.mjs';
 import { mountChoiceButtons } from './choice-buttons.mjs';
 import { homeLabelCandidates, layoutLabels } from './label-layout.mjs';
 function practiceLabel(d, compact = false) {
@@ -35,8 +35,20 @@ function practiceLabel(d, compact = false) {
 /* loop142 */
 // loop130
 /* loop73 */
-/* loop81 成長分層介面；GMEMO 只存在 UI，不存檔 */
+/* 成長提示與能力圖歷史：只保存介面資料，不寫模擬。 */
 const GMEMO = {};
+const AXIS_HISTORY = {};
+const CARD_PORTRAITS = new Map();
+function cardPortrait(d) {
+  if (d.portrait) return d.portrait;
+  const key = `${d.id}|${d.sprite}|${d.adult}|${d.fem}`;
+  if (!CARD_PORTRAITS.has(key)) {
+    const c = document.createElement('canvas'); c.width = 64; c.height = 72;
+    const p = c.getContext('2d'); p.translate(32, 66); drawPoseActor(p, d, dailyPose(d));
+    CARD_PORTRAITS.set(key, c.toDataURL('image/png'));
+  }
+  return CARD_PORTRAITS.get(key);
+}
 const cv = document.getElementById('map'), g = cv.getContext('2d');
 const IMG = {}; const names = ['ground', 'hall_s0', 'hall_s1', 'dorm_s0', 'dorm_s1', 'log', 'herb', 'pine', 'bamboo', 'boar', 'rat', 'hero', 'cousin', 'senior', 'master', 'bench', 'wood', 'vat', 'grass', 'woodpile', 'kitchen_s1', 'map_s0', 'map_s1', 'map_s2'];
 await Promise.all(names.map((n) => new Promise((r) => { const i = new Image(); i.onload = r; i.onerror = r; i.src = `assets/${n}.${n === 'ground' || n.startsWith('map_') ? 'jpg' : 'png'}`; IMG[n] = i; })));
@@ -62,6 +74,9 @@ const newGame = () => { starting = true; openStart((spec) => { S = createState(D
 window.__sect = { get S() { return S; }, set speed(v) { speed = v; }, freeze: false, hitstop: true, panel: () => panel(), get starting() { return starting; } };
 const ACT_ICON = { quarry: '⛏', spar: '🤺', cook: '🍲', deliver: '📦', rest: '💤', eat: '🍚', farm: '🌱', forage: '🌿', chop: '🪓', train: '掌', learn: '📜', build: '🔨', chat: '💬', hunt: '⚔', strike: '⚔', trial: '⚔' };
 let hoveredActor = null;
+let hoveredOpponent = null;
+document.addEventListener('pointerover', (e) => { const card = e.target.closest?.('[data-dcard]'); if (card) { hoveredActor = card.dataset.dcard; hoveredOpponent = null; } });
+document.addEventListener('pointerout', (e) => { const card = e.target.closest?.('[data-dcard]'); if (card && !card.contains(e.relatedTarget)) hoveredActor = null; });
 // v1.45 B 級＝右側竹簡（可點推鏡）、A 級＝暫停＋推鏡
 function focusOn(id) { const d = S.ds.find((x) => x.id === id); if (!d || d.away) return false; window.__artsOf = id; camFocus(d.pos[0], d.pos[1] - 30, 2.5); panel(); const c = document.querySelector(`[data-dcard="${id}"]`); if (c) { c.open = true; c.scrollIntoView({ block: 'nearest' }); } return true; }
 function feed() { let f = document.getElementById('feed'); if (!f) { f = document.createElement('div'); f.id = 'feed'; document.getElementById('wrap').appendChild(f); }
@@ -265,11 +280,17 @@ document.addEventListener('click', (e) => { const tab = e.target.closest('[data-
 const hermitBadge = (S) => (isEliteHermit(S) ? `<b class="hermit-badge" title="清修：弟子少、幫工多，練功／打坐／讀書快 20%">【清修山莊・弟子 ${S.ds.filter((d) => d.role !== 'laborer').length}／幫工 ${S.ds.filter((d) => d.role === 'laborer').length}】</b>　` : '');
 function panel() {
   const ph = phaseOf(S); const se = seasonOf(S); $('clock').textContent = `第 ${se.year} 年 ${se.name}・第 ${ph.day} 日・${ph.name}（${Math.floor(S.t % 600)}/600）・${speed}×${rumorDays(S) ? `・⚠ 山賊傳聞：約 ${rumorDays(S)} 日` : ''}`; /* loop120 角落倒數 */ $('clock').title = seasonHint(S); /* loop73 季節說明（滑鼠移到時鐘） */
+  for (const d of S.ds) recordAxisHistory(AXIS_HISTORY, d, S.day);
   const levels = new Map(S.ds.map((d) => [d.id, growthView(d)]));
   const selected = S.ds.find((d) => d.id === window.__artsOf) || S.ds.find((d) => d.id === 'hero') || S.ds[0];
   const level = levels.get(selected?.id), latest = GROWTH_NOTICE.get(selected?.id);
   $('urgent').textContent = S.alert?.msg || (S.threat?.pending ? '今日要事：山賊已到，守住山門' : rumorDays(S) ? `今日要事：山賊約 ${rumorDays(S)} 日後到` : lastGrowth ? `今日要事：${lastGrowth}` : '今日要事：山中暫安');
-  $('focuscard').innerHTML = selected ? `<div class="focus-level" title="階段與熟練從現有武學資料計算；N42 後轉接新成長底層">${level.firstLine}</div>${bar(level.progress, '#6f8a4c')}<div class="k">${selected.name}・${selected.reason || '待命'}　<button data-focus-actor="${selected.id}" title="鏡頭移到此人">看他</button></div>${latest && S.t - latest.t < 4 ? `<div class="level-card">${latest.detail}</div>` : ''}` : '';
+  { const compare = selected && (S.ds.find((d) => d.id === hoveredActor) || hoveredOpponent);
+    const opponent = compare?.id !== selected?.id ? compare : null;
+    const old = selected ? earlierAxisHistory(AXIS_HISTORY, selected.id, S.day) : null;
+    const portrait = cardPortrait(selected);
+    $('focuscard').innerHTML = selected ? `<div class="actor-card-head"><img class="actor-portrait" src="${portrait}" alt="${selected.name}的肖像"><div><div class="actor-name">${selected.name}</div><div class="focus-level">${level.title}</div><div class="k">${RANK_NAMES[selected.role] || '內門'}・${selected.task ? ACTIVITIES[selected.task.act]?.name || selected.task.act : '待命'}</div></div></div>${battleRadarSvg(battleMetrics(selected), old?.day < S.day ? old.raw : null, opponent ? battleMetrics(opponent) : null, opponent?.name || ENEMIES[opponent?.k]?.name || '對手')}<div class="k">${selected.reason || '待命'}　<button data-focus-actor="${selected.id}" title="鏡頭移到此人">看他</button></div><details class="actor-card-more" data-keep="actor-card-more"><summary>技能、關係與性格</summary><div class="k">${level.firstLine}</div>${bar(level.progress, '#6f8a4c')}<div class="k">技能：掌 ${selected.skills?.palm?.toFixed(1) || '0'}・腿 ${selected.skills?.leg?.toFixed(1) || '0'}・腳力 ${selected.skills?.agility?.toFixed(1) || '0'}</div><div class="k">同門好感 ${avgAff(S, selected).toFixed(0)}・性格 ${(selected.personality || []).map((p) => TRAITS[p]?.name || p).join('、') || '尚未明朗'}</div></details>${latest && S.t - latest.t < 4 ? `<div class="level-card">${latest.detail}</div>` : ''}` : '';
+  }
   $('routine').innerHTML = `<h2>門規作息</h2><p class="k">設定一次，之後每日照做；心情低於現有低落門檻時先靜坐。</p>${Object.entries(ROUTINE_PERIODS).map(([part, name]) => `<div class="routine-row"><b>${name}</b><div class="choice-row">${Object.entries(ROUTINE_MODES).map(([mode, label]) => `<button data-routine="${part}|${mode}" class="${(S.routine?.[part] || 'free') === mode ? 'on' : ''}">${label}</button>`).join('')}</div></div>`).join('')}<div class="routine-row"><b>收徒方針</b><div class="choice-row">${Object.entries(RECRUIT_POLICIES).map(([mode,label])=>`<button data-recruit-policy="${mode}" class="${recruitmentOf(S).policy===mode?'on':''}">${label}</button>`).join('')}</div><label class="k">人口上限 <input id="recruit-cap" type="number" min="${recruitmentOf(S).basePeople}" max="${capacity(S)}" value="${recruitmentOf(S).cap??''}" placeholder="依方針" style="width:4em"></label><span class="k">目前可收至 ${policyCap(S)} 人；上門看名聲、自產與守山成績。</span></div>`;
   $('res').innerHTML = `${hermitBadge(S)}${resItem('wood-pile', '木', `${S.res.wood}/${S.cap.wood}`)}${resItem('falling-rocks', '石', `${S.res.stone}/${S.cap.stone}`)}${resItem('coins', '香火錢', S.res.coin)}${resItem('herbs-bundle', '菜', S.res.veg)}${resItem('meal', '飯', S.res.food)}${resItem('herbs-bundle', '藥', S.res.herb)}${resItem('medicines', '療傷丹', S.res.pill)}${resItem('full-wood-bucket', '水', `${S.res.water}/${S.cap.water}`)}${resItem('wood-beam', '鐵木', S.res.tiemu || 0)}${resItem('crystal-shrine', '靈石', S.res.lingshi || 0)}<div>名聲 ${S.rep}・弟子 ${disciples(S).length}/${capacity(S)} 床・雇工 ${laborers(S).length}/${laborCap(S)}・地圖 ${mapStage(S)}</div><div class="k">菜畦：${S.plots.map((p) => ({ empty: '空', grow: '長', ripe: '熟' })[p.st]).join(' ')}</div>`;
   const blueprints = FACILITIES.filter((f) => f.stages.length > 1 && !f.sig && f.stages[S.fac[f.id].stage + 1]);
@@ -372,7 +393,8 @@ document.addEventListener('click', (e) => { const b = e.target.closest('[data-bu
 document.addEventListener('change', (e) => { if (e.target.dataset.branch) { const [id, art] = e.target.dataset.branch.split('|'); const d = S.ds.find((x) => x.id === id); if (d && e.target.value) rechooseBranch(d, art, e.target.value, S.t); panel(); return; } if (e.target.dataset.variant) { const [id, art] = e.target.dataset.variant.split('|'); const d = S.ds.find((x) => x.id === id); if (d && e.target.value) chooseVariant(d, art, e.target.value, S.t); panel(); return; } if ('artsof' in e.target.dataset) { window.__artsOf = e.target.value; panel(); return; } if (e.target.dataset.focus) { setFocus(S, e.target.dataset.focus, e.target.value || null); panel(); return; } if (e.target.dataset.q) { window.__ans[+e.target.dataset.q] = +e.target.value; panel(); return; } if (e.target.dataset.duty) { setDuty(S, e.target.dataset.duty, e.target.value, e.target.checked); panel(); return; } if (e.target.dataset.prio) { setPrio(S, e.target.dataset.prio, e.target.value); panel(); return; } if (e.target.dataset.style) setStyle(S, e.target.dataset.style, e.target.value); if (e.target.dataset.ord) { setOrder(S, e.target.dataset.ord, e.target.value || null); panel(); } });
 // review fix：存讀檔改用非阻斷提示（原本 alert() 會卡住瀏覽器自動化與遊戲迴圈）
 function toast(msg, bad = false) { let t = document.getElementById('toast'); if (!t) { t = document.createElement('div'); t.id = 'toast'; t.style.cssText = 'position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:99;padding:6px 14px;border-radius:6px;font-size:14px;pointer-events:none'; document.body.appendChild(t); } t.textContent = msg; t.style.background = bad ? '#7a2a1e' : '#3a5a2a'; t.style.color = '#fff'; t.style.display = 'block'; clearTimeout(t._h); t._h = setTimeout(() => { t.style.display = 'none'; }, 2000); }
-$('save').onclick = () => { try { localStorage.setItem('solo-sect-save', save(S)); toast(`已存檔（第 ${Math.floor(S.t / 600) + 1} 日）`); } catch (e) { toast('存檔失敗：' + e.message, true); } };
+const saveWithUiHistory = () => save({ ...S, uiGrowthHistory: AXIS_HISTORY });
+$('save').onclick = () => { try { localStorage.setItem('solo-sect-save', saveWithUiHistory()); toast(`已存檔（第 ${Math.floor(S.t / 600) + 1} 日）`); } catch (e) { toast('存檔失敗：' + e.message, true); } };
 $('load').onclick = () => { const r = load(localStorage.getItem('solo-sect-save') || ''); if (r.ok) { S = r.state; freshGame(); try { syncLegacy(localStorage, S); } catch {} toast('已讀檔'); } else toast(r.err, true); panel(); };
 $('reset').onclick = () => newGame();
 $('load').addEventListener('click', () => { if (document.getElementById('start')) { document.getElementById('start').remove(); starting = false; } });
@@ -532,11 +554,13 @@ function fightWatch() { const X = S?.exp; if (!X) { fightLog.n = null; fightLog.
 // 捲動：拖曳地圖、滾輪縮放（邊界由 camBounds 決定）
 { let drag = null; const k = () => Math.max(1600 / cv.clientWidth, 900 / cv.clientHeight) / cam.uz;
   cv.addEventListener('pointerdown', (e) => { drag = [e.clientX, e.clientY]; cv.setPointerCapture?.(e.pointerId); });
-  cv.addEventListener('pointerleave', () => { hoveredActor = null; });
+  cv.addEventListener('pointerleave', () => { hoveredActor = null; hoveredOpponent = null; });
   cv.addEventListener('pointermove', (e) => { const r = cv.getBoundingClientRect(), c = clampCam({ x: cam.x, y: cam.y, z: cam.z }, camBounds(S));
     const x = ((e.clientX - r.left) * 1600 / r.width - 800) / c.z + c.x - HOME.x, y = ((e.clientY - r.top) * 900 / r.height - 450) / c.z + c.y - HOME.y;
     const near = S.ds.filter((d) => !d.away && Math.abs(d.pos[0] - x) <= 24 && y >= d.pos[1] - 74 && y <= d.pos[1] + 8).sort((a, b) => Math.abs(a.pos[0] - x) - Math.abs(b.pos[0] - x));
-    hoveredActor = near[0]?.id || null; cv.title = near[0] ? homeLabelCandidates(S).find((l) => l.id === near[0].id)?.text || '' : '';
+    const foe = [...(S.mons || []), ...(S.band?.members || [])].filter((m) => m.pos && Math.abs(m.pos[0] - x) <= 28 && y >= m.pos[1] - 65 && y <= m.pos[1] + 12)[0];
+    hoveredActor = near[0]?.id || null; hoveredOpponent = near[0] ? null : foe || null;
+    cv.title = near[0] ? homeLabelCandidates(S).find((l) => l.id === near[0].id)?.text || '' : foe ? ENEMIES[foe.k]?.name || foe.name || '對手' : '';
     if (!drag) return; const f = k(); cam.ux -= (e.clientX - drag[0]) * f; cam.uy -= (e.clientY - drag[1]) * f; drag = [e.clientX, e.clientY]; if (cam.follow) { cam.follow = false; refreshCamUI(); } });
   addEventListener('pointerup', () => { drag = null; });
   cv.addEventListener('wheel', (e) => { e.preventDefault(); cam.uz = Math.min(1.6, Math.max(ZOOMS.far, cam.uz * (e.deltaY > 0 ? 0.9 : 1.1))); }, { passive: false }); }
@@ -578,12 +602,12 @@ function chapterModal() {
 }
 let lastAuto = 0; const cue = {};
 /* loop65：換局／讀檔時重設只屬於上一局的介面狀態：自動存檔計時、音效佇列（log 頂端）、巡山提示 */
-function freshGame() { lastAuto = S.t; for (const k of Object.keys(cue)) delete cue[k]; lastExpT = null; GROWTH_MEMO.clear(); GROWTH_NOTICE.clear(); lastGrowth = ''; }
+function freshGame() { lastAuto = S.t; for (const k of Object.keys(cue)) delete cue[k]; lastExpT = null; GROWTH_MEMO.clear(); GROWTH_NOTICE.clear(); CARD_PORTRAITS.clear(); lastGrowth = ''; for (const k of Object.keys(GMEMO)) delete GMEMO[k]; for (const k of Object.keys(AXIS_HISTORY)) delete AXIS_HISTORY[k]; Object.assign(AXIS_HISTORY, S.uiGrowthHistory || {}); delete S.uiGrowthHistory; }
 function audioStep() { for (const c of cuesFrom(cue, S)) { SFX[c]?.(); const p = c === 'breakthrough' ? (S.fx.find((f) => f.kind === 'break')?.pos || NODES.yard) : c === 'record' ? NODES.gate : c === 'chapter' ? NODES.hall : null; if (p) camFocus(p[0], p[1]); }
   const rd = S.mons.find((m) => m.raid === 'go'); if (rd && cue.raid !== rd.uid) { cue.raid = rd.uid; camFocus(rd.pos[0], rd.pos[1], 2); } }
-setInterval(() => { if (!S || starting || !autoDue(S.t, lastAuto)) return; /* loop65：用 autoDue，時間倒退也算到期；開局畫面不存 */ lastAuto = S.t; autosave(localStorage, save(S), { day: Math.floor(S.t / 600) + 1, name: S.hero?.name, suhui: suhuiOf(S), at: Date.now() }); }, 1000);
+setInterval(() => { if (!S || starting || !autoDue(S.t, lastAuto)) return; /* loop65：用 autoDue，時間倒退也算到期；開局畫面不存 */ lastAuto = S.t; autosave(localStorage, saveWithUiHistory(), { day: Math.floor(S.t / 600) + 1, name: S.hero?.name, suhui: suhuiOf(S), at: Date.now() }); }, 1000);
 $('autos').onchange = (e) => { if (e.target.value === '') return; const r = load(autoGet(localStorage, +e.target.value) || ''); if (r.ok) { S = r.state; freshGame(); try { syncLegacy(localStorage, S); } catch {} document.getElementById('start')?.remove(); starting = false; } else alert(r.err); panel(); };
-$('export').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([save(S)], { type: 'application/json' })); a.download = `solo-sect-day${Math.floor(S.t / 600) + 1}.json`; a.click(); URL.revokeObjectURL(a.href); };
+$('export').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([saveWithUiHistory()], { type: 'application/json' })); a.download = `solo-sect-day${Math.floor(S.t / 600) + 1}.json`; a.click(); URL.revokeObjectURL(a.href); };
 $('import').onchange = async (e) => { const f = e.target.files[0]; if (!f) return; const r = load(await f.text()); if (r.ok) { S = r.state; freshGame(); try { syncLegacy(localStorage, S); } catch {} document.getElementById('start')?.remove(); starting = false; } else alert('匯入失敗：' + r.err); e.target.value = ''; panel(); };
 $('mute').onclick = () => { setMute(!isMuted()); ambient(!isMuted()); panel(); };
 document.addEventListener('click', (e) => { if (e.target.closest('button')) { SFX.click(); if (!isMuted()) ambient(true); } }, true);

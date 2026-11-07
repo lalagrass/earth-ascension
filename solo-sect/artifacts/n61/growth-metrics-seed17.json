@@ -1,0 +1,674 @@
+{
+  "seed": 17,
+  "clock": 30,
+  "dt": 0.25,
+  "scenario": "合法指派：採石蓋井→每200秒練拳/砍柴/挑水；完整模擬，無灌值",
+  "snapshots": [
+    {
+      "day": 1,
+      "t": 30,
+      "hero": {
+        "id": "hero",
+        "name": "主角",
+        "root": 2,
+        "rootKnown": true,
+        "style": "palm",
+        "personality": [
+          "diligent",
+          "brave",
+          "sociable"
+        ],
+        "known": [
+          "diligent",
+          "brave"
+        ],
+        "together": 30,
+        "mood": 64,
+        "thoughts": [],
+        "why": [],
+        "adult": true,
+        "age": 22,
+        "sprite": "hero",
+        "traits": {
+          "diligent": 1.2
+        },
+        "skills": {
+          "leg": 0,
+          "palm": 0,
+          "strength": 12.105501538461539,
+          "farming": 5,
+          "herbal": 5,
+          "agility": 10,
+          "cooking": 3
+        },
+        "moves": [
+          "bodyPunch",
+          "bodyPush",
+          "bodyGrab",
+          "bodyKick",
+          "toolStone"
+        ],
+        "needs": {
+          "energy": 71.00000000000023,
+          "hunger": 59.49999999999969,
+          "social": 38.049999999999834,
+          "fun": 53.42750000000003
+        },
+        "hp": 100,
+        "fret": 0,
+        "raging": false,
+        "rageUntil": 0,
+        "busyUntil": 0,
+        "at": "g2",
+        "pos": [
+          805.6679856236277,
+          696.9822135155516
+        ],
+        "path": [
+          {
+            "n": "g1",
+            "xy": [
+              862,
+              700
+            ]
+          },
+          {
+            "n": "s3",
+            "xy": [
+              894,
+              681
+            ]
+          },
+          {
+            "n": "s2",
+            "xy": [
+              931,
+              631
+            ]
+          },
+          {
+            "n": "s1",
+            "xy": [
+              965,
+              569
+            ]
+          },
+          {
+            "n": "south",
+            "xy": [
+              960,
+              506
+            ]
+          },
+          {
+            "n": "mid",
+            "xy": [
+              950,
+              431
+            ]
+          },
+          {
+            "n": "court",
+            "xy": [
+              1038,
+              394
+            ]
+          }
+        ],
+        "role": "inner",
+        "duties": [
+          "chop",
+          "quarry",
+          "farm",
+          "cook",
+          "build",
+          "forage"
+        ],
+        "prio": "normal",
+        "chore": 0,
+        "choreDebt": 0,
+        "contrib": 0,
+        "task": {
+          "act": "quarry",
+          "fac": "quarry",
+          "node": "quarry",
+          "phase": "return",
+          "resv": [
+            "quarry:quarry:*"
+          ],
+          "timer": 10,
+          "walkStart": 763.9777756515797
+        },
+        "order": "quarry",
+        "reason": "玩家指派",
+        "carry": {
+          "stone": 1
+        },
+        "cool": 0,
+        "walked": 1081.6027756515798,
+        "face": 1,
+        "anim": null,
+        "arts": {},
+        "pendingArt": null,
+        "focus": null,
+        "best": 0,
+        "insight": {},
+        "away": false,
+        "wu": 2,
+        "ding": 2,
+        "values": {
+          "xia": 50,
+          "sect": 24,
+          "qing": 8,
+          "free": 0,
+          "wu": 50,
+          "fame": 0
+        },
+        "wexin": 0,
+        "gInit": true,
+        "pf": 1,
+        "ng": 1,
+        "qi": 0,
+        "ng2": 1,
+        "lg": 1,
+        "bare": true,
+        "tools": {
+          "stone": true
+        },
+        "pendingMove": null,
+        "practice": {
+          "hands": {
+            "work:quarry": 0.888888888888889
+          },
+          "eyes": {},
+          "origin": {},
+          "families": {}
+        },
+        "sectId": "wuming",
+        "gdr": 1,
+        "timeToday": {
+          "day": 1,
+          "elapsed": 30,
+          "free": 0,
+          "guided": 0
+        },
+        "posture": 100,
+        "pain": 0,
+        "decision": {
+          "layer": "order",
+          "act": "quarry",
+          "why": "玩家指派"
+        },
+        "acts": {
+          "craft": 30
+        },
+        "powMul": 1,
+        "yunvLink": false,
+        "jhMul": 1,
+        "sbias": {
+          "剛": 0.15
+        },
+        "stree": [
+          "wuhuBlade",
+          "pushPalm",
+          "breath"
+        ],
+        "sgain": 1,
+        "medK24": 1,
+        "pairMul": 0.05,
+        "asp": {
+          "id": "xia",
+          "done": false
+        },
+        "lgDay": 0,
+        "lgGot": 2.1055015384615388
+      },
+      "eventHands": {
+        "work:quarry": 0.888888888888889
+      },
+      "events": 1,
+      "eventHash": "e741d84cd5f5519fb4c20257752cccdae9b26e59767e259ff3bfe7a894cb14d5",
+      "metrics": {
+        "chopPause": 0.5,
+        "waterTilt": 15,
+        "hipHeight": 17,
+        "routineSeconds": 6.8999999999999995,
+        "combatWind": 0.45,
+        "routinePause": 0.5,
+        "sway": 2
+      }
+    },
+    {
+      "day": 60,
+      "t": 35430,
+      "hero": {
+        "id": "hero",
+        "name": "主角",
+        "root": 2,
+        "rootKnown": true,
+        "style": "palm",
+        "personality": [
+          "diligent",
+          "brave",
+          "sociable"
+        ],
+        "known": [
+          "diligent",
+          "brave",
+          "sociable"
+        ],
+        "together": 35430,
+        "mood": 18,
+        "thoughts": [
+          {
+            "id": "bedSleep",
+            "text": "睡在床上",
+            "v": 5,
+            "left": 290
+          }
+        ],
+        "why": [],
+        "adult": true,
+        "age": 24,
+        "sprite": "hero",
+        "traits": {
+          "diligent": 1.2
+        },
+        "skills": {
+          "leg": 0,
+          "palm": 100,
+          "strength": 100,
+          "farming": 5,
+          "herbal": 5,
+          "agility": 100,
+          "cooking": 3
+        },
+        "moves": [
+          "bodyPunch",
+          "bodyPush",
+          "bodyGrab",
+          "bodyKick",
+          "toolStone",
+          "toolKnife",
+          "toolPole",
+          "kh1",
+          "bs1",
+          "km1",
+          "km2"
+        ],
+        "needs": {
+          "energy": 81.68000000000002,
+          "hunger": 0,
+          "social": 0,
+          "fun": 0
+        },
+        "hp": 100,
+        "fret": 0,
+        "raging": false,
+        "rageUntil": 0,
+        "busyUntil": 0,
+        "at": "court",
+        "pos": [
+          1044.050115278618,
+          395.1040356347843
+        ],
+        "path": [
+          {
+            "n": "yard",
+            "xy": [
+              1175,
+              419
+            ]
+          },
+          {
+            "n": "yard",
+            "xy": [
+              1100,
+              459
+            ]
+          }
+        ],
+        "role": "inner",
+        "duties": [
+          "chop",
+          "quarry",
+          "farm",
+          "cook",
+          "build",
+          "forage"
+        ],
+        "prio": "normal",
+        "chore": 0,
+        "choreDebt": 0,
+        "contrib": 0,
+        "task": {
+          "act": "train",
+          "fac": "yard",
+          "node": "yard",
+          "phase": "go",
+          "resv": [
+            "yard:spot:open0"
+          ],
+          "spot": "open0",
+          "spotKind": "open"
+        },
+        "order": "train",
+        "reason": "玩家指派",
+        "carry": null,
+        "cool": 0,
+        "walked": 1417358.2774001732,
+        "face": 1,
+        "anim": null,
+        "arts": {
+          "kuihua": {
+            "xp": 92.52714147666754,
+            "last": 4995.25,
+            "bt1": true,
+            "rust": 0,
+            "gm": {
+              "e": 16.26439567488604,
+              "ms": 0
+            }
+          },
+          "breath": {
+            "xp": 54.9,
+            "last": 35416.25,
+            "rust": 0,
+            "gm": {
+              "e": 4.7638012227002715,
+              "ms": 1
+            }
+          },
+          "basicSword": {
+            "xp": 0,
+            "last": 9000
+          },
+          "kongming": {
+            "xp": 56,
+            "last": 13200,
+            "bt1": true
+          }
+        },
+        "pendingArt": null,
+        "focus": null,
+        "best": 0,
+        "insight": {},
+        "away": false,
+        "wu": 2,
+        "ding": 2,
+        "values": {
+          "xia": 50,
+          "sect": 24,
+          "qing": 8,
+          "free": 0,
+          "wu": 50,
+          "fame": 0
+        },
+        "wexin": 3,
+        "gInit": true,
+        "pf": 1,
+        "ng": 1,
+        "qi": 15.2194029155629,
+        "ng2": 1,
+        "lg": 1,
+        "bare": true,
+        "tools": {
+          "stone": true,
+          "knife": true,
+          "pole": true
+        },
+        "pendingMove": null,
+        "practice": {
+          "hands": {
+            "work:quarry": 7.1111111111111125,
+            "work:chop": 349.3333333333352,
+            "work:water": 515.5555555555621,
+            "bodyPunch": 742.3152156485604,
+            "bodyPush": 706.9668720462238,
+            "bodyGrab": 706.9668720462238,
+            "bodyKick": 645.4914918683114,
+            "toolStone": 549.8631227026298,
+            "toolKnife": 674.8320142259499,
+            "toolPole": 593.8521725188485,
+            "kh1": 2036.6602533269431,
+            "bs1": 523.7755331088731,
+            "km1": 517.7890011223374,
+            "km2": 400.84175084175365
+          },
+          "eyes": {},
+          "origin": {},
+          "families": {}
+        },
+        "sectId": "wuming",
+        "gdr": 1,
+        "timeToday": {
+          "day": 60,
+          "elapsed": 30.25,
+          "free": 0,
+          "guided": 0
+        },
+        "posture": 100,
+        "pain": 0,
+        "decision": {
+          "layer": "order",
+          "act": "train",
+          "why": "玩家指派"
+        },
+        "acts": {
+          "craft": 11513.25,
+          "cult": 10166.5
+        },
+        "powMul": 1.6,
+        "yunvLink": false,
+        "jhMul": 1.15,
+        "sbias": {
+          "剛": 0.15
+        },
+        "stree": [
+          "wuhuBlade",
+          "pushPalm",
+          "breath"
+        ],
+        "sgain": 1,
+        "medK24": 1,
+        "pairMul": 0.1,
+        "asp": {
+          "id": "xia",
+          "done": false
+        },
+        "lgDay": 19,
+        "lgGot": 0.015188441256810847,
+        "likes": {
+          "food": "紅燒肉",
+          "drink": "清茶"
+        },
+        "small29": true,
+        "timePrev": {
+          "day": 59,
+          "elapsed": 600,
+          "free": 0,
+          "guided": 0
+        },
+        "mates": {
+          "origin-1": 83,
+          "origin-2": 33,
+          "guojing": 109
+        },
+        "duanqing": 2253.75,
+        "moodCap": 80,
+        "xiao29": true,
+        "growMul": {
+          "art": "breath",
+          "total": 1.5220800000000003,
+          "talent": 1.2,
+          "state": 0.8400000000000001,
+          "ext": 1.5100000000000002,
+          "gate": 1
+        },
+        "bore31": 0,
+        "xiao29c": true,
+        "champ28": true,
+        "chief24": true,
+        "base28": true,
+        "deeds": [
+          {
+            "day": 10,
+            "kind": "champ",
+            "chron": "主角奪得第 10 日山門大比魁首"
+          },
+          {
+            "day": 20,
+            "kind": "champ",
+            "chron": "主角奪得第 20 日山門大比魁首"
+          }
+        ],
+        "deedN": {
+          "champ": 2
+        },
+        "base29c": true,
+        "sweet": null,
+        "lastWexinT": 34200
+      },
+      "eventHands": {
+        "work:quarry": 7.1111111111111125,
+        "work:chop": 349.3333333333352,
+        "work:water": 515.5555555555621,
+        "bodyPunch": 742.3152156485604,
+        "bodyPush": 706.9668720462238,
+        "bodyGrab": 706.9668720462238,
+        "bodyKick": 645.4914918683114,
+        "toolStone": 549.8631227026298,
+        "toolKnife": 674.8320142259499,
+        "toolPole": 593.8521725188485,
+        "kh1": 2036.6602533269431,
+        "bs1": 523.7755331088731,
+        "km1": 517.7890011223374,
+        "km2": 400.84175084175365
+      },
+      "events": 9135,
+      "eventHash": "4b420fe5f0f8081bdc0f148432b392e91cca96567526d8349e39bd4ca9164fff",
+      "metrics": {
+        "chopPause": 0.17799168636023746,
+        "waterTilt": 0.9066283088622591,
+        "hipHeight": 11.17292059434812,
+        "routineSeconds": 2.489082711623948,
+        "combatWind": 0.1684520879759967,
+        "routinePause": 0.15588588530399597,
+        "sway": 0.11434954414323512
+      }
+    }
+  ],
+  "substrate": [
+    {
+      "day": 1,
+      "art": null
+    },
+    {
+      "day": 60,
+      "art": "breath",
+      "wind": null,
+      "reaction": 0.08695652173913045,
+      "force": 7.539999999999999,
+      "why": "身體招尚未定型，反應下限 0.09 秒，勁 7.54"
+    }
+  ],
+  "cardAxes": [
+    {
+      "day": 1,
+      "raw": {
+        "quick": 0.45,
+        "eye": 0.2,
+        "force": 1.1210550153846155,
+        "body": 42.35,
+        "endure": 71.00000000000023,
+        "forms": 5
+      },
+      "display": [
+        0.35714285714285715,
+        0.47368421052631576,
+        0.5605275076923077,
+        0.35291666666666666,
+        0.3944444444444457,
+        0.2777777777777778
+      ]
+    },
+    {
+      "day": 60,
+      "raw": {
+        "quick": 0.0038556613282008626,
+        "eye": 0.08695652173913045,
+        "force": 1.4989975,
+        "body": 129.79999999999998,
+        "endure": 125.49937381030446,
+        "forms": 17
+      },
+      "display": [
+        0.9848115999933678,
+        0.6742671009771987,
+        0.74949875,
+        1,
+        0.6972187433905803,
+        0.9444444444444444
+      ]
+    }
+  ],
+  "table": [
+    {
+      "key": "chopPause",
+      "name": "劈柴每斧間停頓(s)",
+      "day1": 0.5,
+      "day60": 0.17799168636023746,
+      "reduction": 0.6440166272795251,
+      "pass": true
+    },
+    {
+      "key": "waterTilt",
+      "name": "挑水最大傾角(deg)",
+      "day1": 15,
+      "day60": 0.9066283088622591,
+      "reduction": 0.9395581127425161,
+      "pass": true
+    },
+    {
+      "key": "hipHeight",
+      "name": "馬步重心高度(px)",
+      "day1": 17,
+      "day60": 11.17292059434812,
+      "reduction": 0.34276937680305175,
+      "pass": true
+    },
+    {
+      "key": "routineSeconds",
+      "name": "通用拳三式秒數(s)",
+      "day1": 6.8999999999999995,
+      "day60": 2.489082711623948,
+      "reduction": 0.6392633751269641,
+      "pass": true
+    },
+    {
+      "key": "combatWind",
+      "name": "交手直拳前搖(s)",
+      "day1": 0.45,
+      "day60": 0.1684520879759967,
+      "reduction": 0.6256620267200073,
+      "pass": true
+    },
+    {
+      "key": "routinePause",
+      "name": "式間停頓(s)",
+      "day1": 0.5,
+      "day60": 0.15588588530399597,
+      "reduction": 0.6882282293920081,
+      "pass": true
+    },
+    {
+      "key": "sway",
+      "name": "身體晃動幅度(px)",
+      "day1": 2,
+      "day60": 0.11434954414323512,
+      "reduction": 0.9428252279283824,
+      "pass": true
+    }
+  ],
+  "pass": true
+}
