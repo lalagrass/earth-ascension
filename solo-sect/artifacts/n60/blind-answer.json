@@ -1,0 +1,20 @@
+{
+  "seed": 17,
+  "leftToRight": [
+    {
+      "id": "hero",
+      "name": "無名",
+      "sprite": "hero"
+    },
+    {
+      "id": "origin-1",
+      "name": "阿禾",
+      "sprite": "senior"
+    },
+    {
+      "id": "origin-2",
+      "name": "石生",
+      "sprite": "cousin"
+    }
+  ]
+}

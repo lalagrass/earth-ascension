@@ -1,5 +1,18 @@
 # 可重跑驗收
 
+## N60：共用骨架上的分層像素人物（#492，純畫面）
+
+實際主筆 grass／Codex Cloud；疊在第十輪 #499。玩家問題：主角、阿禾、石生和山賊原本同是線條身體與圓頭，很難一眼分辨。現在開白身新局，走路、練功、對練、打雜時，頭、髮、衣身、上下臂腿與手持物逐塊跟著原骨架移動；外觀色、髮型與體型從資料列／穩定 id 取得，沒有每人動作分支。像素部件由本倉程式原創，對照 `cousin.png` 的輪廓與受光；無新增外部素材。規則 3.9、存檔及 golden 必須不變。
+
+| 類 | 指令（repo 根目錄） | 門檻／預期輸出 |
+|---|---|---|
+| A 首日真畫布 | `PW=/opt/codex/cua_node/lib/node_modules/playwright-core/index.mjs node solo-sect/tools/n59-visual-check.mjs --seed=17 --out=solo-sect/artifacts/n60/day-1` | 任一正整數 seed；從開局跑完首日，各觀測到的主角 task.act/phase 都截真地圖並拼[對照板 WebP](artifacts/n60/day-1/contact-sheet.webp)（工具產 PNG，以 `magick ... -quality 84` 等尺轉存）；在場人物每步均有姿勢、map 整張 `hero.png`／`cousin.png` 繪製次數 0。seed 17：16 種、7200 次、缺姿勢 0、整張圖 0；[原始統計](artifacts/n60/day-1/visual-check.json)。 |
+| A 遮名三人 | `PW=/opt/codex/cua_node/lib/node_modules/playwright-core/index.mjs node solo-sect/tools/n60-blind-board.mjs --seed=17` | 先看同框[遮名圖](artifacts/n60/three-blind.webp)，不看 [有名圖](artifacts/n60/three-named.webp) 配對三人；再讀獨立[答案](artifacts/n60/blind-answer.json)。替換正整數 seed 仍要有三人、同一套分層圖。 |
+| A/B 資產及規則 | `node solo-sect/tools/check-assets.mjs`；CI `bash solo-sect/test/run.sh quick`、`bash solo-sect/test/run.sh golden` | 所有新增的像素部件在執行時由 `paper-doll.mjs` 自繪，無第三方檔案；資產清冊通過。純畫面不新增抽樣式、`RULES_VERSION` 仍 3.9，golden hash 與 #499 完全相同。 |
+| C 同尺 bot12 | Node 22：`node solo-sect/tools/bot12.mjs solo-sect --json` | [#499 base](artifacts/n60/bot12-base.json)／[N60 head](artifacts/n60/bot12-head.json) 原始輸出逐位相同；不拿 C 值調參。擁有人對畫風的評價待真人看圖，不當自動通過。 |
+
+舊名 → 新名：`drawPoseActor` 仍是共用入口；線條／圓頭繪製退為無 DOM 的測試後備，實際畫布改用 `drawPaperDoll`；原 `IMG.hero` 師父特例與招式殘影整張圖改共用分層。最沒把握三處：低解析度關節旋轉會出現鋸齒；多位名俠以穩定 id 配色而非每人手繪衣服；擁有人覺得「像阿禾那樣好看」只能靠真實畫面回饋判斷，工程證據不能替代審美。
+
 ## N59：日常人物共用骨架（#490，純畫面）
 
 實際主筆 grass／Codex Cloud。原問題是 `hero.png` 5×6 動作表在非練功時被當單張人物畫；現在活動資料選站、走、蹲、坐、劈、挑，缺資料回站姿。角色、出身同行與近景山賊／遠行人物都共用骨架；沒有模擬變更、RULES_VERSION 仍 3.7，`test/golden` 三檔與 30 日 fixture 均不變。
