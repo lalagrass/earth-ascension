@@ -10,6 +10,7 @@ import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, VARIANTS,
 import { stampCard, BRANCHES } from './artcard.mjs';
 import { strMul } from './economy.mjs';
 import { pipeline, log, chronOf, affKey } from './util.mjs';
+import { recordSocialEvent } from './social-thoughts.mjs';
 // ==== （原 growth.mjs）====
 /* loop78 成長分層（開關 s.grow）：成長門類 metadata、造詣單一結算入口、同類學習加速。
    造詣不另存門類值：造詣＝Σ 各武學紀錄 r.gm 的有界貢獻 × 門類權重（衍生值，不會與 skills.palm 漂移）。
@@ -1345,9 +1346,9 @@ export function interceptOpening(s, atk, def, rnd, ctx = {}) {
   if (ctx.allowCover !== false && (def.swing || def.bswing)) {
     for (const helper of allies(s || {},def).filter(h=>h.pos&&def.pos&&atk.pos&&distance(h.pos,def.pos)<=RING.step*2&&distance(h.pos,atk.pos)<=RING.engage+RING.step&&!h.swing&&!h.bswing&&(h.busyUntil||0)<=(s?.t||0)).sort((a,b)=>distance(a.pos,def.pos)-distance(b.pos,def.pos))) {
       const shared=(s?.mem||[]).filter(m=>((m.a===helper.id&&m.b===def.id)||(m.a===def.id&&m.b===helper.id))&&['spar','patrol'].includes(m.k)).length
-        + Math.max(0,s?.aff?.[affKey(helper.id,def.id)]||0)/100*PRACTICE.eyeHalf;
+        + Math.max(0,((s?.aff?.[affKey(helper.id,def.id)]||0)+(s?.aff?.[affKey(def.id,helper.id)]||0))/2)/100*PRACTICE.eyeHalf;
       const assisted=interceptOpening(s,atk,helper,rnd,{...ctx,allowCover:false,sharedUses:shared});
-      if (assisted.read?.kind === 'read') return { ...assisted, helper };
+      if (assisted.read?.kind === 'read') { recordSocialEvent(s, 'covered', helper, def); return { ...assisted, helper }; }
     }
   }
   const T = clashTimes(s, atk, def, ctx), reaction = drawReaction(T,rnd);

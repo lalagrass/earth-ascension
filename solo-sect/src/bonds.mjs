@@ -3,6 +3,7 @@ import { fanRank, CEILING, SPECIALS, BRANCHES } from './artcard.mjs';
 import { ARTS, TRAITS, DAY } from './data.mjs';
 import { aff, relAdd } from './social.mjs';
 import { log, resAdd } from './util.mjs';
+import { recordSocialEvent } from './social-thoughts.mjs';
 // ==== （原 bonds.mjs）====
 // v1.65 人物與門派運作：共同記憶帳本、名俠池畫風濾鏡、傳功、收徒（資料表＋小解讀器）
 
@@ -50,7 +51,7 @@ export function passPick(s, d) {
 export const passReserve = (s) => { s.passN = { day: s.day, n: passToday(s) + 1 }; }; // 開始傳功即佔當日名額（多人同時起手不會超量）
 export function passDo(s, d, p, art) {
   const key = `${d.id}>${p.id}:${art}`; (s.passed ??= {}); if (s.passed[key]) return false; s.passed[key] = s.day; d.passDay = s.day;
-  const a = learnArt(p, art, s.t); relAdd(s, d, p, PASS.aff); addMem(s, d, p, 'pass', a.name); log(s, `【傳授】${d.name}帶${p.name}練「${a.name}」`); return true;
+  const a = learnArt(p, art, s.t); relAdd(s, d, p, PASS.aff); addMem(s, d, p, 'pass', a.name); recordSocialEvent(s, 'taught', d, p, a.name); log(s, `【傳授】${d.name}帶${p.name}練「${a.name}」`); return true;
 }
 
 // ---- 收徒：內門／首徒對好感夠的外門收一名徒弟；徒弟在師父在場時練功 ×1.15 ----
@@ -115,7 +116,7 @@ export function startTeachArt(s, m, d, artId) {
   const id = typeof artId === 'string' ? artId : artId.id;
   m.teaching = { pupil: d.id, art: id };
   if (isFamousArt(id)) (m.taught28 ||= {})[id] = d.id;
-  if (!d.arts?.[id]) { learnArt(d, id, s.t); growEnsure(d); log(s, `【傳授】${m.name}開始教${d.name}《${artById(id).name}》`); addMem(s, m, d, 'pass', artById(id).name); }
+  if (!d.arts?.[id]) { learnArt(d, id, s.t); growEnsure(d); log(s, `【傳授】${m.name}開始教${d.name}《${artById(id).name}》`); addMem(s, m, d, 'pass', artById(id).name); recordSocialEvent(s, 'taught', m, d, artById(id).name); }
   return true;
 }
 
