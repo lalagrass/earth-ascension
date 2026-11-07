@@ -308,3 +308,5 @@ N34 的 `duel.mjs --log` 仍輸出每拍的 `T/r/m/margin` 供 reviewer 任取�
 - C 全量護欄：`node solo-sect/tools/bot12.mjs solo-sect --json`；[T1 base](artifacts/n58/bot12-full-base.json)／[N58 head](artifacts/n58/bot12-full-head.json) 用相同工具與 1001–1012 種子。自然山賊 4/5 → 78/82、有柵探針 94/96 → 90/96、柵留住 88 → 29、惱羞 149 → 326、威脅點中位 0 → 267；這些是 C 數字，未改威脅公式或敵人出現規則。收徒帶來更多武學與家底，使既有威脅公式從零啟動並增強來犯；柵較常被攻破，列為 review 風險，不以勝率係數補回。
 
 新常數與既有係數的意義見 [收徒系統](docs/systems/recruitment.md)。畫面操作：在門規作息選「閉門」再看招收按鈕禁用；改「廣收」、擴床後看候選人繳束脩或做工，點按才入門。可觀察人口上限與名聲／自產分數變化。
+
+首次 PR CI [run 42347301548](https://github.com/lalagrass/earth-ascension/actions/runs/42347301548) 的 quick 為 331/332；唯一失敗是 `v145-review.test.mjs` 的 `migSteps` 明列清單仍停在 3.7。新規則有意增加 3.8，故只在期望清單加 `3.8`，原「未來版本拒讀、原檔不變」及完整遷移清單斷言保留，沒有改模擬來掩蓋錯誤。
