@@ -100,7 +100,13 @@ export const nextLvXp = (xp) => { const p = profOf(xp); if (!p.lv) return null; 
 // v0.9 武學骨架：每門武學各自熟練、五階、前置、悟性門檻、笨功夫倍率
 export const artById = (id) => ARTS.find((a) => a.id === id);
 /* loop160：v2.4 新武學只對 v2.4 新局的人開放（舊局、舊存檔看不到） */
-export const artOk = (d, a) => (!a?.v24 || !!d) && (!a?.hermitageLineage || (!d?.hermitagePartner && ['quanzhen', 'zhongnan'].includes(d?.sectId))); // 出自 Phase 4 規格：舊門派與古墓伴侶的候選池不得混入全真路線。
+export const artOk = (d, a) => {
+  if ((a?.v24 && !d) || (a?.hermitageLineage && (d?.hermitagePartner || !['quanzhen', 'zhongnan'].includes(d?.sectId))) || (a?.phase6Only && d?.hermitageStarter !== 'luohanHands')) return false;
+  if (d?.hermitageStarter && ['quanzhenXinfa', 'shaolinXinfa'].includes(a?.id) && (d.skills?.strength || 0) < 15) return false;
+  if (a?.id === 'shaolinXinfa' && d?.hermitageStarter === 'luohanHands' && (d.arts?.luohanHands?.xp || 0) < 25) return false;
+  if (d?.hermitageStarter && ['jinyanStep', 'shaolinStep'].includes(a?.id) && (d.skills?.agility || 0) < 16) return false;
+  return true;
+}; // 出自 Phase 6 規格：隱居心法／身法需體魄門檻；少林新候選不進舊門派池。
 /* loop164 v2.4 Batch 4.3 本門傳承鎖：他派專屬（名門 classic、非名俠招牌、在某派 tree 而不在本門 d.stree）預設不可自悟／自選；
    【宗師觸類旁通】該武學主門類造詣 ≥ LOCK24.master 時解鎖他派 grade ≤2 武學。 */
 export const LOCK24 = { master: 40, maxGrade: 2 };
@@ -514,7 +520,7 @@ export function gainArt(d, amt, mf = 1, now = 0, g = null) {
     if (r.guizhen) { r.sxp = (r.sxp || 0) + gx * 0.4; r.lifetime = (r.lifetime || 0) + gx * 0.4; while (r.sxp >= starCost(r)) { r.sxp -= starCost(r); r.stars = (r.stars || 0) + 1; out.star = true; } }
     else { const next = Math.min(curCap(d, a), r.xp + gx * (1 - r.xp / 130)); r.xp = clampTrainXp(d, a, r.xp, next); out.moves = unlockTechs(d, a); }
     if (g) out.gm = settleGrowth(d, a, r, { src: g.src || 'train', raw: g.raw ?? amt, xp0, xp1: r.xp });
-    const feed = !r.guizhen && feedInner31(d, a, gx, g); if (feed) { out.feed = feed; d.growMul.feed = feed.label; } }
+    const feed = !r.guizhen && feedInnerFromOuter(d, a, gx, g); if (feed) { out.feed = feed; d.growMul.feed = feed.label; } }
   if (!d.pendingArt && !d.bare) { const next = [...sectUnlock24(d), ...ARTS.filter((a) => artOk(d, a) && !a.deprecated && (!a.secret || yunvOpen24(d, a)) && !d.arts[a.id] && !reqMissing(d, a).length && fits(d, a) && !lockedArt24(d, a)).sort((a, b) => ownFirst24(d)(a, b) || ((b.school === d.style) - (a.school === d.style)) || appetiteOrder31(d, a, b))][0]; if (next) { d.pendingArt = next.id; out.next = next; } } /* loop208：本門特許與本門、路數都先於偏好；白身另須真教材來源 */
   return out;
 }
@@ -554,7 +560,25 @@ export function checkPartnerAwakening(d, hero, s) {
   log(s, `【雙人領悟・${d.partnerStage}/4】${d.name}與${hero.name}共修，領悟${row.arts.map((id) => `《${artById(id).name}》`).join('與')}。`);
   return row.arts;
 }
-export const moveMul = (d, mvId, now = 0) => strMul(d) * moveMul0(d, mvId, now) * harmonyMul(d) * affixMul(d, mvId, 'dmg') * (d.raging ? CLASH.fret.force : 1); /* loop161 v2.4 陰陽共鳴 */ // loop127 勞作練體
+// 出自 Phase 6 規格：入門外功 XP25＋臂力15 悟心法，心法 XP25＋身法16 悟輕功；無抽籤。
+const HERMITAGE_CHAIN = Object.freeze({ chunyangFist: ['quanzhenXinfa', 'jinyanStep'], luohanHands: ['shaolinXinfa', 'shaolinStep'] });
+export function checkExteriorToInteriorAwakening(d, s) {
+  if (!s?.hermitage?.active || d?.id !== 'hero') return null;
+  const outer = d.hermitageStarter || (d.arts?.chunyangFist ? 'chunyangFist' : d.arts?.luohanHands ? 'luohanHands' : null);
+  const chain = HERMITAGE_CHAIN[outer]; if (!chain) return null;
+  d.hermitageStarter ??= outer;
+  let gained = null;
+  if (!d.arts?.[chain[0]] && (d.arts?.[outer]?.xp || 0) >= 25 && (d.skills?.strength || 0) >= 15) {
+    learnArt(d, chain[0], s.t); gained = chain[0]; log(s, `【由外而內・氣感自生】${d.name}外家拳勁內斂，悟出《${artById(gained).name}》。`);
+  }
+  if (!d.arts?.[chain[1]] && (d.arts?.[chain[0]]?.xp || 0) >= 25 && (d.skills?.agility || 0) >= 16) {
+    learnArt(d, chain[1], s.t); gained = chain[1]; log(s, `【足下生風・領悟身法】${d.name}內氣貫足，悟出《${artById(gained).name}》。`);
+  }
+  return gained;
+}
+export const hermitageInnerActive = d => !!(d?.hermitageStarter && d.arts?.[HERMITAGE_CHAIN[d.hermitageStarter]?.[0]]);
+export const hermitageStepActive = d => !!(d?.hermitageStarter && d.arts?.[HERMITAGE_CHAIN[d.hermitageStarter]?.[1]]);
+export const moveMul = (d, mvId, now = 0) => strMul(d) * moveMul0(d, mvId, now) * harmonyMul(d) * affixMul(d, mvId, 'dmg') * (d.raging ? CLASH.fret.force : 1) * (hermitageInnerActive(d) ? 1.28 : 1); /* 出自 Phase 6 規格：氣感自生後招式威力×1.28，僅隱居路線；其餘沿原路。 */
 const moveMul0 = (d, mvId, now = 0) => { const raw = artOfMove(mvId), a = raw && d.arts?.[raw.id] ? raw : null, q = qiStrikeMul(d, a) * swordDmgMul(d, mvId), md = modeMul31(d, a, 'dmg'); if (!a) return (d.powMul || 1) * (d.jhMul || 1) * q * styleDamage(d) * md; const r = d.arts[a.id]; return forceTarget(a, r.xp) * (d.powMul || 1) * (d.jhMul || 1) * (variantOf(d, a.id, now)?.dmg || 1) * q * md * styleDamage(d) * innerDrive28(d, a).mul; };
 export const effectTier = (d, eff) => ARTS.filter((a) => a.effect === eff).reduce((m, a) => Math.max(m, artTier(d, a.id)), -1);
 export const effectMul = (d, eff, now = 0) => ARTS.filter((a) => a.effect === eff && d.arts?.[a.id]).reduce((m, a) => m * (variantOf(d, a.id, now)?.eff || 1), 1);
@@ -1065,10 +1089,12 @@ function feedTarget31(d, mode) {
   if (M && ownLineageArt(d, M)) return M;
   return ownInners28(d).sort((x, y) => innerScore28(d, y) - innerScore28(d, x))[0] || null;
 }
-export function feedInner31(d, a, gx, g) {
+export function feedInnerFromOuter(d, a, gx, g) {
   if (!d || !g || !((g.raw ?? 0) > 0) || !(gx > 0) || !a || isInner(a)) return null;
   const share = FEED31[a.mode]; if (!share) return null;
-  const target = feedTarget31(d, a.mode);
+  // 出自 Phase 6 規格：隱居主角的兩條外入內鏈都回饋到剛悟的本路心法；舊門派仍用原本門內功選擇。
+  const hermitageHeart = a.id === d.hermitageStarter && HERMITAGE_CHAIN[d.hermitageStarter]?.[0];
+  const target = hermitageHeart && d.arts?.[hermitageHeart] ? artById(hermitageHeart) : feedTarget31(d, a.mode);
   if (!target || target.id === a.id || !d.arts?.[target.id]) return null;
   const ir = d.arts[target.id], xp0 = ir.xp || 0;
   ir.xp = clampTrainXp(d, target, xp0, Math.min(curCap(d, target), xp0 + share * gx));
@@ -1197,7 +1223,7 @@ export function innerOnGetHit(s, who, ctx = {}) {
   return out;
 }
 /* loop196：腳程與閃避用熟練最高的輕功身法催動係數 */
-export function stepDrive28(d) {
+export function stepDrive(d) {
   if (!d) return 1; let b = null;
   for (const id of Object.keys(d.arts || {})) { const a = artById(id); if (a?.school !== 'step') continue; if (!b || (d.arts[id].xp || 0) > (d.arts[b.id].xp || 0)) b = a; }
   return b ? innerDrive28(d, b).mul : 1;

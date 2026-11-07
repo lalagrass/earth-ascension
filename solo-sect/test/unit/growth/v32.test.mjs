@@ -221,7 +221,7 @@ test('loop205 診斷鉤子預設不聽；掛上才記練功與反哺', () => {
     const d = body({ personality: ['nimble', 'playful', 'brave'] });
     d.arts = { wudangXinfa: { xp: 10, last: 0 }, mianPalm: { xp: 10, last: 0 } };
     A.noteTrain31(d, A.artById('mianPalm'));
-    const fed = A.feedInner31(d, A.artById('mianPalm'), 10, { raw: 4 });
+    const fed = A.feedInnerFromOuter(d, A.artById('mianPalm'), 10, { raw: 4 });
     assert.equal(fed.label, '練招養氣');
     assert.ok(ev.some((e) => e.kind === 'train' && e.k === 'lian' && e.A === 3));
     assert.ok(ev.some((e) => e.kind === 'feed' && e.mode === 'lian' && e.xp > 0));

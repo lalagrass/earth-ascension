@@ -108,6 +108,12 @@ export const MIGRATIONS = [
     o.res.medFood ??= 0; o.medFoodBatches ??= [];
     for (const d of o.ds || []) { d.bodyConditionDay ??= o.day; d.muscleFatigue ??= 0; d.soreness ??= false; d.recoveryCyclesToday ??= 0; d.maxCyclesToday ??= 1; d.bodyGainToday ??= 0; }
   } },
+  { to: '4.5', note: 'Phase 6（#511）：隱居路線補山崖探索與起手拳譜；舊門派局不加欄位', up(o) {
+    if (!o.hermitage?.active && !o.hermitage?.founded) return;
+    o.res.beeJelly ??= 0; o.res.coldWater ??= 0; o.hermitage.exploredCliffs ??= [];
+    const hero = o.ds?.find(d => d.id === 'hero');
+    if (hero) hero.hermitageStarter ??= Object.keys(hero.arts || {}).find(id => ['chunyangFist', 'luohanHands'].includes(id)) || 'chunyangFist'; // 舊隱居檔的起手拳譜是兩者中先加入者。
+  } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
 export function v150Up(o) {

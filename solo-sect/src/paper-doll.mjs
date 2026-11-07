@@ -94,6 +94,12 @@ export function drawPaperDoll(g, d, view, geometry) {
     segment(g,piece('shin',p),kx,kneeY,fx,fy,8);
   }
   g.save();g.translate(0,sink);g.imageSmoothingEnabled=false;
+  if (ergo?.qinggongLeaping || ergo?.cliffLeapStage) {
+    // 出自 Phase 6 規格：紙偶衣襟隨輕功上揚，僅畫面效果。
+    g.fillStyle = '#7bbdb1';
+    g.beginPath(); g.moveTo(effectiveLean - 8, -35);
+    g.lineTo(effectiveLean - 24, -43); g.lineTo(effectiveLean - 10, -25); g.fill();
+  }
 
   if (isRaging && g.strokeRect) {
     g.strokeStyle = 'rgba(192, 57, 43, 0.45)';

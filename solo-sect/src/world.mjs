@@ -5,7 +5,7 @@ import { recordExchange, practiceWindow } from './practice.mjs';
 import { ROUTE, NODES, ENEMIES, RAID_EVERY, DAY, ENDLESS, CAMPS, INSIGHT, EXP, MOVES, EXP_STYLES as STYLES, STYLE_TRAIT, EVADE, TRAITS, ARTS as ARTS_ALL, HS, DAO } from './data.mjs';
 import { log, affKey, resAdd } from './util.mjs';
 import { addMem } from './bonds.mjs';
-import { CLASH, clashOdds, moveStats, windOf, spendQi, shieldHit, moveMul, cdMul, effectTier, artTier as effectTierOf, SPEC, zhenK, hasPoison, bestSpec, fengxueK, HARMONY24, stepDrive28, artNoParry, applyArtOn, expCause, expectOf, innerOnHit, innerOnGetHit } from './arts.mjs';
+import { CLASH, clashOdds, moveStats, windOf, spendQi, shieldHit, moveMul, cdMul, effectTier, artTier as effectTierOf, SPEC, zhenK, hasPoison, bestSpec, fengxueK, HARMONY24, stepDrive, artNoParry, applyArtOn, expCause, expectOf, innerOnHit, innerOnGetHit } from './arts.mjs';
 import { mateBonus } from './economy.mjs';
 import { addWexin, awaken } from './hero.mjs';
 import { aff } from './social.mjs';
@@ -308,7 +308,7 @@ export function suggestTeam(s, n = 2) {
   }
   return { ids: pick.map((d) => d.id), why };
 }
-export const evadeScore = (d) => d.skills.agility + Math.max(0, effectTier(d, 'speed') + 1) * EVADE.tierPts * (stepDrive28(d)) + ((d.personality || []).includes('lazy') ? EVADE.lazyBonus : 0); /* loop196：閃避的輕功段乘本門內功催動 */
+export const evadeScore = (d) => d.skills.agility + Math.max(0, effectTier(d, 'speed') + 1) * EVADE.tierPts * (stepDrive(d)) + ((d.personality || []).includes('lazy') ? EVADE.lazyBonus : 0); /* loop196：閃避的輕功段乘本門內功催動 */
 export const EXP_ODDS = { scoreScale: 17, duguBase: 20, duguOpposition: 80 };
 const expOdds = (mine, theirs) => 1 / (1 + Math.exp(-(mine - theirs) / EXP_ODDS.scoreScale));
 // H：sim 內部工具 { rand, cancelTask, grow, think }
