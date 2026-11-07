@@ -599,3 +599,27 @@ CI 第三輪 quick 與 golden 全過，accept 296/301。五項逐項處置：
 畫面：[四階藍圖及弟子理由](artifacts/r12/facility-panel.png)為正常白身開局後的門派面板；[可讀救援記憶](artifacts/r12/social-memory-panel.png)在白身開局後透過公用 `recordSocialEvent` 注入一筆救援事件以展示面板，不代表該局已實戰救援。
 
 舊名 → 新名：本輪改動的 N46/N47 接口新設 `SOCIAL_EVENTS`／`recordSocialEvent`／`fadeSocialThoughts`；原有鄰近輪次編號函式未改名或移動，故無舊名改名。三處最沒把握：① 自然工作點由原不限同時使用改為階段容量，無武學人數 23→32，日程與勝場都被推移；② 守柵窄處只在菜園、且只有牆未破時生效，木柵探針勝場 91→84、守住 34→48，原因還混有每日訓練改變；③ 惱羞與林克時間 C 指標變動，不能單從兩個總數推出是人際事件還是新工作容量的影響，不為 C 數字改公式。
+
+## Phase 4 荒山雙人隱居（#509，規則 4.3）
+
+實作 grass／Codex Cloud；由已合併 #508 的 `535dacd` 建立。新入口明選隱居時只生成主角與小龍女／黃蓉，起手武學、好感與門派暫緩依 [Phase 4 契約](docs/plans/PHASE4-HERMITAGE-DUO-OPENING.md)。六門全真武學與純陽十二式登錄於共用武學／姿勢表；後三階內容的事件和場景留給 Phase 5–7。舊局的武學候選由 `hermitageLineage` 擋住新增全真武學；未選隱居時不添加 `hermitage` 狀態，既有亂數消耗不變。
+
+| 類 | 驗收和證據 |
+|---|---|
+| A 固定雙人 | `node solo-sect/tools/phase4-check.mjs --seed=17`：舊局三人、雙人局兩人、兩位伴侶起手、初始好感 55、無月俸、四階逐階領悟，均通過。`bash solo-sect/test/run.sh smoke` 含五項 Phase 4 小測及舊檔遷移。|
+| B 隨機公式 | 本輪無新隨機機率；原 N62 6,000 次效用測試在 smoke 中保留，期望 0.4926757803、觀察 0.4978333333、容差 0.021407701。|
+| golden | Node 22 `node solo-sect/tools/golden.mjs --write --tier all`：原 quick 4、full 32、舊檔 6 個檔案的重產 diff 為零；新增 [隱居兩線](test/golden/hermitage.json)。後續以 `--check --tier all` 及山門紀 CI 判定。舊 golden 的行為雜湊僅去掉規則版號 4.3 與舊局空遷移步；其餘存檔欄位仍逐格比較。|
+| 畫面 | [隱居入口](artifacts/phase4/start-hermitage.png)、[雙人山居](artifacts/phase4/duo-opening.png)。`python3 solo-sect/tools/phase4-visual.py --seed=17` 生成[盲測 A](artifacts/phase4/blind-A.png)／[盲測 B](artifacts/phase4/blind-B.png)和[答案](artifacts/phase4/blind-answers.json)，兩局由正常開局按鈕產生。|
+
+同尺 bot12 命令：在 base 與 head 各自 checkout 根目錄執行 `docker run --rm -v "$PWD:/app" -w /app node:22-bookworm-slim node solo-sect/tools/bot12.mjs solo-sect --json > solo-sect/artifacts/phase4/bot12-{base,head}.json`（實際一次只指定一個輸出檔）。[base 原始輸出](artifacts/phase4/bot12-base.json)與[head 原始輸出](artifacts/phase4/bot12-head.json)逐字相同。
+
+| C 指標 | #508 base | Phase 4 head |
+|---|---:|---:|
+| 自然山賊勝場／交手場 | 53/62 | 53/62 |
+| 有柵欄探針勝場／96、守住／96 | 84/96、48/96 | 84/96、48/96 |
+| 惱羞、林克時間 | 1052、149 | 1052、149 |
+| `winP` 中位數 | 0.985 | 0.985 |
+
+這是舊開局隔離的 C 報告，不把自然山賊與柵欄探針分母混用。
+
+舊名 → 新名：`own28` → `ownLineageArt`、`sectRoots24` → `grantSectRoots`，只整理本輪碰到的讀取／授武接口。最沒把握三處：① 黃蓉鏈只規定招名，門檻沿小龍女鏈對應階段，細節在[隱居規則](docs/systems/hermitage.md)；② 小龍女第 4 階短暫對坐只在微距窗播放，不修改時間帳或戰鬥；③ 全真劍法以 `basicSword` 小成作替代前置，舊武學候選隔離需靠完整 golden 持續守住。

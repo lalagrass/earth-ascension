@@ -97,6 +97,12 @@ export const MIGRATIONS = [
     const plots = FACILITIES.find((f) => f.id === 'veg')?.stages[o.fac?.veg?.stage || 0]?.plots || 0;
     while ((o.plots || []).length < plots) (o.plots ??= []).push({ st: 'empty', g: 0 });
   } },
+  { to: '4.3', note: 'Phase 4（#509）：隱居雙人開局與伴侶領悟階段；舊門派開局不加隱居旗標、不改人物及武學', up(o) {
+    if (!o.hermitage) return;
+    o.hermitage.stage ??= o.ds.find((d) => d.xia === o.hermitage.partnerId)?.partnerStage || 0;
+    o.hermitage.founded ??= false;
+    o.hermitage.livedDays ??= Math.max(0, (o.day || 1) - 1);
+  } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
 export function v150Up(o) {

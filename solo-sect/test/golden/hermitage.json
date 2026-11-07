@@ -1,0 +1,25 @@
+{
+ "tier": "hermitage",
+ "days": 5,
+ "dt": 6,
+ "checkpoints": [
+  1,
+  3,
+  5
+ ],
+ "seeds": [
+  42
+ ],
+ "runs": {
+  "hr-luohan-42": {
+   "1": "a63de6d5f0f944a0",
+   "3": "c4a41f441d5a1a45",
+   "5": "5170a91d6668cef5"
+  },
+  "xln-chunyang-42": {
+   "1": "ff5d850073246bce",
+   "3": "162cf153f69b0e8b",
+   "5": "af4e5f47430d3bf9"
+  }
+ }
+}

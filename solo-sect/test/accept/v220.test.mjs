@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import crypto from 'node:crypto';
+import { hash } from '../golden/scenarios.mjs';
 import { createState, tick, save } from '../../src/sim.mjs';
 import { load, BASELINE_V22 } from '../../src/save.mjs';
 import { RULES, buildSpec } from '../../src/start-ui.mjs';
@@ -16,7 +16,6 @@ export const V22_GOLDEN_SPEC = { kind: 'template', id: 'guojing', askMajor: fals
 // #390 part 2：30 個規則開關（2.5）也不在狀態上；勇名 valor 是數值狀態
 const noSwitch = (s) => Object.keys(BASELINE_V22).every((k) => k === 'valor' ? typeof s.valor === 'number' : k === 'jhev' ? s.jhev !== true : !((FLAG[k] || k) in s));
 const curRules = (s) => s.rules === RULES_VERSION && noSwitch(s) && !['v22', 'v23', 'v24'].some((k) => k in s) && s.ds.every((d) => !('v23' in d) && !('v24' in d));
-const hash = (s) => crypto.createHash('sha256').update(save(s)).digest('hex').slice(0, 16);
 
 test('BASELINE_V22 涵蓋擁有人點名的 30 條規則', () => {
   const want = 'grow growdr neigong ngshield prof laborgrow valor valormid rumor readwu comprehend mentor mpool cotrain cofun paypill longwatch masterask letterask cropcare mfit jhrefuse qshare jhui jhev peace lairpow lift bt25 draw'.split(' ');

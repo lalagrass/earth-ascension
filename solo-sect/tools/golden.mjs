@@ -20,7 +20,7 @@ if (flag('--worker')) { // 子行程：收一格、回雜湊
   process.on('message', (c) => { process.send({ key: c.key, got: S.runCase(c) }); });
 } else {
   const mode = flag('--write') ? 'write' : 'check', tier = opt('--tier', 'all'), only = opt('--only', null);
-  const tiers = tier === 'all' ? ['quick', 'full', 'saves'] : [tier];
+  const tiers = tier === 'all' ? ['quick', 'full', 'saves', 'hermitage'] : [tier];
   let bad = 0;
   for (const t of tiers) bad += t === 'saves' ? doSaves(mode) : await doTier(t, mode, only);
   console.log(bad ? `\n✗ ${bad} 格不符` : '\n✓ 全部相符');

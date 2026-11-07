@@ -366,7 +366,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '4.2'; /* 第十二輪：人際想法與四階設施 */
+export const RULES_VERSION = '4.3'; /* Phase 4 規格：荒山雙人隱居開局 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -923,6 +923,22 @@ export const RULE_LIB = {
   jiu: { text: '劍不離手、酒不離口', flavor: true },
   qi: { text: '以氣御劍，氣宗為正', flavor: true },
 };
+// 出自 Phase 4 規格：純陽入門三手、全真雙脈；只在終南兩脈出現。
+ARTS.push(...[
+  { id: 'chunyangFist', name: '純陽拳', school: 'fist', grade: 1, tags: ['剛'], attr: 'yang', req: [], techs: ['cy1', 'cy2', 'cy3'], tech: 'cy1', mode: 'base', qiScale: 0.15, routine: 'chunyang', v24: true, classic: true, own24: 'quanzhen', isPublic: false, cats: { quanzhang: 1 } },
+  { id: 'quanzhenXinfa', name: '玄門心法', school: 'inner', grade: 2, tags: ['柔', '剛'], attr: 'yang', req: [{ art: 'chunyangFist', tier: 1 }], tech: null, techs: ['守一', '抱元'], effect: 'rest', v24: true, classic: true, own24: 'quanzhen', isPublic: false, cats: { neigong: 1 } },
+  { id: 'jinyanStep', name: '金雁功', school: 'step', grade: 2, tags: ['巧'], attr: 'yang', req: [{ art: 'quanzhenXinfa', tier: 1 }], tech: null, techs: ['提縱', '金雁'], effect: 'speed', mode: 'lian', qiScale: 0.4, v24: true, classic: true, own24: 'quanzhen', isPublic: false, cats: { shenfa: 1 } },
+  { id: 'haotianPalm', name: '昊天掌', school: 'palm', grade: 2, tags: ['剛'], attr: 'yang', req: [{ art: 'chunyangFist', tier: 1 }], techs: ['ht1', 'ht2'], tech: 'ht1', mode: 'lian', qiScale: 0.4, v24: true, classic: true, own24: 'quanzhen', isPublic: false, cats: { quanzhang: 1 } },
+  { id: 'quanzhenSword', name: '全真劍法', school: 'palm', grade: 3, tags: ['巧', '剛'], weapon: 'sword', attr: 'yang', req: [{ art: 'chunyangFist', tier: 1 }], alt24: [{ art: 'basicSword', tier: 1 }], techs: ['qz1', 'qz2'], tech: 'qz1', mode: 'lian', qiScale: 0.4, v24: true, classic: true, own24: 'quanzhen', isPublic: false, cats: { jianfa: 1 } },
+  { id: 'xiantianGong', name: '先天功', school: 'inner', grade: 3, tags: ['柔', '剛'], attr: 'he', req: [{ art: 'quanzhenXinfa', tier: 2 }], tech: null, techs: ['返先天', '抱一'], effect: 'rest', secret: true, hint: '高崖絕頂參悟石刻；山崖路線由 Phase 6 開通', v24: true, classic: true, own24: 'quanzhen', isPublic: false, cats: { neigong: 1 } },
+].map((art) => ({ ...art, hermitageLineage: true })));
+// 出自 Phase 4 規格的招式名稱；秒數、射程與勁沿用同階既有拳掌／基礎劍，不另造平衡常數。
+const lineageMove = (base, id, name) => ({ ...MOVES.find((m) => m.id === base), id, name });
+MOVES.push(
+  lineageMove('fist', 'cy1', '守一架'), lineageMove('fist2', 'cy2', '純陽衝拳'), lineageMove('fist3', 'cy3', '三花聚頂勢'),
+  lineageMove('push', 'ht1', '昊天起掌'), lineageMove('push2', 'ht2', '昊天合掌'),
+  lineageMove('bs1', 'qz1', '全真起劍'), lineageMove('bs2', 'qz2', '金雁迴鋒'),
+);
 export const SECTS = {
   gaibang: { name: '丐幫', plaque: '丐幫・北丐一脈', color: '#8a5a2b', flag: '丐', bias: { 剛: 0.1, 拙: 0.05 }, tree: ['xianglong', 'dagou', 'pushPalm', 'basicFist'], tree24: ['breath', 'huntianGong', 'snowStep', 'xiaoyaoStep', 'lianhuaPalm', 'sweepLeg', 'fengmoStaff', 'liuheBlade', 'shexingHand'], ban: [], rules: ['hoard', 'rescue'],
     fac: { name: '打狗棒堂', cost: { wood: 10, coin: 10 }, daily: { food: 2 }, desc: '污衣淨衣議事；弟子沿村乞討，每日糧 +2' }, rivals: ['鐵掌幫', '白駝山'], fav: ['hongqigong', 'huangrong'],
@@ -961,6 +977,8 @@ export const SECTS = {
   wuming: { name: '無名小派', plaque: '無名小派', color: '#6a5a4a', flag: '武', bias: {}, tree: [], ban: [], rules: [],
     fac: { name: '祖師堂', cost: { wood: 8, stone: 4 }, daily: { rep: 0.5 }, gain24: 1.12, desc: '供奉開山祖師：名聲每日 +0.5（新局另全派練武 +12%）' }, rivals: [], fav: [],
     recruit: { text: '一個慕名而來的年輕人上山拜師。' } },
+  quanzhen: { v24: true, name: '全真派', plaque: '終南・全真', color: '#a8804a', flag: '真', bias: {}, tree: ['chunyangFist', 'quanzhenXinfa', 'jinyanStep', 'haotianPalm', 'quanzhenSword', 'xiantianGong'], ban: [], rules: [], rivals: [], fav: [] },
+  zhongnan: { v24: true, name: '終南雙劍宗', plaque: '終南・雙劍', color: '#8c7192', flag: '雙', bias: {}, tree: ['chunyangFist', 'quanzhenXinfa', 'quanzhenSword', 'yunvJian', 'yunvSword'], ban: [], rules: [], rivals: [], fav: [] },
 };
 /* loop169 t190 待決 4：自創主角開局可選的開山道統（custom-sect24 下拉；wuming＝不指定） */
 export const SECT_PICK24 = ['wuming', 'emei', 'wudang', 'taohua', 'gumu', 'xingxiu', 'qizong', 'jianzong', 'gaibang', 'mingjiao', 'tiandihui']; /* loop174 加天地會 */
