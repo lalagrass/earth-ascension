@@ -1,7 +1,8 @@
+import { createState, prepareHistoricalAdmission } from './harness/historical-party.mjs';
 import { openExp } from "../src/world.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick, startExpedition } from '../src/sim.mjs';
+import { tick, startExpedition } from '../src/sim.mjs';
 import { ARTS, MOVES, RULES_VERSION, DAY, DUGU } from '../src/data.mjs';
 import { learnArt, artTier } from '../src/arts.mjs';
 import { CARDS, card, hsResolve, hsStep, zxGate, zxUp, fengFit, formReady, learnDugu, bixie } from '../src/wuxia.mjs';
@@ -25,7 +26,7 @@ test('岳不群開局紫霞第一層；1→3 靠閉關、4→6 要祕洞壁刻�
   d.mood = 80; d.ding = 4; d.lastWexinT = s.t; assert.match(zxGate(s, d), /連續 7 天/); s.t += 7.1 * DAY; assert.equal(zxGate(s, d), null);
 });
 test('辟邪三卡：林平之上山→暗查劍譜→自宮修練；岳不群自動駕駛照名望走，偽君子添違心', () => {
-  const s = yue(false); run(s, DAY * 3.2);
+  const s = yue(false); prepareHistoricalAdmission(s, 'linpingzhi'); run(s, DAY * 3.2);
   assert.ok(s.ds.some((d) => d.id === 'linpingzhi')); assert.ok(s.hs.bixie === 3, `bixie ${s.hs.bixie}`); const d = hero(s);
   assert.ok(artTier(d, 'bixie') >= 2); assert.ok(d.duanqing != null);
   // 晨課靜坐可消去違心；仍要確認違心確實發生過。

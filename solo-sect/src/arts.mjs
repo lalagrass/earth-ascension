@@ -511,7 +511,7 @@ export function gainArt(d, amt, mf = 1, now = 0, g = null) {
     else { const next = Math.min(curCap(d, a), r.xp + gx * (1 - r.xp / 130)); r.xp = clampTrainXp(d, a, r.xp, next); out.moves = unlockTechs(d, a); }
     if (g) out.gm = settleGrowth(d, a, r, { src: g.src || 'train', raw: g.raw ?? amt, xp0, xp1: r.xp });
     const feed = !r.guizhen && feedInner31(d, a, gx, g); if (feed) { out.feed = feed; d.growMul.feed = feed.label; } }
-  if (!d.pendingArt) { const next = [...sectUnlock24(d), ...ARTS.filter((a) => artOk(d, a) && !a.deprecated && (!a.secret || yunvOpen24(d, a)) && !d.arts[a.id] && !reqMissing(d, a).length && fits(d, a) && !lockedArt24(d, a)).sort((a, b) => ownFirst24(d)(a, b) || ((b.school === d.style) - (a.school === d.style)) || appetiteOrder31(d, a, b))][0]; if (next) { d.pendingArt = next.id; out.next = next; } } /* loop208：本門特許與本門、路數都先於偏好 */
+  if (!d.pendingArt && !d.bare) { const next = [...sectUnlock24(d), ...ARTS.filter((a) => artOk(d, a) && !a.deprecated && (!a.secret || yunvOpen24(d, a)) && !d.arts[a.id] && !reqMissing(d, a).length && fits(d, a) && !lockedArt24(d, a)).sort((a, b) => ownFirst24(d)(a, b) || ((b.school === d.style) - (a.school === d.style)) || appetiteOrder31(d, a, b))][0]; if (next) { d.pendingArt = next.id; out.next = next; } } /* loop208：本門特許與本門、路數都先於偏好；白身另須真教材來源 */
   return out;
 }
 export function chooseVariant(d, id, v, now = 0) {
@@ -608,7 +608,7 @@ function add(s, d, id, amt, how, think, log) {
   return a;
 }
 // 自悟目標：等師父教的那門優先；否則本門派可學的下一門，再不然任一門可學的
-export function selfTarget(d) { if (d.pendingArt) return d.pendingArt; const u = sectUnlock24(d); if (u.length) return u[0].id; const c = ARTS.filter((a) => open(d, a) && !lockedArt24(d, a));  c.sort((a, b) => ownFirst24(d)(a, b) || appetiteOrder31(d, a, b)); /* loop208：本門特許與本門優先，偏好只排同一層 */ if (c[0] && ownArt24(d, c[0])) return c[0].id; const styled = c.filter((a) => a.school === d.style); return (styled[0] || c[0])?.id || null; }
+export function selfTarget(d) { if(d.bare)return d.pendingArt||null; if(!Object.keys(d.arts||{}).length&&!d.pendingArt)return null; if (d.pendingArt) return d.pendingArt; const u = sectUnlock24(d); if (u.length) return u[0].id; const c = ARTS.filter((a) => open(d, a) && !lockedArt24(d, a));  c.sort((a, b) => ownFirst24(d)(a, b) || appetiteOrder31(d, a, b)); /* loop208：本門特許與本門、路數都先於偏好 */ if (c[0] && ownArt24(d, c[0])) return c[0].id; const styled = c.filter((a) => a.school === d.style); return (styled[0] || c[0])?.id || null; }
 // 活動完成時呼叫
 export function comprehend(s, d, act, partner, think, log) {
   if (!COMP.gain[act]) return null;
@@ -1221,7 +1221,7 @@ export function windOf(d, mvId, cd) {
 export function combatMoves(d,distance=0) {
   if(isMon(d)&&FOE_ACTIONS[d.k]){
     const weapon=d.weapon||['blade','staff','fist'][(d.i||0)%3];
-    return [...FOE_ACTIONS[d.k].moves,...TECHNIQUE_MOVES.filter(m=>d.glimmer?.known.includes(m.id)&&moveAvailable(d,m))].filter(m=>(!m.requiresSurvived||d.survived)&&(!m.once||!d.opened)&&(!m.minDistance||distance>=m.minDistance)&&(!m.weapon||m.weapon===weapon)&&usableMove(d,m)).map(m=>({...m,cd:m.wind+BODY_TIMING.recovery}));
+    return [...FOE_ACTIONS[d.k].moves,...TECHNIQUE_MOVES.filter(m=>d.glimmer?.known.includes(m.id)&&moveAvailable(d,m))].filter(m=>(!m.requiresSurvived||d.survived)&&(!m.once||!d.opened)&&(!m.minDistance||distance>=m.minDistance)&&distance<=m.range&&(!m.weapon||m.weapon===weapon)&&usableMove(d,m)).map(m=>({...m,cd:m.wind+BODY_TIMING.recovery}));
   }
   return (d.moves||['fist']).map(id=>MOVES.find(m=>m.id===id)).filter(m=>m&&moveAvailable(d,m)&&usableMove(d,m));
 }
@@ -1415,9 +1415,10 @@ export function techniqueFacts(s,a,t,move=null){
   const enemies=isMon(a)?(s?.ds||[]).filter(d=>!d.away&&d.hp>0):(s?.mons||[]).concat(s?.band?.members||[]).filter(d=>!d.gone&&d.hp>0);
   const close=enemies.filter(d=>d.pos&&a.pos&&Math.hypot(d.pos[0]-a.pos[0],d.pos[1]-a.pos[1])<=RING.outer);
   const weapon=t.weapon||incoming?.tool||incoming?.weapon||(t.k&&FOE_ACTIONS[t.k]?.moves.some(m=>m.weapon)?['blade','staff','fist'][(t.i||0)%3]:null);
-  return {hands:FOE_ACTIONS[a.k]?.hands??2,weapon,opponentWind:!!(t.swing||t.bswing),afterDodge,opponentCharge:!!(afterDodge?last.charging:incoming?.travel),enemies:close.length,opponentUnbalanced:(t.posture??postureMax(t))<postureMax(t)/2,losing:a.hp<(a.max||100)/2,cornered:!!coverFor(a),approaching:!!t.path?.length&&!t.swing&&!t.bswing,force:moveStats(a,move).force,opponentForce:moveStats(t).force};
+  const burden=assessLoad(s,a).L;
+  return {hands:FOE_ACTIONS[a.k]?.hands??2,weapon,opponentWind:!!(t.swing||t.bswing),afterDodge,opponentCharge:!!(afterDodge?last.charging:incoming?.travel),enemies:close.length,opponentUnbalanced:(t.posture??postureMax(t))<postureMax(t)/2,losing:a.hp<(a.max||100)/2||(a.posture??postureMax(a))<postureMax(a)/2,cornered:!!coverFor(a)||burden>=1,approaching:!!t.path?.length&&!t.swing&&!t.bswing,force:moveStats(a,move).force,opponentForce:moveStats(t).force};
 }
-function moveParents(move){const m=MOVES.find(m=>m.id===move)||Object.values(FOE_ACTIONS).flatMap(p=>p.moves).find(m=>m.id===move);return [move,m?.type,m?.weapon,m?.tool==='stone'?'stone':null].filter(Boolean);}
+function moveParents(move){const m=MOVES.find(m=>m.id===move)||Object.values(FOE_ACTIONS).flatMap(p=>p.moves).find(m=>m.id===move);return [move,m?.type,m?.skill,m?.weapon,m?.tool==='stone'?'stone':null].filter(Boolean);}
 function noteDiscoveries(s,d,rows){for(const row of rows){const text=`${d.name||d.k}在吃虧後悟出「${row.name}」`;log(s,text);if(d.id)chronOf(s,d,'glimmer',{chron:text});}}
 function reportContact(s,a,t,m,c){if(!c.layer)return;const row=TISSUES.blunt.find(r=>r.id===c.layer);log(s,`${a.name||a.k}以${m.name||m.id}打在${t.name||t.k}的${c.where==='body'?'':c.side}${BODY_PARTS[c.where].name}，${row.name}${c.layer==='bruise'?'，只痛未失血':''}`);}
 export function transferredDamage(s,a,t,damage,force,move){const action=MOVES.find(m=>m.id===move)||{id:move||'redirect',type:moveStats(a,move).type},contact=contactImpact(s,a,t,{move:action,force,armor:moveStats(t).armor});reportContact(s,a,t,action,contact);return damage*contact.damageFactor;}
@@ -1425,6 +1426,8 @@ export function transferredDamage(s,a,t,damage,force,move){const action=MOVES.fi
 export function resolveSwing(s, atk, def, rnd, ctx = {}) {
   const move = timedMoveId(atk,ctx.move), odds = clashOdds(s,atk,def,{ ...ctx, move });
   const initialT=ctx.opening?.T||clashTimes(s,atk,def,ctx),atkFacts=techniqueFacts(s,atk,def,move),defFacts={...techniqueFacts(s,def,atk),opponentWind:true};
+  if(ctx.targetApproachingAtWindup)atkFacts.approaching=true;
+  if(ctx.dodgeAtWindup?.target===(def.uid||def.id||def.k)){atkFacts.afterDodge=true;atkFacts.opponentCharge=!!ctx.dodgeAtWindup.charging;}
   atk.lastCombatMove=move;
   const result = resolveSwingCore(s,atk,def,rnd,{ ...ctx, move });
   result.learning = recordExchange(s,atk,def,move,ctx.opening?.p ?? odds.hit,result);

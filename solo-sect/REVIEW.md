@@ -1,5 +1,46 @@
 # 可重跑驗收
 
+## 第九輪 9c：N50／N38 與 #445 新增情境可達性（規則 3.6）
+
+本輪承接已由擁有人合併的 #485（merge `4885eb8`），實際主筆 grass／Codex Cloud。N50 出身普通同行、共同食宿與真雙人指導時數及同一招募公式；N38 用真接法機率即時命名等級，沒有第二套 XP。N33 新生者過往手眼熟不再沿用他人的記憶，N32 正式譜必須來自真授藝或教材。#445 追加的三種悟招情境修在同一輪；悟招難度、失手時 `w=4p(1−p)` 和原始 N22／N27 高手截鼠斷言不變。
+
+9c 的 A 規則由 `bash solo-sect/test/run.sh smoke` 的原 N35 小測試擴充驗證：真閃野豬衝撞後以踢招側擊，負傷或失衡被逼住時撒土，山路上真撿石並於敵人在途時起手投出。野豬只選真射程內的招，倖存者假衝不能同場無限重複；投石與側擊把起手時的真情境保留到出手，不造出不存在的來敵。N50／N38 各只有一個本 milestone 小測試；最終 smoke 與 CI 數字見本節後續驗收表。
+
+完整量測指令從 repo 根目錄執行：
+
+```sh
+bash solo-sect/test/run.sh smoke
+node solo-sect/tools/bot12.mjs solo-sect --json
+node solo-sect/tools/white-body.mjs --seed 17 --days 30 --check
+node solo-sect/tools/glimmer-metrics.mjs --days=60
+node solo-sect/tools/glimmer-metrics.mjs --days=60 --hunt-every=3
+docker run --rm -v "$PWD":/repo -w /repo node:22-bookworm-slim node solo-sect/tools/golden.mjs --write --tier all
+```
+
+`glimmer-metrics` 不注入敵人、熟練或血量。純經營 bot 不主動出獵；`--hunt-every=3` 是玩家每三日選一次正常出獵的輸入，兩者不混稱。兩者皆只將真 `resolveSwing` 的情境次數列 C；首次悟招日期、白身級名到達日與名俠人頭也按 #441/#445 的新版驗收列 C，不靠改常數湊目標。截圖由 `PW=/tmp/ss-playwright/node_modules/playwright-core/index.mjs node solo-sect/tools/round9c-shots.mjs` 從正常頁面取得：[人物卡](artifacts/round9c/people.png)／[入門原因](artifacts/round9c/admission.png)；[原始畫面文字](artifacts/round9c/shots.json)。
+
+規則 3.6 遷移保留舊名單與已學武學，為舊角色補 `timeToday`／`guidanceTotal`；新局同行仍由出身真資料產生。Node 22 是 CI 的 canonical golden runtime；Node 24 的前輪 N33 浮點計算曾有 1 ULP 差異，不混用兩版 hash。
+
+9c 第一輪完整 CI（[run 42326710710](https://github.com/lalagrass/earth-ascension/actions/runs/42326710710)）quick 572 過、57 敗，golden 因 quick 失敗跳過。舊測試多處默認開局有林師姐／堂弟、指定名俠當場入門；N50 正式開局已改為出身同行與共用招募，因此舊機制測試改用 `test/harness/historical-party.mjs` 明確建出所需歷史角色，原交手、劇情和人際斷言保留。真實回歸另修：新同行者剛建立時缺 `best`／`insight`／`away`，讀檔才補，破壞現行存讀冪等；義學帶回的候選被固定招募名冊擋在後面，未能優先走共用食宿與師父驗算。第七輪群戰探針現在明確安排洪七公第三段傳藝後量亢龍時間，避免把 N50 不再保證見到師父誤當成群戰機制失敗。訪客共餐原本已走 `resAdd` 自動記帳，資源稽核失敗是新合法管道未列白名單；再加一次 `book` 會重複記帳，已撤回。舊 v2.2 三十日存檔 hash 隨正式新開局改變，Node 22 重產 `test/fixtures/golden-30d-v22.txt`，不改早期 `golden-30d.txt`。後續 CI 結果仍待核對。
+
+本輪觸及舊招募／練功程式的可讀名稱：`fnv29 → stableTraitHash`、`RECRUIT29 → RECRUIT_TRAIT_VARIATION`、`trained31 → trainedArt`。歷史文件中的舊名保留為當時紀錄；舊存檔鍵 `v29n` 仍照 3.6 遷移讀取，不靠改鍵名破壞回放。
+
+bot12 取已合併 9b 的相同工具重跑 base，與 9c head 的[完整原始輸出](artifacts/round9c/bot12-head-final.json)對照（[base](artifacts/round9c/bot12-base.json)）。第10／30日常住名俠中位數為 **7／11 → 0／0**，後者兩日均低於 N50 原 C 目標；候選人的拒絕理由明記「存糧不足全門一日」，例如 9.0/14.0，並保留每人床位／師父空檔／處境效用。這是食宿共用門檻對舊免費名俠的真影響，沒有為湊人頭轉動出現頻率。其餘 C 指標：單人狩獵擊退 317→259、溜走 139→318、失血 9→55；**有柵探針** 96/96→94/96，守柵 26→88，重傷 28→4；**自然日常山賊** 84/84→4/5、重傷 20→3，兩個分母不能混用。自然山賊戰數隨招募和威脅點數 687→0 一起下降，五場的勝率不可和前輪 84 場當同分布的強弱結論。巫時自然 1→0、柵探針 1→29，惱羞 125→149，常見武學 DPS 中位 144.4→492.8（樣本 155→2）；後一個中位數因新規則讓該類僅餘兩人，不能代表通常武學被整體加強。相較 9c 首版，義學帶回的人現在先走共用招募，因此同源 bot 路線改變，柵探針由 96/96 變 94/96；這是 C 觀測而非另設勝率係數，原始 JSON 保留每戰原因。
+
+N38 指定 seed17 的[自然 30 日原始輸出](artifacts/round9c/white-body-seed17-final.json)：A 類每筆即時級名與機率投影一致，`rulePass=true`；ISTJ／INTP／ESTP 首到 1 級分別為 d8／d2／d3，3／4／5 級均在 d8，2 級未到，單人對豬逼退日皆 null。拿手招依真交手選招次數分別為揮拳／踢／踢，故三人格只有兩種最常用招。原設計日期與單豬日未達 C 目標，d8 出現正式級名與原江湖葵花殘頁、後續授藝事件有關，不能誤寫為土招自然磨練。Node 22 重產 golden quick 4、full 32、舊檔矩陣皆相符（[原始日誌](artifacts/round9c/golden-write-node22.log)）；本地 smoke 19/19（[日誌](artifacts/round9c/smoke.log)），完整 quick 與 golden 仍由 PR CI 驗證。
+
+N35 [純經營日程 12 種子 × 60 日](artifacts/round9c/glimmer-60-final.json) 的六情境「出現／失手」為奪械 286/190、側擊 0/0、掃 51/20、摔 10/5、撒土 108/80、擲石 0/0；主角首悟日 12 人皆 null。這個日程沒有玩家主動出獵，故沒有野豬衝撞或山路撿石，不能把零次說成招式規則不可能。固定野豬閃後踢、被逼住失手與來敵時擲石三段真 `resolveSwing` 都在原 N35 小測試中出現，A 由 smoke 通過。下段同種子、每三日正常出獵的 C 原始檔另列主動玩法數字，不會把輸入隱藏在「自然 bot」名下。
+
+[同一 12 種子 × 60 日、玩家每三日選一次正常出獵](artifacts/round9c/glimmer-hunt-12seed-final.json) 的六情境「出現／失手」為奪械 470/313、側擊 0/0、掃 67/33、摔 628/183、撒土 461/276、擲石 220/64。141 次真出獵中有 561 次野豬衝撞、2 次真閃，主角真閃 0 次，因此沒有主角側擊情境；排定野豬閃後踢的 A 測試仍能在真 `resolveSwing` 觸發。這組 C 顯示該情境在正常主動出獵下仍極罕見，不能把 A 可達性誤寫成自然已常見；12 人首悟仍全 null，與第 7–10 日原 C 目標有明顯偏差。現有難度門檻與只在失手時累積的規則未改；交 reviewer 與擁有人決定是否要再改世界規則。
+
+| 類 | 指令 | 預期輸出／本輪觀測 |
+|---|---|---|
+| A N50／N35／N38 | `bash solo-sect/test/run.sh smoke` | exit 0、19/19；N50 容量剩一只收一人，N35 三段排定真交手可觸發，N38 名稱隨機率變。 |
+| A N38、C 日期 | `node solo-sect/tools/white-body.mjs --seed 17 --days 30 --check` | exit 0、`rulePass=true`；`balanceTargets` 分項與每人首達日見原始 JSON，不以日期作 exit gate。 |
+| C N50／戰鬥 | `node solo-sect/tools/bot12.mjs solo-sect --json` | 列 12 種子名俠 d10/d30 及探針／自然戰各自分母；與同版工具 9b base 對照如上。 |
+| C N35 | `node solo-sect/tools/glimmer-metrics.mjs --days=60` 及加 `--hunt-every=3` | 每種子真情境與首悟日，兩日程分列；後者六種情境均非零，但首悟 null。 |
+| golden | Node22 `node solo-sect/tools/golden.mjs --write --tier all` | quick4、full32、saves 全相符，PR 山門紀 job 仍需全綠。 |
+
 以下指令由 repo 根目錄執行；需要比對逐位元組 golden hash 時用 CI 相同的 Node 22，其他功能驗收可用 Node 22 或 24，無需下載素材／套件。N33 的長尾反應運算在兩版 V8 有末位浮點差異，規則公式保持原樣，不能混用不同 runtime 產生的 golden。工具可接受 `--seed`，標籤工具使用該種子的真實模擬快照，不以種子選擇門檻。素材檢查無隨機資料，傳入種子不影響結果。
 
 ## 第八輪：N53／N48／N52／N49，N54 review 修正（#468、#482）
@@ -211,3 +252,11 @@ N34 的 `duel.mjs --log` 仍輸出每拍的 `T/r/m/margin` 供 reviewer 任取�
 | 9b 修正後 head | 34 | 24 | 105 | [JSON](artifacts/round9b/bot12-head.json) |
 
 這是逐提交的**行為差**，未把各項差全歸給單一機制。可定位的規則鏈是：N34 的選招決策占用起手時間；N36 讓應接負荷與掩體／士氣選擇占用同一人物的時間；N37 把未達皮破門檻的接觸 `damageFactor` 設為 0，這類命中不再扣氣血，山賊需要更多次有效接觸才退場，守柵者因此多承受來招。N37 初版惱羞 2180 是修復前的異常量，不代表最終規則；修復後 105 對基線 102，已不再四倍暴增。最終柵守率 34/96 與重傷 24 仍明顯劣於基線，屬 C 類需擁有人審閱的手感與平衡結果，不把 96/96 勝利當作守住柵。兩條第七輪高手截鼠原測試完全未改，在 CI quick 原斷言通過。
+
+### 第九輪 9c：N50 出身同伴與共用招募（#464，施工中）
+
+`bash solo-sect/test/run.sh smoke` 要 fail 0；唯一 N50 小測試排出四住客／五床，一人真入門後第二人因床位不足被共用招募拒絕，候選查詢不改 state。`node solo-sect/tools/bot12.mjs solo-sect --json` 加入 `recruitment.day10Med/day30Med/bySeed` 及真指導時數，與上一輪 head 同命令對照。d10、d30 數字依 #441 新 A/B/C 改寫只列 C 報告，原始單種子 checkpoint 不能冒充 bot12 中位數。人物卡須顯示同伴關係句與名俠不能來的食宿／師父／處境原因；尚待正常桌面驗證。舊存檔同伴保留，3.6 遷移與 golden 在收尾處核對。
+
+### 第九輪 9c：N38 即時白身等級（#449，施工中）
+
+`bash solo-sect/test/run.sh smoke` 要 fail 0，唯一 N38 小測試驗「同一接法機率一改即改級名」、不存 level/XP、不消耗逃敵。`node solo-sect/tools/white-body.mjs --seed 17 --days 30` 應輸出每人格每日各級機率、首次過線日與真交手最常用招；第3–5日狗、第10–15日豬、第20–30日刀賊是新版 #441 C 平衡數字，不能以固定日數決定 `--check` 退出碼。`node solo-sect/tools/bot12.mjs solo-sect --json` 對 12 種子統計各級日數與三人格拿手招，並與上一輪同尺對照。白身即時級名須由正常人物卡可見；受控工具 JSON 不是畫面實拍。原 seed17 自然日程 checkpoint 見 [證據](docs/evidence/r9-n38-levels.md)，其中舊版 `--check` FAIL 是舊 C 門檻，尚待按新驗收修正；不將它冒充新 A/B 失敗。

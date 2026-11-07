@@ -347,7 +347,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '3.5'; /* 第九輪 9b：情境選招、失手悟招、負荷士氣與分層受力 */
+export const RULES_VERSION = '3.6'; /* 第九輪 9c：入門生活與白身接法能力 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -361,7 +361,7 @@ export const OPPOSE = [['diligent', 'playful'], ['optimist', 'worrier'], ['gentl
 /* loop188 v2.9：經典特質相剋／相惜，只 v24 新局（compat 中 a.v24 時才加） */
 export const OPPOSE24 = [['rigid', 'free'], ['rigid', 'drinker'], ['hypocrite', 'honest'], ['hypocrite', 'bold'], ['quiet', 'glib'], ['stubborn', 'rascal'], ['picky', 'glutton']];
 export const LIKES24 = [['bold', 'drinker'], ['bold', 'brave'], ['honest', 'kind'], ['honest', 'diligent'], ['quiet', 'chi'], ['clever', 'free'], ['stubborn', 'rigid']];
-export const RECRUIT29 = { p: 0.35, pool: ['clever', 'nimble', 'bold', 'drinker', 'rigid', 'kind', 'stubborn', 'quiet', 'chi', 'hypocrite'] }; /* loop193 偽君子入池，梟雄強練才抽得到 */
+export const RECRUIT_TRAIT_VARIATION = { p: 0.35, pool: ['clever', 'nimble', 'bold', 'drinker', 'rigid', 'kind', 'stubborn', 'quiet', 'chi', 'hypocrite'] }; /* loop193 偽君子入池，梟雄強練才抽得到 */
 export const LIKES = { glutton: ['gentle'], worrier: ['optimist', 'gentle'], sociable: ['sociable', 'optimist'], diligent: ['diligent'], playful: ['playful', 'sociable'], brave: ['brave'], gentle: ['worrier'], optimist: [] };
 // 特質揭露：第 i 個特質在「相處」累積 REVEAL_AT[i] 秒後才看得出來（聊天加速）
 export const REVEAL_AT = [0, 300, 900];

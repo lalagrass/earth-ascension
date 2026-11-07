@@ -178,7 +178,7 @@ function bandClash(s, b, defs, dt) {
   const fight = defs.filter((d) => d.hp >= BAND.hpMin && d.pos), live = () => b.members.filter((m) => m.hp > 0&&!m.gone);
   for(const d of fight){fretStep(s,d);postureRegen(s,d,dt);if(d.downUntil>s.t)continue; d.bcool = (d.bcool ?? 0) - dt; /* 冷卻含前搖（收招＝冷卻剩下的時間） */
     if (d.bswing) { if (s.t + 1e-9 < d.bswing.at) continue; const w = d.bswing; d.bswing = null; const m = b.members.find((x) => x.uid === w.tgt && x.hp > 0); if (!m) continue;
-      const r = resolveSwing(s, d, m, () => R(s), { depth: topTierOf(d) + 1, move: w.mv, wind: w.wind, map: true }); (b.cl ??= {})[r.kind] = (b.cl[r.kind] || 0) + 1;
+      const r = resolveSwing(s, d, m, () => R(s), { depth: topTierOf(d) + 1, move: w.mv, wind: w.wind, map: true, targetApproachingAtWindup:w.targetApproachingAtWindup }); (b.cl ??= {})[r.kind] = (b.cl[r.kind] || 0) + 1;
       if(r.counter)d.hp=Math.max(1,d.hp-r.counterDamage);
       if (r.kind === 'hit') { breakWindup(s, d, m, w.mv, w.wind, r.contact); bandHit(s, b, m, w.dmg * (r.heavy ? CLASH.heavy : 1) * r.contact.damageFactor, d); } else (s.fx ||= []).push({ kind: 'clash', word: r.kind === 'dodge' ? '閃' : r.kind === 'parry' ? '架' : '破', color: '#ddd', pos: [...(m.pos || b.pos)], ttl: 0.6 });
       continue; }
@@ -186,7 +186,7 @@ function bandClash(s, b, defs, dt) {
     if (d.bcool > 0 || (d.busyUntil || 0) > s.t) continue;
     const mine = live().filter((m) => m.ring === 1 && m.foe === d.id), tgt = (mine.length ? mine : live()).sort((x, y) => x.hp - y.hp)[0]; if (!tgt) break;if(distance(d.pos,tgt.pos)>Math.max(...combatMoves(d).map(m=>m.range||26)))continue;
     const pick=chooseCombatMove(s,d,tgt,()=>R(s)),mv=pick?.move||fastestMove(d),wind=windOf(d,mv.id,mv.cd)+(pick?.seconds||0);d.bcool=BAND_CLASH.cd+(pick?.seconds||0);
-    d.bswing = { mv: mv.id, tgt: tgt.uid, at: s.t + wind, wind, dmg: defenderDps(d, s) * sectDefenseFactor(s) * BAND_CLASH.cd };
+    d.bswing = { mv: mv.id, tgt: tgt.uid, at: s.t + wind, wind, dmg: defenderDps(d, s) * sectDefenseFactor(s) * BAND_CLASH.cd, targetApproachingAtWindup:!!tgt.path?.length&&!tgt.swing&&!tgt.bswing };
     (s.fx ||= []).push({ kind: 'warn', from: [...d.pos], to: [...(tgt.pos || b.pos)], r: 30, dur: wind, ttl: wind, t0: s.t });
   }
   if (b.state !== 'yard') return;

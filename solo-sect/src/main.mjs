@@ -1,3 +1,6 @@
+import {bodyAssessment} from './body-level.mjs';
+import {xiaAdmission} from './wuxia.mjs';
+import {dailyRations,guidanceSeconds} from './admission.mjs';
 import {impactVisual} from './contact-view.mjs';
 import {COVERS} from './tactics.mjs';
 import { BRANCHES } from './artcard.mjs';
@@ -334,9 +337,9 @@ function panel() {
     if (c.ok) { const key = c.next.id; if (window.__ansFor !== key) { window.__ans = defaultAnswers(c.next); window.__ansFor = key; }
       const pr = personalityFrom(c.next, window.__ans);
       qa = `<div class="qa"><b>三問心印・${c.next.name}</b>${QUESTIONS.map((q, i) => `<div class="k">${q.q} <select data-q="${i}">${q.a.map(([t], j) => `<option value="${j}" ${window.__ans[i] === j ? 'selected' : ''}>${t}</option>`).join('')}</select></div>`).join('')}<div class="k">將成為：${pr.known.map((t) => TRAITS[t].name).join('、')}${pr.personality.length > pr.known.length ? '＋一項天性（相處後揭露）' : ''}（不改就用預選）${(() => { const ty = nearestType(pr.known); return ty ? `｜傾向 ${typeLabel(ty)}` : ''; })()}</div></div>`; }
-    $('recruit').innerHTML = `${qa}<button id="rec-go" ${c.ok ? '' : 'disabled'}>招收弟子（名聲 ${recruitNeed(S)}、糧 3）</button> <span class="k">${c.ok ? '' : c.why}</span>`;
+    $('recruit').innerHTML = `${qa}<button id="rec-go" ${c.ok ? '' : 'disabled'}>商量入門（全門一日糧 ${((S.ds.length+1)*dailyRations(S)).toFixed(1)}）</button> <span class="k">${c.ok ? '' : c.why}</span>`;
     $('rec-go').onclick = () => { recruit(S, window.__ans); panel(); }; }
-  $('ds').innerHTML = disciples(S).map((d) => `<div class="card" data-dcard="${d.id}"><b>${d.name}</b> ${teachingBadge(S, d)}<span class="k">${(() => { const L = likesOf(d), a = aspOf(d); return `愛吃${L.food}・愛喝${L.drink}${a ? `｜志向「${ASPIRATIONS[a.id].name}」${a.done ? '✔' : `：${ASPIRATIONS[a.id].goal}`}` : ''}`; })()}</span><br>${statusHtml(S, d)}${`<div class="k bio">${bioLine(d)}</div>`}<div class="k" data-blow-why="1">${blowWhy(d)}</div><span class="k">${d.adult ? '' : '（少年）'}（${RANK_NAMES[d.role] || '內門'}）${d.task ? (ACTIVITIES[d.task.act]?.name || ({ trial: '試煉', feed: '送飯', shelter: '避難' }[d.task.act] || '狩獵')) : '待命'}｜${d.reason}</span>
+  $('ds').innerHTML = disciples(S).map((d) => `<div class="card" data-dcard="${d.id}"><b>${d.name}</b> <span class="k" title="休息/無占用接法能力，非整場勝率">${bodyAssessment(S,d).name}</span> ${d.originRelation?`<div class="k">${d.originRelation}</div>`:""}${d.guidanceMentor?`<div class="k">${S.ds.find(m=>m.id===d.guidanceMentor)?.name||"師父離山"}指點：今日${(d.timeToday?.guided||0).toFixed(1)}/${guidanceSeconds(d).toFixed(1)}秒</div>`:""} ${teachingBadge(S, d)}<span class="k">${(() => { const L = likesOf(d), a = aspOf(d); return `愛吃${L.food}・愛喝${L.drink}${a ? `｜志向「${ASPIRATIONS[a.id].name}」${a.done ? '✔' : `：${ASPIRATIONS[a.id].goal}`}` : ''}`; })()}</span><br>${statusHtml(S, d)}${`<div class="k bio">${bioLine(d)}</div>`}<div class="k" data-blow-why="1">${blowWhy(d)}</div><span class="k">${d.adult ? '' : '（少年）'}（${RANK_NAMES[d.role] || '內門'}）${d.task ? (ACTIVITIES[d.task.act]?.name || ({ trial: '試煉', feed: '送飯', shelter: '避難' }[d.task.act] || '狩獵')) : '待命'}｜${d.reason}</span>
    <details class="dmore" data-keep="dc-${d.id}"><summary class="k">${dsum(d, (id) => artById(id)?.name || id)}</summary>
    <div class="k">性格：${d.personality.map((p) => d.known.includes(p) ? `<span title="${TRAITS[p].desc}">${TRAITS[p].name}</span>` : '<span title="相處久了才看得出來">？？</span>').join('、')}｜心情 ${d.mood | 0}（${moodLabel(d.mood)}）${(() => { const ty = d.mbti || nearestType(d.known || []); return ty ? `｜${d.mbti ? '' : '看來像 '}${typeLabel(ty)}` : ''; })()}</div>${bar(d.mood, '#6a8cc7')}<div class="k" title="心情目標的組成">${moodParts(d, S).slice(1).map(([t, v]) => [d.personality.some((p) => !d.known.includes(p) && TRAITS[p].name === t) ? '某種天性' : t, v]).map(([t, v]) => `${t}${v > 0 ? '+' : ''}${v}`).join('・') || '—'}</div>
    <details class="why" data-keep="why-${d.id}"><summary>為什麼${d.task ? (ACTIVITIES[d.task.act]?.name || ({ trial: '試煉', feed: '送飯', shelter: '避難' }[d.task.act] || '狩獵')) : '待命'}？</summary>${(d.why || []).map((w, i) => `<div class="k">${i + 1}. ${ACTIVITIES[w.act]?.name || w.act} <b>${w.score}</b> = 基礎${w.f.base.toFixed(0)}×作息${w.f.sched}×${w.f.text ? `［${w.f.text}］` : `性格${w.f.trait.toFixed(2)}×心情${w.f.mood}`}＋雜訊${w.f.noise.toFixed(0)}｜${w.why}</div>`).join('') || '<div class="k">玩家指派或尚未決策</div>'}</details>
@@ -443,7 +446,7 @@ function hsHtml() {
 }
 function xiaHtml() {
   const X = S.xia; if (!X) return '';
-  const pool = xiaPool(S).map((k) => `${XIA[k].name}（${XIA[k].need(S) ? '<b style="color:#c83">機緣已到</b>' : XIA[k].why}）`).join('、') || '—';
+  const pool = xiaPool(S).map((k) => `${XIA[k].name}（${XIA[k].need(S)?"可以相遇":"未遇："+XIA[k].why}；${X.met?.[k]?"已來往第"+X.met[k].day+"日・"+X.met[k].reason:"尚未來往"}；${XIA[k].role==="teacher"?"短期訪客，非可用常住師父空檔":xiaAdmission(S,k).why}）`).join('、') || '—';
   const T = X.teacher, tt = T ? `<div class="k">🍶 ${T.name}傳功：降龍十八掌 ${T.stage}/3・黃蓉的菜 ${T.meals}/${Math.min(3, T.stage + 1)}・傳人 ${T.student ? S.ds.find((d) => d.id === T.student)?.name : (pickStudent(S)?.name || '（缺拙／剛脾性）')}</div>` : '';
   const sig = S.ds.flatMap((d) => ['xianglong', 'dagou'].filter((a) => d.arts?.[a]).map((a) => `${d.name}・${a === 'xianglong' ? '降龍十八掌' : '打狗棒法'}`)).join('、');
   return `<div class="k"><b>名俠奇遇</b>　可遇：${pool}</div>${tt}${sig ? `<div class="k">招牌武學：${sig}</div>` : ''}${Object.keys(X.left).length ? `<div class="k">已下山：${Object.keys(X.left).map((k) => XIA[k].name).join('、')}</div>` : ''}`;

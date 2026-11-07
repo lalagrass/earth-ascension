@@ -1,9 +1,11 @@
+import {admissionStatus,prepareAdmission} from './admission.mjs';
+import {BODY_BASE} from './starter-combat.mjs';
 import { styleOk } from './bonds.mjs';
 import { favSort } from './sect.mjs';
-import { DAY, TIERS, TREES, HS, DUGU, MOVES, buildCards } from './data.mjs';
-import { think, initPair } from './social.mjs';
+import { DAY, TIERS, TREES, HS, DUGU, MOVES, COMPANIONS, ACTIVITIES, buildCards } from './data.mjs';
+import { think, initPair, meetOpinion } from './social.mjs';
 import { encounterPool, mkComp, heroById, addWexin } from './hero.mjs';
-import { learnArt, artById, artTier } from './arts.mjs';
+import { learnArt, seedArts, artById, artTier } from './arts.mjs';
 import { log, resAdd } from './util.mjs';
 import { removeActor } from './core.mjs';
 import { onJoin13 } from './jianghu.mjs';
@@ -78,7 +80,7 @@ export function xiaStep(s, H) {
   for (const k of xiaPool(s)) {
     if ((X.declined[k] || -1e9) > s.t - 3 * DAY || !XIA[k].need(s)) continue;
     const A = XIA[k]; X.pending = k; X.lastT = s.t;
-    s.choices.push({ id: `xia-${k}`, xia: k, portrait: XIA23[k] ? null : `assets/portraits/${k}.png`, /* loop151 v2.3 三人無立繪 */ title: `【奇遇・${A.where}】${A.title}`, text: A.text, opts: A.role === 'teacher' ? ['好酒好菜招待他', '門派窮，請他走'] : ['收入門下', '婉拒'], at: s.t });
+    s.choices.push({ id: `xia-${k}`, xia: k, portrait: XIA23[k] ? null : `assets/portraits/${k}.png`, /* loop151 v2.3 三人無立繪 */ title: `【奇遇・${A.where}】${A.title}`, text: A.text+(A.role==='teacher'?'':`\n${xiaAdmission(s,k).why}`), opts: A.role === 'teacher' ? ['好酒好菜招待他', '門派窮，請他走'] : ['招待並商量入門', '婉拒'], at: s.t });
     log(s, `【奇遇】${A.title}：${A.text}`); if (!s.hero?.askMajor) s.autoAt = s.t; return;
   }
 }
@@ -86,7 +88,7 @@ export function xiaStep(s, H) {
 export function xiaHints(ch) {
   const A = XIA[ch?.xia]; if (!A) return null; const no = '三天後或許還會再來';
   if (A.role === 'teacher') return [ch.xia === 'zhoubotong' ? '他在山門邊住下，找弟子打賭比武' : '名聲 +3；他在膳房邊住下，吃得好就肯教東西', no];
-  return [A.role === 'guest' ? '以客人身分住下：多一張嘴吃飯、佔一個床位；長期心情太差會下山' : '入門成為弟子：多一張嘴吃飯、佔一個床位；長期心情太差會下山', no];
+  return ['花一份飯招待、累積既有好感；食宿、師父真空檔與對方處境都合適才會留，不保證入門',no];
 }
 export function xiaResolve(s, ch, i) {
   const k = ch.xia, A = XIA[k]; s.choices = s.choices.filter((c) => c !== ch); s.xia.pending = null;
@@ -95,22 +97,41 @@ export function xiaResolve(s, ch, i) {
   if (A.role === 'teacher') { s.xia.teacher = { id: k, name: A.name, stage: 0, meals: 0, since: s.t, lastStageT: s.t - DAY, student: null }; s.rep = (s.rep || 0) + 3;
     const hr = s.ds.find((d) => xidOf(s, d) === 'huangrong'); if (hr) s.aff[`${hr.id}>hongqigong`] = 40;
     log(s, `洪七公在膳房邊上住下：「女娃娃的菜好吃，老叫化就教點東西。」（吃人嘴軟）`); arcAdvance(s, 2, '吃人嘴軟：洪七公留下了'); return true; }
-  join(s, k); return true;
+  const candidate=makeXiaCandidate(s,k),host=s.ds.find(d=>d.id==='hero')||s.ds[0];
+  if(s.res.food>=ACTIVITIES.eat.use.food&&host){resAdd(s,'food',-ACTIVITIES.eat.use.food);meetOpinion(s,candidate,host,4);s.xia.met??={};s.xia.met[k]={day:s.day,at:s.t,reason:'一起吃飯談近況'};}
+  const joined=join(s,k);if(!joined){s.xia.declined[k]=s.t;log(s,`${A.name}這回先做客：${xiaAdmission(s,k).why}`);}return true;
 }
 // 突然入門的高手：帶著底子來（技藝高、心情好）
-export function join(s, k) {
-  let d;
-  const Y = XIA_T[k];
-  if (Y) { d = mkComp('huangrong', s.ds.length); Object.assign(d, { id: k, name: Y.name, root: Y.stats.gen, wu: Y.stats.wu, personality: [...Y.personality], known: Y.personality.slice(0, 2), sprite: 'hero', portrait: XIA23[k] ? null : `assets/portraits/${k}.png`, skills: { ...Y.skills }, values: null, guest: XIA[k].role === 'guest' }); }
-  else if (k === 'huangrong') d = mkComp('huangrong', s.ds.length);
-  else { const T = heroById(k); d = mkComp('huangrong', s.ds.length); Object.assign(d, { id: k, name: T.name, root: T.stats.gen, wu: T.stats.wu, style: T.style, personality: [...T.personality], known: T.personality.slice(0, 2), sprite: 'hero', portrait: `assets/portraits/${k}.png`,
-    skills: k === 'linghuchong' ? { leg: 16, palm: 36, strength: 14, farming: 2, herbal: 2, agility: 30, cooking: 2 } : { leg: 14, palm: 30, strength: 36, farming: 6, herbal: 2, agility: 14, cooking: 2 }, values: null }); }
-  Object.assign(d, { companion: false, xia: k, reason: '名俠入門', mood: 80, role: 'inner' });
-  d.skills.palm = Math.max(d.skills.palm, k === 'weixiaobao' ? 4 : 30); s.ds.push(d); if (Y) onJoin13(s, d, k);
-  for (const o of s.ds) if (o !== d) initPair(s, d, o, 10);
+const XIA_SITUATIONS={
+ guojing:{food:.5,bed:0,reason:'離鄉尋師，仍有自己的江湖路'},
+ linghuchong:{reason:'有華山劍學與舊友，不為一口飯改投師門'},
+ yangguo:{safety:-1,reason:'避仇等人；需山門能庇護'},
+ baozupo:{safety:-1,reason:'避斧頭幫，需要安全居所'},
+ baozugong:{safety:-1,reason:'與伴侶避仇，不把家搬進無床的山門'},
+ linpingzhi:{food:0,bed:0,safety:-1,reason:'家遭變故，投靠能庇護自己的門派'},
+};
+const XIA_START_SKILLS={linghuchong:{leg:16,palm:36,strength:14,farming:2,herbal:2,agility:30,cooking:2},default:{leg:14,palm:30,strength:36,farming:6,herbal:2,agility:14,cooking:2}};
+const XIA_PALM_MIN={weixiaobao:4,default:30};
+export function makeXiaCandidate(s,k){
+ const c=COMPANIONS[k],Y=XIA_T[k],T=heroById(k),info=Y||T;
+ if(!c&&!info)throw Error('未知名俠 '+k);
+ const d=mkComp(c?k:'huangrong',s.ds.length);
+ if(info)Object.assign(d,{id:k,name:info.name,root:info.stats.gen,wu:info.stats.wu,style:info.style||d.style,personality:[...info.personality],known:info.personality.slice(0,2),sprite:'hero',portrait:XIA23[k]?null:`assets/portraits/${k}.png`,skills:{...(Y?.skills||XIA_START_SKILLS[k]||XIA_START_SKILLS.default)},values:null});
+ Object.assign(d,{companion:false,xia:k,reason:'名俠入門',mood:80,role:'inner',guest:XIA[k]?.role==='guest'});
+ d.skills.palm=Math.max(d.skills.palm,XIA_PALM_MIN[k]??XIA_PALM_MIN.default);
+ d.arts={};d.moves=['fist',...BODY_BASE];d.focus=null;seedArts(d);
+ d.situation={food:1,bed:1,autonomy:1,reason:'已有自己的生活與武學，留下須更合處境',...XIA_SITUATIONS[k]};
+ return d;
+}
+export const xiaAdmission=(s,k)=>admissionStatus(s,makeXiaCandidate(s,k));
+export function join(s,k){
+  if(present(s,k))return null;
+  const d=makeXiaCandidate(s,k),c=prepareAdmission(s,d);if(!c.ok)return null;
+  const Y=XIA_T[k];s.ds.push(d);if(Y)onJoin13(s,d,k);
+  for(const o of s.ds)if(o!==d){const a=s.aff[`${d.id}>${o.id}`]??0,b=s.aff[`${o.id}>${d.id}`]??0;initPair(s,d,o,(a+b)/2);s.aff[`${d.id}>${o.id}`]=a;s.aff[`${o.id}>${d.id}`]=b;}
   const mate = s.ds.find((o) => xidOf(s, o) === ({ guojing: 'huangrong', huangrong: 'guojing', yangguo: 'xiaolongnv', xiaolongnv: 'yangguo', baozupo: 'baozugong' })[k]); if (mate) initPair(s, d, mate, 45);
-  s.xia.joinT[k] = s.t; s.xia.done[k] = true; s.rep = (s.rep || 0) + 3; for (const o of s.ds) if (o.role !== 'laborer') think(s, o, 'xiaJoin');
-  log(s, `【名俠入門】${XIA[k].name}拜入門下！`); return d;
+  s.xia??=xiaInit();s.xia.joinT[k] = s.t; s.xia.done[k] = true; s.rep = (s.rep || 0) + 3; for (const o of s.ds) if (o.role !== 'laborer') think(s, o, 'xiaJoin');
+  log(s, `【名俠入門】${d.name}拜入門下！${c.reason}`); return d;
 }
 // 洪七公分三段傳降龍十八掌：每段要先吃到黃蓉一頓菜（食誘），傳人要有拙／剛的脾性；第三段順帶把打狗棒法傳給黃蓉，然後飄然而去
 export const TEACH = { stages: 3, gap: DAY / 2, xp: [1, TIERS[1][0] + 1, TIERS[2][0] + 1], stay: 4 * DAY };
@@ -271,7 +292,7 @@ export function hsStep(s, dt, H) {
   fengStep(s, H);
   if (s.choices?.some((c) => c.hs)) return; // 一次一張
   if (yue) {
-    const H0 = s.hero; if (H0.flags?.lin && !find(s, 'linpingzhi') && !X.cards.linJoin) { X.cards.linJoin = true; const l = mkComp('linpingzhi', s.ds.length); Object.assign(l, { companion: false, reason: '投靠', xia: 'linpingzhi' }); s.ds.push(l); for (const o of s.ds) if (o !== l) initPair(s, l, o, 10); log(s, '林平之磕頭拜師，成了華山弟子。'); X.bixie = 1; X.linT = s.t; }
+    const H0 = s.hero; if (H0.flags?.lin && !find(s, 'linpingzhi') && !X.cards.linJoin) { const l=mkComp('linpingzhi',s.ds.length);l.situation={food:0,bed:0,autonomy:1,safety:-1,reason:'家遭變故，來華山投靠'};const admission=prepareAdmission(s,l);if(admission.ok){X.cards.linJoin=true;Object.assign(l,{companion:false,reason:admission.reason,xia:'linpingzhi'});s.ds.push(l);for(const o of s.ds)if(o!==l)initPair(s,l,o,10);log(s,'林平之在食宿與指導都安排好後拜師。');X.bixie=1;X.linT=s.t;} }
     if (X.bixie === 1 && s.t - X.linT >= DAY && card(s, 'lin2')) return;
     if (X.bixie === 2 && card(s, 'lin3')) { arc(s, 2, '暗查劍譜'); return; }
     if (s.day >= 3 && s.day - X.songLast >= HS.songEvery) { X.songLast = s.day; X.songN++; card(s, 'song'); return; }

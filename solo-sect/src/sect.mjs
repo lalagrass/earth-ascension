@@ -1,3 +1,5 @@
+import {BODY_MECHANICS} from './contact.mjs';
+import {makeBare} from './starter-combat.mjs';
 import { DAY, NODES, SECTS, SECT_K, RULE_LIB, HERO_SECT, CUSTOM_BY_VALUE, CUSTOM_RIVALS, WUMING_KIT24, ARTS, SECT_PICK24 } from './data.mjs';
 import { seedArts, learnArt, artTier, artById, artOk, reqMissing, curCap, focusOf, specK, bestSpec, chiefLocked24, mastery, primaryCat, CATS, qiInjuryFight28, temperOf, TEMPER29, yunvOpen24, ponderLuoying, practiceLuoying } from './arts.mjs';
 import { dpsOf } from './world.mjs';
@@ -39,7 +41,11 @@ export function adopt(s, pa, pb, rnd = Math.random) {
   const d = { ...JSON.parse(JSON.stringify(tpl)), id, name, adult: false, child: { since: s.t, parents: ps.map((p) => p.id) }, age: GEN.adoptAge, sprite: 'cousin', role: 'inner', personality: pers, known: pers.slice(0, 1), values, wexin: 0, classic: false, xia: null, portrait: null, spouse: null, ...({ sweet: null, wed: undefined }), /* loop148 孩子不沿用範本的心上人 */ acts: undefined, deeds: undefined, deedN: undefined, /* M1 傳記不沿用範本 */
     root: part(avg((p) => p.root)), wu: part(avg((p) => p.wu ?? p.root)), rootKnown: true, arts: {}, moves: ['fist'], pendingArt: null, focus: null, skills: { leg: 2, palm: 2, strength: 2, farming: 2, herbal: 2, agility: 6, cooking: 1 },
     needs: { energy: 80, hunger: 70, social: 50, fun: 70 }, hp: 100, mood: 60, thoughts: [], why: [], task: null, path: [], order: null, carry: null, away: false, at: 'hall', pos: [NODES.hall[0] + 20 * G.kids.length, NODES.hall[1] + 40], reason: '剛被收養', together: 0, master: null, oneArm: false, hidden: null, takeMul: null, reflect: null, awakened: false, duanqing: null, moodCap: null };
-  seedArts(d); s.ds.push(d); G.kids.push(id); G.lastAdopt = s.t;
+  // A new person does not inherit the parent's lived encounters or the parent's time sheet.
+  makeBare(d);d.practice={hands:{},eyes:{},origin:{}};
+  for(const k of ['glimmer','selection','trainingWish','trainingWishes','timeToday','timePrev','guidanceTotal','guidanceMentor','originRelation','originRelationKind','originInvented','lastDodge','techniqueContact','flightSeen','lastCombatMove','sure','intentTarget','foe','tactics','lureUntil','lurePos','lastHelpAt','scarred','survived'])delete d[k];
+  Object.assign(d,{wounds:[],part:null,pain:0,painAt:s.t,fret:0,raging:false,rageUntil:0,visionUntil:0,posture:BODY_MECHANICS.balance,downUntil:0,faintUntil:0,balanceOpenUntil:0,busyUntil:0,swing:null,bswing:null});
+  s.ds.push(d); G.kids.push(id); G.lastAdopt = s.t;
   for (const o of s.ds) if (o !== d) { const v = ps.includes(o) ? 60 : 15; s.aff[affKey(o.id, d.id)] = v; s.aff[affKey(d.id, o.id)] = v; s.rel[relKey(o.id, d.id)] = v; }
   setMaster(s, d, ps.slice().sort((a, b) => bestTier(b) - bestTier(a))[0]);
   log(s, `【收養】${ps.map((p) => p.name).join('與')}收養了孤兒${name}（${GEN.adoptAge} 歲；承襲${pers.join('、') || '—'}、悟性${d.wu}・根骨${d.root}）。`); return d;

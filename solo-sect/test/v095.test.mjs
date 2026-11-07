@@ -1,9 +1,10 @@
+import { createState } from './harness/historical-party.mjs';
 import { openExp, checkRetreat } from "../src/world.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-import { createState, tick, save, load, MIGRATIONS, scoreActs, startExpedition, canExpedition, codexRows, byId, skipGuide, startBuild, dpsOf } from '../src/sim.mjs';
+import { tick, save, load, MIGRATIONS, scoreActs, startExpedition, canExpedition, codexRows, byId, skipGuide, startBuild, dpsOf } from '../src/sim.mjs';
 import { RULES_VERSION, ROUTE, ENEMIES, DAY, PHASES } from '../src/data.mjs';
 import { pipeline, MUL_CLAMP } from '../src/util.mjs';
 import { artMulParts, artById, seedArts, gainArt } from '../src/arts.mjs';

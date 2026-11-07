@@ -1,6 +1,7 @@
+import { createState } from './harness/historical-party.mjs';
 import { openExp } from "../src/world.mjs";
 import test from 'node:test'; import assert from 'node:assert/strict';
-import { createState, tick, startExpedition, payday, load, save, moodParts } from '../src/sim.mjs';
+import { tick, startExpedition, payday, load, save, moodParts } from '../src/sim.mjs';
 import { styleOf, teamStyle, evadeScore } from '../src/world.mjs';
 import { ROUTE, RULES_VERSION, ENEMIES } from '../src/data.mjs';
 const H = (id, comp) => createState(21, { kind: 'template', id, companion: comp });

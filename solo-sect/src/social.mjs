@@ -14,9 +14,13 @@ export function compat(a, b) {
 }
 export const aff = (s, a, b) => s.aff[affKey(a.id ?? a, b.id ?? b)] ?? 0;
 export function initPair(s, a, b, v) { s.aff[affKey(a.id, b.id)] = v; s.aff[affKey(b.id, a.id)] = v; s.rel[relKey(a.id, b.id)] = v; }
+// 來訪者同用好感，但未常住者不寫居民關係圖／道侶資料。
+export function meetOpinion(s,a,b,amt){const before=s.rel[relKey(a.id,b.id)]||0,cap=a.adult&&b.adult?100:89;
+  for (const [x, y] of [[a, b], [b, a]]) { const kk = affKey(x.id, y.id), c = compat(x, y); if (c !== 1) { const W = ((s.v29n ??= {}).compat ??= { pos: 0, neg: 0 }); W[c > 1 ? 'pos' : 'neg']++; } s.aff[kk] = clamp((s.aff[kk] ?? before) + amt * c, 0, cap); } /* loop188 相性計數 */
+}
 export function relAdd(s, a, b, amt) {
   const k = relKey(a.id, b.id), before = s.rel[k] || 0, cap = a.adult && b.adult ? 100 : 89; // 未成年不進道侶
-  for (const [x, y] of [[a, b], [b, a]]) { const kk = affKey(x.id, y.id), c = compat(x, y); if (c !== 1) { const W = ((s.v29n ??= {}).compat ??= { pos: 0, neg: 0 }); W[c > 1 ? 'pos' : 'neg']++; } s.aff[kk] = clamp((s.aff[kk] ?? before) + amt * c, 0, cap); } /* loop188 相性計數 */
+  meetOpinion(s,a,b,amt);
   s.rel[k] = (aff(s, a, b) + aff(s, b, a)) / 2;
   if (relStage(before) !== relStage(s.rel[k])) {
     log(s, `${a.name}與${b.name}成了「${relStage(s.rel[k])}」`);

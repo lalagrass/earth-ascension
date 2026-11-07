@@ -1,5 +1,6 @@
+import { createState } from './harness/historical-party.mjs';
 import test from 'node:test'; import assert from 'node:assert/strict';
-import { createState, tick, scoreActs, outers, skipsChores, emergency, payday, setDuty, setPrio, canPromote, startTrial, migrate, save, load, quotaOf } from '../src/sim.mjs';
+import { tick, scoreActs, outers, skipsChores, emergency, payday, setDuty, setPrio, canPromote, startTrial, migrate, save, load, quotaOf } from '../src/sim.mjs';
 import { CHORE_ACTS, QUOTA, PROMOTE, DAY, RULES_VERSION } from '../src/data.mjs';
 const mkOuter = (s, id, root = 4) => { const base = s.ds.find((d) => d.id === 'cousin'); const d = JSON.parse(JSON.stringify(base)); Object.assign(d, { id, name: id, role: 'outer', root, rootKnown: true, adult: true, duties: [...CHORE_ACTS], prio: 'normal', chore: 0, choreDebt: 0, contrib: 0, task: null, path: [] }); s.ds.push(d); return d; };
 const acts = (s, d) => scoreActs(s, d).map((o) => o.act);

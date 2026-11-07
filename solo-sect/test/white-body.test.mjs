@@ -2,12 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick } from '../src/sim.mjs';
 import { BODY_MOVES, BODY_TIMING, foeAction } from '../src/starter-combat.mjs';
-import { windOf, clashTimes, moveStats, clashOdds, resolveSwing } from '../src/arts.mjs';
-import { MONSTERS, SOURCES } from '../src/data.mjs';
+import { windOf, clashTimes, moveStats, clashOdds, resolveSwing, selfTarget, learnArt, gainArt } from '../src/arts.mjs';
+import { MONSTERS, SOURCES, DAY } from '../src/data.mjs';
 
 test('N32 白身無武學、起手秒數與野狗從邊緣走來', () => {
   const s = createState(27, { kind: 'bare', askMajor: false }), d = s.ds.find((d) => d.id === 'hero');
-  assert.deepEqual(d.arts, {}); assert.ok(d.moves.includes('bodyKick')); assert.ok(!d.moves.includes('fist'));
+  assert.deepEqual(d.arts, {}); assert.equal(selfTarget(d),null); assert.ok(d.moves.includes('bodyKick')); assert.ok(!d.moves.includes('fist'));
+  const learner=structuredClone(d);learnArt(learner,'basicFist');gainArt(learner,600,1,s.t);assert.equal(learner.pendingArt,null,'即使從真教材學會一門，白身不能憑熟練憑空取得下一本正式譜');assert.equal(selfTarget(learner),null,'已學一本也不等於憑空知道其他正式招式');
   assert.equal(windOf(d, 'bodyPunch', 1), .45);
   assert.ok(windOf(d,'bodyPunch',1) < windOf(d,'bodyPush',1) && windOf(d,'bodyPush',1) < windOf(d,'bodyKick',1));
   const charge = foeAction({ k: 'boar' }, 70), T = clashTimes(s, { k:'boar' }, d, { move:charge.id, wind:charge.wind });
@@ -50,6 +51,7 @@ test('N33 同一底層累積w，手熟縮前搖、眼熟縮反應，人獸都有
   assert.equal(familiarUses(novice,{k:'dog'},'dogBite'),0,'白身初遇野狗仍陌生');
   recordExchange(s,{k:'boar',uid:'sample'},novice,'boarCharge',.5,{kind:'hit'});
   assert.ok(familiarUses(novice,{k:'boar'},'boarToss')>0,'同類衝撞可折算眼熟');
+  const {adopt}=await import('../src/sect.mjs');d.trainingWish={kind:'timing'};d.raging=true;d.glimmer={known:['disarm'],progress:{disarm:100}};d.timePrev={day:1,elapsed:DAY,free:400,guided:100};const child=adopt(s,d,s.ds[1],()=>.5);assert.deepEqual(child.practice,{hands:{},eyes:{},origin:{}});assert.equal(child.glimmer,undefined);assert.equal(child.trainingWish,undefined);assert.equal(child.raging,false);assert.equal(child.timePrev,undefined);assert.ok(child.bare);
 });
 
 
@@ -97,7 +99,7 @@ test('N34 情境識別穩定後零決策時間，選招/心願所有人共用',a
 
 test('N35 母招/條件/效果全資料化，只有真失手加w，弱敵期望慢逾10倍',async()=>{
   const {TECHNIQUES,learnFromLoss,applyTechnique,learningRate}=await import('../src/techniques.mjs');
-  const {breakWindup}=await import('../src/arts.mjs');
+  const {breakWindup,combatMoves}=await import('../src/arts.mjs');
   const s=createState(17,{kind:'bare',askMajor:false}),d=s.ds[0],boar={k:'boar',uid:'boar',hp:100,pos:[20,0],posture:70,swing:{at:1,mv:'boarCharge',wind:1}};
   d.wu=3;const facts={hands:2,afterDodge:true,opponentCharge:true,force:24,opponentForce:40};
   assert.equal(learningRate(.5)/learningRate(.9)>10,true);
@@ -107,7 +109,23 @@ test('N35 母招/條件/效果全資料化，只有真失手加w，弱敵期望�
   assert.equal(breakWindup(s,d,boar,'bodyKick',.6),false);
   const out=applyTechnique(s,d,boar,'flankStrike',facts);assert.equal(out.armorBypass,true);assert.equal(out.interrupt,true);assert.equal(boar.swing,null);
   assert.equal(TECHNIQUES.length,6);const enemy={k:'bandit',uid:'bandit',wu:3};
+  assert.deepEqual(combatMoves({k:'boar'},60).map(m=>m.id),['boarCharge'],'六十像素外不能用二十六像素的拱挑取代衝撞');
+  assert.deepEqual(combatMoves({k:'boar',survived:true,opened:true},60).map(m=>m.id),['boarCharge'],'倖存野豬假衝過後，下次在合法距離內會真衝撞');
   for(let i=0;i<24;i++)learnFromLoss(s,enemy,['guard'],{hands:2,weapon:'blade',opponentWind:true},.5,{lost:true});assert.ok(enemy.glimmer.known.includes('disarm'));
+  // #445 9c: the three contexts are reachable through actual exchanges, including
+  // the opponent's real windup/approach state and the defender's real dodge record.
+  const q=createState(17,{kind:'bare'}),hero=q.ds[0];hero.pos=[0,0];q.ds=[hero];q.captureTechniqueContexts=true;
+  const boar2={k:'boar',uid:'boar2',hp:48,max:48,pos:[50,0],posture:70,practice:{hands:{},eyes:{},origin:{}}};q.mons=[boar2];
+  assert.equal(resolveSwing(q,boar2,hero,()=>.5,{move:'boarCharge',wind:1}).kind,'dodge');
+  const dodgeAtWindup={...hero.lastDodge};q.t=dodgeAtWindup.until+.1;
+  resolveSwing(q,hero,boar2,()=>.99,{move:'bodyKick',wind:.6,dodgeAtWindup});assert.ok(q.techniqueContextCounts.flankStrike.heroSeen);
+  const {COVERS}=await import('../src/tactics.mjs');hero.hp=40;hero.pos=[...COVERS[0].stand];
+  const dog={k:'dog',uid:'dog',hp:14,max:14,pos:[hero.pos[0]+20,hero.pos[1]],practice:{hands:{},eyes:{},origin:{}}};q.mons=[dog];
+  assert.equal(resolveSwing(q,dog,hero,()=>.99,{move:'dogBite',wind:.4}).kind,'hit');assert.ok(q.techniqueContextCounts.dustCast.heroLost);
+  hero.pos=[0,0];hero.tools.stone=true;hero.moves.push('toolStone');
+  const traveler={k:'bandit',uid:'traveler',hp:60,max:60,pos:[90,0],path:[[0,0]],practice:{hands:{},eyes:{},origin:{}}};q.mons=[traveler];
+  const approaching=(await import('../src/arts.mjs')).techniqueFacts(q,hero,traveler,'toolStone').approaching;assert.equal(approaching,true);
+  traveler.path=[];resolveSwing(q,hero,traveler,()=>.99,{move:'toolStone',wind:.8,targetApproachingAtWindup:approaching});assert.ok(q.techniqueContextCounts.stoneOpening.heroSeen);
 });
 
 
@@ -162,4 +180,22 @@ test('N37 共用受力/分層/手側/長破綻，局部hitstop不改模擬',asyn
   const va=impactVisual(s,a,time),vt=impactVisual(s,target,time),stranger=impactVisual(s,{uid:'uninvolved',pos:[80,80]},time);
   assert.ok(va.paused&&vt.paused);assert.ok(Math.abs(vt.shake)>Math.abs(va.shake));assert.equal(stranger.paused,false);assert.equal(impactVisual(s,target,time,false).paused,false);assert.equal(JSON.stringify(s),before);
   const dust=(await import('../src/techniques.mjs')).TECHNIQUE_MOVES.find(m=>m.id==='dustCast'),unhurt=structuredClone(a);unhurt.pos=[20,0];unhurt.wounds=[];unhurt.pain=0;const beforePos=[...unhurt.pos],irritant=contactImpact(s,a,unhurt,{move:dust,force:10000});assert.equal(irritant.force,0);assert.equal(irritant.injured,false);assert.equal(irritant.balance,0);assert.deepEqual(unhurt.pos,beforePos);
+});
+
+
+test('N50 兩個普通出身同伴與真床位剩一時第二名俠不入門',async()=>{
+ const {admissionStatus,bedCount}=await import('../src/admission.mjs'),{join,makeXiaCandidate}=await import('../src/wuxia.mjs');
+ const s=createState(17,{kind:'bare'});assert.equal(s.ds.length,3);assert.ok(s.ds.slice(1).every(d=>d.bare&&d.originRelation&&!Object.keys(d.arts).length));assert.ok(s.ds.every(d=>!['senior','junior'].includes(d.id)));assert.deepEqual(s.ds.slice(1).map(d=>d.sprite),['senior','cousin']);
+ const classic=createState(17,{kind:'template',id:'guojing'}),{visualSpriteOf}=await import('../src/visual-gender.mjs');assert.equal(classic.ds[1].name,'李萍');assert.equal(visualSpriteOf(classic.ds[1]),'sister');
+ // Controlled capacity fixture: hall3+dorm2, four residents, one physical free bed.
+ s.fac.dorm.stage=1;s.res.food=100;s.ds.push({...structuredClone(s.ds[1]),id:'resident',companion:false});const master=s.ds[0];master.practice.hands=Object.fromEntries((await import('../src/starter-combat.mjs')).BODY_BASE.map(id=>[id,500]));master.skills.palm=100;master.timePrev={day:0,elapsed:DAY,free:400,guided:0};
+ const first=makeXiaCandidate(s,'guojing'),before=JSON.stringify(s),preview=admissionStatus(s,first);assert.equal(JSON.stringify(s),before);assert.equal(bedCount(s)-s.ds.length,1);assert.equal(preview.ok,true,preview.why);
+ assert.ok(join(s,'guojing'));assert.equal(s.ds.length,bedCount(s));assert.equal(join(s,'linghuchong'),null);assert.equal(s.ds.length,5);assert.match(admissionStatus(s,makeXiaCandidate(s,'linghuchong')).why,/床位已滿/);
+});
+
+
+test('N38 接法機率改變即改名稱，不存level/XP且不消耗逃敵',async()=>{
+ const {rankFromProbabilities,bodyAssessment}=await import('../src/body-level.mjs');
+ const p={1:.51,2:.51,3:.51,4:.51,5:.51};assert.equal(rankFromProbabilities(p).name,'好手');p[5]=.5;p[4]=.5;assert.equal(rankFromProbabilities(p).name,'會截');for(const k in p)p[k]=.5;assert.equal(rankFromProbabilities(p).name,'挨打');
+ const s=createState(17,{kind:'bare'});s.survivors={returnDog:{k:'dog',uid:'returnDog',hp:12,max:14,escapedAt:0,practice:{hands:{dogBite:2},eyes:{},origin:{}}}};const before=JSON.stringify(s),report=bodyAssessment(s,s.ds[0]);assert.equal(report.rows[0].sources[0].uid,'returnDog');assert.equal(report.rows[0].sources[0].source,'returned survivor');assert.equal(JSON.stringify(s),before);assert.equal(s.ds[0].level,undefined);assert.equal(s.ds[0].xp,undefined);
 });

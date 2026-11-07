@@ -1,10 +1,11 @@
+import { createState, historicJoin as join, prepareHistoricalAdmission } from './harness/historical-party.mjs';
 import { openExp } from "../src/world.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick, startExpedition } from '../src/sim.mjs';
+import { tick, startExpedition } from '../src/sim.mjs';
 import { ARTS, MOVES, RULES_VERSION, DAY } from '../src/data.mjs';
 import { learnArt, artTier } from '../src/arts.mjs';
-import { XIA, xiaPool, xiaStep, xiaResolve, join, pickStudent, onCook, dragonFit, PAIR_CAP, xidOf } from '../src/wuxia.mjs';
+import { XIA, xiaPool, xiaStep, xiaResolve, pickStudent, onCook, dragonFit, PAIR_CAP, xidOf } from '../src/wuxia.mjs';
 import { pairBonus, applyHero, autoPick } from '../src/hero.mjs';
 import { aff } from '../src/social.mjs';
 import { migrate } from '../src/save.mjs';
@@ -24,6 +25,7 @@ test('名俠池排除已選主角／同門與已在門中者', () => {
 test('名聲觸發郭靖奇遇，一天最多一個；收入門下帶高手底子', () => {
   const s = st(); s.rep = 20; xiaStep(s); const ch = s.choices.find((c) => c.xia); assert.equal(ch.xia, 'guojing');
   const n = s.choices.length; xiaStep(s); assert.equal(s.choices.length, n);
+  prepareHistoricalAdmission(s, 'guojing');
   assert.equal(autoPick(s, ch), 0); xiaResolve(s, ch, 0); const g = s.ds.find((d) => d.xia === 'guojing');
   assert.ok(g && g.skills.palm >= 30 && dragonFit(g)); assert.ok(s.xia.done.guojing);
 });

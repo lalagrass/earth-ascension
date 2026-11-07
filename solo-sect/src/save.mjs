@@ -62,6 +62,9 @@ export const MIGRATIONS = [
       a.wounds ??= []; a.pain ??= 0; a.balanceOpenUntil ??= 0; a.downUntil ??= 0;
     }
   } },
+  { to: '3.6', note: '第九輪 9c（#464/#449）：新局按出身決定同行；舊局門人與師承保留，補真指導時間帳', up(o) {
+    for (const d of o.ds || []) { d.timeToday ??= { day: o.day, elapsed: 0, free: 0, guided: 0 }; d.guidanceTotal ??= 0; }
+  } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
 export function v150Up(o) {
