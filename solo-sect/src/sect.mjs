@@ -106,7 +106,7 @@ export function genStep(s) {
 }
 export function genResolve(s, ch, i) {
   s.choices = s.choices.filter((c) => c !== ch);
-  if (ch.gen === 'adopt') { if (i === 0) { const [a, b] = ch.pair.map((id) => s.ds.find((d) => d.id === id)); resSet(s, 'food', Math.max(0, s.res.food - GEN.adoptFood)); adopt(s, a, b, () => ((s.gen.kidN * 37 + s.day) % 100) / 100); } else { s.gen.lastAdopt = s.t; log(s, '孩子被送去山下善堂。'); } }
+  if (ch.gen === 'adopt') { if (i === 0) { const [a, b] = ch.pair.map((id) => s.ds.find((d) => d.id === id)); resSet(s, 'food', Math.max(0, s.res.food - GEN.adoptFood), 'adopt'); adopt(s, a, b, () => ((s.gen.kidN * 37 + s.day) % 100) / 100); } else { s.gen.lastAdopt = s.t; log(s, '孩子被送去山下善堂。'); } }
   return true;
 }
 

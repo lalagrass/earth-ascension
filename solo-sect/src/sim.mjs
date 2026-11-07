@@ -151,7 +151,7 @@ export function recruit(s, answers) {
   const c = canRecruit(s); if (!c.ok) return c;
   const { personality, known } = personalityFrom(c.next, answers);
   if (rand(s) < 0.3) { const x = rand(s) < 0.5 ? 'lazy' : 'stubborn'; if (!personality.includes(x)) personality.push(x); } // v0.97 一般弟子也可能懶散／較真（暗）
-  s.res.food -= ACTIVITIES.eat.use.food; book(s,'out','food',ACTIVITIES.eat.use.food); { const h = stableTraitHash(`${s.seed}:trait29:${c.next.id}:${s.ds.length}`); if (h < RECRUIT_TRAIT_VARIATION.p) { const x = RECRUIT_TRAIT_VARIATION.pool[Math.floor(stableTraitHash(`${s.seed}:trait29b:${c.next.id}:${s.ds.length}`) * RECRUIT_TRAIT_VARIATION.pool.length)]; if (!personality.includes(x)) { const old = personality[1]; personality[1] = x; const k = known.indexOf(old); if (k >= 0) known[k] = x; (s.v29n ??= {}).recruitTrait = (s.v29n.recruitTrait || 0) + 1; } } } /* loop188 v2.9 經典特質（雜湊，不吃亂數流） */
+  resAdd(s, 'food', -ACTIVITIES.eat.use.food, 'admission'); { const h = stableTraitHash(`${s.seed}:trait29:${c.next.id}:${s.ds.length}`); if (h < RECRUIT_TRAIT_VARIATION.p) { const x = RECRUIT_TRAIT_VARIATION.pool[Math.floor(stableTraitHash(`${s.seed}:trait29b:${c.next.id}:${s.ds.length}`) * RECRUIT_TRAIT_VARIATION.pool.length)]; if (!personality.includes(x)) { const old = personality[1]; personality[1] = x; const k = known.indexOf(old); if (k >= 0) known[k] = x; (s.v29n ??= {}).recruitTrait = (s.v29n.recruitTrait || 0) + 1; } } } /* loop188 v2.9 經典特質（雜湊，不吃亂數流） */
   const d = makeBare(mkDisciple(c.next,1,'gate',personality,known)); d.guidanceMentor=c.mentor;d.admissionReason=c.reason; d.together = 0; Object.assign(d, { role: 'outer', root: 2 + Math.floor(rand(s) * 4), rootKnown: false }); { const A = archRecruit(() => rand(s)); Object.assign(d, { arch: A.id, root: A.root, wu: A.wu }); if (!d.personality.includes(A.trait)) d.personality.push(A.trait); } /* loop21 原型 */ s.ds.push(d); if (c.next.school) econOf(s).pool.shift();
   for (const o of s.ds) if (o !== d) initPair(s, o, d, 5); sectRecruit(s, d);
   log(s, `${d.name}慕名從村路上山，拜入門下。`); recordDeed(s, d, 'join', { chron: `${d.name}慕名上山，拜入門下` }); return { ok: true, d };
@@ -399,7 +399,7 @@ function feedGo(s, d) {
 function feedStep(s, d) {
   const t = d.task, p = byId(s, t.to); if (!p || p.away || s.res.food < 1) { d.task = null; return; }
   if (d.path.length) return; if (p.path?.length || dist(d.pos, p.pos) > 60) { goto(d, p.at || 'court'); if (d.path.length) return; }
-  s.res.food -= 1; book(s, 'out', 'food', 1); p.needs.hunger = clamp(p.needs.hunger + PAIR.feedHunger, 0, 100); relAdd(s, d, p, PAIR.feedRel); think(s, p, 'fedBy'); think(s, d, 'helped');
+  resAdd(s, 'food', -1, 'feeding'); p.needs.hunger = clamp(p.needs.hunger + PAIR.feedHunger, 0, 100); relAdd(s, d, p, PAIR.feedRel); think(s, p, 'fedBy'); think(s, d, 'helped');
   tallyAct(d, 'feed', 2); recordDeed(s, d, 'feed', { to: p.id }); log(s, `${d.name}端了一碗飯給${t.why === 'hurt' ? '養傷' : '正忙'}的${p.name}`, 'low'); d.task = null; d.anim = null;
 }
 function shelterGo(s, d) {
@@ -490,9 +490,9 @@ function doTask(s,d,dt){
     if (t.act === 'build') { const site = s.fac[t.fac].site; site.work += dt; d.needs.energy = clamp(d.needs.energy - dt, 0, 100); grow(s, d, 'strength', 0.2 * dt, 'labor'); if (site.work >= site.workNeed) { finishBuild(s, t.fac); finish(s, d); } else if (t.timer >= A.dur) finish(s, d); return; }
     const dur = effDur;
     if (t.timer >= dur) {
-      if (t.act === 'cook') { const st = facStage(s, t.fac); resAdd(s, 'veg', -2); t.phase = 'done'; const wat = s.res.water >= 1 ? 1 : 0; if (wat) { s.res.water -= 1; book(s, 'out', 'water', 1); } const yld = st.cookYield + cookBonus(d) + wat; /* v1.6 有井水多煮一份 */ onCook(s, d); s.res.food += yld; book(s, 'in', 'food', yld); log(s, `${d.name}在${st.name}煮好 ${yld} 份飯`); grow(s, d, 'cooking', 6); finish(s, d); return; }
+      if (t.act === 'cook') { const st = facStage(s, t.fac); resAdd(s, 'veg', -2); t.phase = 'done'; const wat = s.res.water >= 1 ? 1 : 0; if (wat) { s.res.water -= 1; book(s, 'out', 'water', 1); } const yld = st.cookYield + cookBonus(d) + wat; /* v1.6 有井水多煮一份 */ onCook(s, d); resAdd(s, 'food', yld, 'kitchen'); log(s, `${d.name}在${st.name}煮好 ${yld} 份飯`); grow(s, d, 'cooking', 6); finish(s, d); return; }
       if (t.act === 'farm') { const p = s.plots[t.plot]; t.resv = []; grow(s, d, 'farming', 6); if (p.st === 'ripe') { p.st = 'empty'; p.g = 0; d.carry = { veg: HARVEST }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; } p.st = 'grow'; p.g = 0; finish(s, d); return; }
-      if (A.use) { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } s.res.food -= 1; book(s, 'out', 'food', 1); }
+      if (A.use) { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } resAdd(s, 'food', -1, 'meal'); }
       if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) { d.needs.social = clamp(d.needs.social + b / 2, 0, 100); think(s, d, 'hallMeal'); } likeMeal(s, d, think); }
       let trainedArt = null;
       acquireWorkTool(d, t.act);
@@ -679,7 +679,7 @@ function dStrike(s, h, d, live, w) {
   noteFret(s, d, 'strike'); if (d.raging) spendQi(d, Math.min(qiOf(d), CLASH.fret.attackQi * CLASH.fret.qi));
   if (r.heavy && lt === tgt) clashFx(s, tgt, 'heavy');
   const base = landOn(s, d, lt, mv, power, MONSTERS[lt.k].name); power = base * (r.heavy ? CLASH.heavy : 1); /* #404 打中：降龍、辟邪、七傷、打狗、獨孤。範圍先圈定，再震退 */
-  const psn = specM(d, 'dushu') > 0; for (const m of hitList) { let pw = power; if (each) { const rr = each.get(m.uid); if (rr.kind !== 'hit') { if (rr.kind === 'dodge') clashFx(s, m, 'dodge'); continue; } pw = base * (rr.heavy ? CLASH.heavy : 1); if (rr.heavy && m !== tgt) clashFx(s, m, 'heavy'); } const contact=each?each.get(m.uid).contact:r.contact;pw*=contact.damageFactor;breakWindup(s, d, m, mv.id, w.wind, contact); m.hp -= pw; if (psn) m.psn = s.t + SPEC.poisonT; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; if (artOfMove(mv.id)?.id === 'kuihua' && zjHas(d, 'kuihua')) s.fx.push({ kind: 'fall', pos: [...m.pos], k: m.k, delay: ZJ.kuihua.fall, ttl: ZJ.kuihua.fall + 0.6 }); /* #426 葵花：中針的一起晚一拍倒下 */ (h.wk ??= {})[d.id] = (h.wk[d.id] || 0) + 1; seeEnemy(s, m.k, 'kill', d); applyArtOn(s, 'kill', d, m, { move: mv.id, foeName: MONSTERS[m.k].name }); log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') resAdd(s, 'food', 3); } }
+  const psn = specM(d, 'dushu') > 0; for (const m of hitList) { let pw = power; if (each) { const rr = each.get(m.uid); if (rr.kind !== 'hit') { if (rr.kind === 'dodge') clashFx(s, m, 'dodge'); continue; } pw = base * (rr.heavy ? CLASH.heavy : 1); if (rr.heavy && m !== tgt) clashFx(s, m, 'heavy'); } const contact=each?each.get(m.uid).contact:r.contact;pw*=contact.damageFactor;breakWindup(s, d, m, mv.id, w.wind, contact); m.hp -= pw; if (psn) m.psn = s.t + SPEC.poisonT; if (m.hp <= 0 && !m.gone) { m.gone = true; h.kills++; if (artOfMove(mv.id)?.id === 'kuihua' && zjHas(d, 'kuihua')) s.fx.push({ kind: 'fall', pos: [...m.pos], k: m.k, delay: ZJ.kuihua.fall, ttl: ZJ.kuihua.fall + 0.6 }); /* #426 葵花：中針的一起晚一拍倒下 */ (h.wk ??= {})[d.id] = (h.wk[d.id] || 0) + 1; seeEnemy(s, m.k, 'kill', d); applyArtOn(s, 'kill', d, m, { move: mv.id, foeName: MONSTERS[m.k].name }); log(s, `${d.name}以「${mv.name}」擊退${MONSTERS[m.k].name}`); if (m.k === 'boar') resAdd(s, 'food', 3, 'hunt'); } }
   return r;
 }
 function huntStep(s, dt) {
@@ -828,7 +828,7 @@ export function canHire(s) {
 }
 export function hire(s) {
   const c = canHire(s); if (!c.ok) return c;
-  s.res.coin -= ECON.hireCoin; s.res.food -= ECON.hireFood; book(s, 'out', 'coin', ECON.hireCoin); book(s, 'out', 'food', ECON.hireFood);
+  s.res.coin -= ECON.hireCoin; resAdd(s, 'food', -ECON.hireFood, 'hire'); book(s, 'out', 'coin', ECON.hireCoin);
   const d = mkDisciple(c.next, 1, 'gate', c.next.personality, c.next.personality.slice(0, 1));
   Object.assign(d, { role: 'laborer', root: c.next.root, rootKnown: false, cowork: 0, unpaid: 0, reason: '應雇上山' }); if (LABOR23.spec[d.id]) d.lspec = LABOR23.spec[d.id]; /* loop155 幫工專長 */
   s.ds.push(d); for (const o of s.ds) if (o !== d) initPair(s, o, d, 0);
@@ -957,7 +957,7 @@ function paceStep(s) {
   if (!P.done.includes('firstBuild') && Object.values(s.fac).some((f) => f.site || f.stage > 0)) milestone(s, 'firstBuild');
 }
 function finishTrial(s,d,m,mv){
-  applyArtOn(s,'kill',d,m,{move:mv?.id,foeName:MONSTERS[m.k].name});s.mons=s.mons.filter(x=>x!==m);seeEnemy(s,m.k,'kill',d);resAdd(s,'food',2);
+  applyArtOn(s,'kill',d,m,{move:mv?.id,foeName:MONSTERS[m.k].name});s.mons=s.mons.filter(x=>x!==m);seeEnemy(s,m.k,'kill',d);resAdd(s,'food',2,'trial');
   const r=d.arts.basicFist;if(r&&r.xp<25)r.xp=25.5;const learned=gainArt(d,0,1,s.t);for(const id of learned.moves)log(s,`${d.name}練熟了，自悟新招「${MOVES.find(x=>x.id===id).name}」`);
   log(s,`${d.name}站穩腳步，終於把來犯的野獸趕回山裡。`);think(s,d,'learned');s.pace.trial='done';milestone(s,'trial');d.task=null;d.anim=null;d.swing=null;
 }

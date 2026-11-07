@@ -36,7 +36,7 @@ export const comedyOk = (s) => { const J = s.jh; if (!J.comedyOn) return false; 
 const mood = (d, v) => { if (d) d.mood = Math.max(0, Math.min(100, d.mood + v)); };
 // v2.0 A8：卡文字／選項／價值觀移至 destiny-trees.json；此處只留效果函式（依選項序號）
 const FX = {
-  diao: [(s) => { resSet(s, 'food', Math.max(0, s.res.food - 3)); s.jh.diao++; log(s, `餵了神鵰一次（${s.jh.diao}/${JH.diaoFeeds}）。`); if (s.jh.diao >= JH.diaoFeeds) log(s, '神鵰低鳴一聲，用翅膀拍了拍楊過——結緣了。'); }, () => {}],
+  diao: [(s) => { resSet(s, 'food', Math.max(0, s.res.food - 3), 'eagle'); s.jh.diao++; log(s, `餵了神鵰一次（${s.jh.diao}/${JH.diaoFeeds}）。`); if (s.jh.diao >= JH.diaoFeeds) log(s, '神鵰低鳴一聲，用翅膀拍了拍楊過——結緣了。'); }, () => {}],
   arm: [(s) => armLoss(s), (s) => { const y = find(s, 'yangguo'); mood(y, -10); }],
   tomb: [(s) => { s.jh.bees = true; }, () => {}],
   zbt: [(s, H) => zbtBet(s, H, 0), (s, H) => zbtBet(s, H, 1), () => {}],

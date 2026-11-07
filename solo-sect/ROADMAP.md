@@ -1,5 +1,9 @@
 # 山門紀路線圖
 
+## N57 糧食帳查因（#487，PR 準備中）
+
+規則 3.7 在原 resAdd 帳加糧食來源，不另建庫存。9b／9c 同種子逐日守恆均為 0；9c 三名住民的灶房產出近乎用完於基本三餐，端飯與訪客又吃掉盈餘，故 12 種子第 10／30 日均不足加一人所需的 14 份。這是已採用規則的結果，沒有改招募機率或門檻。下一步依 #488 做 #393 測試精簡，再接第十至十二輪。
+
 > 這份只寫「現在在哪、接下來做什麼、等誰決定」。舊路線圖保留作歷史：
 > [ROADMAP-HISTORY.md](docs/reports/milestones/ROADMAP-HISTORY.md)（v0.6–v2.5，各文件寫的「ROADMAP §N」指它）、
 > [loop/ROADMAP.md](loop/ROADMAP.md)（loop engineering 輪次）、
