@@ -99,7 +99,7 @@ test('N34 情境識別穩定後零決策時間，選招/心願所有人共用',a
 
 test('N35 母招/條件/效果全資料化，只有真失手加w，弱敵期望慢逾10倍',async()=>{
   const {TECHNIQUES,learnFromLoss,applyTechnique,learningRate}=await import('../src/techniques.mjs');
-  const {breakWindup}=await import('../src/arts.mjs');
+  const {breakWindup,combatMoves}=await import('../src/arts.mjs');
   const s=createState(17,{kind:'bare',askMajor:false}),d=s.ds[0],boar={k:'boar',uid:'boar',hp:100,pos:[20,0],posture:70,swing:{at:1,mv:'boarCharge',wind:1}};
   d.wu=3;const facts={hands:2,afterDodge:true,opponentCharge:true,force:24,opponentForce:40};
   assert.equal(learningRate(.5)/learningRate(.9)>10,true);
@@ -109,13 +109,16 @@ test('N35 母招/條件/效果全資料化，只有真失手加w，弱敵期望�
   assert.equal(breakWindup(s,d,boar,'bodyKick',.6),false);
   const out=applyTechnique(s,d,boar,'flankStrike',facts);assert.equal(out.armorBypass,true);assert.equal(out.interrupt,true);assert.equal(boar.swing,null);
   assert.equal(TECHNIQUES.length,6);const enemy={k:'bandit',uid:'bandit',wu:3};
+  assert.deepEqual(combatMoves({k:'boar'},60).map(m=>m.id),['boarCharge'],'六十像素外不能用二十六像素的拱挑取代衝撞');
+  assert.deepEqual(combatMoves({k:'boar',survived:true,opened:true},60).map(m=>m.id),['boarCharge'],'倖存野豬假衝過後，下次在合法距離內會真衝撞');
   for(let i=0;i<24;i++)learnFromLoss(s,enemy,['guard'],{hands:2,weapon:'blade',opponentWind:true},.5,{lost:true});assert.ok(enemy.glimmer.known.includes('disarm'));
   // #445 9c: the three contexts are reachable through actual exchanges, including
   // the opponent's real windup/approach state and the defender's real dodge record.
   const q=createState(17,{kind:'bare'}),hero=q.ds[0];hero.pos=[0,0];q.ds=[hero];q.captureTechniqueContexts=true;
   const boar2={k:'boar',uid:'boar2',hp:48,max:48,pos:[50,0],posture:70,practice:{hands:{},eyes:{},origin:{}}};q.mons=[boar2];
   assert.equal(resolveSwing(q,boar2,hero,()=>.5,{move:'boarCharge',wind:1}).kind,'dodge');
-  resolveSwing(q,hero,boar2,()=>.99,{move:'bodyKick',wind:.6});assert.ok(q.techniqueContextCounts.flankStrike.heroSeen);
+  const dodgeAtWindup={...hero.lastDodge};q.t=dodgeAtWindup.until+.1;
+  resolveSwing(q,hero,boar2,()=>.99,{move:'bodyKick',wind:.6,dodgeAtWindup});assert.ok(q.techniqueContextCounts.flankStrike.heroSeen);
   const {COVERS}=await import('../src/tactics.mjs');hero.hp=40;hero.pos=[...COVERS[0].stand];
   const dog={k:'dog',uid:'dog',hp:14,max:14,pos:[hero.pos[0]+20,hero.pos[1]],practice:{hands:{},eyes:{},origin:{}}};q.mons=[dog];
   assert.equal(resolveSwing(q,dog,hero,()=>.99,{move:'dogBite',wind:.4}).kind,'hit');assert.ok(q.techniqueContextCounts.dustCast.heroLost);

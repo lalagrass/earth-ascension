@@ -1221,7 +1221,7 @@ export function windOf(d, mvId, cd) {
 export function combatMoves(d,distance=0) {
   if(isMon(d)&&FOE_ACTIONS[d.k]){
     const weapon=d.weapon||['blade','staff','fist'][(d.i||0)%3];
-    return [...FOE_ACTIONS[d.k].moves,...TECHNIQUE_MOVES.filter(m=>d.glimmer?.known.includes(m.id)&&moveAvailable(d,m))].filter(m=>(!m.requiresSurvived||d.survived)&&(!m.once||!d.opened)&&(!m.minDistance||distance>=m.minDistance)&&(!m.weapon||m.weapon===weapon)&&usableMove(d,m)).map(m=>({...m,cd:m.wind+BODY_TIMING.recovery}));
+    return [...FOE_ACTIONS[d.k].moves,...TECHNIQUE_MOVES.filter(m=>d.glimmer?.known.includes(m.id)&&moveAvailable(d,m))].filter(m=>(!m.requiresSurvived||d.survived)&&(!m.once||!d.opened)&&(!m.minDistance||distance>=m.minDistance)&&distance<=m.range&&(!m.weapon||m.weapon===weapon)&&usableMove(d,m)).map(m=>({...m,cd:m.wind+BODY_TIMING.recovery}));
   }
   return (d.moves||['fist']).map(id=>MOVES.find(m=>m.id===id)).filter(m=>m&&moveAvailable(d,m)&&usableMove(d,m));
 }
@@ -1427,6 +1427,7 @@ export function resolveSwing(s, atk, def, rnd, ctx = {}) {
   const move = timedMoveId(atk,ctx.move), odds = clashOdds(s,atk,def,{ ...ctx, move });
   const initialT=ctx.opening?.T||clashTimes(s,atk,def,ctx),atkFacts=techniqueFacts(s,atk,def,move),defFacts={...techniqueFacts(s,def,atk),opponentWind:true};
   if(ctx.targetApproachingAtWindup)atkFacts.approaching=true;
+  if(ctx.dodgeAtWindup?.target===(def.uid||def.id||def.k)){atkFacts.afterDodge=true;atkFacts.opponentCharge=!!ctx.dodgeAtWindup.charging;}
   atk.lastCombatMove=move;
   const result = resolveSwingCore(s,atk,def,rnd,{ ...ctx, move });
   result.learning = recordExchange(s,atk,def,move,ctx.opening?.p ?? odds.hit,result);
