@@ -408,7 +408,7 @@ function encounter(s, e, seg, team, H) {
     X.events.push(`閃${E.name}失手`);
   }
   X.fights++;
-  if (ROUTE.indexOf(seg) < 3 && ROUTE.indexOf(seg) >= 0) {
+  if (ROUTE.indexOf(seg) < 4 && ROUTE.indexOf(seg) >= 0) {
     for (const d of team) seeEnemy(s, e, 'fight', d);
     seeEnemy(s, e, 'see');
     const source = seg.id === 'foot' ? DEN : RINGS.find(r => r.id === seg.id)?.nest || trailAt(X.dist);
@@ -425,7 +425,7 @@ function encounter(s, e, seg, team, H) {
   return t;
 }
 
-function pickEnemy(s, seg, H) { const tot = seg.roster.reduce((a, [, w]) => a + w, 0); let r = H.rand(s) * tot; for (const [k, w] of seg.roster) { r -= w; if (r < 0) return k; } return seg.roster[0][0]; }
+function pickEnemy(s, seg, H) { const focus = s.exp?.focus; if (focus?.seg === seg.id && seg.roster.some(([key]) => key === focus.key)) return focus.key; const tot = seg.roster.reduce((a, [, w]) => a + w, 0); let r = H.rand(s) * tot; for (const [k, w] of seg.roster) { r -= w; if (r < 0) return k; } return seg.roster[0][0]; }
 export function checkRetreat(s, team) {
   const X = s.exp;
   let down = null;
@@ -463,7 +463,7 @@ export function expStep(s, dt, H) {
     X.sta = (X.sta ?? EXP.sta + Math.max(0, ...team.map((d) => d.staBonus || 0))) - (X.dist - d0) * EXP.staStep;
     if (X.gorgeT == null && !(X.from > 0) && X.dist >= ROUTE[3].from) X.gorgeT = s.t - X.startT;
     const G = rivalGate(s, routeSeg(X.gateI), X.gateI);
-    if (G && X.dist >= G.to && X.gateI < 3) {
+    if (G && X.dist >= G.to && X.gateI < 4) {
       X.dist = G.to; X.gateI++; X.encN = (X.encN || 0) + 1; X.fights++;
       const sg = (X.seg[G.id] ??= { enc: 0, kill: 0 }); sg.enc++;
       for (const d of team) seeEnemy(s, G.gate, 'fight', d); seeEnemy(s, G.gate, 'see');
@@ -531,6 +531,7 @@ function finishExpedition(s, team, H) {
   const rep0 = { ret: X.ret ? { hits: X.ret.hits, staLost: X.ret.staLost, lost: X.ret.lost } : null, style: X.style, styleWhy: X.styleWhy, evaded: X.evaded, chase: X.chase, clear, qing, gates: X.gates, blocked: X.blocked || null, time: Math.round(s.t - X.startT), order: X.order, sta: Math.max(0, Math.round(X.sta ?? 0)), pat: Math.max(0, Math.round(X.pat ?? 0)), patMax: X.patMax, scout: X.scout, camps: X.camps || [], from: X.camp, quarrel: qu, cool: Math.round(cool), fast, cause };
   rep0.story = storyOf(team, rep0, X);
   const rep = { ...rep0, n: X.n, team: team.map((d) => d.name), ids: team.map((d) => d.id), dist, seg: segAt(Math.max(0, dist - 0.01)).name, kills: X.kills, escaped: X.escaped, hurt, out: outcomeOf(X), razed: X.razed || [], loot: X.loot, reason: X.reason, fights: X.fights, sectRec, personal: rec, day: Math.floor(s.t / DAY) + 1 };
+  if (X.autonomous != null) { const stats = (s.forayStats ??= { starts: 0, patrols: 0, hurt: 0, discoveries: 0, targets: [] }); stats.hurt += hurt.length; stats.discoveries += Math.max(0, team.reduce((n, d) => n + (d.glimmer?.known || []).length, 0) - (X.glimmerBefore || 0)); rep.outing = { kind: X.outing, autonomous: X.autonomous, focus: X.focus }; }
   for (let i = 0; i < team.length; i++) for (let j = i + 1; j < team.length; j++) addMem(s, team[i], team[j], 'patrol', rep.seg); // v1.65 並肩巡山
   s.lastExp = rep; s.exp = null;
   log(s, `巡山戰報 #${rep.n}：走到${rep.seg} ${dist} 步｜${reportText(rep)}`);

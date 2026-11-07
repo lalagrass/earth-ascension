@@ -1,0 +1,240 @@
+{
+  "days": [
+    30,
+    60
+  ],
+  "seeds": [
+    1001,
+    1002,
+    1003,
+    1004,
+    1005,
+    1006,
+    1007,
+    1008,
+    1009,
+    1010,
+    1011,
+    1012
+  ],
+  "rows": [
+    {
+      "seed": 1001,
+      "day30": {
+        "starts": 7,
+        "hurt": 6,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 7
+      },
+      "day60": {
+        "starts": 7,
+        "hurt": 6,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 7
+      }
+    },
+    {
+      "seed": 1002,
+      "day30": {
+        "starts": 17,
+        "hurt": 12,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 17
+      },
+      "day60": {
+        "starts": 26,
+        "hurt": 15,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 26
+      }
+    },
+    {
+      "seed": 1003,
+      "day30": {
+        "starts": 12,
+        "hurt": 10,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 12
+      },
+      "day60": {
+        "starts": 12,
+        "hurt": 11,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 12
+      }
+    },
+    {
+      "seed": 1004,
+      "day30": {
+        "starts": 24,
+        "hurt": 17,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 24
+      },
+      "day60": {
+        "starts": 34,
+        "hurt": 25,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 34
+      }
+    },
+    {
+      "seed": 1005,
+      "day30": {
+        "starts": 26,
+        "hurt": 19,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 26
+      },
+      "day60": {
+        "starts": 36,
+        "hurt": 24,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 36
+      }
+    },
+    {
+      "seed": 1006,
+      "day30": {
+        "starts": 13,
+        "hurt": 8,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 13
+      },
+      "day60": {
+        "starts": 15,
+        "hurt": 9,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 15
+      }
+    },
+    {
+      "seed": 1007,
+      "day30": {
+        "starts": 22,
+        "hurt": 16,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 22
+      },
+      "day60": {
+        "starts": 22,
+        "hurt": 16,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 22
+      }
+    },
+    {
+      "seed": 1008,
+      "day30": {
+        "starts": 18,
+        "hurt": 7,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 18
+      },
+      "day60": {
+        "starts": 20,
+        "hurt": 9,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 20
+      }
+    },
+    {
+      "seed": 1009,
+      "day30": {
+        "starts": 18,
+        "hurt": 13,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 18
+      },
+      "day60": {
+        "starts": 25,
+        "hurt": 18,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 25
+      }
+    },
+    {
+      "seed": 1010,
+      "day30": {
+        "starts": 15,
+        "hurt": 14,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 15
+      },
+      "day60": {
+        "starts": 42,
+        "hurt": 35,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 42
+      }
+    },
+    {
+      "seed": 1011,
+      "day30": {
+        "starts": 13,
+        "hurt": 7,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 13
+      },
+      "day60": {
+        "starts": 17,
+        "hurt": 10,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 17
+      }
+    },
+    {
+      "seed": 1012,
+      "day30": {
+        "starts": 19,
+        "hurt": 17,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 19
+      },
+      "day60": {
+        "starts": 19,
+        "hurt": 17,
+        "discoveries": 0,
+        "totalDiscoveries": 0,
+        "expN": 19
+      }
+    }
+  ],
+  "totals": {
+    "30": {
+      "starts": 204,
+      "hurt": 146,
+      "discoveries": 0,
+      "totalDiscoveries": 0
+    },
+    "60": {
+      "starts": 275,
+      "hurt": 195,
+      "discoveries": 0,
+      "totalDiscoveries": 0
+    }
+  }
+}

@@ -91,6 +91,7 @@ export const MIGRATIONS = [
     o.choices = (o.choices || []).filter(c => !['dfbb', 'hy'].includes(c.jh));
     if (o.jh) { o.jh.visitor = null; o.jh.visitorPending = null; }
   } },
+  { to: '4.1', note: 'N62（#504）：新增自主後山出獵門規；舊局沿預設允許，已在外巡山者不重派，含目標勝算的記錄從遷移後起算', up(o) { o.forayPolicy ??= 'allow'; o.forayStats ??= { starts: 0, patrols: 0, hurt: 0, discoveries: 0, targets: [] }; o.forayStats.targets ??= []; } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
 export function v150Up(o) {

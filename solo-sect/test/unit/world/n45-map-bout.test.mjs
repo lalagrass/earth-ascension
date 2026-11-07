@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, startExpedition } from '../../../src/sim.mjs';
-import { openExp, DEN } from '../../../src/world.mjs';
+import { openExp, DEN, RINGS } from '../../../src/world.mjs';
 import { ENEMIES } from '../../../src/data.mjs';
+import { EXP_BOUT } from '../../../src/exp-map-combat.mjs';
 import { lairStep } from '../../../src/threat.mjs';
 
 test('N45 巡山山腳從既有邊緣獸穴走來，逐招交手後才結算', () => {
@@ -61,5 +62,10 @@ test('N45 巡山山腳從既有邊緣獸穴走來，逐招交手後才結算', (
     assert.equal(next.exp.bout?.key, key, `${key} 守關進逐招地圖`);
     assert.equal(next.exp.bout?.foes[0].k, moveKey, `${key} 沿用同種招式`);
     assert.equal(next.exp.bout?.near, near);
+    if (near) assert.deepEqual(next.exp.bout.source, RINGS[index].nest, '林地守關從可見環巢走近');
+    else {
+      const B = next.exp.bout, [x, y] = B.source;
+      assert.ok(x === B.left || x === B.left + 2 * EXP_BOUT.halfWidth || y === B.top || y === B.top + 2 * EXP_BOUT.halfHeight, '山腰守關從小地圖邊緣走近');
+    }
   }
 });

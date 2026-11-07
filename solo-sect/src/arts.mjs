@@ -1263,7 +1263,10 @@ export function moveStats(w, moveId, wind = 0.5) {
     if (p) return { force: m.force * (w.raging ? CLASH.fret.force : 1), speed: p.speed, armor: p.armor, type: m.type || (m.cut ? 'blade' : m.bite ? 'bite' : 'fist') };
     return MOVE.monsters[w.k] || MOVE.monsters.fist;
   }
-  const body=bodyMove(moveId)||TECHNIQUE_MOVES.find(m=>m.id===moveId); if (body) return { force: (body.force + (w.skills?.strength || 0) * BODY_TIMING.forceSkill) * (w.raging ? CLASH.fret.force : 1), speed: 1 / body.wind, armor: MOVE.armor, type: body.type };
+  const body=bodyMove(moveId)||TECHNIQUE_MOVES.find(m=>m.id===moveId); if (body) {
+    const trained = body.skill === 'strength' ? 0 : (w.skills?.[body.skill] || 0);
+    return { force: (body.force + ((w.skills?.strength || 0) + trained) * BODY_TIMING.forceSkill) * (w.raging ? CLASH.fret.force : 1), speed: 1 / body.wind, armor: MOVE.armor, type: body.type };
+  }
   const a = artOfMove(moveId) || artById(moveId), t = a && w?.arts?.[a.id] ? artTier(w, a.id) : 0, tags = a?.tags || [];
   const force = MOVE.force + t * MOVE.tierForce + (w?.skills?.strength || 0) * MOVE.strengthForce + (tags.includes('剛') ? MOVE.hardForce : 0) + (tags.includes('拙') ? MOVE.plainForce : 0);
   const speed = MOVE.speed + t * MOVE.tierSpeed + (tags.includes('快') ? MOVE.quickSpeed : 0) + Math.min(MOVE.windSpeedMax, MOVE.windSpeed / Math.max(MOVE.minWind, wind));
@@ -1432,7 +1435,7 @@ export function techniqueFacts(s,a,t,move=null){
   return {hands:FOE_ACTIONS[a.k]?.hands??2,weapon,opponentWind:!!(t.swing||t.bswing),afterDodge,opponentCharge:!!(afterDodge?last.charging:incoming?.travel),enemies:close.length,opponentUnbalanced:(t.posture??postureMax(t))<postureMax(t)/2,losing:a.hp<(a.max||100)/2||(a.posture??postureMax(a))<postureMax(a)/2,cornered:!!coverFor(a)||burden>=1,approaching:!!t.path?.length&&!t.swing&&!t.bswing,force:moveStats(a,move).force,opponentForce:moveStats(t).force};
 }
 function moveParents(move){const m=MOVES.find(m=>m.id===move)||Object.values(FOE_ACTIONS).flatMap(p=>p.moves).find(m=>m.id===move);return [move,m?.type,m?.skill,m?.weapon,m?.tool==='stone'?'stone':null].filter(Boolean);}
-function noteDiscoveries(s,d,rows){for(const row of rows){const text=`${d.name||d.k}在吃虧後悟出「${row.name}」`;log(s,text);if(d.id)chronOf(s,d,'glimmer',{chron:text});}}
+function noteDiscoveries(s,d,rows){for(const row of rows){const text=`${d.name||d.k}在吃虧後悟出「${row.name}」：${row.reason}`;log(s,text);if(d.id)chronOf(s,d,'glimmer',{chron:text});}}
 function reportContact(s,a,t,m,c){if(!c.layer)return;const row=TISSUES.blunt.find(r=>r.id===c.layer);log(s,`${a.name||a.k}以${m.name||m.id}打在${t.name||t.k}的${c.where==='body'?'':c.side}${BODY_PARTS[c.where].name}，${row.name}${c.layer==='bruise'?'，只痛未失血':''}`);}
 export function transferredDamage(s,a,t,damage,force,move){const action=MOVES.find(m=>m.id===move)||{id:move||'redirect',type:moveStats(a,move).type},contact=contactImpact(s,a,t,{move:action,force,armor:moveStats(t).armor});reportContact(s,a,t,action,contact);return damage*contact.damageFactor;}
 
