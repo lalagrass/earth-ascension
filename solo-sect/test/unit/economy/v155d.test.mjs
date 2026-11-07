@@ -2,7 +2,8 @@
 import test from 'node:test'; import assert from 'node:assert/strict'; import fs from 'node:fs'; import crypto from 'node:crypto';
 import { createState, tick, startExpedition } from '../../../src/sim.mjs'; import { save } from '../../../src/save.mjs'; import { openExp } from '../../../src/world.mjs';
 import { ENDLESS, DAY } from '../../../src/data.mjs'; import { segAt } from '../../../src/world.mjs'; import * as W from '../../../src/world.mjs';
-const buff = (s, ids, lvl) => { for (const d of s.ds) if (ids.includes(d.id)) { d.skills.palm = d.skills.leg = lvl; d.skills.agility = d.skills.strength = lvl / 2; d.hp = 100; d.mood = 80; } };
+// N42: 身體技巧只縮短動作下限；連闖高階守關還需要實際護體功夫。
+const buff = (s, ids, lvl) => { for (const d of s.ds) if (ids.includes(d.id)) { d.skills.palm = d.skills.leg = lvl; d.skills.agility = d.skills.strength = lvl / 2; d.zixia = 7; d.hp = 100; d.mood = 80; } };
 test('雲海：絕頂之前不算，之後每 200 步一重，重數＝模擬的段', () => {
   assert.equal(W.cloudAt(W.TRAIL_END - 0.1), null); assert.equal(W.cloudAt(null), null);
   for (const d of [1600, 1700, 1799, 1800, 2050, 2399]) { const c = W.cloudAt(d); assert.equal('end' + c.k, segAt(d).id, String(d)); assert.ok(c.f >= 0 && c.f < 1); }

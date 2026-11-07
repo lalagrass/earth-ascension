@@ -251,6 +251,6 @@ test('loop201 面板規則跟上封頂與造詣', () => {
   assert.doesNotMatch(h, /造詣不加傷害/);
   assert.doesNotMatch(h, /氣宗／紫霞/);
   assert.doesNotMatch(rulesHtml(), /造詣進實戰/);
-  assert.match(rulesHtml(), /造詣不加傷害/);
+  assert.match(rulesHtml(), /出手強度只讀武學的勁目標，沒有熟練十重的第二層傷害/);
   assert.doesNotMatch(neigongRules2Html({ ng: 1 }), /出手 ×/);
 });
