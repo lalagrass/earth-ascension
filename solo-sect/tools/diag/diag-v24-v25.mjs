@@ -3,7 +3,7 @@
    strat：idle（不操作）／bot（每日試蓋寢舍、能收就收）／farm（bot＋升正殿／演武場／膳房、缺鐵木靈石時有閒錢就買）／exp（bot＋每日派前 4 人巡山，撤退線 50%）
    門派依種子輪替：峨眉、武當、桃花、古墓、星宿、無名（自創，不指定 sect24）。崩潰記 crash:1 不中斷。 */
 import { run } from '../../test/harness/bot.mjs';
-import { power, strikeLedger33 } from '../../src/jianghu.mjs';
+import { power, strikeLedger } from '../../src/jianghu.mjs';
 import { startBuild, buildWhy, facDef, startExpedition, canExpedition } from '../../src/sim.mjs';
 import { openExp } from '../../src/world.mjs';
 import * as EC from '../../src/economy.mjs';
@@ -17,7 +17,7 @@ export const SECTS24 = process.env.SS_SECTS ? process.env.SS_SECTS.split(',').ma
 const ST = process.argv[2] || 'bot', N = +(process.argv[3] || 40), S0 = +(process.argv[4] || 1001), D = +(process.argv[5] || 30);
 const avg = (a, f) => (a.length ? a.reduce((x, d) => x + f(d), 0) / a.length : 0);
 /* loop206：只讀。出手、減傷、內力上限分開記，不寫回狀態。 */
-const ledOf = (s) => { const L = strikeLedger33(s); return { dps: +L.dps.toFixed(2), mit: +L.mit.toFixed(3), qi: +L.qi.toFixed(1) }; };
+const ledOf = (s) => { const L = strikeLedger(s); return { dps: +L.dps.toFixed(2), mit: +L.mit.toFixed(3), qi: +L.qi.toFixed(1) }; };
 /* loop205：只量測。鉤子不寫存檔。每局開始把計數清掉。 */
 const box = { trainHi: { n: 0, da: 0 }, trainLo: { n: 0, calm: 0 }, feedLian: 0, feedBase: 0, daoTrain: 0, daoWho: new Set(), by: {} };
 const resetBox = () => { box.trainHi.n = box.trainHi.da = box.trainLo.n = box.trainLo.calm = box.feedLian = box.feedBase = box.daoTrain = 0; box.daoWho = new Set(); box.by = {}; };
