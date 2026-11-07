@@ -575,7 +575,7 @@ CI 第三輪 quick 與 golden 全過，accept 296/301。五項逐項處置：
 |---|---|
 | A 人際 | `bash solo-sect/test/run.sh smoke`：被掩護者單向好感 +8、人物面板有原因、第 100 日仍銘記；共守、切磋落敗、拉住惱羞、傳藝共用 `SOCIAL_EVENTS` 資料列。短期想法按日撤回當時實際加值；掩護成功事件接 N44。 |
 | A 設施 | 同一 smoke：外功場升 Lv1 後 `registry` 真站位增加，可逐個預約直到滿；石牆將山門貼身位 2→1。醫館、藥園各階治傷資料和自然工作點四階見[設施階段](docs/systems/facility-stages.md)。 |
-| A 舊驗收更新 | `test/accept/v160.test.mjs` 原有「九座新建築只兩階」與 #461 四階規則互斥，改成恰四階並逐階有活動；未建不登記、修復後原容量及其餘舊斷言不放寬。 |
+| A 舊驗收更新 | `test/accept/v160.test.mjs` 原有「九座新建築只兩階」與 #461 四階規則互斥，改成恰四階並逐階有活動；未建不登記、修復後原容量及其餘舊斷言不放寬。`v145-review`、`v145`、`v150` 的精確遷移路徑追加新 4.2，仍逐版比較完整序列；未來版本拒讀的斷言保留。 |
 | B 公式 | 本輪沒有新抽機率；沿用 N62 的 6,000 次出獵效用期望測試，smoke 期望 0.4926757803、實測 0.4978333333、容差 0.021407701，沒有改斷言。 |
 | golden | Node 22：`docker run --rm -v "$PWD:/work" -w /work node:22-bookworm-slim node solo-sect/tools/golden.mjs --write --tier all`；quick 4 格、full 32 格及舊檔重產並自檢「✓ 全部相符」。山門紀 CI 仍是正式門檻。 |
 
