@@ -1,5 +1,7 @@
 import {originPeople,ORIGIN_RELATIONS} from './origins.mjs';
 import {HUNGER_PER_SECOND,admissionStatus,mentorFor,guidanceSeconds,clockActor,noteGuidance,guidanceLearning,guidanceDaily} from './admission.mjs';
+import {attraction,applicantAway,discipleCount,policyCap,recruitmentInit,recruitmentOf,returnFromWork,sendApplicantToWork,setRecruitPolicy} from './recruitment.mjs';
+export {attraction,policyCap,setRecruitPolicy} from './recruitment.mjs';
 import {transferredDamage,moveStats} from './arts.mjs';
 import {ringCapacity,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} from './tactics.mjs';
 import {pickupDrop} from './techniques.mjs';
@@ -81,11 +83,12 @@ export function createState(seed = 1, heroSpec = null) {
   if (heroSpec?.kind === 'bare') makeBare(byId(s, 'hero'));
   for(const d of s.ds)if(d.originRelation)makeBare(d);
   for (const d of s.ds) { d.moves=[...new Set([...d.moves,...BODY_BASE])];ensurePractice(d,s.codex); }
+  s.recruitment = recruitmentInit(discipleCount(s));
   return s;
 }
 function mkDisciple(d, i, at = 'court', personality = d.personality || [], known = personality.slice(0, 1)) {
   return seedArts({
-      id: d.id, name: d.name, root: d.root ?? 3, rootKnown: true, style: d.style, personality: [...personality], known: [...known], together: 0, mood: MOOD.base, thoughts: [], why: [], adult: d.adult, sprite: d.sprite, fem: d.fem, traits: d.traits,
+      id: d.id, name: d.name, root: d.root ?? 3, rootKnown: true, style: d.style, personality: [...personality], known: [...known], together: 0, mood: MOOD.base, thoughts: [], why: [], adult: d.adult, age: d.age, child: d.child, youngHero: d.youngHero, sprite: d.sprite, fem: d.fem, traits: d.traits,
       skills: { ...d.skills }, moves: ['fist'], pendingMove: null,
       needs: { energy: 80, hunger: 70 - i * 10, social: 50, fun: 60 }, hp: 100, fret: 0, raging: false, rageUntil: 0, busyUntil: 0,
       at, pos: [...NODES[at]].map((v, k) => v + (k ? 0 : (i - 1) * 16)), path: [],
@@ -101,7 +104,7 @@ export const outers = (s) => s.ds.filter((d) => d.role === 'outer');
 export const emergency = (s) => s.res.food <= 0 || s.mons.some((m) => m.raid && !m.gone);
 // loop39：8 人時內門多、外門少（常 4 外門撐 8 人），日課過半做不完；「人多分攤」開時全派人數 ≥ 外門×QUOTA.shareAt，每位外門日課 −1。
 export const shareOn = (s) => !!s && s.ds.length >= QUOTA.shareAt * Math.max(1, outers(s).length);
-export const quotaOf = (d, s) => QUOTA.points - (shareOn(s) ? 1 : 0) + (d.choreDebt || 0);
+export const quotaOf = (d, s) => QUOTA.points - (shareOn(s) ? 1 : 0) + (d.choreDebt || 0) + (d.boardByWork ? 1 : 0);
 // 內門／首徒免雜務：外門已有人手（≥2）才免；缺糧或野豬下山時全員暫時回來幫忙
 export const skipsChores = (s, d) => (d.role === 'inner' || d.role === 'head') && outers(s).length >= QUOTA.outerMin && !emergency(s);
 export function setDuty(s, id, act, on) { const d = byId(s, id); if (!d || !CHORE_ACTS.includes(act)) return; d.duties = d.duties.filter((a) => a !== act); if (on) d.duties.push(act); }
@@ -113,8 +116,9 @@ export function canPromote(s, id) {
   if ((d.contrib || 0) < PROMOTE.contrib) return { ok: false, why: `貢獻不足（${d.contrib || 0}/${PROMOTE.contrib}）` };
   if ((d.trialCool || 0) >= s.day) return { ok: false, why: '考核剛失敗，明日再試' };
   if (d.task?.trial) return { ok: false, why: '考核進行中' };
-  const ex = s.ds.filter((o) => (o.role === 'inner' || o.role === 'head') && o.adult).sort((a, b) => b.skills[b.style] - a.skills[a.style])[0];
-  if (!ex) return { ok: false, why: '沒有內門可以主考' };
+  if ((d.known || []).length < (d.personality || []).length) return { ok: false, why: '師父還沒看清他的性情' };
+  const ex = s.ds.filter((o) => (o.role === 'inner' || o.role === 'head') && o.adult && aff(s, o, d) >= ROOT.inviteAff).sort((a, b) => b.skills[b.style] - a.skills[a.style])[0];
+  if (!ex) return { ok: false, why: `尚無相熟的內門師父願意主考（好感需 ${ROOT.inviteAff}）` };
   return { ok: true, d, ex };
 }
 // 切磋考核：在木樁場對練，結束時結算（根骨×5＋主修＋力氣/2＋雜訊 ≥ 門檻）
@@ -133,10 +137,10 @@ export { book }; // v1.8 移到 util.mjs（各模組共用）
 export function capacity(s) { return FACILITIES.reduce((a, f) => a + (facStage(s, f.id).beds || 0), 0); }
 export function recruitNeed(s) { return RECRUIT.baseRep + RECRUIT.stepRep * (disciples(s).length - 3); }
 export function canRecruit(s) {
-  const next = econOf(s).pool[0] || RECRUIT_POOL.find((p) => !s.ds.some((d) => d.id === p.id)); // 義學帶回的人先評估食宿與師父，毋須等固定名冊招滿
+  const next = econOf(s).pool.find((p) => !applicantAway(s,p.id)) || RECRUIT_POOL.find((p) => !s.ds.some((d) => d.id === p.id || (d.id === 'hero' && s.hero?.id === p.id)) && !applicantAway(s,p.id)); // 義學帶回的人先評估食宿與師父
   if (!next) return { ok: false, why: '暫無人選' };
-  if(!next.school&&s.rep<recruitNeed(s))return {ok:false,why:`還未聽說山門（名聲 ${s.rep}/${recruitNeed(s)}）`,heard:false};
-  const candidate=makeBare({id:next.id,skills:{...next.skills},situation:next.situation});
+  if(!next.school&&attraction(s)<recruitNeed(s))return {ok:false,why:`還未聽說山門（名聲與自產成績 ${attraction(s).toFixed(1)}/${recruitNeed(s)}）`,heard:false};
+  const candidate=makeBare({id:next.id,adult:next.adult,skills:{...next.skills},situation:next.situation,support:next.support,canWork:next.canWork});
   return {...admissionStatus(s,candidate),next,heard:true};
 }
 // 三問心印：預設答案取人選天性；答案→前兩個不重複特質為明面，人選天性補為第三（暗，相處 900 秒揭露）
@@ -148,13 +152,15 @@ export function personalityFrom(p, answers = defaultAnswers(p)) {
 }
 const stableTraitHash = (str) => { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967296; };
 export function recruit(s, answers) {
-  const c = canRecruit(s); if (!c.ok) return c;
+  const c = canRecruit(s); if (!c.ok) { if (c.workAway && c.next && sendApplicantToWork(s,c.next.id)) { log(s,`${c.next.name}付不起束脩，山門暫無可抵食宿的工作，先下山做工，攢夠再回來。`); return {...c,away:true}; } return c; }
   const { personality, known } = personalityFrom(c.next, answers);
   if (rand(s) < 0.3) { const x = rand(s) < 0.5 ? 'lazy' : 'stubborn'; if (!personality.includes(x)) personality.push(x); } // v0.97 一般弟子也可能懶散／較真（暗）
+  if(c.offer.kind==='food')resAdd(s,'food',c.offer.amount,'tuition');
+  if(c.offer.kind==='coin')resAdd(s,'coin',c.offer.amount,'tuition');
   resAdd(s, 'food', -ACTIVITIES.eat.use.food, 'admission'); { const h = stableTraitHash(`${s.seed}:trait29:${c.next.id}:${s.ds.length}`); if (h < RECRUIT_TRAIT_VARIATION.p) { const x = RECRUIT_TRAIT_VARIATION.pool[Math.floor(stableTraitHash(`${s.seed}:trait29b:${c.next.id}:${s.ds.length}`) * RECRUIT_TRAIT_VARIATION.pool.length)]; if (!personality.includes(x)) { const old = personality[1]; personality[1] = x; const k = known.indexOf(old); if (k >= 0) known[k] = x; (s.v29n ??= {}).recruitTrait = (s.v29n.recruitTrait || 0) + 1; } } } /* loop188 v2.9 經典特質（雜湊，不吃亂數流） */
-  const d = makeBare(mkDisciple(c.next,1,'gate',personality,known)); d.guidanceMentor=c.mentor;d.admissionReason=c.reason; d.together = 0; Object.assign(d, { role: 'outer', root: 2 + Math.floor(rand(s) * 4), rootKnown: false }); { const A = archRecruit(() => rand(s)); Object.assign(d, { arch: A.id, root: A.root, wu: A.wu }); if (!d.personality.includes(A.trait)) d.personality.push(A.trait); } /* loop21 原型 */ s.ds.push(d); if (c.next.school) econOf(s).pool.shift();
+  const d = makeBare(mkDisciple(c.next,1,'gate',personality,known)); d.guidanceMentor=c.mentor;d.admissionReason=c.reason; d.together = 0; d.boardByWork=c.offer.kind==='work'; Object.assign(d, { role: 'outer', root: 2 + Math.floor(rand(s) * 4), rootKnown: false }); { const A = archRecruit(() => rand(s)); Object.assign(d, { arch: A.id, root: c.next.root??A.root, wu: c.next.wu??A.wu }); if (!d.personality.includes(A.trait)) d.personality.push(A.trait); } /* loop21 原型 */ for(const art of c.next.starterArts||[])learnArt(d,art,s.t); s.ds.push(d); delete recruitmentOf(s).returned[c.next.id]; if (c.next.school) econOf(s).pool.splice(econOf(s).pool.findIndex((x)=>x.id===c.next.id),1);
   for (const o of s.ds) if (o !== d) initPair(s, o, d, 5); sectRecruit(s, d);
-  log(s, `${d.name}慕名從村路上山，拜入門下。`); recordDeed(s, d, 'join', { chron: `${d.name}慕名上山，拜入門下` }); return { ok: true, d };
+  log(s, `${d.name}慕名從村路上山，${c.offer.kind==='work'?'做工抵食宿與教學':`繳${c.offer.kind==='food'?'糧':'錢'}束脩`}，拜入外門。`); recordDeed(s, d, 'join', { chron: `${d.name}慕名上山，拜入門下` }); return { ok: true, d };
 }
 export function mapStage(s) {
   if (s.fac.hall.stage >= 1 && s.fac.yard.stage >= 1) return 'S2';
@@ -245,7 +251,7 @@ const dayUse = (s, act) => { const D = (s.daily ??= {}), c = D[act]; if (!c || c
 export function applyEff(s, d, E, actName) { if (!E) return;
   if (E.use && Object.entries(E.use).some(([k, v]) => (s.res[k] || 0) < v)) return applyEff(s, d, E.alt, actName);
   for (const [k, v] of Object.entries(E.use || {})) { s.res[k] -= v; book(s, 'out', k, v); if (k === 'pill') pillNote(s, 'used', v); }
-  for (const [k, v] of Object.entries(E.res || {})) { const nv = Math.min(s.cap[k] ?? Infinity, (s.res[k] || 0) + v); const got = nv - (s.res[k] || 0); book(s, 'in', k, got); s.res[k] = nv; if (k === 'pill') pillNote(s, 'made', got); }
+  for (const [k, v] of Object.entries(E.res || {})) { const nv = Math.min(s.cap[k] ?? Infinity, (s.res[k] || 0) + v); const got = nv - (s.res[k] || 0); book(s, 'in', k, got, 'work'); s.res[k] = nv; if (k === 'pill') pillNote(s, 'made', got); }
   if (E.hp) d.hp = clamp(d.hp + E.hp, 0, 100); if (E.mood) d.mood = clamp(d.mood + E.mood, 0, 100); if (E.rep) s.rep = Math.round(((s.rep || 0) + E.rep) * 10) / 10;
   if (E.wexin) for (let i = 0; i < E.wexin; i++) easeWexin(s, d);
   if (E.allMood) { for (const o of s.ds) if (!o.away) o.mood = clamp(o.mood + E.allMood, 0, 100); log(s, `${d.name}敲響晨鐘，全派精神一振`); }
@@ -541,7 +547,7 @@ function doTask(s,d,dt){
     }
   }
   if (t.phase === 'return' && !d.path.length) {
-    for (const [k, v] of Object.entries(d.carry)) { const nv = Math.min(s.cap[k] ?? 99, s.res[k] + v); book(s, 'in', k, nv - s.res[k]); s.res[k] = nv; }
+    for (const [k, v] of Object.entries(d.carry)) { const nv = Math.min(s.cap[k] ?? 99, s.res[k] + v); book(s, 'in', k, nv - s.res[k], 'work'); s.res[k] = nv; }
     const walk = d.walked - (t.walkStart || 0); d.skills.agility = Math.min(100, d.skills.agility + walk / 400); // 負重長路→腳力
     d.carry = null; finish(s, d);
   }
@@ -845,6 +851,7 @@ function checkRoot(s, d) { if (!d.rootKnown && (d.cowork || 0) >= ROOT.revealAt)
 export const avgAff = (s, d) => { const ds = disciples(s); return ds.length ? ds.reduce((a, o) => a + aff(s, o, d), 0) / ds.length : 0; };
 export function canInvite(s, id) {
   const d = byId(s, id); if (!d || !isLabor(d)) return { ok: false, why: '不是雇工' };
+  if (disciples(s).length >= policyCap(s)) return { ok: false, why: '收徒方針的人口上限已滿' };
   if (d.hidden?.shown) { if (disciples(s).length >= capacity(s)) return { ok: false, why: `弟子床位已滿（${disciples(s).length}/${capacity(s)}）` }; return { ok: true, d }; } /* loop155 隱世高人身分已明：不必再看根骨與好感 */
   if (!d.rootKnown) return { ok: false, why: `還看不出根骨（共事 ${Math.floor(d.cowork || 0)}/${ROOT.revealAt}）` };
   if (d.root < ROOT.inviteMin) return { ok: false, why: `根骨${ROOT.names[d.root]}，不宜習武` };
@@ -897,6 +904,7 @@ export function temperDaily29(s) { const W = (s.v29n ??= {}), B = (W.baseByTrait
     if (d.xiao29 && !d.xiao29c) { d.xiao29c = true; W.xiao = (W.xiao || 0) + 1; } if (d.ling29 && !d.ling29c) { d.ling29c = true; W.ling = (W.ling || 0) + 1; } if (temperOf(d).qing && !d.qing29c) { d.qing29c = true; W.qing = (W.qing || 0) + 1; } } }
 function injuryDaily(s) { for (const d of [...s.ds,...s.mons,...(s.band?.members||[])]) if (d.part||d.wounds?.length) partHeal(s,d,'day'); /* 新層1–4遊戲日；舊部位傷仍可遷移 */ for (const d of s.ds) { if (!d.qiInjury) continue; if (d.qiInjury >= DRIVE28.injHeavy) { d.hp = clamp(d.hp - DRIVE28.hp, 1, 100); d.mood = clamp((d.mood ?? 50) - DRIVE28.mood, 0, 100); } const a = mainOuterArt(d); if (!a || innerDrive28(d, a).tier !== 4) qiInjuryCure28(s, d, DRIVE28.rest); } }
 export function dailyPipeline(s) {
+  for (const x of returnFromWork(s)) log(s, `${x.id}下山做工攢足束脩，回到山門口等掌門決定。`);
   payday(s); econDaily(s, EH); apprDaily(s); teachDaily(s); threatDaily(s);
   cliqueDaily(s);
   lairDaily(s, EH);

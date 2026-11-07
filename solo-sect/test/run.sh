@@ -19,7 +19,7 @@ case "${1:-quick}" in
   golden) exec node tools/golden.mjs --check ;;
   smoke)
     node test/smoke.mjs || exit 1
-    exec node --test test/unit/save/schema-invariants.test.mjs test/unit/growth/white-body.test.mjs
+    exec node --test test/unit/save/schema-invariants.test.mjs test/unit/growth/white-body.test.mjs test/unit/social/n58-admission.test.mjs
     ;;
   *) echo "用法：bash test/run.sh [quick|all|archive|accept|golden|smoke]"; exit 2 ;;
 esac

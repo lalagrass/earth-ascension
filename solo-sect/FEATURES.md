@@ -229,3 +229,7 @@ Artifact 目錄：[`artifacts/features/77e1b2d/`](artifacts/features/77e1b2d/REA
 
 ### T1 測試整理（#393）
 `test/unit/<系統>/` 便於按成長、經濟、威脅、人際、存檔和介面找回歸；`test/accept/` 保留長跑，`test/archive/` 保留通過的舊 bug 重現。#495 發現的 20 個失敗斷言保存在 `test/parked/`，由 #496 逐項追蹤，PR CI 暫不執行。`tools/diag/README.md` 列出每支診斷腳本用途。這是開發者測試入口，玩家模擬、畫面、規則 3.7 和 golden 均不改。
+
+### N58 收徒三層（#489）
+
+門規作息面板加收徒方針與人口上限；招收面板顯示名聲／自產成績、候選人的束脩或做工條件。付不起又無工作時可下山打工再返；少年郭靖作為普通候選資料列，帶基礎拳，不走長成名俠入門捷徑。外門若做工抵食宿每天多一項日課；師父了解全部性情並有足夠好感才願主考內門。規則 3.8 的公式與來源見 [recruitment.md](docs/systems/recruitment.md)。
