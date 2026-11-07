@@ -7,5 +7,5 @@ const femaleIds = new Set([
   ...DISCIPLES.filter((def) => def.fem).map((def) => def.id),
   ...Object.entries(XIA_T).filter(([, def]) => def.fem).map(([id]) => id),
 ]);
-export const visualSpriteOf = (d) => femaleIds.has(d.id) ? 'sister' : d.sprite;
-export const isFemaleVisual = (d) => femaleIds.has(d.id);
+export const visualSpriteOf = (d) => d.fem || femaleIds.has(d.id) ? 'sister' : d.sprite;
+export const isFemaleVisual = (d) => !!d.fem || femaleIds.has(d.id);

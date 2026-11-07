@@ -85,7 +85,7 @@ export function createState(seed = 1, heroSpec = null) {
 }
 function mkDisciple(d, i, at = 'court', personality = d.personality || [], known = personality.slice(0, 1)) {
   return seedArts({
-      id: d.id, name: d.name, root: d.root ?? 3, rootKnown: true, style: d.style, personality: [...personality], known: [...known], together: 0, mood: MOOD.base, thoughts: [], why: [], adult: d.adult, sprite: d.sprite, traits: d.traits,
+      id: d.id, name: d.name, root: d.root ?? 3, rootKnown: true, style: d.style, personality: [...personality], known: [...known], together: 0, mood: MOOD.base, thoughts: [], why: [], adult: d.adult, sprite: d.sprite, fem: d.fem, traits: d.traits,
       skills: { ...d.skills }, moves: ['fist'], pendingMove: null,
       needs: { energy: 80, hunger: 70 - i * 10, social: 50, fun: 60 }, hp: 100, fret: 0, raging: false, rageUntil: 0, busyUntil: 0,
       at, pos: [...NODES[at]].map((v, k) => v + (k ? 0 : (i - 1) * 16)), path: [],

@@ -183,6 +183,7 @@ test('N37 共用受力/分層/手側/長破綻，局部hitstop不改模擬',asyn
 test('N50 兩個普通出身同伴與真床位剩一時第二名俠不入門',async()=>{
  const {admissionStatus,bedCount}=await import('../src/admission.mjs'),{join,makeXiaCandidate}=await import('../src/wuxia.mjs');
  const s=createState(17,{kind:'bare'});assert.equal(s.ds.length,3);assert.ok(s.ds.slice(1).every(d=>d.bare&&d.originRelation&&!Object.keys(d.arts).length));assert.ok(s.ds.every(d=>!['senior','junior'].includes(d.id)));assert.deepEqual(s.ds.slice(1).map(d=>d.sprite),['senior','cousin']);
+ const classic=createState(17,{kind:'template',id:'guojing'}),{visualSpriteOf}=await import('../src/visual-gender.mjs');assert.equal(classic.ds[1].name,'李萍');assert.equal(visualSpriteOf(classic.ds[1]),'sister');
  // Controlled capacity fixture: hall3+dorm2, four residents, one physical free bed.
  s.fac.dorm.stage=1;s.res.food=100;s.ds.push({...structuredClone(s.ds[1]),id:'resident',companion:false});const master=s.ds[0];master.practice.hands=Object.fromEntries((await import('../src/starter-combat.mjs')).BODY_BASE.map(id=>[id,500]));master.skills.palm=100;master.timePrev={day:0,elapsed:DAY,free:400,guided:0};
  const first=makeXiaCandidate(s,'guojing'),before=JSON.stringify(s),preview=admissionStatus(s,first);assert.equal(JSON.stringify(s),before);assert.equal(bedCount(s)-s.ds.length,1);assert.equal(preview.ok,true,preview.why);
