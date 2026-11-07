@@ -3,7 +3,7 @@ import {HUNGER_PER_SECOND,admissionStatus,mentorFor,guidanceSeconds,clockActor,n
 import {attraction,applicantAway,bookAdmissionWork,discipleCount,policyCap,recruitmentInit,recruitmentOf,returnFromWork,sendApplicantToWork,setRecruitPolicy} from './recruitment.mjs';
 export {attraction,policyCap,setRecruitPolicy} from './recruitment.mjs';
 import {transferredDamage,moveStats} from './arts.mjs';
-import {ringCapacity,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} from './tactics.mjs';
+import {ringCapacity,attackTokenLimit,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} from './tactics.mjs';
 import {pickupDrop} from './techniques.mjs';
 import {finishTrainingWish,TRAINING_CAUSES} from './decision.mjs';
 import { ensurePractice, rehearse, practiceWork, practiceWindow } from './practice.mjs';
@@ -716,11 +716,14 @@ function huntStep(s, dt) {
     }
     const near = foe ? dist(foe.pos, m.pos) : 1e9, actionRange = foeAction(m, near)?.range || MON_REACH;
     if (foe && near < (m.orbit === foe.id ? RING.outer + 10 : m.slot === foe.id ? Math.max(RING.engage, actionRange) : actionRange)) { /* #419 交戰圈：4 個近戰位，第 5 隻起在外圈繞 */
-      if (m.slot !== foe.id||s.mons.filter(o=>!o.gone&&o.slot===foe.id).indexOf(m)>=ringCapacity(foe)) { const held = s.mons.filter((o) => o !== m && !o.gone && o.slot === foe.id).length;
-        if (held >= ringCapacity(foe)) { m.orbit = foe.id; m.slot = null; orbitStep(m, foe, M.speed * mdt); continue; }
+      if (m.slot !== foe.id||s.mons.filter(o=>!o.gone&&o.slot===foe.id).indexOf(m)>=ringCapacity(foe,s)) { const held = s.mons.filter((o) => o !== m && !o.gone && o.slot === foe.id).length;
+        if (held >= ringCapacity(foe,s)) { m.orbit = foe.id; m.slot = null; orbitStep(m, foe, M.speed * mdt); continue; }
         m.slot = foe.id; m.orbit = null; }
       if (near > MON_REACH * 0.95 && !foeAction(m, near)?.minDistance) { stepToward(m, foe.pos, M.speed * mdt, MON_REACH * 0.8); continue; }
       if(m.cool<=0&&!(m.downUntil>s.t)){ /* #426 獨孤：觀破過的獸一起手就被截；太極圈內前搖拉長 */
+        const source=SOURCES[m.src||FOE_ACTIONS[m.k]?.escapeSource||'den']||SOURCES.den;
+        const limit=attackTokenLimit(source.organization??SOURCES.den.organization,ringCapacity(foe,s));
+        if(s.mons.filter(o=>o!==m&&!o.gone&&o.swing?.tgt===foe.id).length>=limit)continue;
         if (zjIntercept(s, m, team)) { m.cool = MON_CD; continue; }
         const pick=chooseCombatMove(s,m,foe,()=>rand(s),{distance:near}),action=pick?.move||foeAction(m,near),wind=(windOf(m,action?.id,MON_CD)+(pick?.seconds||0))*zjWindK(s,m.pos,team);
         const start = interceptOpening(s, m, foe, () => rand(s), { depth: depthOf(m), move: action?.id, wind, map: true });

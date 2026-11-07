@@ -1,11 +1,11 @@
 import {transferredDamage} from './arts.mjs';
 import {RING} from './combat-space.mjs';
-import {movementSpeed,moveToward,ringCapacity,rememberEscape,restoreSurvivor,distance} from './tactics.mjs';
+import {movementSpeed,moveToward,ringCapacity,attackTokenLimit,rememberEscape,restoreSurvivor,distance} from './tactics.mjs';
 import { combatMoves,combatTacticStep,fretStep,chooseCombatMove, fastestMove, windOf } from './arts.mjs';
 import { practiceWindow } from './practice.mjs';
 import { foeAction } from './starter-combat.mjs';
 import { log, seedMix, resAdd, recordDeed, tallyAct, chronOf } from './util.mjs';
-import { NODES, EDGES, DAY, SEASON_DAYS, FACILITIES, MOVES, ARTS } from './data.mjs';
+import { NODES, EDGES, SOURCES, DAY, SEASON_DAYS, FACILITIES, MOVES, ARTS } from './data.mjs';
 import { noteFret, interceptOpening, breakWindup, taijiReturn, zjHas, zjMark, zjIntercept, ZJ, partHit, resolveSwing, postureOf, postureRegen, postureHit, handleTake, topTierOf, windFrac, CLASH, perfectDodge, witchK, lightCross, WITCH } from './arts.mjs';
 import { qiInjuryFight28, qiInjuryAdd28, innerDrive28, mainOuterArt, CHAMP28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
 import { power } from './jianghu.mjs';
@@ -19,9 +19,9 @@ import { startMapBout, stepMapBout } from './exp-map-combat.mjs';
 // loop17 山賊多樣：只在 s.m9（江湖規則「太平與備料」）時抽類型；舊局／golden 無 kind＝原樣。
 // 期望點數 ≈ 原值（0.5×0.8+0.3×1.25+0.2×1.0=0.975），夜襲不能付錢、敗了只偷不傷人 → 不推高重傷。
 export const RAID_KINDS = {
-  liukou: { name: '流寇', w: 0.5, pts: 0.8, demand: 0.8, steal: 1, winHurt: 0.5, loseHurt: true, desc: '烏合之眾，好打發' },
-  hanfei: { name: '悍匪', w: 0.3, pts: 1.25, demand: 1.3, steal: 1.2, winHurt: 1, loseHurt: true, desc: '亡命之徒，下手狠' },
-  yexi: { name: '夜襲', w: 0.2, pts: 1, demand: 0, steal: 0.6, winHurt: 0.5, loseHurt: false, noPay: true, desc: '趁夜摸進來偷，不談價；只偷不傷人' },
+  liukou: { name: '流寇', organization: 2, w: 0.5, pts: 0.8, demand: 0.8, steal: 1, winHurt: 0.5, loseHurt: true, desc: '烏合之眾，好打發' },
+  hanfei: { name: '悍匪', organization: 4, w: 0.3, pts: 1.25, demand: 1.3, steal: 1.2, winHurt: 1, loseHurt: true, desc: '亡命之徒，下手狠' },
+  yexi: { name: '夜襲', organization: 2, w: 0.2, pts: 1, demand: 0, steal: 0.6, winHurt: 0.5, loseHurt: false, noPay: true, desc: '趁夜摸進來偷，不談價；只偷不傷人' },
 };
 export function pickKind(r) { let a = 0; for (const [id, k] of Object.entries(RAID_KINDS)) { a += k.w; if (r < a) return id; } return 'liukou'; }
 export const kindOf = (id) => (id && RAID_KINDS[id]) || null;
@@ -181,6 +181,8 @@ function bandHit(s, b, m, dmg, who) {
 }
 function bandClash(s, b, defs, dt) {
   const fight = defs.filter((d) => d.hp >= BAND.hpMin && d.pos), live = () => b.members.filter((m) => m.hp > 0&&!m.gone);
+  // 守者退到不能應戰時，已對準他的來招失去目標；權杖立即釋出，不能保留空指向的前搖。
+  if (!fight.length) for (const m of live()) m.swing = null;
   for(const d of fight){fretStep(s,d);postureRegen(s,d,dt);if(d.downUntil>s.t)continue; d.bcool = (d.bcool ?? 0) - dt; /* 冷卻含前搖（收招＝冷卻剩下的時間） */
     if (d.bswing) { if (s.t + 1e-9 < d.bswing.at) continue; const w = d.bswing; d.bswing = null; const m = b.members.find((x) => x.uid === w.tgt && x.hp > 0); if (!m) continue;
       const r = resolveSwing(s, d, m, () => R(s), { depth: topTierOf(d) + 1, move: w.mv, wind: w.wind, map: true, targetApproachingAtWindup:w.targetApproachingAtWindup }); (b.cl ??= {})[r.kind] = (b.cl[r.kind] || 0) + 1;
@@ -196,7 +198,7 @@ function bandClash(s, b, defs, dt) {
   }
   if (b.state !== 'yard') return;
   const ready = [];
-  for(const m of live()){postureRegen(s,m,dt);if(m.downUntil>s.t)continue; fretStep(s,m);const d = fight.find((x) => x.id === m.foe) || fight[0]; if (!d) break;
+  for(const m of live()){postureRegen(s,m,dt);if(m.downUntil>s.t)continue; fretStep(s,m);const d = m.swing ? fight.find(x=>x.id===m.swing.tgt) : fight.find((x) => x.id === m.foe) || fight[0]; if (!d) { m.swing=null; continue; }
     m.intentTarget=d.id;
     if(!m.swing&&combatTacticStep(s,m,dt,{exit:a=>{rememberEscape(s,a);a.gone=true;a.state='gone';}}))continue;
     const wk = witchK(s, m.pos), mdt = dt * wk; if (m.swing && wk < 1) m.swing.at += dt - mdt; /* #425 林克時間圈內的山賊放慢 */ m.cool = (m.cool ?? 0) - mdt;
@@ -217,12 +219,18 @@ function bandClash(s, b, defs, dt) {
   }
   // 先讓每個人走完本步的冷卻，再看同伴還需多久；避免陣列順序決定能否合擊。
   const delays = ready.map(({ m }) => bandSyncDelay(m, live()));
+  const tokens = attackTokenLimit(kindOf(b.kind)?.organization ?? SOURCES.gate.organization,
+    Math.max(0,...fight.map(d=>ringCapacity(d,s))));
+  let freeTokens = Math.max(0,tokens-live().filter(m=>m.swing).length);
+  b.tokenLimit = tokens; b.tokenPeak = Math.max(b.tokenPeak||0,tokens-freeTokens);
   for (let i = 0; i < ready.length; i++) {
     const { m, d } = ready[i];
+    if (freeTokens <= 0) continue;
     if (delays[i] > 0) { m.cool = delays[i]; continue; }
+    freeTokens--; b.tokenPeak = Math.max(b.tokenPeak||0,tokens-freeTokens);
     if (zjIntercept(s, m, fight)) { m.cool = BAND_CLASH.monCd; continue; }
     const pick=chooseCombatMove(s,m,d,()=>R(s)),action=pick?.move||foeAction(m,Math.hypot(m.pos[0]-d.pos[0],m.pos[1]-d.pos[1])),wind=practiceWindow(m,action.id,action.wind).wind+(pick?.seconds||0), start = interceptOpening(s, m, d, () => R(s), { depth: 2, move: action.id, wind }); m.cool=BAND_CLASH.monCd+(pick?.seconds||0);m.energy=(m.energy??100)-1;
-    if (start.read?.kind === 'read') { bandHit(s, b, m, start.read.counterDamage, d); (b.cl ??= {}).mread = (b.cl.mread || 0) + 1; continue; }
+    if (start.read?.kind === 'read') { bandHit(s, b, m, start.read.counterDamage, start.helper||d); (b.cl ??= {}).mread = (b.cl.mread || 0) + 1; continue; }
     m.opened = true; m.swing = { mv: action.id,tgt:d.id, at: s.t + wind, wind, opening: start.opening };
     (s.fx ||= []).push({ kind: 'warn', from: [...(m.pos || b.pos)], to: [...d.pos], r: 26, dur: wind, ttl: wind, t0: s.t });
   }
@@ -235,7 +243,7 @@ function placeMembers(s,b,defs,dt){
  if(b.state==='go'||!defs.length){live.forEach((m,k)=>{if(!m.pos)m.pos=[...c];if(!(m.downUntil>s.t)&&!m.swing&&!['flee','cover'].includes(m.tactics?.action))moveToward(m,[c[0]+((k%3)-1)*BAND_MEMBER.gap,c[1]+Math.floor(k/3)*8],movementSpeed(m),dt);m.ring=0;});return;}
  const held={};
  for(const[k,m]of live.entries()){
-   const d=defs[k%defs.length],capacity=ringCapacity(d),slot=held[d.id]||0;held[d.id]=slot+1;
+   const d=defs[k%defs.length],capacity=ringCapacity(d,s),slot=held[d.id]||0;held[d.id]=slot+1;
    if(m.downUntil>s.t||m.tactics?.action==='flee'||m.tactics?.action==='cover')continue;
    const near=slot<capacity,angle=Math.PI*(.25+.5*slot),radius=near?(b.state==='yard'?22:34):BAND_MEMBER.outer;
    const target=[d.pos[0]+Math.cos(angle)*radius,d.pos[1]-Math.sin(angle)*radius*.55];

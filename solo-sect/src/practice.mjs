@@ -46,8 +46,8 @@ export function familiarUses(d, attacker, move, codex = {}) {
   const related = (d?.practice?.families?.[moveFamily(move)] || 0) * PRACTICE.familyTransfer + shared * PRACTICE.eyeHalf;
   return Math.max(d?.practice?.eyes?.[key] || 0, oldCodex || 0, priorUses(veteranTier(d)), related);
 }
-export function familiarReaction(d, attacker, move, codex = {}) {
-  const f = familiarUses(d, attacker, move, codex), half = PRACTICE.eyeHalf * PRACTICE.ordinaryWu / (d?.wu || d?.root || PRACTICE.ordinaryWu);
+export function familiarReaction(d, attacker, move, codex = {}, sharedUses = 0) {
+  const f = familiarUses(d, attacker, move, codex) + sharedUses, half = PRACTICE.eyeHalf * PRACTICE.ordinaryWu / (d?.wu || d?.root || PRACTICE.ordinaryWu);
   const art = artForMove(move), stage = art && lifeStage(attacker, art.id);
   const possibilities = stage >= 5 ? 2 : 1;
   return reactionTime(reactionFloor(d), PRACTICE.reactionSpan, half, f, possibilities);

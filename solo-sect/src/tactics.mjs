@@ -17,12 +17,20 @@ export function opponents(s,a,extra=null){const list=combatants(s).filter(t=>t!=
 export function allies(s,a){return combatants(s).filter(t=>t!==a&&!t.gone&&!t.away&&(t.hp??1)>0&&faction(t)===faction(a));}
 export function movementSpeed(a){return a.k?(MONSTERS[a.k]?.speed||BASE_SPEED*(1+(a.agi||0)/100)):BASE_SPEED*(1+(a.skills?.agility||0)/100);}
 export function coverFor(a){return COVERS.filter(c=>distance(a.pos,c.stand)<=RING.engage/2).sort((a,b)=>a.slots-b.slots)[0]||null;}
-export const ringCapacity=a=>coverFor(a)?.slots||RING.slots;
-export function loadFromForecast(a,rows){
- const cover=coverFor(a),active=rows.filter(r=>r.active),waiting=rows.filter(r=>!r.active).sort((x,y)=>x.window+x.travel-y.window-y.travel);
- const relevant=cover?[...active,...waiting.slice(0,Math.max(0,cover.slots-active.length))]:rows;
- const parts=relevant.map(r=>({...r,share:r.need/(r.window+r.travel)}));return {L:parts.reduce((n,r)=>n+r.share,0),rows:parts,slots:cover?.slots||RING.slots};
+export function backToBackPartner(s,a) {
+ if(!s || !a?.pos) return null;
+ return allies(s,a).filter(b=>b.pos&&distance(a.pos,b.pos)<=RING.step*2
+   && (b.pos[0]-a.pos[0])*(a.face||1)<0 && (b.pos[0]-a.pos[0])*(b.face||1)>0)
+   .sort((x,y)=>distance(a.pos,x.pos)-distance(a.pos,y.pos)||String(x.id).localeCompare(String(y.id)))[0]||null;
 }
+export const ringCapacity=(a,s)=>Math.min(coverFor(a)?.slots||RING.slots,backToBackPartner(s,a)?RING.slots/2:RING.slots);
+export function loadFromForecast(a,rows,s){
+ const slots=ringCapacity(a,s),active=rows.filter(r=>r.active),waiting=rows.filter(r=>!r.active).sort((x,y)=>x.window+x.travel-y.window-y.travel);
+ // 開放地形仍照 N28 將所有可預見來招計入；實際背靠背／掩體才排除站不進來的候補。
+ const relevant=slots<RING.slots?[...active,...waiting.slice(0,Math.max(0,slots-active.length))]:rows;
+ const parts=relevant.map(r=>({...r,share:r.need/(r.window+r.travel)}));return {L:parts.reduce((n,r)=>n+r.share,0),rows:parts,slots};
+}
+export const attackTokenLimit=(organization,slots)=>Math.min(organization,slots);
 export function moraleOf(a,{L,enemies,allies:friends,fallen=0,initialFriends=friends+1,threat=0,tolerance=1}){
  const health=Math.max(0,1-(a.hp??a.max??MONSTERS[a.k]?.hp??100)/(a.max||MONSTERS[a.k]?.hp||100)),fatigue=1-(a.needs?.energy??a.energy??100)/100;
  const profile=FOE_ACTIONS[a.k]||{},reserve=tolerance+(profile.injuryAnger?health:0)+friends/(enemies+1);

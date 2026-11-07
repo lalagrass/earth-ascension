@@ -2,6 +2,7 @@
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 const { chromium } = await import(process.env.PW || 'playwright-core');
 const home = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -68,6 +69,13 @@ try {
     await page.screenshot({ path: path.join(out, 'visitor-map-fight.png') });
   }
   if (errors.length) throw Error(errors.join('\n'));
+  if (process.argv.includes('--visitor')) {
+    const blind = path.join(out, 'blind'); fs.mkdirSync(blind, { recursive: true });
+    const views = ['visitor-reason-card.png', 'visitor-map-fight.png'];
+    if (createHash('sha256').update(String(seed)).digest()[0] & 1) views.reverse();
+    for (const [i, view] of views.entries()) fs.copyFileSync(path.join(out, view), path.join(blind, `${i ? 'B' : 'A'}.png`));
+    fs.writeFileSync(path.join(blind, 'answers.json'), JSON.stringify({ seed, A: views[0], B: views[1] }, null, 2) + '\n');
+  }
   const report = { seed, screenshots: process.argv.includes('--visitor') ? ['visitor-reason-card.png', 'visitor-map-fight.png'] : ['foot-main-map.png', 'lair-small-map.png'], errors };
   fs.writeFileSync(path.join(out, 'visual-check.json'), JSON.stringify(report, null, 2) + '\n');
   console.log(JSON.stringify(report));

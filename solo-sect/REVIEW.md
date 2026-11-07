@@ -482,9 +482,46 @@ DPS 下降的主要規則原因是撤去十重、星數、同類造詣及小成�
 
 | 類 | 指令（repo 根目錄） | 門檻與預期輸出 |
 |---|---|---|
-| A 准入／時間 | `bash solo-sect/test/run.sh smoke` | exit 0；`n51-visitor.test.mjs` 在第八日且威脅點數足夠時仍須證明「沒葵花殘頁、名聲未達正殿」不登門；有理由才出卡且卡寫理由，接受後先建立地圖 `bout`，勝負不在選項當下產生。 |
+| A 准入／時間 | `bash solo-sect/test/run.sh smoke` | exit 0；`n51-visitor.test.mjs` 在第八日且威脅點數足夠時仍須證明「沒葵花殘頁、名聲未達正殿」不登門；有理由才出卡且卡寫理由，接受後先建立地圖 `bout`，勝負不在選項當下產生；3.9 舊未決敵意卡遷移時撤回。 |
 | A 來源／受力 | 同一 smoke 小測試及任意 seed 的 `s.jh.visitor.bout` | 來源等於 `SOURCES.gate` 的世界座標，敵人逐招 `exchanges > 0`，勝負只在 HP 耗盡或既有 90 秒時限後決定；成年江湖客不進弟子表。 |
 | B 共用公式 | `bash solo-sect/test/run.sh smoke` 及 CI 山門紀 quick | 准入讀 N43 原 `points(s)`、來犯期和名額；出招讀 N27–N28 `interceptOpening`／`resolveSwing`，沒有獨立勝率項。 |
 | C 自然 12 種子 | `docker run --rm -v "$PWD:/work" -w /work node:22-bookworm-slim node solo-sect/tools/bot12.mjs solo-sect --json` | `visitors.bySeed` 列第一次登門日與是否擊退；第 30 日內大多不來是 C 參考，無登門時擊退率為 null，不宣稱為零勝率。原始結果見 `artifacts/r11/n51/`。 |
 
 同一入門通路的 `VISITOR_INCIDENTS` 各有 `reasonAny`、威脅強度、勝／敗／婉拒後果；非敵意卡的逐張核對在 `combat.md`。舊名 → 新名：`villain()` → `startVisitorFight`／`finishVisitorFight`；舊門派戰力 `JH.dfbbPow`／`JH.hyPow` 已淘汰；新增狀態名均表用途。最沒把握三處：（一）強者對點數的 HP 量尺會使多數自然 30 日沒有登門，照 C 只回報；（二）90 秒僵持計敗沿用 N45 小地圖超時規則；（三）現有非敵意喜劇卡保留原獨立結果，將其規則逐張列在文檔而不假裝是敵意戰鬥。
+
+| bot12 C 指標（同 Node 22、12 種子 × 30 日） | #502 base | 第十一輪 head |
+|---|---:|---:|
+| dfbb 第 30 日前登門／被擊退 | 12/12／12/12 | 0/12／無樣本 |
+| 自然日常山賊：結算／真迎戰／勝／受傷 | 75／73／65／22 | 74／74／65／25 |
+| 有柵獨立探針：場／勝／守住／受傷 | 96／89／28／27 | 96／91／35／29 |
+| 第 30 日威脅點數中位／末日勝算中位 | 216／0.933 | 221／0.957 |
+
+原始 [base](artifacts/r11/n51/bot12-base.json) 與 [head](artifacts/r11/n51/bot12-head.json) 同用 `docker run --rm -v "$PWD:/work" -w /work node:22-bookworm-slim node solo-sect/tools/bot12.mjs solo-sect --json` 產生；base 在 #502 的同版工具上執行。dfbb 無樣本時擊退率是 `null`，不得寫成 0%；自然山賊與有柵探針分母不同。登門變少由名聲／被欺線索、N43 來犯期及同一威脅點數必須足以承接白猿敵人造成，未調抽樣率。守柵探針由 28/96 至 35/96，仍主要靠原木柵耐久、修理和現場逐招，而非來犯節奏本身。
+
+N51 離線畫面盲測：`PW=/opt/codex/cua_node/lib/node_modules/playwright-core/index.mjs node solo-sect/tools/r11-visual-check.mjs --seed=17 --out=solo-sect/artifacts/r11/n51 --visitor`；先看 [A](artifacts/r11/n51/blind/A.png) 和 [B](artifacts/r11/n51/blind/B.png)，判斷哪張是有來由的登門卡、哪張是接受後的真地圖交手，再看獨立[答案](artifacts/r11/n51/blind/answers.json)。任意整數 seed 由 SHA-256 決定順序，`visual-check.json` 的 `errors` 必須為空；兩張皆由正常頁面的畫布及卡片直接截取。
+
+Node 22 `node solo-sect/tools/golden.mjs --write` 重產 quick 4 格、full 32 格及六份舊檔載入矩陣，皆顯示「全部相符」。4.0 版本欄、N43 時序、N45/N51 地圖交手與 N44 站位會改變整局狀態，故三個 golden 檔的 hash 均有變動；純畫面 N60/N61 的規則未在此變更。正式 quick、golden、accept 仍以本 PR 的山門紀 CI 為準。
+
+## 第十一輪 N44：同伴站位、掩護與攻擊權杖（#456）
+
+| 類 | 指令（repo 根目錄） | 門檻與預期輸出 |
+|---|---|---|
+| A 固定分位 | `bash solo-sect/test/run.sh smoke` | exit 0；`n44-teamwork.test.mjs` 的同一 .5 反應分位、同一四狗站位，分立者中招 4、背靠背者 2；來招前搖 1 秒且同伴空手時 .01 分位可幫正在出手者截擊。 |
+| A 權杖 | 同一 smoke 測試 | 250 點流寇山賊在同一後院短交手的 `tokenPeak` 大於零且不超 `tokenLimit=2`；組織 4 與貼身位 2 的公式仍輸出 2。 |
+| B 時間與眼熟 | CI 山門紀 quick／N33／N27 原測試 | `ringCapacity` 只限制真貼身位；開放地形仍按 N28 計所有可見來招。援護調用同一 N33 眼熟量尺、同一截擊反應與出手秒數，不加門派傷害倍率。 |
+| C 人海探針 | `docker run --rm -v "$PWD:/work" -w /work node:22-bookworm-slim node solo-sect/tools/round7-crowd.mjs > solo-sect/artifacts/r11/n44/crowd-before.json`；加權杖後改用 `--tokens` 存 `crowd-after.json` | 同一第 20 日郭靖與 100 固定反應分位、每位四個獨立冷卻循環；兩份原始輸出與 PR 並列，僅報方向，嘍囉人海變弱是預期。 |
+
+舊名 → 新名：沒有在這次修改範圍新增輪次編號名稱；`ringCapacity` 加可選狀態以讀同伴站位，`loadFromForecast` 同步使用。最沒把握三處：（一）沒有顯式玩家陣型命令，先以可見兩步內站位自然形成背靠背；（二）共同練與好感只影響反應殘量，不另外製造傷害加成；（三）人海探針以同一輪流時程演算權杖，最終自然頻率由 bot12 另列，C 偏差不調常數。
+
+N44 第七輪人海探針同一郭靖、同一固定分位與四個獨立冷卻循環；`--tokens` 只給持權杖者排前搖，未持者等空出權杖，並保留原 `bandSyncDelay`。原始 [前](artifacts/r11/n44/crowd-before.json)／[後](artifacts/r11/n44/crowd-after.json)：
+
+| 對手／錯相 | 人數 | 權杖前中招率 | 權杖後中招率 |
+|---|---:|---:|---:|
+| 持刀嘍囉／同刻 | 4／6 | .265／.622 | 0／0 |
+| 持刀嘍囉／錯相 | 4／6 | .113／.626 | 0／0 |
+| 同級好手／同刻 | 4／6 | .876／.917 | .876／.917 |
+| 同級好手／錯相 | 4／6 | .876／.917 | .876／.917 |
+
+嘍囉兩枚權杖讓第 20 日郭靖有時間截掉每招；有組織好手四枚權杖仍壓得住，同級好手的實際中招率方向未反轉。這是 C 類量測，不以零值調新常數。權杖排程與真 `bandClash` 共用來源組織及站位公式；真人防守的地圖路徑、士氣、熟練會另受狀態影響。
+
+N51 舊驗收更新：`test/accept/v130.test.mjs` 的原場景只把日數設為 8、以一次總戰力／10% 骰在選卡瞬間判勝，與 #465 明確的新規則衝突。新場景明確造出正殿名聲、四名常住者與足夠同一威脅點數；先斷言理由卡與未結算的地圖交手，再把敵方或我方 HP 固定為已敗情境，分別斷言殘頁、斷情、未招收、落敗不死。舊成果斷言仍在，勝負因果改讀地圖結果，不以調低門檻維持舊故事。
