@@ -83,12 +83,13 @@ export function polySvg(d, now = 0, cls = '') {
 // only display values; the opponent and history never enter the simulation.
 export function battleRadarSvg(raw, earlier = null, opponent = null, opponentName = '') {
   const cx = 114, cy = 100, radius = 67, n = BATTLE_AXES.length;
+  const fmt = (v) => { const n = Number(v) || 0; return n > 0 && n < 0.01 ? n.toFixed(4) : n.toFixed(2); };
   const point = (i, f) => { const a = -Math.PI / 2 + i * 2 * Math.PI / n; return `${(cx + radius * f * Math.cos(a)).toFixed(2)},${(cy + radius * f * Math.sin(a)).toFixed(2)}`; };
   const poly = (data, cls) => `<polygon class="${cls}" points="${battleAxisValues(data).map((v, i) => point(i, v)).join(' ')}"/>`;
   const grid = [0.25, 0.5, 0.75, 1].map((f) => `<polygon class="radar-grid" points="${BATTLE_AXES.map((_, i) => point(i, f)).join(' ')}"/>`).join('');
   const labels = BATTLE_AXES.map((axis, i) => { const [x,y] = point(i, 1.26).split(','); return `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle">${axis.name}</text>`; }).join('');
-  const info = BATTLE_AXES.map((axis) => `${axis.name} ${Number(raw[axis.key] || 0).toFixed(2)} ${axis.unit}`).join('、');
-  return `<svg class="battle-radar" viewBox="0 0 228 200" role="img" aria-label="六項能力：${info}">${grid}${BATTLE_AXES.map((_, i) => `<line class="radar-grid" x1="${cx}" y1="${cy}" x2="${point(i, 1).split(',')[0]}" y2="${point(i, 1).split(',')[1]}"/>`).join('')}${earlier ? poly(earlier, 'radar-earlier') : ''}${opponent ? poly(opponent, 'radar-opponent') : ''}${poly(raw, 'radar-now')}${labels}</svg><div class="radar-legend">● 現在${earlier ? '　◌ 30 日前／入門日' : ''}${opponent ? `　◆ 比較：${String(opponentName).replace(/[&<>"']/g, '')}` : ''}</div><details class="radar-info" data-keep="radar-info"><summary>六軸數字與根據</summary>${BATTLE_AXES.map((axis) => `<div>${axis.name} ${Number(raw[axis.key] || 0).toFixed(2)} ${axis.unit}：${axis.note}</div>`).join('')}</details>`;
+  const info = BATTLE_AXES.map((axis) => `${axis.name} ${fmt(raw[axis.key])} ${axis.unit}`).join('、');
+  return `<svg class="battle-radar" viewBox="0 0 228 200" role="img" aria-label="六項能力：${info}">${grid}${BATTLE_AXES.map((_, i) => `<line class="radar-grid" x1="${cx}" y1="${cy}" x2="${point(i, 1).split(',')[0]}" y2="${point(i, 1).split(',')[1]}"/>`).join('')}${earlier ? poly(earlier, 'radar-earlier') : ''}${opponent ? poly(opponent, 'radar-opponent') : ''}${poly(raw, 'radar-now')}${labels}</svg><div class="radar-legend">● 現在${earlier ? '　◌ 30 日前／入門日' : ''}${opponent ? `　◆ 比較：${String(opponentName).replace(/[&<>"']/g, '')}` : ''}</div><details class="radar-info" data-keep="radar-info"><summary>六軸數字與根據</summary>${BATTLE_AXES.map((axis) => `<div>${axis.name} ${fmt(raw[axis.key])} ${axis.unit}：${axis.note}</div>`).join('')}</details>`;
 }
 /* 合併成長提示：UI 記憶（不存檔）。換日時比較前一日起點，只有真的成長才回傳 anim＝true 與提示字串 */
 export function dailyGrowth(memo, d, day, now = 0) {

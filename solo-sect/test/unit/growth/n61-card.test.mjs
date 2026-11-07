@@ -24,4 +24,5 @@ test('N61 six independent axes share one adapter; 30-day layer survives save and
   const svg = battleRadarSvg(battleMetrics(d), initial);
   assert.match(svg, /radar-now/); assert.match(svg, /radar-earlier/);
   assert.match(svg, /六軸數字與根據/);
+  assert.match(battleRadarSvg({ ...raw, quick: 0.0039 }), /快 0\.0039 秒/);
 });
