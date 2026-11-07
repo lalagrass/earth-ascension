@@ -98,13 +98,13 @@ function draw() {
     const c = clampCam({ x: cam.x, y: cam.y, z: cam.z }, camBounds(S)); if (!on) { const u = clampCam({ x: cam.ux, y: cam.uy, z: cam.uz }, camBounds(S)); cam.ux = u.x; cam.uy = u.y; }
     g.translate(800, 450); g.scale(c.z, c.z); g.translate(-c.x, -c.y); drawWorld(c); g.save(); g.translate(HOME.x, HOME.y); }
   const ms = mapStage(S); g.drawImage(IMG[MAPS[ms]], 0, 0, 1600, 900);
-  if (S.hermitage?.active) for (const [id, cliff] of Object.entries(CLIFFS)) {
+  if (S.hermitage?.active) { g.save(); for (const [id, cliff] of Object.entries(CLIFFS)) {
     // 出自 Phase 6 規格：地圖標出可攀登的三階絕壁及高度，解鎖狀態依主角實際身法。
     const [x, y] = NODES[id], ready = canLeapCliff(S.ds.find(d => d.id === 'hero'), id);
     g.fillStyle = ready ? '#4f8f77' : '#6c746f'; g.fillRect(x - 18, y - 14, 36, 12);
     g.fillStyle = '#fff5db'; g.font = 'bold 14px serif'; g.textAlign = 'center';
     g.fillText(`${cliff.name}・${cliff.height}${ready ? ' ✓' : ' 🔒'}`, x, y - 22);
-  }
+  } g.restore(); }
   if (window.__debugRoads) { g.strokeStyle = 'rgba(200,60,40,.6)'; g.lineWidth = 3; for (const [a, b] of EDGES) { g.beginPath(); g.moveTo(...NODES[a]); g.lineTo(...NODES[b]); g.stroke(); } }
   const items = [];
   for (const f of FACILITIES) {
