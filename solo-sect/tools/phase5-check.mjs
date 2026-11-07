@@ -13,4 +13,4 @@ for (const seed of chosenSeed ? [chosenSeed] : Array.from({ length: 12 }, (_, i)
   rows.push({ seed, partner: s.hermitage.partnerId, herb: s.res.herb || 0, medFood: s.res.medFood || 0,
     people: s.ds.map(d => ({ id: d.id, strength: d.skills.strength, agility: d.skills.agility, fatigue: d.muscleFatigue ?? null, cycles: d.maxCyclesToday ?? null, buff: !!(d.herbalDietUntil > s.t) })) });
 }
-console.log(JSON.stringify({ days: 5, dt: 6, rows }, null, 2));
+console.log(JSON.stringify({ days: 5, dt: 6, alertPolicy: 'clear on each step', scope: 'controlled coarse-step C sample; not a normal 0.25-second reachability test', rows }, null, 2));

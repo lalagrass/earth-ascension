@@ -1,6 +1,8 @@
 {
   "days": 5,
   "dt": 6,
+  "alertPolicy": "clear on each step",
+  "scope": "controlled coarse-step C sample; not a normal 0.25-second reachability test",
   "rows": [
     {
       "seed": 1001,
