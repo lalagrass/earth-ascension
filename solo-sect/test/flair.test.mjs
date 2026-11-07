@@ -33,7 +33,9 @@ test('N16：第一次使出某招記一筆大事記，第二次不記', () => {
 test('N16：大成以上，遠程招會滑步上前', () => {
   const { s, d } = onPost(); d.arts.pushPalm = { xp: 9999, last: 0, bt1: true, bt2: true, bt3: true }; d.moves = ['push']; assert.ok(visTier(d, 'push') >= 3);
   const p0 = [...d.pos], reach = MOVES.find((m) => m.id === 'push').range * (1 + d.skills.palm / 200);
-  s.mons.push(dog(s, [d.pos[0] + reach + FLAIR.dash.add / 2, d.pos[1]]));
+  const foe = dog(s, [d.pos[0] + reach + FLAIR.dash.add - 1, d.pos[1]]);
+  foe.path = [[...d.pos]]; // 真正在來路上；空路徑的獸會立刻離場
+  s.mons.push(foe);
   let dash = 0; for (let i = 0; i < 40; i++) { tick(s, 0.25); dash += s.fx.filter((f) => f.kind === 'dash').length; }
   assert.ok(dash > 0, '有滑步'); assert.ok(Math.hypot(d.pos[0] - NODES[s.hunt.post][0], d.pos[1] - NODES[s.hunt.post][1]) <= 41, '不離守點太遠'); assert.ok(p0);
 });
