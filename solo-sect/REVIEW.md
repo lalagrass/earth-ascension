@@ -297,3 +297,26 @@ N34 的 `duel.mjs --log` 仍輸出每拍的 `T/r/m/margin` 供 reviewer 任取�
 - A：`node solo-sect/tools/golden.mjs --check`；門檻所有新局與舊檔 hash 完全相同；預期「全部相符」。本 PR 不改模擬或 golden 資料。
 - A：`cd solo-sect && node --test test/unit/social/story-data.test.mjs`；門檻每個宿命樹資料列都有可達的觸發與聲明的卡／主線結果，缺卡或旗標門檻錯誤即失敗。
 - C：`bash solo-sect/test/run.sh quick`；記錄項數與秒數，20 秒只作目標報告。搬移／暫停逐項原因見 `docs/evidence/t1-moves.tsv` 與 #496；診斷用途見 `tools/diag/README.md`。
+
+### N58 收徒三層（#489）
+
+- A：`bash solo-sect/test/run.sh smoke`，門檻 0 fail。`test/unit/social/n58-admission.test.mjs` 用排定情境檢查閉門 30 日不收、付糧／錢或做工、無支付與工作就下山並返、少年郭靖和普通人共用入門、師父相熟後才主考。舊 N50「四人／五床，第一名俠可入、第二名俠不可入」原斷言不改；fixture 明選廣收，以單獨檢查真床位。
+- A：`node solo-sect/tools/golden.mjs --check`，門檻 quick／full／舊存檔全部相符；規則改成 3.8，Node 22 用 `node solo-sect/tools/golden.mjs --write --tier all` 重產。30 日現行規則的獨立 fixture 亦用 Node 22 的 `UPDATE_GOLDEN_V22=1 node --test solo-sect/test/accept/v220.test.mjs` 重產（`01c88b908115b6aa → 3715f9cf5336af75`）；原斷言不改。`MIGRATIONS` 對舊局只加收徒方針，自產計數不倒推，不改已有人與庫存。[兩份原始日誌](artifacts/n58/golden-write-node22.log)、[v2.2 fixture 日誌](artifacts/n58/golden-v22-node22.log)。
+- A：PR 山門紀 job `quick → golden → accept` 均 0 fail；以 PR 最新 head CI 為準。
+- B：沒有新增概率期望值，故本輪無 B 比例檢查。
+- C：`node solo-sect/tools/n58-report.mjs solo-sect --json` 以 0.25 秒步長、1001–1012 種子列第 10／30 日門人數、少年名俠數、下山打工人次；可加 `--seed=17` 換種子。不以固定日數或人頭作 A/B 門檻。前版與本版使用同一工具、同一種子及 bot。[前版原始輸出](artifacts/n58/bot12-base.json)第 10／30 日中位門人 3／3、少年 0／0、下山 0／0；[本版](artifacts/n58/bot12-head.json)為 8／10、少年 0／0、下山 0／0。這組自動 bot 的主角是郭靖，故不會再出現同名少年郭靖候選；有支付或有工作者亦不會下山。兩條路徑另由 A 情境驗證，C 如實列零。
+- C 全量護欄：`node solo-sect/tools/bot12.mjs solo-sect --json`；[T1 base](artifacts/n58/bot12-full-base.json)／[N58 head](artifacts/n58/bot12-full-head.json) 用相同工具與 1001–1012 種子。自然山賊 4/5 → 78/82、有柵探針 94/96 → 90/96、柵留住 88 → 29、惱羞 149 → 326、威脅點中位 0 → 267；這些是 C 數字，未改威脅公式或敵人出現規則。收徒帶來更多武學與家底，使既有威脅公式從零啟動並增強來犯；柵較常被攻破，列為 review 風險，不以勝率係數補回。
+
+新常數與既有係數的意義見 [收徒系統](docs/systems/recruitment.md)。畫面操作：在門規作息選「閉門」再看招收按鈕禁用；改「廣收」、擴床後看候選人繳束脩或做工，點按才入門。可觀察人口上限與名聲／自產分數變化。
+
+首次 PR CI [run 42347301548](https://github.com/lalagrass/earth-ascension/actions/runs/42347301548) 的 quick 為 331/332；唯一失敗是 `v145-review.test.mjs` 的 `migSteps` 明列清單仍停在 3.7。新規則有意增加 3.8，故只在期望清單加 `3.8`，原「未來版本拒讀、原檔不變」及完整遷移清單斷言保留，沒有改模擬來掩蓋錯誤。
+
+第二次 [run 42347561563](https://github.com/lalagrass/earth-ascension/actions/runs/42347561563) quick 與 golden 通過；accept 292/301，九項舊情境要明確表達 N58 的合法規則變化：
+
+| 舊驗收 | 新情境或期望的原因 |
+|---|---|
+| `sim.test` 招收 | 阿青自帶 3 糧入庫後扣當餐；下一位沒束脩且零存糧時須下山打工，不再檢查全門一日存糧。 |
+| `v08.test` 低根骨雇工 | 原 fixture 弟子三床已滿；先建弟子床再檢查低根骨仍被拒。 |
+| `v085.test` 升內門、失敗冷卻（2 項） | 原 fixture 未交代師父相熟；明設性情全知與既有師父好感門檻，再保留原根骨、貢獻、考核與冷卻斷言。 |
+| `v145.test`、`v150.test` 舊檔（2 項） | 完整遷移版本清單有意增加 3.8；原遷移結果與版本拒讀斷言不動。 |
+| `v178.test` 三個 15 日種子（3 項） | 束脩是新增合法糧／錢入帳管道，列入白名單；原非負、期初＋異動、每日帳本守恆逐項斷言不動。 |

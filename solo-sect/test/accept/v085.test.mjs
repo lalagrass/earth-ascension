@@ -1,8 +1,9 @@
 import { createState } from '../harness/historical-party.mjs';
 import test from 'node:test'; import assert from 'node:assert/strict';
 import { tick, scoreActs, outers, skipsChores, emergency, payday, setDuty, setPrio, canPromote, startTrial, migrate, save, load, quotaOf } from '../../src/sim.mjs';
-import { CHORE_ACTS, QUOTA, PROMOTE, DAY, RULES_VERSION } from '../../src/data.mjs';
+import { CHORE_ACTS, QUOTA, PROMOTE, ROOT, DAY, RULES_VERSION } from '../../src/data.mjs';
 const mkOuter = (s, id, root = 4) => { const base = s.ds.find((d) => d.id === 'cousin'); const d = JSON.parse(JSON.stringify(base)); Object.assign(d, { id, name: id, role: 'outer', root, rootKnown: true, adult: true, duties: [...CHORE_ACTS], prio: 'normal', chore: 0, choreDebt: 0, contrib: 0, task: null, path: [] }); s.ds.push(d); return d; };
+const knownByMaster = (s, d) => { d.known = [...d.personality]; s.aff[`${s.ds[0].id}>${d.id}`] = ROOT.inviteAff; };
 const acts = (s, d) => scoreActs(s, d).map((o) => o.act);
 
 test('創立弟子皆為內門；外門未滿 2 人時內門仍做雜務', () => {
@@ -46,13 +47,13 @@ test('主角自動升首徒：外門 ≥2 且完成率 ≥80%；首徒練功加�
 test('外門升內門：根骨＋貢獻條件，再經切磋考核', () => {
   const s = createState(3); const o = mkOuter(s, 'o1', 2);
   assert.match(canPromote(s, 'o1').why, /根骨/); o.root = 5; assert.match(canPromote(s, 'o1').why, /貢獻/); o.contrib = PROMOTE.contrib;
-  o.rootKnown = false; assert.match(canPromote(s, 'o1').why, /未明/); o.rootKnown = true;
+  o.rootKnown = false; assert.match(canPromote(s, 'o1').why, /未明/); o.rootKnown = true; knownByMaster(s, o);
   assert.equal(startTrial(s, 'o1').ok, true); assert.equal(o.task.trial, true);
   for (let i = 0; i < 4 * 120 && o.role === 'outer' && !o.trialScore; i++) tick(s);
   assert.ok(o.trialScore > 0); assert.equal(o.role, o.trialScore >= PROMOTE.pass ? 'inner' : 'outer');
 });
 test('考核失敗：當日冷卻', () => {
-  const s = createState(3); const o = mkOuter(s, 'o1', 3); o.contrib = PROMOTE.contrib; o.skills.leg = 0; o.skills.palm = 0; o.skills.strength = 0;
+  const s = createState(3); const o = mkOuter(s, 'o1', 3); o.contrib = PROMOTE.contrib; o.skills.leg = 0; o.skills.palm = 0; o.skills.strength = 0; knownByMaster(s, o);
   startTrial(s, 'o1'); for (let i = 0; i < 4 * 120 && !o.trialScore; i++) tick(s);
   if (o.role === 'outer') { assert.match(canPromote(s, 'o1').why, /明日/); assert.ok(o.thoughts.some((t) => t.id === 'trialFail')); }
 });

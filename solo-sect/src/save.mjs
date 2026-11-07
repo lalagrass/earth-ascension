@@ -1,5 +1,6 @@
 import { tierOf, affKey } from './util.mjs';
 import { RULES_VERSION, DISCIPLES, RECRUIT_POOL, MOOD, ECON, FACILITIES, CHORE_ACTS, DAY, ARTS, ROUTINE_DEFAULT } from './data.mjs';
+import {discipleCount,recruitmentInit} from './recruitment.mjs';
 import { seedArts, growInit } from './arts.mjs';
 import { ensurePractice } from './practice.mjs';
 import { sectOf, genInit } from './sect.mjs';
@@ -69,6 +70,9 @@ export const MIGRATIONS = [
     for (const L of [o.ledger, o.ledgerPrev]) if (L && !L.foodBySource) L.foodBySource = {
       in: L.in?.food ? { legacy: L.in.food } : {}, out: L.out?.food ? { legacy: L.out.food } : {},
     };
+  } },
+  { to: '3.8', note: 'N58（#489）：收徒三層；舊局的已收門人與庫存不動，人口方針按讀檔時人數起算，自產成績不倒推', up(o) {
+    o.recruitment ??= recruitmentInit(discipleCount(o));
   } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored

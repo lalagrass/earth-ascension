@@ -1,0 +1,185 @@
+{
+  "stepSeconds": 0.25,
+  "seeds": [
+    1001,
+    1002,
+    1003,
+    1004,
+    1005,
+    1006,
+    1007,
+    1008,
+    1009,
+    1010,
+    1011,
+    1012
+  ],
+  "day10": {
+    "people": 3,
+    "youngHeroes": 0,
+    "workDepartures": 0
+  },
+  "day30": {
+    "people": 3,
+    "youngHeroes": 0,
+    "workDepartures": 0
+  },
+  "rows": [
+    {
+      "seed": 1001,
+      "day10": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      },
+      "day30": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      }
+    },
+    {
+      "seed": 1002,
+      "day10": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      },
+      "day30": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      }
+    },
+    {
+      "seed": 1003,
+      "day10": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      },
+      "day30": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      }
+    },
+    {
+      "seed": 1004,
+      "day10": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      },
+      "day30": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      }
+    },
+    {
+      "seed": 1005,
+      "day10": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      },
+      "day30": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      }
+    },
+    {
+      "seed": 1006,
+      "day10": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      },
+      "day30": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      }
+    },
+    {
+      "seed": 1007,
+      "day10": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      },
+      "day30": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      }
+    },
+    {
+      "seed": 1008,
+      "day10": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      },
+      "day30": {
+        "people": 4,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      }
+    },
+    {
+      "seed": 1009,
+      "day10": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      },
+      "day30": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      }
+    },
+    {
+      "seed": 1010,
+      "day10": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      },
+      "day30": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      }
+    },
+    {
+      "seed": 1011,
+      "day10": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      },
+      "day30": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      }
+    },
+    {
+      "seed": 1012,
+      "day10": {
+        "people": 3,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      },
+      "day30": {
+        "people": 4,
+        "youngHeroes": 0,
+        "workDepartures": 0
+      }
+    }
+  ]
+}
