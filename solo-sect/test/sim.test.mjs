@@ -2,6 +2,7 @@ import { createState, prepareHistoricalMentor } from './harness/historical-party
 import test from 'node:test'; import assert from 'node:assert/strict';
 import { tick, startBuild, startHunt, setOrder, save, load, routeLength, relKey } from '../src/sim.mjs';
 import { appetiteActMul31 } from '../src/arts.mjs';
+import { ACTIVITIES } from '../src/data.mjs';
 const run = (s, sec) => { for (let i = 0; i < sec * 4; i++) tick(s); };
 
 test('長山路比院內路遠（保留通勤距離）', () => { assert.ok(routeLength('court', 'guard') > 2 * routeLength('court', 'kitchen')); });
@@ -87,7 +88,7 @@ import { recruit, canRecruit, capacity, mapStage } from '../src/sim.mjs';
 test('招收受名聲、床位、存糧與師父真空檔約束；成功扣糧且新人從村路上山', () => {
   const s = createState(41); s.res.food = 10; assert.equal(canRecruit(s).ok, false); s.rep = 100;
   const cap = capacity(s); assert.equal(cap, 3); assert.match(canRecruit(s).why, /床位/);
-  s.fac.dorm.stage = 1; s.res.food = 20; prepareHistoricalMentor(s); const r = recruit(s); assert.ok(r.ok, r.why); assert.equal(s.res.food, 17); assert.equal(r.d.at, 'gate'); assert.equal(s.ds.length, 4);
+  s.fac.dorm.stage = 1; s.res.food = 20; prepareHistoricalMentor(s); const r = recruit(s); assert.ok(r.ok, r.why); assert.equal(s.res.food, 20 - ACTIVITIES.eat.use.food); assert.equal(r.d.at, 'gate'); assert.equal(s.ds.length, 4);
   s.res.food = 0; s.fac.dorm.stage = 2; assert.match(canRecruit(s).why, /存糧/);
 });
 test('大廳擴建需名聲；母版階段隨建設 S0→S1→S2', () => {

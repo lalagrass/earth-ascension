@@ -21,7 +21,7 @@ docker run --rm -v "$PWD":/repo -w /repo node:22-bookworm-slim node solo-sect/to
 
 規則 3.6 遷移保留舊名單與已學武學，為舊角色補 `timeToday`／`guidanceTotal`；新局同行仍由出身真資料產生。Node 22 是 CI 的 canonical golden runtime；Node 24 的前輪 N33 浮點計算曾有 1 ULP 差異，不混用兩版 hash。
 
-9c 第一輪完整 CI（[run 42326710710](https://github.com/lalagrass/earth-ascension/actions/runs/42326710710)）quick 572 過、57 敗，golden 因 quick 失敗跳過。舊測試多處默認開局有林師姐／堂弟、指定名俠當場入門；N50 正式開局已改為出身同行與共用招募，因此舊機制測試改用 `test/harness/historical-party.mjs` 明確建出所需歷史角色，原交手、劇情和人際斷言保留。真實回歸另修：新同行者剛建立時缺 `best`／`insight`／`away`，讀檔才補，破壞現行存讀冪等；義學帶回的候選被固定招募名冊擋在後面，未能優先走共用食宿與師父驗算。第七輪群戰探針現在明確安排洪七公第三段傳藝後量亢龍時間，避免把 N50 不再保證見到師父誤當成群戰機制失敗。舊 v2.2 三十日存檔 hash 隨正式新開局改變，Node 22 重產 `test/fixtures/golden-30d-v22.txt`，不改早期 `golden-30d.txt`。後續 CI 結果仍待核對。
+9c 第一輪完整 CI（[run 42326710710](https://github.com/lalagrass/earth-ascension/actions/runs/42326710710)）quick 572 過、57 敗，golden 因 quick 失敗跳過。舊測試多處默認開局有林師姐／堂弟、指定名俠當場入門；N50 正式開局已改為出身同行與共用招募，因此舊機制測試改用 `test/harness/historical-party.mjs` 明確建出所需歷史角色，原交手、劇情和人際斷言保留。真實回歸另修：新同行者剛建立時缺 `best`／`insight`／`away`，讀檔才補，破壞現行存讀冪等；義學帶回的候選被固定招募名冊擋在後面，未能優先走共用食宿與師父驗算。第七輪群戰探針現在明確安排洪七公第三段傳藝後量亢龍時間，避免把 N50 不再保證見到師父誤當成群戰機制失敗。訪客共餐原本已走 `resAdd` 自動記帳，資源稽核失敗是新合法管道未列白名單；再加一次 `book` 會重複記帳，已撤回。舊 v2.2 三十日存檔 hash 隨正式新開局改變，Node 22 重產 `test/fixtures/golden-30d-v22.txt`，不改早期 `golden-30d.txt`。後續 CI 結果仍待核對。
 
 本輪觸及舊招募／練功程式的可讀名稱：`fnv29 → stableTraitHash`、`RECRUIT29 → RECRUIT_TRAIT_VARIATION`、`trained31 → trainedArt`。歷史文件中的舊名保留為當時紀錄；舊存檔鍵 `v29n` 仍照 3.6 遷移讀取，不靠改鍵名破壞回放。
 
