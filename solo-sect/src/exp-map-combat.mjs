@@ -19,7 +19,8 @@ export function startMapBout(s, owner, key, seg, team, anchor, source, options =
   const center = near ? anchor : [EXP_BOUT.halfWidth, EXP_BOUT.halfHeight];
   const edges = [[left, center[1]], [left + 2 * EXP_BOUT.halfWidth, center[1]], [center[0], top], [center[0], top + 2 * EXP_BOUT.halfHeight]];
   const entry = near ? source : edges[((owner.n || 0) + (owner.encN || 0)) % edges.length];
-  const foeKey = key === 'boars' ? 'boar' : key;
+  // 守關者沿用同種敵人的逐招時間表；血量、傷害及戰報仍用守關資料。
+  const foeKey = { boars: 'boar', wolfking: 'wolf', post: 'bandit' }[key] || key;
   team.forEach((d, i) => { d.pos = [center[0] - RING.step * .75 + i * RING.step / 2, center[1] + RING.step / 2 * (i % 2)]; d.swing = null; d.busyUntil = Math.max(d.busyUntil || 0, s.t); });
   const foes = Array.from({ length: n }, (_, i) => restoreSurvivor(s, foeKey, {
     uid: `exp${owner.n || 0}-${owner.encN || 0}-${i}`, k: foeKey, name: E.name, hp: (options.totalHp || E.hp * (seg.scale || 1)) / n, max: (options.totalHp || E.hp * (seg.scale || 1)) / n,

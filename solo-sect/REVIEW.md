@@ -2,6 +2,8 @@
 
 ## 第十一輪 N45：巡山前三段與剿寨逐招（#457）
 
+後續補齊前三段段尾守關：野豬、狼王、哨卡也使用同一逐招地圖，入口分別沿用獸穴、環巢與山腰小地圖邊緣；勝負及營地等在交手結束後結算。原 N45 smoke 小測試增查三處守關 `bout`，守關未打完仍在去程。這會改變實際巡山結果，故 4.0 golden 已重新產生；Node 22 同命令重跑 bot12 的完整 JSON 與本輪原始 head 逐位相同（`cmp` exit 0），原 C 表仍適用。
+
 實作 grass／Codex Cloud。山腳由主地圖上緣原 `DEN` 獸穴進場、林地由既有巢側接近；山腰及山寨另開 300×200 小地圖。隊伍及敵人的真位置每拍移動，`interceptOpening`、`resolveSwing`、`shieldHit`、原護體與出招冷卻決定結果。敵人、招式、前搖、勁、霸體及型的資料表見 [combat.md](docs/systems/combat.md)。圖只讀 `s.exp.bout`／`s.lair.trip.bout` 的權威狀態，沒有演出側的另擲勝負。
 
 真遊戲畫布截圖：[山腳主地圖](artifacts/r11/n45/foot-main-map.png)、[山寨小地圖](artifacts/r11/n45/lair-small-map.png)。離線重拍：`PW=/opt/codex/cua_node/lib/node_modules/playwright-core/index.mjs node solo-sect/tools/r11-visual-check.mjs --seed=17 --out=solo-sect/artifacts/r11/n45`；`--seed` 可改任何整數，輸出 [`visual-check.json`](artifacts/r11/n45/visual-check.json) 的 `errors` 必須是空陣列。該工具不改模擬與素材，畫布只在本機 Chromium 繪製。
