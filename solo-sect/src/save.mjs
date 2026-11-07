@@ -92,6 +92,11 @@ export const MIGRATIONS = [
     if (o.jh) { o.jh.visitor = null; o.jh.visitorPending = null; }
   } },
   { to: '4.1', note: 'N62（#504）：新增自主後山出獵門規；舊局沿預設允許，已在外巡山者不重派，出行記錄從遷移後起算', up(o) { o.forayPolicy ??= 'allow'; o.forayStats ??= { starts: 0, patrols: 0, hurt: 0, discoveries: 0, targets: [] }; o.forayStats.targets ??= []; } },
+  { to: '4.2', note: '第十二輪（#460/#461）：人際想法從遷移後的事件起算；原設施階段保留，新四階資料依階段生效；已擴菜園的菜畦補足站位', up(o) {
+    o.socialThoughts ??= [];
+    const plots = FACILITIES.find((f) => f.id === 'veg')?.stages[o.fac?.veg?.stage || 0]?.plots || 0;
+    while ((o.plots || []).length < plots) (o.plots ??= []).push({ st: 'empty', g: 0 });
+  } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
 export function v150Up(o) {

@@ -1,11 +1,13 @@
 import {transferredDamage} from './arts.mjs';
+import { recordSocialEvent } from './social-thoughts.mjs';
 import {RING} from './combat-space.mjs';
 import {movementSpeed,moveToward,ringCapacity,attackTokenLimit,rememberEscape,restoreSurvivor,distance} from './tactics.mjs';
 import { combatMoves,combatTacticStep,fretStep,chooseCombatMove, fastestMove, windOf } from './arts.mjs';
 import { practiceWindow } from './practice.mjs';
 import { foeAction } from './starter-combat.mjs';
 import { log, seedMix, resAdd, recordDeed, tallyAct, chronOf } from './util.mjs';
-import { NODES, EDGES, SOURCES, DAY, SEASON_DAYS, FACILITIES, MOVES, ARTS } from './data.mjs';
+import { NODES, EDGES, SOURCES, DAY, SEASON_DAYS, FACILITIES, MOVES, ARTS, FENCE_FAC } from './data.mjs';
+export { FENCE_FAC };
 import { noteFret, interceptOpening, breakWindup, taijiReturn, zjHas, zjMark, zjIntercept, ZJ, partHit, resolveSwing, postureOf, postureRegen, postureHit, handleTake, topTierOf, windFrac, CLASH, perfectDodge, witchK, lightCross, WITCH } from './arts.mjs';
 import { qiInjuryFight28, qiInjuryAdd28, innerDrive28, mainOuterArt, CHAMP28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
 import { power } from './jianghu.mjs';
@@ -39,7 +41,7 @@ export const FENCE = {
   boarRams: 2,                      // loop4：每次下山最多連撞 2 下（長跑比較 3 下＝等於沒柵），柵破就闖進去拱菜（不再「有柵就全擋」）
   warnAt: 0.5,                      // loop4：耐久跌破一半才記一次日誌（防洗版）；修回一半以上重置
   floor: 4,                         // loop4：修柵後倉裡至少留這麼多料，不和建造搶光
-  levels: [null, { name: '木柵', max: 60, mat: 'wood', hp: 15 }, { name: '石牆', max: 150, mat: 'stone', hp: 25, cost: { stone: 12 } }],
+  levels: [null, { name: '木柵', max: 60, mat: 'wood', hp: 15 }, { name: '石牆', max: 150, mat: 'stone', hp: 25, cost: { stone: 12 } }, { name: '山門壘', max: 240, mat: 'stone', hp: 35, cost: { stone: 12 } }],
   bandit: { k: 0.15, min: 15 },     // 山賊落敗時對柵傷害＝max(min, 威脅點數×k)
   repair: { hp: 15, wood: 1 },      // 一次修柵：耗 1 木、回 15 耐久（石牆見 levels：耗 1 石、回 25）
   score: { base: 30, dmgK: 50, broken: 25 }, // 修柵分數＝base＋受損比例×dmgK（全毀再＋broken）
@@ -95,16 +97,16 @@ export function repairDone(s, d) {
 }
 export function fenceHtml(s) {
   const F = s.fence, v = fenceSite(s), prog = v ? `<span class="k">工地：${v.need.wood ? `木 ${v.delivered.wood}/${v.need.wood} ` : ''}${v.need.stone ? `石 ${v.delivered.stone}/${v.need.stone} ` : ''}工時 ${Math.floor(v.work)}/${v.workNeed}</span>` : '';
-  if (!F) return `<div class="fence"><b>菜園木柵</b>：還沒築 ${v ? prog : `<button data-fence>立藍圖：築木柵（${FENCE.cost.wood} 木，弟子搬料施工）</button>`}</div>`;
+  const speaker = s.ds?.find((d) => d.role !== 'laborer')?.name || '弟子';
+  if (!F) return `<div class="fence"><b>菜園木柵</b>：還沒築 ${v ? prog : `<button data-fence>立藍圖：築木柵（${FENCE.cost.wood} 木，弟子搬料施工）</button>`}<span class="k"> ${speaker}：「${FENCE_FAC.stages[1].proposal}」</span></div>`;
   const nx = FENCE.levels[(F.lv || 1) + 1];
-  return `<div class="fence"><b>菜園${lvOf(F).name}</b>${v ? ' ' + prog : nx ? ` <button data-fence-up>立藍圖：加砌${nx.name}（${nx.cost.stone} 石）</button>` : ''}：耐久 ${F.hp}/${F.max}${F.hp <= 0 ? '（已破）' : ''}・擋下 ${F.blocked} 次・被破 ${F.broken} 次・修補 ${F.repaired} 次</div>`;
+  return `<div class="fence"><b>菜園${lvOf(F).name}</b>${v ? ' ' + prog : nx ? ` <button data-fence-up>立藍圖：加砌${nx.name}（${nx.cost.stone} 石）</button>` : ''}：耐久 ${F.hp}/${F.max}${F.hp <= 0 ? '（已破）' : ''}・擋下 ${F.blocked} 次・被破 ${F.broken} 次・修補 ${F.repaired} 次${nx ? `<span class="k"> ${speaker}：「${FENCE_FAC.stages[(F.lv || 1) + 1].proposal}」</span>` : ''}</div>`;
 }
 
 // ---- loop11：築柵／加砌改走既有工地搬運流程（藍圖→弟子從院倉搬料到菜園→施工）。只限柵牆。 ----
 function placeFence(s) { s.fence = { lv: 1, hp: FENCE.max, max: FENCE.max, hits: 0, broken: 0, repaired: 0, blocked: 0 }; log(s, `菜園圍起了木柵（耐久 ${FENCE.max}）。`); }
 function raiseFence(s, nx) { const F = s.fence; F.lv = (F.lv || 1) + 1; F.hp = Math.min(nx.max, F.hp + (nx.max - F.max)); F.max = nx.max; F.warned = false; log(s, `菜園木柵加砌成${nx.name}（耐久 ${F.hp}/${F.max}）。`); }
 export const FENCE_SITE = { work: { build: 12, up: 20 } };
-export const FENCE_FAC = { id: 'fence', name: '菜園柵', node: FENCE.node, stages: [{ name: '菜園柵', offers: [] }] };
 export const fenceSite = (s) => s.fac?.fence?.site || null;
 export function canStartFenceSite(s) {
   if (fenceSite(s)) return { ok: false, why: '柵牆工地施工中' };
@@ -461,7 +463,7 @@ export function bandStep(s, dt, H) {
     if (win) { X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; if (R(s) < RAID.winHurt * (kindOf(X.cur)?.winHurt ?? 1)) hurt = hurtOne(s, H); log(s, `眾人在院裡和山賊一個個交手——打退了山賊！名聲 +${RAID.rep}${hurt ? `；${hurt.name}重傷` : ''}。`); }
     else hurt = raidLose(s, H, '院內交手，');
     bossEnd(s, b, win, defs); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(b.wave ? { wave: 2 } : {}), n: b.n, day: b.day, pts: b.pts, fight: win ? 'win' : 'lose', hurt: hurt?.id || null, map: true, broke: !!s.fence }); nextWave(s, b, win); return; }
-  if (b.hp <= 0) { qiInjuryFight28(s, defs, log); /* loop186 守柵實戰 */ s.band = null; X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; log(s, `守柵迎敵——${defs.map((d) => d.name).join('、') || '眾人'}把山賊打退了！名聲 +${RAID.rep}。`); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(b.wave ? { wave: 2 } : {}), n: b.n, day: b.day, pts: b.pts, fight: 'win', hurt: null, map: true, fence: s.fence?.hp ?? 0 }); for (const d of defs) recordDeed(s, d, 'defend'); recordDeed(s, null, 'raid', b.boss ? {} : { chron: `守柵打退山賊（${defs.map((d) => d.name).join('、') || '眾人'}）` }); bossEnd(s, b, true, defs); nextWave(s, b, true); return; }
+  if (b.hp <= 0) { qiInjuryFight28(s, defs, log); /* loop186 守柵實戰 */ if (b.members.length >= 2) for (let i = 0; i < defs.length; i++) for (let j = i + 1; j < defs.length; j++) { recordSocialEvent(s, 'surrounded', defs[i], defs[j]); recordSocialEvent(s, 'surrounded', defs[j], defs[i]); } s.band = null; X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; log(s, `守柵迎敵——${defs.map((d) => d.name).join('、') || '眾人'}把山賊打退了！名聲 +${RAID.rep}。`); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(b.wave ? { wave: 2 } : {}), n: b.n, day: b.day, pts: b.pts, fight: 'win', hurt: null, map: true, fence: s.fence?.hp ?? 0 }); for (const d of defs) recordDeed(s, d, 'defend'); recordDeed(s, null, 'raid', b.boss ? {} : { chron: `守柵打退山賊（${defs.map((d) => d.name).join('、') || '眾人'}）` }); bossEnd(s, b, true, defs); nextWave(s, b, true); return; }
   b.clock += dt; if (b.clock < BAND.hitEvery) return; b.clock -= BAND.hitEvery;
   const fd0 = Math.max(BAND.fenceDmg.min, Math.round(b.pts * BAND.fenceDmg.k)), fd = Math.max(1, Math.round(fd0 * (1 - SPEC.zhenMit * zhenK(s)) * (b.psn > s.t ? 1 - SPEC.poisonWeak : 1))); b.fenceDealt += fd; /* loop151 陣法護柵 */
   if (fenceHit(s, fd, '山賊', true).held) return;

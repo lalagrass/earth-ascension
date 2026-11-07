@@ -10,6 +10,7 @@ import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, VARIANTS,
 import { stampCard, BRANCHES } from './artcard.mjs';
 import { strMul } from './economy.mjs';
 import { pipeline, log, chronOf, affKey } from './util.mjs';
+import { recordSocialEvent } from './social-thoughts.mjs';
 // ==== （原 growth.mjs）====
 /* loop78 成長分層（開關 s.grow）：成長門類 metadata、造詣單一結算入口、同類學習加速。
    造詣不另存門類值：造詣＝Σ 各武學紀錄 r.gm 的有界貢獻 × 門類權重（衍生值，不會與 skills.palm 漂移）。
@@ -1345,9 +1346,9 @@ export function interceptOpening(s, atk, def, rnd, ctx = {}) {
   if (ctx.allowCover !== false && (def.swing || def.bswing)) {
     for (const helper of allies(s || {},def).filter(h=>h.pos&&def.pos&&atk.pos&&distance(h.pos,def.pos)<=RING.step*2&&distance(h.pos,atk.pos)<=RING.engage+RING.step&&!h.swing&&!h.bswing&&(h.busyUntil||0)<=(s?.t||0)).sort((a,b)=>distance(a.pos,def.pos)-distance(b.pos,def.pos))) {
       const shared=(s?.mem||[]).filter(m=>((m.a===helper.id&&m.b===def.id)||(m.a===def.id&&m.b===helper.id))&&['spar','patrol'].includes(m.k)).length
-        + Math.max(0,s?.aff?.[affKey(helper.id,def.id)]||0)/100*PRACTICE.eyeHalf;
+        + Math.max(0,((s?.aff?.[affKey(helper.id,def.id)]||0)+(s?.aff?.[affKey(def.id,helper.id)]||0))/2)/100*PRACTICE.eyeHalf;
       const assisted=interceptOpening(s,atk,helper,rnd,{...ctx,allowCover:false,sharedUses:shared});
-      if (assisted.read?.kind === 'read') return { ...assisted, helper };
+      if (assisted.read?.kind === 'read') { recordSocialEvent(s, 'covered', helper, def); return { ...assisted, helper }; }
     }
   }
   const T = clashTimes(s, atk, def, ctx), reaction = drawReaction(T,rnd);
@@ -1441,7 +1442,7 @@ export function techniqueFacts(s,a,t,move=null){
   const close=enemies.filter(d=>d.pos&&a.pos&&Math.hypot(d.pos[0]-a.pos[0],d.pos[1]-a.pos[1])<=RING.outer);
   const weapon=t.weapon||incoming?.tool||incoming?.weapon||(t.k&&FOE_ACTIONS[t.k]?.moves.some(m=>m.weapon)?['blade','staff','fist'][(t.i||0)%3]:null);
   const burden=assessLoad(s,a).L;
-  return {hands:FOE_ACTIONS[a.k]?.hands??2,weapon,opponentWind:!!(t.swing||t.bswing),afterDodge,opponentCharge:!!(afterDodge?last.charging:incoming?.travel),enemies:close.length,opponentUnbalanced:(t.posture??postureMax(t))<postureMax(t)/2,losing:a.hp<(a.max||100)/2||(a.posture??postureMax(a))<postureMax(a)/2,cornered:!!coverFor(a)||burden>=1,approaching:!!t.path?.length&&!t.swing&&!t.bswing,force:moveStats(a,move).force,opponentForce:moveStats(t).force};
+  return {hands:FOE_ACTIONS[a.k]?.hands??2,weapon,opponentWind:!!(t.swing||t.bswing),afterDodge,opponentCharge:!!(afterDodge?last.charging:incoming?.travel),enemies:close.length,opponentUnbalanced:(t.posture??postureMax(t))<postureMax(t)/2,losing:a.hp<(a.max||100)/2||(a.posture??postureMax(a))<postureMax(a)/2,cornered:!!coverFor(a,s)||burden>=1,approaching:!!t.path?.length&&!t.swing&&!t.bswing,force:moveStats(a,move).force,opponentForce:moveStats(t).force};
 }
 function moveParents(move){const m=MOVES.find(m=>m.id===move)||Object.values(FOE_ACTIONS).flatMap(p=>p.moves).find(m=>m.id===move);return [move,m?.type,m?.skill,m?.weapon,m?.tool==='stone'?'stone':null].filter(Boolean);}
 function noteDiscoveries(s,d,rows){for(const row of rows){const text=`${d.name||d.k}在吃虧後悟出「${row.name}」`;log(s,text);if(d.id)chronOf(s,d,'glimmer',{chron:text});}}
