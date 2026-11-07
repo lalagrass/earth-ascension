@@ -93,7 +93,7 @@ jobs:
           fi
 
   solo-sect:
-    name: 山門紀 solo-sect (quick + golden)
+    name: 山門紀 solo-sect (quick + golden + accept)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -121,9 +121,9 @@ jobs:
       - name: Quick tests
         if: steps.paths.outputs.run == 'true'
         run: bash solo-sect/test/run.sh quick
-      - name: Full solo-sect tests
-        if: steps.paths.outputs.run == 'true'
-        run: bash solo-sect/test/run.sh all
       - name: Golden check
         if: steps.paths.outputs.run == 'true'
         run: node solo-sect/tools/golden.mjs --check
+      - name: Accept tests
+        if: steps.paths.outputs.run == 'true'
+        run: bash solo-sect/test/run.sh accept

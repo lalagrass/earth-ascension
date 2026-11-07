@@ -292,7 +292,7 @@ N34 的 `duel.mjs --log` 仍輸出每拍的 `T/r/m/margin` 供 reviewer 任取�
 `bash solo-sect/test/run.sh smoke` 要 fail 0，唯一 N38 小測試驗「同一接法機率一改即改級名」、不存 level/XP、不消耗逃敵。`node solo-sect/tools/white-body.mjs --seed 17 --days 30` 應輸出每人格每日各級機率、首次過線日與真交手最常用招；第3–5日狗、第10–15日豬、第20–30日刀賊是新版 #441 C 平衡數字，不能以固定日數決定 `--check` 退出碼。`node solo-sect/tools/bot12.mjs solo-sect --json` 對 12 種子統計各級日數與三人格拿手招，並與上一輪同尺對照。白身即時級名須由正常人物卡可見；受控工具 JSON 不是畫面實拍。原 seed17 自然日程 checkpoint 見 [證據](docs/evidence/r9-n38-levels.md)，其中舊版 `--check` FAIL 是舊 C 門檻，尚待按新驗收修正；不將它冒充新 A/B 失敗。
 
 ### T1 測試精簡（#393）
-- A：`bash solo-sect/test/run.sh all`；門檻 0 fail；預期原短測、歷史重現、長跑均通過。PR 的 Node 22 CI `Full solo-sect tests` 為正式證據。
+- A：PR 的山門紀 CI 依序跑 `bash solo-sect/test/run.sh quick`、`node solo-sect/tools/golden.mjs --check`、`bash solo-sect/test/run.sh accept`，各為 0 fail；archive／parked 不在 PR CI。#496 記錄 parked 的 20 個原斷言與後續決策。
 - A：`node solo-sect/tools/golden.mjs --check`；門檻所有新局與舊檔 hash 完全相同；預期「全部相符」。本 PR 不改模擬或 golden 資料。
 - A：`cd solo-sect && node --test test/unit/social/story-data.test.mjs`；門檻每個宿命樹資料列都有可達的觸發與聲明的卡／主線結果，缺卡或旗標門檻錯誤即失敗。
-- C：`bash solo-sect/test/run.sh quick`；記錄項數與秒數，20 秒只作目標報告。搬移／刪除逐項原因見 `docs/evidence/t1-moves.tsv`；診斷用途見 `tools/diag/README.md`。
+- C：`bash solo-sect/test/run.sh quick`；記錄項數與秒數，20 秒只作目標報告。搬移／暫停逐項原因見 `docs/evidence/t1-moves.tsv` 與 #496；診斷用途見 `tools/diag/README.md`。

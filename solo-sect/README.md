@@ -42,7 +42,7 @@ open http://localhost:8000/solo-sect/index.html
 cd solo-sect
 bash test/run.sh quick
 ```
-短測試依系統放在 `test/unit/`；`bash test/run.sh all` 另跑 `test/archive/` 的歷史重現與 `test/accept/` 的長跑驗收。CI 保留完整套件，快速套件耗時屬 C 類報告。
+短測試依系統放在 `test/unit/`；PR CI 依序跑 `quick`、`golden`、`accept`。`test/archive/` 留已通過的歷史重現，`test/parked/` 保留 #496 追蹤的 20 個原斷言，兩者不進 PR CI；`bash test/run.sh all` 仍可手動跑 unit、archive、accept。快速套件耗時屬 C 類報告。
 
 ### 玩法 PR 最小驗證
 
@@ -73,7 +73,7 @@ node tools/golden.mjs --check   # 或 bash test/run.sh golden；4 核約 5 分�
 | **資料層** | `src/data.mjs` | 路網節點、設施階段、活動、88 門武學、主角模板與門派、平衡常數。 |
 | **模擬層** | `src/sim.mjs`（`tick` 編排）＋規則模組 `arts`、`economy`、`threat`、`world`、`social`、`bonds`、`sect`、`hero`、`jianghu`、`wuxia`、`core`、`util`；存檔 `save.mjs` | 單一權威 `tick(state, dt)` 推進；狀態是可序列化 JSON，固定種子可重放。不碰 DOM，可在 Node 測。 |
 | **繪製與介面層** | `src/main.mjs`（Canvas、鏡頭、面板接線）、`src/panel-ui.mjs`、`src/start-ui.mjs`、`src/audio.mjs`；`index.html`、`style.css` | 讀 state 畫圖與產生面板 HTML。 |
-| **測試層** | `test/unit/<系統>/`、`test/archive/`、`test/accept/`、`test/harness/`、`tools/diag/` | Node 原生測試執行器，零依賴。 |
+| **測試層** | `test/unit/<系統>/`、`test/archive/`、`test/accept/`、`test/parked/`、`test/harness/`、`tools/diag/` | Node 原生測試執行器，零依賴；parked 原斷言追蹤於 #496。 |
 
 各模組職責、目前的依賴問題與 loop144 前舊檔名對照，見 [模組地圖 (MODULES.md)](docs/architecture/MODULES.md)。
 

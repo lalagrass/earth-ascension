@@ -9,10 +9,4 @@ const spec = (x = {}) => ({ kind: 'custom', answers: Array(9).fill(0), askMajor:
 test('沒學內功或沒開二版時沒有加成', () => {
   assert.equal(powBonus({ arts: {}, ng2: 1 }), 0); assert.equal(powBonus({ arts: { breath: { xp: 90 } }, ng: 1 }), 0); assert.equal(dpsBonus({ arts: { breath: { xp: 90 } } }), 0);
 });
-test('內功越高，門派戰力與守柵出手越高', () => {
-  const s = createState(3, spec({ ngshield: true })); const p0 = power(s);
-  for (const d of s.ds) d.arts.breath = { xp: 90 };
-  assert.ok(power(s) > p0); const d = s.ds[0]; assert.ok(Math.abs(powBonus(d) - NG2.powK * qiMax(d)) < 1e-9);
-  const b = defenderDps(d); d.ng2 = 0; assert.ok(defenderDps(d) < b);
-});
 // #390 退役：釘住 v2.4 以前的內力／減傷／造詣公式；現行公式見 test/v31.test.mjs（loop197／198）

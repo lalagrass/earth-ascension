@@ -228,4 +228,4 @@ Artifact 目錄：[`artifacts/features/77e1b2d/`](artifacts/features/77e1b2d/REA
 人物卡級名直接讀同一交手引擎的接法能力過半，不存等級/XP；逃敵優先、沒有才用標準敵人工廠。公開白身人格可重跑自然30日到達日與真最常用招，原始失敗保留。不是自然全場勝率，所有護欄/CI/第九輪收尾尚未全過；見REVIEW與r9-n38-levels證據。
 
 ### T1 測試整理（#393）
-`test/unit/<系統>/` 便於按成長、經濟、威脅、人際、存檔和介面找回歸；`test/accept/` 保留長跑，`test/archive/` 保留舊 bug 重現。`tools/diag/README.md` 列出每支診斷腳本用途。這是開發者測試入口，玩家模擬、畫面、規則 3.7 和 golden 均不改。
+`test/unit/<系統>/` 便於按成長、經濟、威脅、人際、存檔和介面找回歸；`test/accept/` 保留長跑，`test/archive/` 保留通過的舊 bug 重現。#495 發現的 20 個失敗斷言保存在 `test/parked/`，由 #496 逐項追蹤，PR CI 暫不執行。`tools/diag/README.md` 列出每支診斷腳本用途。這是開發者測試入口，玩家模擬、畫面、規則 3.7 和 golden 均不改。

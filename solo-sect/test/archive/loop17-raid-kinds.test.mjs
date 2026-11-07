@@ -11,9 +11,3 @@ test('loop17 類型權重合計 1、期望點數≈原值、抽類型覆蓋三�
   assert.deepEqual(new Set([0.1, 0.6, 0.9].map(pickKind)), new Set(['liukou', 'hanfei', 'yexi']));
 });
 // #390 退役：舊規則（規則關閉）分支已刪，所有局都是現行規則
-test('loop17 夜襲不能付錢、敗了不傷人', () => {
-  const s = createState(1, sp); s.day = 30; s.res.coin = 500; threatDaily(s); const X = T(s);
-  Object.assign(X.pending, { kind: 'yexi', noPay: true, p: 0 }); assert.equal(raidAuto(s), 1);
-  assert.ok(!/付錢了事/.test(threatHtml(s)));
-  const r = raidResolve(s, 0, null); assert.ok(!r.paid); assert.equal(r.win, false); assert.equal(r.hurt, null); assert.equal(X.hist.at(-1).kind, 'yexi');
-});

@@ -37,6 +37,7 @@
 | `test/archive/` | loop 歷史回歸（`run.sh archive`） |
 | `test/accept/` | 長跑驗收（`run.sh accept`） |
 | `test/harness/` | 共用測試／報告輔助函式（`bot.mjs` 等） |
+| `test/parked/` | #496 追蹤的 20 個原斷言，PR CI 暫不執行 |
 | `tools/diag/` | 長跑診斷腳本與用途索引，僅按需執行 |
 | `test/fixtures/` | 舊存檔樣本與 golden 雜湊 |
 | `shoot.mjs` | 截圖腳本（需 playwright-core，非遊戲依賴） |
