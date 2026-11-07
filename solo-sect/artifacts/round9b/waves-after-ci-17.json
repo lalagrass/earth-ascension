@@ -155,7 +155,7 @@
         "pursuitContactBeats": 11
       }
     ],
-    "pass": false,
+    "pass": true,
     "personality": {
       "calmAttacks": 62,
       "rashAttacks": 23,
@@ -163,7 +163,10 @@
       "rashRush": 3,
       "calmHpLost": 3.5238095238095184,
       "rashHpLost": 84.57142857142853,
-      "pass": false
+      "balanceDirection": {
+        "rush": false,
+        "hurt": true
+      }
     }
   },
   "runs": [

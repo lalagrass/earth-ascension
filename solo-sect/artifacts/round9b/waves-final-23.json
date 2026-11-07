@@ -115,7 +115,7 @@
         "pursuitContactBeats": 11
       }
     ],
-    "pass": false,
+    "pass": true,
     "personality": {
       "calmAttacks": 39,
       "rashAttacks": 18,
@@ -123,7 +123,10 @@
       "rashRush": 5,
       "calmHpLost": 31.714285714285666,
       "rashHpLost": 77.52380952380949,
-      "pass": false
+      "balanceDirection": {
+        "rush": false,
+        "hurt": true
+      }
     }
   },
   "runs": [
@@ -2900,7 +2903,7 @@
           "counter": false,
           "type": "defense",
           "T": 0.08633382524594513,
-          "r": 0.3968694398336831
+          "r": 0.39686943983368306
         },
         {
           "t": 10.75,
@@ -9982,7 +9985,7 @@
           "counter": false,
           "type": "defense",
           "T": 0,
-          "r": 0.21064277667560524
+          "r": 0.21064277667560521
         },
         {
           "t": 25.5,
@@ -15510,7 +15513,7 @@
         {
           "t": 2.5,
           "who": "foe1",
-          "L": 2.543518883429614,
+          "L": 2.5435188834296145,
           "reaction": "hold",
           "counter": false,
           "type": "beat",
@@ -15575,7 +15578,7 @@
         {
           "t": 2.75,
           "who": "foe1",
-          "L": 6.903836969308953,
+          "L": 6.903836969308954,
           "reaction": "hold",
           "counter": false,
           "type": "beat",
@@ -16143,7 +16146,7 @@
           "counter": false,
           "type": "defense",
           "T": 0.13876382367589146,
-          "r": 0.22082685778359162
+          "r": 0.2208268577835916
         },
         {
           "t": 5.5,
@@ -18662,7 +18665,7 @@
         {
           "t": 17.75,
           "who": "hero",
-          "L": 8.67342250184554,
+          "L": 8.673422501845542,
           "reaction": "flee",
           "counter": false,
           "type": "beat",
@@ -18689,7 +18692,7 @@
         {
           "t": 18,
           "who": "hero",
-          "L": 6.807562396917755,
+          "L": 6.807562396917756,
           "reaction": "hit",
           "counter": false,
           "type": "defense",
@@ -19027,7 +19030,7 @@
         {
           "t": 19.5,
           "who": "hero",
-          "L": 6.60430226763196,
+          "L": 6.604302267631961,
           "reaction": "flee",
           "counter": false,
           "type": "beat",
@@ -19247,7 +19250,7 @@
         {
           "t": 20.5,
           "who": "hero",
-          "L": 7.9256139050953855,
+          "L": 7.925613905095387,
           "reaction": "press",
           "counter": false,
           "type": "beat",
@@ -19292,7 +19295,7 @@
         {
           "t": 20.75,
           "who": "hero",
-          "L": 7.09715005002473,
+          "L": 7.097150050024731,
           "reaction": "press",
           "counter": false,
           "type": "beat",
@@ -19501,7 +19504,7 @@
         {
           "t": 22,
           "who": "hero",
-          "L": 9.387965995901187,
+          "L": 9.387965995901189,
           "reaction": "hit",
           "counter": false,
           "type": "defense",
@@ -19520,7 +19523,7 @@
         {
           "t": 22,
           "who": "hero",
-          "L": 7.877121964692278,
+          "L": 7.877121964692279,
           "reaction": "hit",
           "counter": false,
           "type": "defense",
@@ -19557,7 +19560,7 @@
         {
           "t": 22,
           "who": "hero",
-          "L": 6.949451734791766,
+          "L": 6.949451734791767,
           "reaction": "press",
           "counter": false,
           "type": "beat",
@@ -19812,7 +19815,7 @@
         {
           "t": 23.25,
           "who": "hero",
-          "L": 7.522752348100578,
+          "L": 7.522752348100579,
           "reaction": "press",
           "counter": false,
           "type": "beat",
@@ -19821,7 +19824,7 @@
         {
           "t": 23.5,
           "who": "hero",
-          "L": 5.851099466352916,
+          "L": 5.851099466352917,
           "reaction": "hit",
           "counter": false,
           "type": "defense",
@@ -20067,7 +20070,7 @@
         {
           "t": 24.5,
           "who": "hero",
-          "L": 7.070067723254288,
+          "L": 7.070067723254289,
           "reaction": "press",
           "counter": false,
           "type": "beat",
@@ -20122,7 +20125,7 @@
         {
           "t": 24.75,
           "who": "hero",
-          "L": 7.651793413256163,
+          "L": 7.651793413256165,
           "reaction": "press",
           "counter": false,
           "type": "beat",
@@ -20387,7 +20390,7 @@
         {
           "t": 26,
           "who": "hero",
-          "L": 7.527983047188244,
+          "L": 7.527983047188245,
           "reaction": "press",
           "counter": false,
           "type": "beat",
@@ -20432,7 +20435,7 @@
         {
           "t": 26.25,
           "who": "hero",
-          "L": 8.662851195592193,
+          "L": 8.662851195592195,
           "reaction": "press",
           "counter": false,
           "type": "beat",
@@ -21007,7 +21010,7 @@
         {
           "t": 29,
           "who": "hero",
-          "L": 8.664571209113749,
+          "L": 8.66457120911375,
           "reaction": "press",
           "counter": false,
           "type": "beat",
@@ -21313,7 +21316,7 @@
           "counter": false,
           "type": "defense",
           "T": 0,
-          "r": 0.21520383892910963
+          "r": 0.21520383892910966
         },
         {
           "t": 30.5,
@@ -21527,7 +21530,7 @@
         {
           "t": 31.5,
           "who": "hero",
-          "L": 7.575425083018705,
+          "L": 7.575425083018706,
           "reaction": "press",
           "counter": false,
           "type": "beat",
@@ -21536,7 +21539,7 @@
         {
           "t": 31.75,
           "who": "hero",
-          "L": 6.886940374381613,
+          "L": 6.886940374381614,
           "reaction": "hit",
           "counter": false,
           "type": "defense",
@@ -21782,7 +21785,7 @@
         {
           "t": 32.75,
           "who": "hero",
-          "L": 7.08822166216108,
+          "L": 7.0882216621610805,
           "reaction": "press",
           "counter": false,
           "type": "beat",
@@ -21837,7 +21840,7 @@
         {
           "t": 33,
           "who": "hero",
-          "L": 10.259957630946726,
+          "L": 10.259957630946728,
           "reaction": "press",
           "counter": false,
           "type": "beat",
@@ -21873,7 +21876,7 @@
         {
           "t": 33.25,
           "who": "hero",
-          "L": 8.282637301710233,
+          "L": 8.282637301710235,
           "reaction": "hit",
           "counter": false,
           "type": "defense",
@@ -22102,7 +22105,7 @@
         {
           "t": 34.25,
           "who": "hero",
-          "L": 7.580000294112395,
+          "L": 7.580000294112397,
           "reaction": "press",
           "counter": false,
           "type": "beat",
@@ -22183,7 +22186,7 @@
         {
           "t": 34.75,
           "who": "hero",
-          "L": 8.223080253792501,
+          "L": 8.223080253792503,
           "reaction": "hit",
           "counter": false,
           "type": "defense",
@@ -22357,7 +22360,7 @@
         {
           "t": 35.5,
           "who": "hero",
-          "L": 7.5936385503279125,
+          "L": 7.593638550327913,
           "reaction": "press",
           "counter": false,
           "type": "beat",
@@ -22375,7 +22378,7 @@
         {
           "t": 35.75,
           "who": "hero",
-          "L": 4.580324385721743,
+          "L": 4.5803243857217435,
           "reaction": "hit",
           "counter": false,
           "type": "defense",
@@ -22677,7 +22680,7 @@
         {
           "t": 37,
           "who": "hero",
-          "L": 7.891025641475843,
+          "L": 7.891025641475844,
           "reaction": "press",
           "counter": false,
           "type": "beat",
@@ -22942,7 +22945,7 @@
         {
           "t": 38.25,
           "who": "hero",
-          "L": 7.130489800937603,
+          "L": 7.130489800937604,
           "reaction": "press",
           "counter": false,
           "type": "beat",

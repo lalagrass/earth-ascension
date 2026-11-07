@@ -188,6 +188,8 @@ N35 的 firstDay 目標在自然 bot12 日程沒有達到。12 種子 × 60 日�
 
 `duel.mjs` 的 `summary.balanceTargets` 保留舊七成／三倍／五次數字的達標與否供 C 報告，`summary.pass`／退出碼只檢查成功接法的 `r+m≤T` 及第60日最小閃接比例沒有比第1日反向下降。`waves.mjs` 的 `personality.balanceDirection` 逐項列搶攻與失血方向；依 #446 明文例外，即使搶攻方向相反也不改 `summary.pass`／退出碼，A 類超載與一、二路反擊仍擋。其他輪次的一般 C 類若方向相反，仍依各該 issue 擋合併。
 
+上方連結的兩份 duel 摘要與 seed17/23 waves 摘要、逐拍 JSON 已用此版工具在 Node 22 重產。seed17 人格搶攻方向為 `false`、失血方向為 `true`，但波次 A 類 `summary.pass=true`、退出碼 0；證據欄位已與新版驗收分層一致。舊 seed23 逐拍檔來自不同 V8，換 Node 22 後僅末位浮點數有差，事件與總數不變。
+
 | 類 | 排場、公式與通過條件 | seed17 實測 |
 |---|---|---|
 | N34 A | 同樣 0.4 秒來招，反應取中位；第1日 `r+step>T`，第60日 `r+step+strike<T` 且真 `resolveSwing` 側身反擊。 | 第1日 `0.600+0.250>0.400`，中招；第60日 `0.233+0.100+0.004<0.400`，側身反擊。 |
