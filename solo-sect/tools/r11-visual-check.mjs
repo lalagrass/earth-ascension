@@ -42,8 +42,33 @@ try {
   });
   await page.waitForTimeout(300);
   await page.screenshot({ path: path.join(out, 'lair-small-map.png') });
+  if (process.argv.includes('--visitor')) {
+    await page.evaluate(async () => {
+      const { DAY } = await import('./src/data.mjs');
+      const { jhStep } = await import('./src/jianghu.mjs');
+      const s = window.__sect.S;
+      s.exp = null; s.lair = null; s.band = null; s.choices = []; s.jh = { ...s.jh, dfbb: 0, dfbbNo: 0, dfbbDay: null, visitor: null, visitorPending: null };
+      s.hero = { kind: 'bare', askMajor: true }; s.day = 8; s.t = 7 * DAY; s.rep = 60; s.res.coin = 2000;
+      for (let i = s.ds.length; i < 4; i++) s.ds.push({ ...s.ds[0], id: `visitor-picture-${i}`, name: `同門${i}`, pos: [...s.ds[0].pos] });
+      s.threat = { next: 8, n: 0, paid: 0, fought: 0, won: 0, homeHurt: 0, deaths: 0, pending: null, rng: 0, hist: [], adapt: 1, rhythmCycle: null, rhythmStrikes: 0, lastBigDay: 0 };
+      jhStep(s, .25, { rand: () => .5 });
+      if (!s.choices.some(c => c.jh === 'dfbb')) throw Error('沒有帶理由的登門卡');
+    });
+    await page.waitForTimeout(250);
+    await page.screenshot({ path: path.join(out, 'visitor-reason-card.png') });
+    await page.evaluate(async () => {
+      const { jhResolve } = await import('./src/jianghu.mjs');
+      const s = window.__sect.S, ch = s.choices.find(c => c.jh === 'dfbb');
+      jhResolve(s, ch, 0, { rand: () => .5 });
+      if (!s.jh.visitor?.bout) throw Error('應戰後沒有地圖交手');
+      const cam = window.__cam; cam.follow = false; cam.until = 0;
+      cam.x = cam.ux = 1475; cam.y = cam.uy = 4700; cam.z = cam.uz = 2;
+    });
+    await page.waitForTimeout(350);
+    await page.screenshot({ path: path.join(out, 'visitor-map-fight.png') });
+  }
   if (errors.length) throw Error(errors.join('\n'));
-  const report = { seed, screenshots: ['foot-main-map.png', 'lair-small-map.png'], errors };
+  const report = { seed, screenshots: process.argv.includes('--visitor') ? ['visitor-reason-card.png', 'visitor-map-fight.png'] : ['foot-main-map.png', 'lair-small-map.png'], errors };
   fs.writeFileSync(path.join(out, 'visual-check.json'), JSON.stringify(report, null, 2) + '\n');
   console.log(JSON.stringify(report));
 } finally { await browser?.close(); await new Promise(resolve => server.close(resolve)); }

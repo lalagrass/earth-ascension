@@ -1,7 +1,9 @@
 import { seedMix, log, resAdd, resSet } from './util.mjs';
-import { DAY, TIERS, JH, TREES, buildCards, destinyStep, ARTS, MOVES } from './data.mjs';
+import { DAY, TIERS, JH, TREES, buildCards, destinyStep, ARTS, MOVES, ENEMIES, FACILITIES, NODES, SOURCES } from './data.mjs';
 import { lockedArt24, growEnsure, learnArt, artTier, powBonus, autoFocus, artById, curCap, reqMissing, fits, qiMax, mitOf } from './arts.mjs';
-import { dpsOf } from './world.mjs';
+import { dpsOf, toWorld, guardOf } from './world.mjs';
+import { points, majorThreatAvailable, reserveMajorThreat } from './threat.mjs';
+import { startMapBout, stepMapBout } from './exp-map-combat.mjs';
 import { laborPow } from './economy.mjs';
 import { valorPowMul, valorAdd, VALOR } from './sect.mjs';
 import { initPair } from './social.mjs';
@@ -24,7 +26,7 @@ const DA = TIERS[2][0] + 1; // 大成
 // 門派戰力（反派事件用）：最強三人的武學階數×品階＋技藝
 export const power = (s) => fighters(s).map((d) => Object.keys(d.arts || {}).reduce((a, k) => a + (artTier(d, k) + 1) * 3, 0) + (d.skills?.palm || 0) / 4 + (d.powMul || 1) * 5 + powBonus(d) + laborPow(d)).sort((a, b) => b - a).slice(0, 3).reduce((a, b) => a + b, 0) * valorPowMul(s); // loop129 勇名
 /* loop206：跟 power() 同一批人。出手是 dpsOf 最高的三個加總。減傷、內力上限是這三個人的平均，不乘進出手，也不改 power()。 */
-export function strikeLedger33(s) {
+export function strikeLedger(s) {
   const rows = fighters(s).map((d) => ({ d, dps: dpsOf(s, d) })).sort((a, b) => b.dps - a.dps || (a.d.id < b.d.id ? -1 : 1)).slice(0, 3);
   const n = rows.length;
   const mean = (f) => (n ? rows.reduce((a, r) => a + f(r.d), 0) / n : 0);
@@ -40,9 +42,9 @@ const FX = {
   arm: [(s) => armLoss(s), (s) => { const y = find(s, 'yangguo'); mood(y, -10); }],
   tomb: [(s) => { s.jh.bees = true; }, () => {}],
   zbt: [(s, H) => zbtBet(s, H, 0), (s, H) => zbtBet(s, H, 1), () => {}],
-  dfbb: [(s, H) => villain(s, H, 'dfbb'), (s) => { s.rep = Math.max(0, (s.rep || 0) - 3); vNo(s, 'dfbb'); }],
+  dfbb: [(s, H) => startVisitorFight(s, H, 'dfbb'), (s) => declineVisitor(s, 'dfbb')],
   kuihua: [(s) => { const d = heroD(s); teachJ(s, d, 'kuihua', DA); d.duanqing ??= s.t; d.moodCap = 80; log(s, `【葵花寶典】${d.name}斷情練成，出手快得只見紅影。`); }, () => {}],
-  hy: [(s, H) => villain(s, H, 'hy'), (s) => { resSet(s, 'coin', Math.max(0, s.res.coin - 20)); vNo(s, 'hy'); }],
+  hy: [(s, H) => startVisitorFight(s, H, 'hy'), (s) => declineVisitor(s, 'hy')],
   axe: [(s) => revealHidden(s), (s) => { resSet(s, 'coin', Math.max(0, s.res.coin - 10)); }],
   hai: [(s) => { s.jh.hai = s.t; const w = find(s, 'weixiaobao'); if (w) teachJ(s, w, 'huagu', 2); log(s, '海大富住進了柴房，每天咳嗽、偷看韋小寶。'); }, () => {}],
   paicuo: [(s) => { const l = s.ds.find((d) => d.role === 'laborer'); if (l) { l.role = 'outer'; delete l.unpaid; log(s, `${l.name}糊里糊塗成了外門弟子。`); } else s.rep = (s.rep || 0) + 1; }, () => {}],
@@ -66,10 +68,10 @@ const FX = {
 };
 export const CARDS = buildCards(TREES.cards.jianghu, FX);
 const once = (s, k) => { if (s.jh.cards[k]) return false; s.jh.cards[k] = true; return true; };
-export function card(s, id, force) {
+export function card(s, id, force, reason = '') {
   const C = CARDS[id]; if (!C) return null; if (!force && !C.comedy && !once(s, id)) return null;
   if (C.comedy && !force) { if (!comedyOk(s)) return null; s.jh.comedy.push(s.t); }
-  const ch = { id: `jh-${id}-${Math.floor(s.t)}`, jh: id, tone: C.comedy ? 'comedy' : 'serious', title: `【${C.comedy ? '喜劇・' : ''}${C.title}】`, text: C.text, opts: C.opts.map((o) => o[0]), portrait: C.who ? P(C.who) : null, at: s.t };
+  const ch = { id: `jh-${id}-${Math.floor(s.t)}`, jh: id, tone: C.comedy ? 'comedy' : 'serious', title: `【${C.comedy ? '喜劇・' : ''}${C.title}】`, text: reason ? `${reason} ${C.text}` : C.text, opts: C.opts.map((o) => o[0]), portrait: C.who ? P(C.who) : null, at: s.t };
   s.choices ??= []; s.choices.push(ch); log(s, `【抉擇】${C.title}：${C.text}`); if (!s.hero?.askMajor) s.autoAt = s.t; return ch;
 }
 export const jhAutoPick = (s, ch) => (ch.jh === 'zwj5' ? ({ qing: 2, free: 0, sect: 1, xia: 3 })[Object.entries(s.hero?.values || {}).filter(([k]) => ['free', 'sect', 'qing', 'xia'].includes(k)).sort((a, b) => b[1] - a[1])[0]?.[0]] ?? 0 : 0);
@@ -90,13 +92,67 @@ function zbtBet(s, H, kind) {
 export const VILLAIN = { cool: 8, more: 2 };
 function vNo(s, k) { s.jh[k + 'No'] = (s.jh[k + 'No'] || 0) + 1; }
 export function villainOk(s, k) { const J = s.jh, last = J[k + 'Day']; if ((J[k + 'No'] || 0) > VILLAIN.more) return false; return last == null || s.day - last >= VILLAIN.cool; }
-function villain(s, H, k) {
-  const need = k === 'dfbb' ? JH.dfbbPow : JH.hyPow, pw = power(s), win = pw >= need || R(s, H) < 0.1;
-  if (win) { s.jh[k] = 2; s.rep = (s.rep || 0) + 8; const art = k === 'dfbb' ? 'kuihua' : 'hama', d = fighters(s).sort((a, b) => (b.skills.palm || 0) - (a.skills.palm || 0))[0];
-    if (d) { learnArt(d, art, s.t); d.arts[art].xp = Math.max(d.arts[art].xp, JH.residueXp); s.jh.residue[art] = d.id; }
-    log(s, k === 'dfbb' ? `【擊退東方不敗】紅影一閃即逝，留下一頁殘譜（葵花寶典 20%，${d?.name}）。` : `【火雲邪神跪地認輸】「我輸了……」留下蛤蟆功殘頁（20%，${d?.name}）。`);
-    if (k === 'dfbb') card(s, 'kuihua');
-  } else { s.jh[k] = 1; for (const d of fighters(s)) { d.hp = Math.max(10, d.hp - 40); mood(d, -10); } log(s, `打不過（門派戰力 ${Math.round(pw)} / ${need}）：眾人重傷，${k === 'dfbb' ? '東方不敗' : '火雲邪神'}揚長而去。（不會死人；之後還會再來）`); }
+// N51：每位敵意訪客是一列 incident。理由同時是准入條件；強度取既有敵人耐力，
+// 同一個 N43 點數與來犯檔期決定是否足以引來他，不再用門派總戰力骰勝負。
+export const VISITOR_INCIDENTS = [
+  { id: 'dfbb', who: '東方不敗', enemy: 'dfbb', after: 8, reasonAny: [
+    { kind: 'art', art: 'kuihua', text: '聽說你們藏有葵花寶典殘頁，特來尋回。' },
+    { kind: 'rep', at: FACILITIES.find(f => f.id === 'hall').stages[2].rep, text: '你們的名聲已傳進日月神教，特來探個虛實。' },
+  ], win: { rep: 8, residue: 'kuihua', card: 'kuihua' }, lose: { mood: -10 }, refuse: { rep: -3 } },
+  { id: 'hy', who: '火雲邪神', enemy: 'hy', after: 6, reasonAny: [
+    { kind: 'hidden', text: '聽說這裡有個深藏不露的高手，特來會一會。' },
+    { kind: 'present', who: 'baozupo', text: '聞得包租婆在此，要找她比試。' },
+  ], win: { rep: 8, residue: 'hama' }, lose: { mood: -10 }, refuse: { coin: -20 } },
+];
+const visitorRow = id => VISITOR_INCIDENTS.find(row => row.id === id);
+export function visitorReason(s, row) {
+  return row.reasonAny.find(r => r.kind === 'art'
+    ? s.ds.some(d => d.arts?.[r.art]) || !!s.jh?.residue?.[r.art]
+    : r.kind === 'rep' ? (s.rep || 0) >= r.at
+      : r.kind === 'hidden' ? s.ds.some(d => d.hidden?.shown)
+        : r.kind === 'present' ? present(s, r.who) : false)?.text || null;
+}
+export function visitorEligible(s, row) {
+  return s.day >= row.after && (s.jh?.[row.id] || 0) < 2 && villainOk(s, row.id)
+    && !!visitorReason(s, row) && !s.exp && !s.lair?.trip
+    && points(s) >= ENEMIES[row.enemy].hp && majorThreatAvailable(s);
+}
+function declineVisitor(s, id) {
+  const row = visitorRow(id), fx = row.refuse;
+  if (fx.rep) s.rep = Math.max(0, (s.rep || 0) + fx.rep);
+  if (fx.coin) resSet(s, 'coin', Math.max(0, s.res.coin + fx.coin));
+  vNo(s, id); s.jh.visitorPending = null;
+}
+function startVisitorFight(s, H, id) {
+  const row = visitorRow(id), reason = s.jh.visitorPending?.reason || visitorReason(s, row);
+  const team = fighters(s).filter(d => d.hp > 0);
+  s.jh.visitorPending = null;
+  if (!team.length) { log(s, `【${row.who}】山門無人應戰，來客留下話後離去。`); return; }
+  const homes = Object.fromEntries(team.map(d => [d.id, [...d.pos]]));
+  s.jh.visitor = { id, reason, homes, n: s.day };
+  startMapBout(s, s.jh.visitor, row.enemy, { id: 'visitor', from: 0 }, team, toWorld(NODES.v2), toWorld(SOURCES.gate.pos));
+  log(s, `【${row.who}登門】${reason} 山門前逐招交手。`);
+}
+function finishVisitorFight(s, result) {
+  const J = s.jh, visit = J.visitor, row = visitorRow(visit.id);
+  for (const id of visit.bout?.team || Object.keys(visit.homes)) {
+    const d = s.ds.find(x => x.id === id); if (!d) continue;
+    d.pos = visit.homes[id]; d.swing = null;
+    if (d.hp <= 0) d.hp = 10; // 既有登門事件不殺死門人；實際傷害仍由逐招交手決定。
+  }
+  J.visitorResult = { id: row.id, day: s.day, won: result.won, exchanges: result.exchanges };
+  J[row.id] = result.won ? 2 : 1;
+  if (result.won) {
+    s.rep = (s.rep || 0) + row.win.rep;
+    const d = fighters(s).sort((a, b) => (b.skills?.palm || 0) - (a.skills?.palm || 0))[0];
+    if (d) { learnArt(d, row.win.residue, s.t); d.arts[row.win.residue].xp = Math.max(d.arts[row.win.residue].xp, JH.residueXp); J.residue[row.win.residue] = d.id; }
+    log(s, `【擊退${row.who}】來客留下${row.win.residue}殘頁，${d?.name || '門人'}收起。`);
+    if (row.win.card) card(s, row.win.card);
+  } else {
+    for (const d of fighters(s)) mood(d, row.lose.mood);
+    log(s, `【${row.who}離去】門人擋不住這位江湖客；傷勢照地圖交手結算。`);
+  }
+  J.visitor = null;
 }
 function revealHidden(s) {
   const l = s.ds.find((d) => d.hidden && !d.hidden.shown); if (!l) return; l.hidden.shown = true; teachJ(s, l, l.hidden.art, DA); l.noGrow = l.hidden.art; l.hidden.xp = l.arts[l.hidden.art].xp;  /* loop155 v2.3：高人仍當幫工，可守柵；要收入門走邀請 */
@@ -117,6 +173,11 @@ export function onJoin13(s, d, k) {
 // 每 tick
 export function jhStep(s, dt, H) {
   s.jh ??= jhInit(); const J = s.jh;
+  if (J.visitor?.bout) {
+    const result = stepMapBout(s, J.visitor, dt, { ...H, guardOf });
+    if (result) finishVisitorFight(s, result);
+    return;
+  }
   // 黯然銷魂掌：心情 ≤30 威力 ×1.5，越低越強；癡：楊過心情隨小龍女；左右互搏、空明拳
   const yg = find(s, 'yangguo'), xl = find(s, 'xiaolongnv');
   for (const d of s.ds) { let m = 1;
@@ -151,9 +212,15 @@ export function jhStep(s, dt, H) {
   if (yg && J.diao >= JH.diaoFeeds && !J.armLost && card(s, 'arm')) return;
   if (xl && !J.bees && card(s, 'tomb')) return;
   if (J.zbt && s.day !== J.zbtDay) { J.zbtDay = s.day; card(s, 'zbt', true); return; }
-  // 反派：東方不敗（第 8 天或名聲 30）、火雲邪神（揭露過隱藏高手或包租婆在，第 6 天後）
-  if ((J.dfbb || 0) < 2 && ((s.day >= 8) || (s.rep || 0) >= 30) && s.day !== J.dfbbDay && (villainOk(s, 'dfbb'))) { J.dfbbDay = s.day; card(s, 'dfbb', true); return; }
-  if ((J.hy || 0) < 2 && s.day >= 6 && (s.ds.some((d) => d.hidden?.shown) || present(s, 'baozupo')) && (villainOk(s, 'hy')) && s.day !== J.hyDay) { J.hyDay = s.day; card(s, 'hy', true); return; }
+  // 敵意訪客共用 incident 准入：理由、點數、來犯期及檔期均由資料列與 N43 決定。
+  if (J.visitorCheckedDay !== s.day) {
+    J.visitorCheckedDay = s.day; // N43 來犯檔期按遊戲日排；只在每日第一次有空卡時檢核。
+    for (const row of VISITOR_INCIDENTS) if (visitorEligible(s, row) && reserveMajorThreat(s)) {
+      const reason = visitorReason(s, row);
+      J[row.id + 'Day'] = s.day; J.visitorPending = { id: row.id, reason };
+      card(s, row.id, true, reason); return;
+    }
+  }
   if (s.ds.some((d) => d.hidden && !d.hidden.shown) && s.day >= 3 && s.day !== J.axeDay && s.day % 3 === 0) { J.axeDay = s.day; card(s, 'axe', true); return; }
   if (present(s, 'weixiaobao') && !J.hai && s.day >= 5 && card(s, 'hai')) { if (isHero(s, 'weixiaobao')) arc(s, 'weixiaobao', 3, '海大富'); return; }
   // 模板主線

@@ -223,7 +223,7 @@ function draw() {
     if (f.kind === 'move') { g.strokeStyle = f.color; g.lineWidth = 4; g.globalAlpha = f.ttl / 0.6; g.beginPath(); g.moveTo(f.from[0], f.from[1] - 25); g.lineTo(f.to[0], f.to[1] - 8); g.stroke(); g.beginPath(); g.arc(f.to[0], f.to[1] - 10, f.r, 0, 7); g.stroke(); label(f.name, f.from[0], f.from[1] - 60, f.color); g.globalAlpha = 1; }
     else { g.fillStyle = 'rgba(200,40,40,.6)'; g.beginPath(); g.arc(f.pos[0], f.pos[1] - 30, 10, 0, 7); g.fill(); }
   }
-  g.restore(); drawWorldTop(); g.restore(); drawCloud(); drawExpBout(); expBar();
+  g.restore(); drawWorldTop(); drawVisitorBout(); g.restore(); drawCloud(); drawExpBout(); expBar();
 }
 // 巡山進度條：作路程總覽，前三段的交手另外在主圖／小圖逐招顯示。
 function expBar() {
@@ -536,6 +536,23 @@ function drawExpBout() { // N45：山腰以上另開同規則小地圖；座標�
   for (const id of B.team) { const d = S.ds.find(x => x.id === id); if (!d || d.hp <= 0) continue; g.save(); g.translate(...d.pos); g.scale(.55, .55); drawPoseActor(g, d, dailyPose(d, d.swing ? 'strike' : 'stand', S.t)); g.restore(); label(d.name, d.pos[0], d.pos[1] - 37, '#7a1a10'); }
   for (const m of B.foes.filter(x => x.hp > 0)) { g.fillStyle = '#7c3824'; g.beginPath(); g.arc(m.pos[0], m.pos[1] - 8, 9, 0, 7); g.fill(); label(ENEMIES[m.k]?.name || m.k, m.pos[0], m.pos[1] - 25, '#7a1a10'); }
   g.restore();
+}
+function drawVisitorBout() {
+  const V = S.jh?.visitor, B = V?.bout; if (!B) return;
+  for (const id of B.team) {
+    const d = S.ds.find(x => x.id === id); if (!d || d.hp <= 0) continue;
+    g.save(); g.translate(...d.pos); g.scale(.7, .7);
+    drawPoseActor(g, d, dailyPose(d, d.swing ? 'strike' : 'stand', S.t)); g.restore();
+    label(d.name, d.pos[0], d.pos[1] - 45, '#7a1a10');
+  }
+  for (const m of B.foes.filter(x => x.hp > 0)) {
+    g.save(); g.translate(...m.pos); g.scale(.8, .8);
+    const actor = { sprite: m.k === 'dfbb' ? 'red_robe' : 'elder' };
+    drawPoseActor(g, actor, dailyPose(actor, m.swing ? 'strike' : 'stand', S.t)); g.restore();
+    label(ENEMIES[m.k]?.name || m.k, m.pos[0], m.pos[1] - 45, '#a21b1b');
+    hp(m.pos[0], m.pos[1] - 52, m.hp / m.max, '#a21b1b');
+  }
+  label(`${V.reason}・逐招交手`, B.anchor[0], B.anchor[1] - 105, '#7a1a10');
 }
 function drawFog() { // v1.55c 迷霧：未探＝雲霧遮住；已探但不在視野＝淡化（只在巡山中）
   for (const [cx, cy] of drawWorld.fog || []) { const x = cx * CHUNK, y = cy * CHUNK; g.fillStyle = '#4a4a56'; g.fillRect(x - 1, y - 1, CHUNK + 2, CHUNK + 2); if (drawWorld.lod === 'far') continue; g.fillStyle = 'rgba(255,255,255,.07)'; for (let k = 0; k < 4; k++) { g.beginPath(); g.arc(x + 40 + k * 60, y + 80 + (k % 2) * 90, 50, 0, 7); g.fill(); } }

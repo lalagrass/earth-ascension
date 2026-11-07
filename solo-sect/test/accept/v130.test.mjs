@@ -35,11 +35,30 @@ test('周伯通：賭贏才教（先左右互搏給憨厚的，再空明拳）�
   s.jh.rng = 1; for (let i = 0; i < 2; i++) { s.day++; s.choices = []; jhStep(s, 0.25); const ch = s.choices.find((c) => c.jh === 'zbt'); jhResolve(s, ch, 0, { rand: () => 0 }); }
   assert.equal(s.jh.zbt, null); assert.ok(s.ds.some((d) => d.arts?.zuoyou) && s.ds.some((d) => d.arts?.kongming)); assert.ok(s.res.coin >= coin);
 });
-test('東方不敗：打退拿葵花殘頁 20%，葵花＝斷情＋心情上限 −20；打不贏重傷不死；不能入門', () => {
-  const s = st(); s.day = 8; s.choices = []; jhStep(s, 0.25); const ch = s.choices.find((c) => c.jh === 'dfbb'); assert.ok(ch); assert.ok(!('dongfangbubai' in (s.xia.done || {})));
-  jhResolve(s, ch, 0, { rand: () => 0.99 }); const n = s.ds.length; if (s.jh.dfbb === 1) assert.equal(s.ds.length, n);
-  const t = st(); t.ds.forEach((d) => { d.skills.palm = 100; for (const a of ['xianglong', 'dagou']) { d.arts[a] = { xp: 90, bt1: true, bt2: false }; } }); t.day = 8; t.choices = []; jhStep(t, 0.25); jhResolve(t, t.choices.find((c) => c.jh === 'dfbb'), 0, { rand: () => 0.99 });
-  assert.equal(t.jh.dfbb, 2); assert.ok(t.ds.some((d) => d.arts?.kuihua?.xp >= JH.residueXp)); pick(t, 'kuihua'); const h = t.ds.find((d) => d.id === 'hero'); assert.equal(h.moodCap, 80); assert.ok(h.duanqing != null);
+test('東方不敗：有來由且逐招分勝負；打退留葵花殘頁、輸了不死人，也不能入門', () => {
+  const arrive = () => {
+    const s = st(); s.day = 8; s.t = 7 * DAY; s.rep = 60; s.res.coin = 2000; s.choices = [];
+    while (s.ds.length < 4) { const d = structuredClone(s.ds[0]); d.id = `visitor-test-${s.ds.length}`; s.ds.push(d); }
+    jhStep(s, .25, { rand: () => .5 });
+    const ch = s.choices.find(c => c.jh === 'dfbb');
+    assert.ok(ch); assert.match(ch.text, /名聲/); assert.ok(!('dongfangbubai' in (s.xia.done || {})));
+    const n = s.ds.length;
+    jhResolve(s, ch, 0, { rand: () => .5 });
+    assert.ok(s.jh.visitor?.bout); assert.equal(s.jh.dfbb, 0, '選應戰當下不預判輸贏');
+    return { s, n };
+  };
+  const { s, n } = arrive();
+  for (const d of s.ds.filter(d => d.role !== 'laborer')) d.hp = 0; // 固定落敗情境：驗其後果，不再借舊總戰力門檻。
+  s.t += .25; jhStep(s, .25, { rand: () => .5 });
+  assert.equal(s.jh.dfbb, 1); assert.equal(s.ds.length, n);
+  assert.ok(s.ds.filter(d => d.role !== 'laborer').every(d => d.hp >= 10), '登門落敗不致死；實際受傷程度由地圖交手決定');
+
+  const { s: t } = arrive();
+  t.jh.visitor.bout.foes[0].hp = 0; // 固定擊退情境：殘頁與斷情選擇仍保留。
+  t.t += .25; jhStep(t, .25, { rand: () => .5 });
+  assert.equal(t.jh.dfbb, 2); assert.ok(t.ds.some(d => d.arts?.kuihua?.xp >= JH.residueXp));
+  pick(t, 'kuihua'); const h = t.ds.find(d => d.id === 'hero');
+  assert.equal(h.moodCap, 80); assert.ok(h.duanqing != null);
 });
 test('韋小寶入門：賭坊每日抽頭有上限', () => {
   const s = st(); join(s, 'weixiaobao'); s.rep = 999; const c = s.res.coin; s.day++; jhStep(s, 0.25); assert.equal(s.res.coin - c, JH.gambleCap);

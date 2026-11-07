@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { strikeLedger33, power } from '../../../src/jianghu.mjs';
+import { strikeLedger, power } from '../../../src/jianghu.mjs';
 import { dpsOf } from '../../../src/world.mjs';
 import { mitOf, qiMax, harmonyMul, HARMONY24, QI_SAT31, qiStrikeMul, qiOf, artById, neigongEff31, gainArt, selfTarget, comprehend, appetite31, sectUnlock24 } from '../../../src/arts.mjs';
 import { SECTS } from '../../../src/data.mjs';
@@ -27,7 +27,7 @@ test('loop206 出手是同一批人的 dpsOf 前三名加總，減傷與內力�
   ]);
   const rows = top3(s);
   assert.deepEqual(rows.map((r) => r.d.id), ['b', 'c', 'd']);
-  const L = strikeLedger33(s);
+  const L = strikeLedger(s);
   assert.equal(L.power, power(s));
   assert.equal(L.n, 3);
   assert.equal(L.dps, rows.reduce((a, r) => a + r.dps, 0));
@@ -40,7 +40,7 @@ test('loop206 出手是同一批人的 dpsOf 前三名加總，減傷與內力�
   const folded = L.dps / (1 - L.mit) * (1 + L.qi / 400);
   assert.ok(Math.abs(L.dps - folded) > 1);
   const bare = sect(s.ds.filter((d) => d.id !== 'labor' && d.id !== 'away'));
-  assert.equal(strikeLedger33(bare).dps, L.dps);
+  assert.equal(strikeLedger(bare).dps, L.dps);
   assert.equal(power(bare), L.power);
 });
 
@@ -50,10 +50,10 @@ test('loop206 多一門入門武學會抬門派戰力；共鳴與造詣凍住時
   assert.equal(harmonyMul(extra.ds[0]), harmonyMul(base.ds[0]));
   assert.equal(harmonyMul(base.ds[0]), 1);
   assert.ok(power(extra) > power(base));
-  assert.equal(strikeLedger33(extra).dps, strikeLedger33(base).dps);
+  assert.equal(strikeLedger(extra).dps, strikeLedger(base).dps);
   const open = sect([disc('a', { moves: ['jd1'], arts: { breath: { xp: 55 }, jindingPalm: { xp: 55 }, pishiFist: { xp: 25 } } })]);
   assert.equal(harmonyMul(open.ds[0]), HARMONY24.all); /* 吐納已小成，陰陽再加「和」是三屬 */
-  assert.ok(strikeLedger33(open).dps > strikeLedger33(base).dps);
+  assert.ok(strikeLedger(open).dps > strikeLedger(base).dps);
 });
 
 test('loop207 內勁飽和維持 1.6，高內力不再往 2.2 長，面板讀同一個常數', () => {

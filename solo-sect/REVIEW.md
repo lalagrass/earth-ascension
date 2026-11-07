@@ -477,3 +477,14 @@ DPS 下降的主要規則原因是撤去十重、星數、同類造詣及小成�
 | C | `node tools/bot12.mjs . --json`，Node 22、相同 12 種子；見[base](artifacts/n61/bot12-base.json)／[head](artifacts/n61/bot12-head.json) | 純 UI 變動，`cmp` 原始 JSON 逐位相同；美觀和可讀性留給擁有人目視。 |
 
 舊名 → 新名：本次沒有更動帶輪次編號的程式名稱；新增 `battleMetrics`、`battleAxisValues` 與 `uiGrowthHistory`。最沒把握的三處：身與耐包含當下疲勞，30 日線可能縮小而非單調成長；敵人的勁依既有碰撞勁每 10 點折一倍，與人的武學勁是比較尺度而非勝率；盲板第 60 日合法日程可能得到其他武學，形狀只表示當日真資料，不鎖死招式種類。
+
+## 第十一輪 N51：有理由的登門與地圖逐招（#465）
+
+| 類 | 指令（repo 根目錄） | 門檻與預期輸出 |
+|---|---|---|
+| A 准入／時間 | `bash solo-sect/test/run.sh smoke` | exit 0；`n51-visitor.test.mjs` 在第八日且威脅點數足夠時仍須證明「沒葵花殘頁、名聲未達正殿」不登門；有理由才出卡且卡寫理由，接受後先建立地圖 `bout`，勝負不在選項當下產生。 |
+| A 來源／受力 | 同一 smoke 小測試及任意 seed 的 `s.jh.visitor.bout` | 來源等於 `SOURCES.gate` 的世界座標，敵人逐招 `exchanges > 0`，勝負只在 HP 耗盡或既有 90 秒時限後決定；成年江湖客不進弟子表。 |
+| B 共用公式 | `bash solo-sect/test/run.sh smoke` 及 CI 山門紀 quick | 准入讀 N43 原 `points(s)`、來犯期和名額；出招讀 N27–N28 `interceptOpening`／`resolveSwing`，沒有獨立勝率項。 |
+| C 自然 12 種子 | `docker run --rm -v "$PWD:/work" -w /work node:22-bookworm-slim node solo-sect/tools/bot12.mjs solo-sect --json` | `visitors.bySeed` 列第一次登門日與是否擊退；第 30 日內大多不來是 C 參考，無登門時擊退率為 null，不宣稱為零勝率。原始結果見 `artifacts/r11/n51/`。 |
+
+同一入門通路的 `VISITOR_INCIDENTS` 各有 `reasonAny`、威脅強度、勝／敗／婉拒後果；非敵意卡的逐張核對在 `combat.md`。舊名 → 新名：`villain()` → `startVisitorFight`／`finishVisitorFight`；舊門派戰力 `JH.dfbbPow`／`JH.hyPow` 已淘汰；新增狀態名均表用途。最沒把握三處：（一）強者對點數的 HP 量尺會使多數自然 30 日沒有登門，照 C 只回報；（二）90 秒僵持計敗沿用 N45 小地圖超時規則；（三）現有非敵意喜劇卡保留原獨立結果，將其規則逐張列在文檔而不假裝是敵意戰鬥。

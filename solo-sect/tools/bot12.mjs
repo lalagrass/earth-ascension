@@ -23,7 +23,7 @@ const L=existsSync(fileURLToPath(root+'/src/body-level.mjs'))?await import(root+
 if (fanArg > 0) { const AC = await import(root + '/src/artcard.mjs'); const D = await import(root + '/src/data.mjs'); if (!AC.setFanBase) throw new Error('此目錄的 artcard 沒有 setFanBase'); AC.setFanBase(fanArg, D.ARTS); }
 const { fanRank } = await import(pathToFileURL(here).href + '/src/artcard.mjs');
 const med = (v) => { v = [...v].sort((a, b) => a - b); return v.length ? v[Math.floor(v.length / 2)] : NaN; };
-const recruitment=[];
+const recruitment=[], visitorRows=[];
 const famousResidents=s=>s.ds.filter(d=>d.id!=='hero'&&(d.xia||COMPANIONS[d.id])).length;
 let practiceOverlap = 0;
 function countPracticeOverlap(s) {
@@ -76,6 +76,7 @@ for (const seed of (seedArg ? [seedArg] : Array.from({ length: 12 }, (_, i) => 1
   recruitmentRow.blocked=W.xiaAdmission?W.xiaPool(s).filter(k=>W.XIA[k].role!=='teacher'&&W.XIA[k].need(s)).map(k=>({id:k,...W.xiaAdmission(s,k)})):null;
   recruitmentRow.guidance=s.ds.filter(d=>d.guidanceMentor).map(d=>({id:d.id,mentor:d.guidanceMentor,day:d.timePrev?.day,received:d.timePrev?.guided||0,totalReceived:d.guidanceTotal||0}));recruitment.push(recruitmentRow);
   recruitmentRow.workDepartures=s.recruitment?.departures||0;
+  visitorRows.push({seed,dfbbFirstDay:s.jh?.dfbbDay??null,dfbbDefeated:s.jh?.dfbb===2,dfbbResult:s.jh?.visitorResult?.id==='dfbb'?s.jh.visitorResult:null});
   huntProbe(s);
   naturalWitch += s.witchN || 0;
   insight.self += s.compN?.self || 0;
@@ -93,7 +94,7 @@ for (const seed of (seedArg ? [seedArg] : Array.from({ length: 12 }, (_, i) => 1
   for (const d of s.ds) { if (d.role === 'laborer') continue; const a = (A.mainOuterArt || A.mainOuter28)(d); const k = a ? fanRank(a.id).fanTier : 'none', dps = dpsOf(s, d); (by[k] ??= []).push(dps); tierDetails.push({ seed, id: d.id, art: a?.id || null, fan: k, xp: a ? d.arts?.[a.id]?.xp || 0 : null, dps: +dps.toFixed(1) }); }
 }
 const sum = (v) => v.reduce((a, b) => a + b, 0);
-const out = { recruitment:{definition:'第10/30日結束常住名俠，含舊版免費名角同伴，不含主角或暫訪師父',day10Med:med(recruitment.map(r=>r.day10)),day30Med:med(recruitment.map(r=>r.day30)),bySeed:recruitment},stepSeconds:.25, insight, solo: { probes: HUNT1.kills.length, kills: sum(HUNT1.kills), escaped: sum(HUNT1.escaped), hurt: sum(HUNT1.hurt), hpLost: Math.round(sum(HUNT1.hpLost)) }, band: { n: BANDP.n, oddsMed: +med(BANDP.odds).toFixed(3), winPMed: +med(BANDP.winP).toFixed(3), won: BANDP.won, fenceHeld: BANDP.fenceHeld, hurt: BANDP.hurt, hurtPerRaid: BANDP.n ? +(BANDP.hurt / BANDP.n).toFixed(3) : 0 }, practiceOverlap, naturalWitch, witch: sum(HUNT.witch) + sum(HUNT1.witch) + sum(BANDP.witch), witchFirst10, rage: sum(HUNT.rage) + sum(HUNT1.rage) + sum(BANDP.rage), breaks: sum(HUNT.breaks) + sum(HUNT1.breaks) + sum(BANDP.breaks), hunt: { probes: HUNT.kills.length, kills: sum(HUNT.kills), escaped: sum(HUNT.escaped), hurt: sum(HUNT.hurt) }, raids: { n: RAIDS.n, fights: RAIDS.fights, won: RAIDS.won, hurt: RAIDS.hurt, map: RAIDS.map, winPMed: +med(RAIDS.predictions).toFixed(3), hurtPerRaid: RAIDS.n ? +(RAIDS.hurt / RAIDS.n).toFixed(3) : 0 }, cShareMed: med(out0.cShare), threat: med(pts), winP: +med(wp).toFixed(3), famousHeld: med(held), threatNoFamous: med(famousBy.no), threatFamous: med(famousBy.yes), nNoFamous: famousBy.no.length, tiers: {} };
+const out = { visitors: { dfbbByDay30:visitorRows.filter(r=>r.dfbbFirstDay!==null).length,dfbbDefeated:visitorRows.filter(r=>r.dfbbDefeated).length,dfbbDefeatRate:visitorRows.filter(r=>r.dfbbFirstDay!==null).length?visitorRows.filter(r=>r.dfbbDefeated).length/visitorRows.filter(r=>r.dfbbFirstDay!==null).length:null,bySeed:visitorRows }, recruitment:{definition:'第10/30日結束常住名俠，含舊版免費名角同伴，不含主角或暫訪師父',day10Med:med(recruitment.map(r=>r.day10)),day30Med:med(recruitment.map(r=>r.day30)),bySeed:recruitment},stepSeconds:.25, insight, solo: { probes: HUNT1.kills.length, kills: sum(HUNT1.kills), escaped: sum(HUNT1.escaped), hurt: sum(HUNT1.hurt), hpLost: Math.round(sum(HUNT1.hpLost)) }, band: { n: BANDP.n, oddsMed: +med(BANDP.odds).toFixed(3), winPMed: +med(BANDP.winP).toFixed(3), won: BANDP.won, fenceHeld: BANDP.fenceHeld, hurt: BANDP.hurt, hurtPerRaid: BANDP.n ? +(BANDP.hurt / BANDP.n).toFixed(3) : 0 }, practiceOverlap, naturalWitch, witch: sum(HUNT.witch) + sum(HUNT1.witch) + sum(BANDP.witch), witchFirst10, rage: sum(HUNT.rage) + sum(HUNT1.rage) + sum(BANDP.rage), breaks: sum(HUNT.breaks) + sum(HUNT1.breaks) + sum(BANDP.breaks), hunt: { probes: HUNT.kills.length, kills: sum(HUNT.kills), escaped: sum(HUNT.escaped), hurt: sum(HUNT.hurt) }, raids: { n: RAIDS.n, fights: RAIDS.fights, won: RAIDS.won, hurt: RAIDS.hurt, map: RAIDS.map, winPMed: +med(RAIDS.predictions).toFixed(3), hurtPerRaid: RAIDS.n ? +(RAIDS.hurt / RAIDS.n).toFixed(3) : 0 }, cShareMed: med(out0.cShare), threat: med(pts), winP: +med(wp).toFixed(3), famousHeld: med(held), threatNoFamous: med(famousBy.no), threatFamous: med(famousBy.yes), nNoFamous: famousBy.no.length, tiers: {} };
 for (const [k, v] of Object.entries(by)) out.tiers[k] = { n: v.length, dps: +med(v).toFixed(1) };
 out.tierDetails = tierDetails;
 if (json) console.log(JSON.stringify(out));
