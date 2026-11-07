@@ -1232,7 +1232,16 @@ export function combatMoves(d,distance=0) {
 export function chooseCombatMove(s,d,target,rnd,options={}) {
   const distance=options.distance??Math.hypot((d.pos?.[0]||0)-(target.pos?.[0]||0),(d.pos?.[1]||0)-(target.pos?.[1]||0));
   const facts=techniqueFacts(s,d,target);
-  const choices=(options.moves||combatMoves(d,distance)).filter(m=>!m.technique||matchesTechnique(TECHNIQUES.find(r=>r.id===m.id),facts)).map(m=>({...m,actualWind:windOf(d,m.id,m.cd,s?.t),force:moveStats(d,m.id).force}));
+  let choices=(options.moves||combatMoves(d,distance)).filter(m=>!m.technique||matchesTechnique(TECHNIQUES.find(r=>r.id===m.id),facts)).map(m=>({...m,actualWind:windOf(d,m.id,m.cd,s?.t),force:moveStats(d,m.id).force}));
+  // 地圖上的敵人有真實硬皮；若已會破皮的招，別仍選只會擦過的快拳。
+  if (options.contactAware) {
+    const armor=moveStats(target).armor;
+    const capable=choices.filter(m=>contactImpact({t:s?.t||0,fx:[]},
+      {id:d.id,uid:d.uid,k:d.k,pos:[...(d.pos||[0,0])]},
+      {...target,pos:[...(target.pos||[0,0])],wounds:target.wounds?.map(w=>({...w}))},
+      {move:m,force:m.force,armor}).damageFactor>0);
+    if (capable.length) choices=capable;
+  }
   return selectAction(s,d,target,choices,rnd,{distance,composure:composure(d),postureCapacity:postureMax(d),armor:moveStats(target).armor,...options});
 }
 export function fastestMove(d) {
@@ -1263,7 +1272,10 @@ export function moveStats(w, moveId, wind = 0.5) {
     if (p) return { force: m.force * (w.raging ? CLASH.fret.force : 1), speed: p.speed, armor: p.armor, type: m.type || (m.cut ? 'blade' : m.bite ? 'bite' : 'fist') };
     return MOVE.monsters[w.k] || MOVE.monsters.fist;
   }
-  const body=bodyMove(moveId)||TECHNIQUE_MOVES.find(m=>m.id===moveId); if (body) return { force: (body.force + (w.skills?.strength || 0) * BODY_TIMING.forceSkill) * (w.raging ? CLASH.fret.force : 1), speed: 1 / body.wind, armor: MOVE.armor, type: body.type };
+  const body=bodyMove(moveId)||TECHNIQUE_MOVES.find(m=>m.id===moveId); if (body) {
+    const trained = body.skill === 'strength' ? 0 : (w.skills?.[body.skill] || 0);
+    return { force: (body.force + ((w.skills?.strength || 0) + trained) * BODY_TIMING.forceSkill) * (w.raging ? CLASH.fret.force : 1), speed: 1 / body.wind, armor: MOVE.armor, type: body.type };
+  }
   const a = artOfMove(moveId) || artById(moveId), t = a && w?.arts?.[a.id] ? artTier(w, a.id) : 0, tags = a?.tags || [];
   const force = MOVE.force + t * MOVE.tierForce + (w?.skills?.strength || 0) * MOVE.strengthForce + (tags.includes('剛') ? MOVE.hardForce : 0) + (tags.includes('拙') ? MOVE.plainForce : 0);
   const speed = MOVE.speed + t * MOVE.tierSpeed + (tags.includes('快') ? MOVE.quickSpeed : 0) + Math.min(MOVE.windSpeedMax, MOVE.windSpeed / Math.max(MOVE.minWind, wind));

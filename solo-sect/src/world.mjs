@@ -398,6 +398,22 @@ export const guardOf = (d) => (ARTS_ALL.some((a) => a.classic && !a.layered && !
 // v1.2 二度氣：無盡段每過一重，有招牌武學在身的人回一口真氣（體力回補，依比例）
 export const secondWind = (team) => team.filter((d) => guardOf(d) < 0.95 || d.dugu?.length).length / Math.max(1, team.length);
 // 遭遇：可繞就閃（隊伍取最差身法）；逃兵依風格追擊；記入該段清場率
+function chaseEscape(s, X, seg, e, team, H, sg) {
+  const E = ENEMIES[e], S = STYLES[X.style]; let t = 0;
+  const stub = team.some((d) => (d.personality || []).includes('stubborn'));
+  if (S.chase >= 1 || (S.chase > 0 && stub && H.rand(s) < S.chase)) {
+    const ag = Math.max(...team.map((d) => d.skills.agility));
+    for (let k = 0; k < (S.chase >= 1 ? 2 : 1); k++) {
+      X.chase.n++; t += EVADE.chaseTime;
+      if (H.rand(s) < expOdds(ag, E.speed)) {
+        X.chase.got++; X.escaped[e]--; if (!X.escaped[e]) delete X.escaped[e];
+        add(X.kills, e, 1); sg.kill++; popKill(s, seg.id); seeEnemy(s, e, 'kill', team[0]);
+        lootRoll(s, X.loot, E.loot, H); break;
+      }
+    }
+  }
+  return t;
+}
 function encounter(s, e, seg, team, H) {
   // v1.95：試過「環被打到 0 就沒有遭遇」，郭靖 30 日 1600 掉到 0–1/5（深谷小環常被清空，少了熊／寨主的歷練），故不採；族群只回饋上限與地圖
   const X = s.exp;  const sca = seg.scale || 1, E = { ...ENEMIES[e], hp: ENEMIES[e].hp * sca }, S = STYLES[X.style], sg = (X.seg[seg.id] ??= { enc: 0, kill: 0 }); sg.enc++; X.encN = (X.encN || 0) + 1;
@@ -417,15 +433,12 @@ function encounter(s, e, seg, team, H) {
     return 0;
   }
   const r = fight(s, e, team, H, false, sca); let t = r.t; if (r.won) { sg.kill++; popKill(s, seg.id); }
-  if (r.fled) { const stub = team.some((d) => (d.personality || []).includes('stubborn'));
-    if (S.chase >= 1 || (S.chase > 0 && stub && H.rand(s) < S.chase)) {
-      const ag = Math.max(...team.map((d) => d.skills.agility)); for (let k = 0; k < (S.chase >= 1 ? 2 : 1); k++) { X.chase.n++; t += EVADE.chaseTime;
-        if (H.rand(s) < expOdds(ag, E.speed)) { X.chase.got++; X.escaped[e]--; if (!X.escaped[e]) delete X.escaped[e]; add(X.kills, e, 1); sg.kill++; popKill(s, seg.id); seeEnemy(s, e, 'kill', team[0]); lootRoll(s, X.loot, E.loot, H); break; } } } }
+  if (r.fled) t += chaseEscape(s, X, seg, e, team, H, sg);
   if (sg.kill >= ECO2.denAt && denRaze(s, seg.id)) { (X.razed ??= []).push(seg.name); X.events.push(`搗毀${seg.name}獸巢`); log(s, `巡山隊搗毀了${seg.name}的獸巢：該區族群上限減半五日`); }
   return t;
 }
 
-function pickEnemy(s, seg, H) { const tot = seg.roster.reduce((a, [, w]) => a + w, 0); let r = H.rand(s) * tot; for (const [k, w] of seg.roster) { r -= w; if (r < 0) return k; } return seg.roster[0][0]; }
+function pickEnemy(s, seg, H) { const focus = s.exp?.focus; if (focus?.seg === seg.id && seg.roster.some(([key]) => key === focus.key)) return focus.key; const tot = seg.roster.reduce((a, [, w]) => a + w, 0); let r = H.rand(s) * tot; for (const [k, w] of seg.roster) { r -= w; if (r < 0) return k; } return seg.roster[0][0]; }
 export function checkRetreat(s, team) {
   const X = s.exp;
   let down = null;
@@ -439,12 +452,32 @@ export function checkRetreat(s, team) {
 }
 export function expStep(s, dt, H) {
   const X = s.exp; if (!X) return; const team = X.team.map((id) => s.ds.find((d) => d.id === id)).filter(Boolean);
+  if (X.recalled && X.bout) {
+    // 玩家召回是撤離指令：中斷尚未決勝的交手，不算擊倒，也不讓隊伍被遠段小地圖困住。
+    for (const d of team) { d.swing = null; d.busyUntil = s.t; }
+    X.bout = null; X.pendingGate = null; X.phase = 'back'; X.backLeft = X.dist / EXP.back; X.backPos = X.dist; X.ret = returnPlan(s, X);
+    log(s, `巡山隊在${segAt(X.dist).name}脫離交手，遵掌門傳令回山`);
+    return;
+  }
   if (X.bout) {
     const r = stepMapBout(s, X, dt, { ...H, guardOf }); if (!r) return;
     const sg = (X.seg[r.seg] ??= { enc: 0, kill: 0 });
-    if (r.won) { sg.kill++; popKill(s, r.seg); add(X.kills, r.key, 1); seeEnemy(s, r.key, 'kill', team.find(d => d.hp > 0)); lootRoll(s, X.loot, ENEMIES[r.key].loot, H); for (const d of team.filter(d => d.hp > 0)) H.grow(s, d, 'style', 3, 'fight'); }
-    else if (r.timedOut) { add(X.escaped, r.key, 1); seeEnemy(s, r.key, 'fled'); X.events.push(`${ENEMIES[r.key].name}沿地圖邊緣脫身`); }
-    X.busy = 0;
+    const gate = X.pendingGate; X.pendingGate = null;
+    if (r.won) {
+      sg.kill++; if (!gate) popKill(s, r.seg);
+      add(X.kills, r.key, 1); seeEnemy(s, r.key, 'kill', team.find(d => d.hp > 0)); lootRoll(s, X.loot, ENEMIES[r.key].loot, H);
+      for (const d of team.filter(d => d.hp > 0)) H.grow(s, d, 'style', 3, 'fight');
+      if (gate) { X.gates.push(gate.gateName); rivalWon(s, gate); const cp = CAMPS.find(c => c.seg === X.gateI - 1); if (cp) campAt(s, X, cp, team); }
+    } else if (gate) {
+      if (team.some(d => d.hp <= 0 && awaken(s, d))) {
+        for (const d of team) d.hp = Math.max(d.hp, 60);
+        X.gateI--; X.events.push(`${team.find(d => d.awakened)?.name || ''}瀕死覺醒`);
+      } else { X.reason = `被${gate.gateName}擋在${gate.name}`; X.blocked = gate.gateName; }
+    } else if (r.fled) {
+      add(X.escaped, r.key, 1); seeEnemy(s, r.key, 'fled');
+      X.busy = chaseEscape(s, X, ROUTE.find(g => g.id === r.seg), r.key, team, H, sg);
+    } else if (r.timedOut) { add(X.escaped, r.key, 1); seeEnemy(s, r.key, 'fled'); X.events.push(`${ENEMIES[r.key].name}沿地圖邊緣脫身`); }
+    if (!r.fled) X.busy = 0;
     const why = X.reason || checkRetreat(s, team);
     if (why) { X.reason = why; X.phase = 'back'; X.backLeft = X.dist / EXP.back; X.backPos = X.dist; X.ret = returnPlan(s, X); }
     return;
@@ -456,10 +489,20 @@ export function expStep(s, dt, H) {
     X.sta = (X.sta ?? EXP.sta + Math.max(0, ...team.map((d) => d.staBonus || 0))) - (X.dist - d0) * EXP.staStep;
     if (X.gorgeT == null && !(X.from > 0) && X.dist >= ROUTE[3].from) X.gorgeT = s.t - X.startT;
     const G = rivalGate(s, routeSeg(X.gateI), X.gateI);
-    if (G && X.dist >= G.to) { X.dist = G.to; X.gateI++; const r = fight(s, G.gate, team, H, true, G.scale || 1); X.encN = (X.encN || 0) + 1; X.busy = r.t / 2; X.fights++; const sg = (X.seg[G.id] ??= { enc: 0, kill: 0 }); sg.enc++;
+    if (G && X.dist >= G.to && X.gateI < 3) {
+      X.dist = G.to; X.gateI++; X.encN = (X.encN || 0) + 1; X.fights++;
+      const sg = (X.seg[G.id] ??= { enc: 0, kill: 0 }); sg.enc++;
+      for (const d of team) seeEnemy(s, G.gate, 'fight', d); seeEnemy(s, G.gate, 'see');
+      const source = G.id === 'foot' ? DEN : RINGS.find(r => r.id === G.id)?.nest || trailAt(X.dist);
+      startMapBout(s, X, G.gate, G, team, trailAt(X.dist), source).spotDist = X.dist;
+      X.pendingGate = G;
+      X.events.push(`在${G.name}遇見${G.gateName}，逐招在${G.id === 'slope' ? '山腰小地圖' : '主地圖'}交手`);
+    }
+    else if (G && X.dist >= G.to) { X.dist = G.to; X.gateI++; const r = fight(s, G.gate, team, H, true, G.scale || 1); X.encN = (X.encN || 0) + 1; X.busy = r.t / 2; X.fights++; const sg = (X.seg[G.id] ??= { enc: 0, kill: 0 }); sg.enc++;
       if (r.won) { sg.kill++; X.gates.push(G.gateName); rivalWon(s, G); if (LS_FIRST24.includes(G.id) && !((s.records ??= {}).lsFirst ??= {})[G.id]) { s.records.lsFirst[G.id] = 1; X.loot.lingshi = (X.loot.lingshi || 0) + 1; X.events.push(`首次闖過${G.gateName}，在關後石縫撿到 1 顆靈石`); } /* loop159 v2.4 P5/P6：深谷、斷崖守關首通保底靈石 */ const cp = CAMPS.find((c) => c.seg === X.gateI - 1); if (cp) campAt(s, X, cp, team); else if (G.endless || G.id === 'peak') { const w = secondWind(team); if (w > 0) { X.sta = Math.min(EXP.sta, X.sta + EXP.sta * HS.secondWind * w); X.pat = Math.min(X.patMax, X.pat + 10 * w); for (const d of team) if (d.hp > 0 && (guardOf(d) < 0.95 || d.dugu?.length)) d.hp = Math.min(100, d.hp + 100 * HS.windHp); X.events.push(`過了${G.gateName}，眾人回了一口真氣（體力 +${Math.round(HS.secondWind * w * 100)}%）`); } } } else if (r.bail) { X.reason = `被${G.gateName}擋在${G.name}（見勢不妙及早撤退）`; X.blocked = G.gateName; } else if (team.some((d) => d.hp <= 0 && awaken(s, d))) { for (const d of team) d.hp = Math.max(d.hp, 60); X.gateI--; X.events.push(`${team.find((d) => d.awakened)?.name || ''}瀕死覺醒`); } else { for (const d of team) if (d.hp <= 0) d.hp = 10; X.reason = `被${G.gateName}擋在${G.name}`; X.blocked = G.gateName; } }
     else if (X.dist >= X.nextAt) { const seg = segAt(X.nextAt - 0.01); X.nextAt += seg.every; X.busy = encounter(s, pickEnemy(s, seg, H), seg, team, H) / 2; lootRoll(s, X.loot, seg.find, H); }
     if (X.fights > f0) { const lazy = team.filter((d) => (d.personality || []).includes('lazy')).length; X.sta -= (X.fights - f0) * EXP.staFight; X.pat -= (X.fights - f0) * (EXP.patFight + lazy * EXP.patLazy); }
+    if (X.bout) return;
     const why = X.reason || checkRetreat(s, team); if (why) { X.reason = why; X.phase = 'back'; X.backLeft = X.dist / EXP.back; X.backPos = X.dist; X.ret = returnPlan(s, X); log(s, `巡山隊在${segAt(X.dist).name}（${X.dist.toFixed(0)} 步）回頭：${why}`); }
     return;
   }
@@ -505,7 +548,7 @@ function finishExpedition(s, team, H) {
   const rec = []; for (const d of team) if (dist > (d.best || 0)) { if (d.best) { H.think(s, d, 'recordSelf'); rec.push(d.name); } d.best = dist; }
   let sectRec = false; if (dist > (s.records.sect || 0)) { sectRec = true; Object.assign(s.records, { sect: dist, who: team.map((d) => d.name), n: X.n, t: s.t }); for (const d of s.ds) if (d.role !== 'laborer') H.think(s, d, 'recordSect'); }
   const R = s.records, clear = {}, qing = []; R.clear ??= {}; R.qing ??= {};
-  for (const g of [...ROUTE, ...Array.from({ length: Math.max(0, segIndex(X.dist) - ROUTE.length + 1) }, (_, k) => routeSeg(ROUTE.length + k))]) { const v = X.seg[g.id]; if (!v || !v.enc) continue; const c = v.kill / v.enc; clear[g.id] = c; if (c > (R.clear[g.id] || 0)) R.clear[g.id] = c; if (c >= 1) { qing.push(g.name); R.qing[g.id] = (R.qing[g.id] || 0) + 1; } }
+  for (const g of [...ROUTE, ...Array.from({ length: Math.max(0, segIndex(X.dist) - ROUTE.length + 1) }, (_, k) => routeSeg(ROUTE.length + k))]) { const v = X.seg[g.id]; if (!v || !v.enc) continue; const c = v.kill / v.enc; clear[g.id] = c; if (R.clear[g.id] == null || c > R.clear[g.id]) R.clear[g.id] = c; if (c >= 1) { qing.push(g.name); R.qing[g.id] = (R.qing[g.id] || 0) + 1; } }
   let fast = X.style === 'dash'; if (X.gorgeT != null && (R.fastGorge == null || X.gorgeT < R.fastGorge)) { R.fastGorge = Math.round(X.gorgeT); fast = true; }
   const cool = EXP.cool * (fast ? EXP.coolFast : 1); for (const d of team) d.restUntil = s.t + cool;
   const st = team.filter((d) => (d.personality || []).includes('stubborn')), lz = team.filter((d) => (d.personality || []).includes('lazy')), qu = [];
@@ -514,6 +557,7 @@ function finishExpedition(s, team, H) {
   const rep0 = { ret: X.ret ? { hits: X.ret.hits, staLost: X.ret.staLost, lost: X.ret.lost } : null, style: X.style, styleWhy: X.styleWhy, evaded: X.evaded, chase: X.chase, clear, qing, gates: X.gates, blocked: X.blocked || null, time: Math.round(s.t - X.startT), order: X.order, sta: Math.max(0, Math.round(X.sta ?? 0)), pat: Math.max(0, Math.round(X.pat ?? 0)), patMax: X.patMax, scout: X.scout, camps: X.camps || [], from: X.camp, quarrel: qu, cool: Math.round(cool), fast, cause };
   rep0.story = storyOf(team, rep0, X);
   const rep = { ...rep0, n: X.n, team: team.map((d) => d.name), ids: team.map((d) => d.id), dist, seg: segAt(Math.max(0, dist - 0.01)).name, kills: X.kills, escaped: X.escaped, hurt, out: outcomeOf(X), razed: X.razed || [], loot: X.loot, reason: X.reason, fights: X.fights, sectRec, personal: rec, day: Math.floor(s.t / DAY) + 1 };
+  if (X.autonomous != null) { const stats = (s.forayStats ??= { starts: 0, patrols: 0, hurt: 0, discoveries: 0, targets: [] }); stats.hurt += hurt.length; stats.discoveries += Math.max(0, team.reduce((n, d) => n + (d.glimmer?.known || []).length, 0) - (X.glimmerBefore || 0)); rep.outing = { kind: X.outing, autonomous: X.autonomous, focus: X.focus }; }
   for (let i = 0; i < team.length; i++) for (let j = i + 1; j < team.length; j++) addMem(s, team[i], team[j], 'patrol', rep.seg); // v1.65 並肩巡山
   s.lastExp = rep; s.exp = null;
   log(s, `巡山戰報 #${rep.n}：走到${rep.seg} ${dist} 步｜${reportText(rep)}`);

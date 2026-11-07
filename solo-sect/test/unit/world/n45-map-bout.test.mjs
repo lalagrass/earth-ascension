@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, startExpedition } from '../../../src/sim.mjs';
-import { openExp, DEN } from '../../../src/world.mjs';
+import { openExp, DEN, RINGS } from '../../../src/world.mjs';
 import { ENEMIES } from '../../../src/data.mjs';
+import { EXP_BOUT } from '../../../src/exp-map-combat.mjs';
 import { lairStep } from '../../../src/threat.mjs';
 
 test('N45 巡山山腳從既有邊緣獸穴走來，逐招交手後才結算', () => {
@@ -38,4 +39,33 @@ test('N45 巡山山腳從既有邊緣獸穴走來，逐招交手後才結算', (
   assert.ok(lairBout.exchanges > 0, '山寨勝負也由逐招判定');
   assert.equal(raid.lair.trip, null);
   assert.equal(typeof raid.lair.hist[0].win, 'boolean');
+
+  const gate = openExp(createState(53, { kind: 'bare', askMajor: false }));
+  gate.res.food = 20;
+  assert.equal(startExpedition(gate, ['hero'], { target: 120, order: 'steady' }).ok, true);
+  gate.exp.dist = 99; gate.exp.nextAt = 1000;
+  for (let i = 0; i < 8 && !gate.exp.bout; i++) tick(gate, .25);
+  assert.equal(gate.exp.bout?.key, 'boar', '山腳守關野豬也必須建立逐招交手');
+  assert.deepEqual(gate.exp.bout.source, DEN);
+  assert.equal(gate.exp.pendingGate?.gateName, '擋路的野豬');
+  assert.equal(gate.exp.phase, 'out', '守關未打完不能先返程');
+
+  for (const [index, at, target, key, moveKey, near] of [
+    [1, 249, 270, 'wolfking', 'wolf', true],
+    [2, 449, 470, 'post', 'bandit', false],
+  ]) {
+    const next = openExp(createState(53 + index, { kind: 'bare', askMajor: false }));
+    next.res.food = 20;
+    assert.equal(startExpedition(next, ['hero'], { target, order: 'steady' }).ok, true);
+    next.exp.dist = at; next.exp.gateI = index; next.exp.nextAt = 1000;
+    for (let i = 0; i < 8 && !next.exp.bout; i++) tick(next, .25);
+    assert.equal(next.exp.bout?.key, key, `${key} 守關進逐招地圖`);
+    assert.equal(next.exp.bout?.foes[0].k, moveKey, `${key} 沿用同種招式`);
+    assert.equal(next.exp.bout?.near, near);
+    if (near) assert.deepEqual(next.exp.bout.source, RINGS[index].nest, '林地守關從可見環巢走近');
+    else {
+      const B = next.exp.bout, [x, y] = B.source;
+      assert.ok(x === B.left || x === B.left + 2 * EXP_BOUT.halfWidth || y === B.top || y === B.top + 2 * EXP_BOUT.halfHeight, '山腰守關從小地圖邊緣走近');
+    }
+  }
 });

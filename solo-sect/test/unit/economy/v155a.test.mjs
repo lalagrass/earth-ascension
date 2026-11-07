@@ -38,6 +38,8 @@ test('各環族群：無亂數回補、巡山擊倒會扣、存檔增量 < 1KB�
 });
 test('巡山實跑：擊倒數從所屬環族群扣掉', async () => {
   const M = await import('../../../src/sim.mjs'), { openExp } = await import('../../../src/world.mjs'); const s = openExp(createState(7)); tick(s); s.res.food = 20; for (const d of s.ds) { Object.assign(d.skills, { palm: 80, leg: 80, agility: 5 }); d.mood = 90; d.hp = 100; }
+  // N45 逐招地圖比舊批次結算久；先讓各環達承載量，隔離期間自然繁殖，仍嚴格驗每次擊倒扣一隻。
+  for (const g of ROUTE) { s.pop[g.id].n = Math.floor(W.capOf(s, g.id)); s.pop[g.id].t = 0; }
   M.startExpedition(s, s.ds.slice(0, 2).map((d) => d.id)); assert.ok(s.exp, '出發');
   const p0 = JSON.parse(JSON.stringify(s.pop)); let k = 0;
   for (let i = 0; i < 4000 && s.exp && !k; i++) { tick(s); k = Object.values(s.exp?.seg || {}).reduce((a, g) => a + g.kill, 0); }

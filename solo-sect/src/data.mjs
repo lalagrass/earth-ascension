@@ -192,6 +192,8 @@ export const ACTIVITIES = {
   leisure: { name: '閒坐看雲', dur: 8, pose: 'sit', fun: 45, energy: 3 },
   deliver: { name: '送回院倉', dur: 0, pose: 'carry' },
   defend: { name: '守柵迎敵', dur: 6, pose: 'stand', energy: -8, skill: { style: 1 } }, // loop3：只有山賊在地圖上時出現
+  foray: { name: '後山出獵', dur: 0, pose: 'walk' }, // N62：效用 AI 發起 N45 巡山，不佔設施工作格
+  patrol: { name: '巡山練招', dur: 0, pose: 'walk' }, // N62：沿已走過的後山路段遇真對手
   repair: { name: '修柵', dur: 8, pose: 'chop', energy: -6, skill: { strength: 2 } }, // loop2：只有築了木柵且受損時才會出現
 };
 
@@ -350,7 +352,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '4.0'; /* 第十一輪 N43–N45／N51／N44：守山與遠行 */
+export const RULES_VERSION = '4.1'; /* N62：自主出獵門規與效用活動 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -853,7 +855,7 @@ export const DAO = { tagOf: { 巧: '破綻', 剛: '蓄力', 柔: '卸力', 拙: 
     boar: '蓄力', boars: '蓄力', bear: '蓄力', bandit: '蓄力', chief: '蓄力', ape: '蓄力', whiteape: '蓄力',
     wolfking: '破綻', post: '蓄力', python: '卸力', pythonking: '卸力', swordtomb: '歸真', peakguard: '歸真' } };
 // ---- v1.76 糧食安全閘（BALANCE-REPORT-v175 P0）：存糧＋菜 < 每人 perHead 份 → 種菜升為需求層、其餘非必要活動 ×gateMul ----
-export const FOOD_SEC = { perHead: 1.5, farm: 75, gateMul: 0.35, keep: ['eat', 'rest', 'farm', 'cook', 'heal', 'watch', 'trial', 'build', 'deliver'] };
+export const FOOD_SEC = { perHead: 1.5, farm: 75, gateMul: 0.35, keep: ['eat', 'rest', 'farm', 'cook', 'heal', 'watch', 'trial', 'build', 'deliver', 'foray'] };
 
 // ==== （原 sect-data.mjs）====
 // v1.35 門派身分（ROADMAP §18）：主角＝門派。純資料，無 import（arts.mjs 也會用）
@@ -944,6 +946,8 @@ export const SCORE = [
   { act: 'chop', when: ['woodRoom'], tiers: [{ if: 'shortWood', v: 50, why: '工地缺木' }, { v: 28, why: '備柴' }] },
   { act: 'quarry', when: ['stoneRoom'], tiers: [{ if: 'shortStone', v: 50, why: '工地缺石' }, { v: 14, why: '備石' }] },
   { act: 'farm', tiers: [{ if: 'foodLow', v: 'FS.farm', why: '存糧見底，先顧菜畦', layer: 'need' }, { if: 'ripe', v: 50, why: '菜熟了' }, { v: 30, why: '菜畦空著該播種' }] },
+  { act: 'foray', when: ['forayReady', 'animalTracks'], tiers: [{ if: 'foodLow', v: 95, why: '存糧不足，沿後山獸跡找獵物', layer: 'need' }, { v: 20, why: '後山有獸跡，想去看看' }] },
+  { act: 'patrol', when: ['practiceStuck', 'patrolReady'], v: 60, why: '招式卡住了，想去走過的後山實戰' },
   { act: 'forage', v: { pick: [true, 18, 18], mul: ['tr.playful'] }, why: '採藥' },
   { gen: true }, // v1.6 建築活動（ACTIVITIES[].gen）在這個位置展開
   { act: 'build', when: ['siteWork'], v: { pick: [true, 55, 55], mul: [{ pick: ['d.adult', 1, 0.6] }] }, why: '{buildWhy}' },

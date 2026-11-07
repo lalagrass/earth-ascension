@@ -2,6 +2,8 @@
 
 ## 第十一輪 N45：巡山前三段與剿寨逐招（#457）
 
+後續補齊前三段段尾守關：野豬、狼王、哨卡也使用同一逐招地圖，入口分別沿用獸穴、環巢與山腰小地圖邊緣；勝負及營地等在交手結束後結算。原 N45 smoke 小測試增查三處守關 `bout`，守關未打完仍在去程。這會改變實際巡山結果，故 4.0 golden 已重新產生；Node 22 同命令重跑 bot12 的完整 JSON 與本輪原始 head 逐位相同（`cmp` exit 0），原 C 表仍適用。
+
 實作 grass／Codex Cloud。山腳由主地圖上緣原 `DEN` 獸穴進場、林地由既有巢側接近；山腰及山寨另開 300×200 小地圖。隊伍及敵人的真位置每拍移動，`interceptOpening`、`resolveSwing`、`shieldHit`、原護體與出招冷卻決定結果。敵人、招式、前搖、勁、霸體及型的資料表見 [combat.md](docs/systems/combat.md)。圖只讀 `s.exp.bout`／`s.lair.trip.bout` 的權威狀態，沒有演出側的另擲勝負。
 
 真遊戲畫布截圖：[山腳主地圖](artifacts/r11/n45/foot-main-map.png)、[山寨小地圖](artifacts/r11/n45/lair-small-map.png)。離線重拍：`PW=/opt/codex/cua_node/lib/node_modules/playwright-core/index.mjs node solo-sect/tools/r11-visual-check.mjs --seed=17 --out=solo-sect/artifacts/r11/n45`；`--seed` 可改任何整數，輸出 [`visual-check.json`](artifacts/r11/n45/visual-check.json) 的 `errors` 必須是空陣列。該工具不改模擬與素材，畫布只在本機 Chromium 繪製。
@@ -541,3 +543,26 @@ CI 第三輪 quick 與 golden 全過，accept 296/301。五項逐項處置：
 | `v220.test.mjs` 30 日 fixture | 來犯時序及逐招改變回放 hash | Node 22 用既有 `UPDATE_GOLDEN_V22=1` 重產 `golden-30d-v22.txt`，舊 `golden-30d.txt` 不動 |
 
 單種子巡山以歷史角色、seed 11 重測：只改技能數字的 0/60/90 距離為 121/121/271，三人 90 級也只到 172；地圖逐招的 32 硬皮面前，白身踢的勁即使在 90 級力量也只有 31。驗收高手明確學會本作的 `pushPalm`，60 級設小成、90 級設圓滿，原 0/60/90 距離斷言得到 121/146/220；90 級三人隊走完 1600 步，超過原「至少進深谷」。這是把原測試的「強者」建成規則上真的會出有勁招的人，未改野豬或門派勝率。
+
+## N62 自主出獵與巡山（#504，規則 4.1）
+
+玩家流程：門規「可以打獵／不准私自下山」控制自主候選；人物卡可明確指定個人出獵或巡山。缺糧與獸跡、練招心願由原 `SCORE`／`scoreActs` 效用列判斷，出行仍用 N45 前三段真地圖接招。缺糧追有食物且原敵人 `hp×dmg` 負荷較低者；練招巡山只選本人可達的最遠前三段，對手仍從該段原群落權重出現。這不估算勢均力敵勝算、不擴深谷。見[門規截圖](artifacts/n62/policy.png)、[出獵中截圖](artifacts/n62/outing.png)。
+
+#503 在 `b8079fe` 合併後，前三段段尾守關的真交手補修 `4c87094`／`56fe9b2` 未進合併提交，故以同樹 `a519679` 隨 N62 交付。原 `v100` 強隊山腰設營失敗時，掌／腿熟練度只加命中後傷害而未進破皮受力；按既有 `BODY_TIMING.forceSkill` 接入原受力式，原斷言不變。逐招交手中的召回直接脫離未決勝戰圈，依原路回程，不虛記擊倒或通關。
+
+**範圍更正**：[擁有人於 #504 13:23Z 的最新決定](https://github.com/lalagrass/earth-ascension/issues/504#issuecomment-6707505621)取代前述 N35／選敵／深谷擴段要求。N35 的公式、門檻與原文字不變；悟招 A、勢均力敵選敵與深谷補段移至 backlog #506，山賊時序常數移至 #507。本輪只以固定缺糧＋獸跡的准許／禁止作 A，出行與受傷作 C；悟招次數照實記錄，零次不視為未達。
+
+| 類別 | 指令與門檻 | 預期／實際 |
+|---|---|---|
+| A 固定出獵與門規 | `bash solo-sect/test/run.sh smoke`；`n62-foray.test.mjs` 固定 seed17 缺糧、野豬獸跡、閒人，准許時需選出獵並真起程；同情境禁止時不得自主出獵；個人指派仍需起程。 | [最新 smoke](artifacts/n62/smoke.log) 44/44；原測試另守舊存檔 4.1 遷移不撤在外隊伍。 |
+| B 原效用雜訊 | 同一 `smoke` 的 N62 小測：用原候選各加 `U(0,8)` 的公式，固定 seed17 底分、8,192 片中點積分推出期望；6,000 次真評分落在 99.9% 區間。 | 期望 0.492676、觀測 0.497833、區間半寬 0.021408，通過；公式與校準理由見[自主出獵系統](docs/systems/autonomous-foray.md)。 |
+| C 12 種子日程 | Node 22 `node solo-sect/tools/n62-foray-report.mjs`，同 bot12 初始派別與 0.25 秒步長，列 30／60 日出行、巡山、回程仍受傷人次及悟招。 | 30／60 日出行 375／610 趟（其中巡山 9／11），回程仍受傷 1／1 人次、途中悟招 0／0、全局悟招 0／0；[逐種子輸出](artifacts/n62/bot12-60d-head.json)。#502 基線自然出獵 0、30／60 日首悟 0／12。C 數不做機率門檻。 |
+| 回放與完整 CI | Node 22 `node solo-sect/tools/golden.mjs --write --tier all`、`UPDATE_GOLDEN_V22=1 node --test solo-sect/test/accept/v220.test.mjs`；山門紀 quick／golden／accept 均須全綠。 | [golden 重產](artifacts/n62/golden-write-node22.log) quick 4、full 32、舊檔全相符；[v2.2 30 日](artifacts/n62/v220-golden-write-node22.log) 15/15，hash `319f067b152f751c`；新 head CI 待驗。 |
+
+同版 bot12：Node 22 `node solo-sect/tools/bot12.mjs solo-sect --json`，[base](artifacts/n62/bot12-base.json)／[head](artifacts/n62/bot12-head.json)。**自然山賊**勝 65/74→65/70，傷者 25→18；**有柵探針**勝 91/96→91/96，守柵 35→34，傷者 29→23；單人打獵擊退 283→295、溜走 287→241。兩組分母分開列；自然場數隨在外人數變動，不把不同分母的勝場當逐場強弱結論。`forayStats.starts` 含巡山，`patrols` 是其中子集；`hurt` 是回程仍低於原輕傷線的人次，不等同所有當日傷口。
+
+30 日每派平均 31.3 趟高於原 5–15 趟的 C 參考；逐目標原始列顯示 375 趟中 366 趟是缺糧找山腳野兔。缺糧需求分 95 高於種菜 75，且野兔負荷在可取糧候選中最低，原作息因此會反覆選它。這是規則組合的結果，不以 C 回調分數或加出獵次數上限。自然悟招 0 次由 #504 最新決定移 #506 重審，不列本輪 A 未達。
+
+既有 CI 回歸逐項判斷：首次 [42376074334](https://github.com/lalagrass/earth-ascension/actions/runs/42376074334) quick 343/345，`v155a` 因真交手變長期間族群自然繁殖 7 隻，fixture 改起始承載量，原擊倒扣一隻的嚴格斷言保持；`v155b` 因召回被 90 秒交手壓住，改收到命令即脫離，原返程位置斷言保持。第二次 [42376476687](https://github.com/lalagrass/earth-ascension/actions/runs/42376476687) quick 345/345、golden 全綠、accept 295/301；其中 `v110`／`v120` 名功距離失敗出自已撤回的深谷真交手，現恢復深谷原批次路徑；`v160` 全建築專測設不准私自下山，原活動出現與不變式斷言保持。縮範圍的 [42379395548](https://github.com/lalagrass/earth-ascension/actions/runs/42379395548) quick／golden 全綠，accept 298/301：前三段地圖仍漏掉原批次 `fight()` 的破皮選招、逃兵追擊、守關瀕死覺醒。接回既有公式後，固定 seed 11 的 0／60／90 級距離為 100／271／361，seed 21–24 的郭靖追逃數為 6／1／1／2，阿星巡山瀕死真覺醒且戰報留句。[42381089119](https://github.com/lalagrass/earth-ascension/actions/runs/42381089119) quick 343/343、golden 全綠、accept 300/301，剩下 `v097` 因地圖逃走令該段清場率為零，戰報記零而歷史紀錄把零誤作未到過；現將零寫入歷史紀錄，原 `v095`、`v097` 斷言均未放寬。新 CI 仍須以新 head 結果判定。
+
+新分數、出行資格、負荷量尺與遷移理由見[自主出獵系統](docs/systems/autonomous-foray.md)及[交手規則](docs/systems/combat.md)。最沒把握三處：① 原效用的缺糧／菜畦和出獵相互競爭，A 固定場景可獨立查；② `hp×dmg` 只作取糧風險排序，不保證真交手勝率；③ 前三段可達性及自然作息可能令 C 的出行或悟招數與舊參考差很多，本輪不為 C 調常數。

@@ -5,6 +5,7 @@ export {attraction,policyCap,setRecruitPolicy} from './recruitment.mjs';
 import {transferredDamage,moveStats} from './arts.mjs';
 import {ringCapacity,attackTokenLimit,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} from './tactics.mjs';
 import {pickupDrop} from './techniques.mjs';
+import {forayChoice} from './foray-choice.mjs';
 import {finishTrainingWish,TRAINING_CAUSES} from './decision.mjs';
 import { ensurePractice, rehearse, practiceWork, practiceWindow } from './practice.mjs';
 import { BODY_TIMING, BODY_MOVES, BODY_BASE, makeBare, acquireWorkTool, moveAvailable, foeAction, FOE_ACTIONS } from './starter-combat.mjs';
@@ -12,10 +13,10 @@ import { BODY_TIMING, BODY_MOVES, BODY_BASE, makeBare, acquireWorkTool, moveAvai
 import { combatTacticStep, chooseCombatMove, fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuterArt, studyChart24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
 import { SOURCES } from './data.mjs';
-import { RECRUIT_TRAIT_VARIATION, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, ROUTINE_DEFAULT, ROUTINE_MODES, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
+import { RECRUIT_TRAIT_VARIATION, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, ROUTINE_DEFAULT, ROUTINE_MODES, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST, ROUTE, ENEMIES } from './data.mjs';
 import { chronOf, clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
 import { MENTOR, think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits, relStage, relAdd, compat, aff, initPair, coTrain, askStrong, pairBoost, drawBoost, pickChatMate, admire, archRecruit } from './social.mjs';
-import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf, raidMul, popStep, fogStep, unlockStep, chapterStep } from './world.mjs';
+import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf, raidMul, popStep, POP, fogStep, unlockStep, chapterStep } from './world.mjs';
 import { BAND, canDefend, boarRam, fenceUp, fenceHit, repairScore, repairDone, FENCE, FENCE_FAC, finishFenceSite, threatDaily, threatStep, raidResolve, bandStep, lairDaily, lairStep, siegeDaily27, crusadeDaily27, crusadeStep27, startCrusade27 } from './threat.mjs';
 import { addMem, chatLine, passPick, passDo, PASS, passScore, passReserve, apprDaily, apprMul, aspStep, likeMeal, likesOf, cliqueDaily, cliqueTrain, teachDaily, teachMul } from './bonds.mjs';
 import { readLuohanBook } from './luohan-book.mjs';
@@ -60,7 +61,7 @@ export function createState(seed = 1, heroSpec = null) {
   // #390：每個新局都用現行規則（含「照舊」開局 spec＝null，擁有人 2026-11-02 決定）。spec 只決定主角與玩家選項。
   const withHero = !!heroSpec;
   const s = {
-    v: SAVE_VERSION, rules: RULES_VERSION, seed, t: 0, xia: xiaInit(), hs: hsInit(), jh: jhInit(), routine: { ...ROUTINE_DEFAULT }, res: { wood: 0, stone: 0, coin: ECON.coinStart, food: 6, herb: 0, veg: 0, water: 0, pill: 0, tiemu: 0, lingshi: 0 }, lots: { n: LOTS.start, bought: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })),  cap: { wood: 12, stone: 12, water: 12, pill: 10 }, day: 1, ledger: { day: 1, in: {}, out: {} }, ledgerPrev: null, laborGone: [],
+    v: SAVE_VERSION, rules: RULES_VERSION, seed, t: 0, xia: xiaInit(), hs: hsInit(), jh: jhInit(), routine: { ...ROUTINE_DEFAULT }, forayPolicy: 'allow', forayStats: { starts: 0, patrols: 0, hurt: 0, discoveries: 0, targets: [] }, res: { wood: 0, stone: 0, coin: ECON.coinStart, food: 6, herb: 0, veg: 0, water: 0, pill: 0, tiemu: 0, lingshi: 0 }, lots: { n: LOTS.start, bought: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })),  cap: { wood: 12, stone: 12, water: 12, pill: 10 }, day: 1, ledger: { day: 1, in: {}, out: {} }, ledgerPrev: null, laborGone: [],
     fac: Object.fromEntries(FACILITIES.map((f) => [f.id, { stage: 0, site: null }])),
     ds: DISCIPLES.slice(0,1).map((d,i)=>mkDisciple(d,i)),
     rel: {}, aff: {}, families: [], eco: Object.fromEntries(Object.entries(ECO).map(([k, e]) => [k, { n: e.start, timer: 0 }])), wild: [], post: 'guard', raidT: 0, rep: 0, log: [], hunt: null, mons: [], fx: [], rngN: 0,
@@ -222,6 +223,7 @@ const siteOf = (s) => { const e = Object.entries(s.fac).find(([, v]) => v.site &
 
 // ---- 指令 ----
 export function setStyle(s, id, st) { const d = byId(s, id); if (d && (st === 'palm' || st === 'leg')) d.style = st; }
+export function setForayPolicy(s, policy) { if (!['allow', 'forbid'].includes(policy)) return false; s.forayPolicy = policy; return true; }
 export function setOrder(s, id, order) {
   const d = byId(s, id); if (!d) return false;
   if (order && order !== 'hunt' && !ACTIVITIES[order]) return false;
@@ -278,6 +280,10 @@ export const PRED = {
   woodRoom: (c) => c.wood < c.s.cap.wood, stoneRoom: (c) => c.stone < c.s.cap.stone, shortWood: (c) => c.shortWood, shortStone: (c) => c.shortStone,
   ripe: (c) => c.s.plots.some((p) => p.st === 'ripe'), siteWork: (c) => !!c.site && (c.haul || siteReady(c.site[1])),
   nightRest: (c) => c.ph === 'night' && c.n.energy < 95, cookable: (c) => vegFree(c.s) >= 2 && c.s.res.food < 10,
+  forayReady: (c) => c.s.forayPolicy !== 'forbid' && !c.s.band && !c.s.hunt && c.d.role !== 'laborer' && c.d.adult !== false && c.n.energy >= 45 && c.n.hunger >= 30 && canExpedition(c.s, [c.d.id]).ok,
+  patrolReady: (c) => PRED.forayReady(c) && !!forayChoice(c.s, c.d, 'practice'),
+  animalTracks: (c) => (c.s.eco?.boar?.n || 0) > 0 && (c.s.pop?.foot?.n ?? POP.foot.start) > 0,
+  practiceStuck: (c) => !!c.d.trainingWish || !!c.bt,
 };
 const path = (c, p) => { if (p === true) return true; const v = String(p).split('.').reduce((o, k) => o?.[k], c); return String(p).startsWith('tr.') ? v || 1 : v; };
 export function valOf(v, c) { if (typeof v === 'number') return v; if (typeof v === 'string') return path(c, v);
@@ -336,6 +342,17 @@ export function scoreActs(s, d) {
 }
 
 function assign(s, d, act, why) {
+  if (act === 'foray' || act === 'patrol') {
+    if ((act === 'foray' && !PRED.animalTracks({ s })) || d.needs.energy < 45 || d.needs.hunger < 30) return false;
+    const motive = act === 'foray' ? 'food' : 'practice', choice = forayChoice(s, d, motive); if (!choice) return false;
+    const result = startExp0(s, [d.id], { target: choice.target }, H); if (!result.ok) return false;
+    s.exp.autonomous = why !== '玩家指派'; s.exp.outing = act; s.exp.focus = { seg: choice.seg, key: choice.key, motive };
+    s.exp.glimmerBefore = (d.glimmer?.known || []).length;
+    const stats = (s.forayStats ??= { starts: 0, patrols: 0, hurt: 0, discoveries: 0, targets: [] }); stats.starts++; if (act === 'patrol') stats.patrols++;
+    (stats.targets ??= []).push({ day: s.day, seg: choice.seg, key: choice.key, motive });
+    d.reason = choice.key ? `${why}；追${ENEMIES[choice.key].name}` : `${why}；走${ROUTE[choice.index].name}看獸跡`;
+    log(s, `${d.name}決定${act === 'foray' ? '出獵' : '巡山'}：${d.reason}`); return true;
+  }
   if (act === 'hunt') { const post = s.hunt?.post || s.post; d.task = { act: 'hunt', node: post, phase: 'go' }; goto(d, post); d.reason = why || '後山守點'; return true; }
   if (act === 'build') {
     const site = siteOf(s); if (!site) return false; const [fid, v] = site;
