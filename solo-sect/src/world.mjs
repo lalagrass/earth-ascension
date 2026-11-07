@@ -442,8 +442,15 @@ export function expStep(s, dt, H) {
   if (X.bout) {
     const r = stepMapBout(s, X, dt, { ...H, guardOf }); if (!r) return;
     const sg = (X.seg[r.seg] ??= { enc: 0, kill: 0 });
-    if (r.won) { sg.kill++; popKill(s, r.seg); add(X.kills, r.key, 1); seeEnemy(s, r.key, 'kill', team.find(d => d.hp > 0)); lootRoll(s, X.loot, ENEMIES[r.key].loot, H); for (const d of team.filter(d => d.hp > 0)) H.grow(s, d, 'style', 3, 'fight'); }
-    else if (r.timedOut) { add(X.escaped, r.key, 1); seeEnemy(s, r.key, 'fled'); X.events.push(`${ENEMIES[r.key].name}沿地圖邊緣脫身`); }
+    const gate = X.pendingGate; X.pendingGate = null;
+    if (r.won) {
+      sg.kill++; if (!gate) popKill(s, r.seg);
+      add(X.kills, r.key, 1); seeEnemy(s, r.key, 'kill', team.find(d => d.hp > 0)); lootRoll(s, X.loot, ENEMIES[r.key].loot, H);
+      for (const d of team.filter(d => d.hp > 0)) H.grow(s, d, 'style', 3, 'fight');
+      if (gate) { X.gates.push(gate.gateName); rivalWon(s, gate); const cp = CAMPS.find(c => c.seg === X.gateI - 1); if (cp) campAt(s, X, cp, team); }
+    } else if (gate) {
+      X.reason = `被${gate.gateName}擋在${gate.name}`; X.blocked = gate.gateName;
+    } else if (r.timedOut) { add(X.escaped, r.key, 1); seeEnemy(s, r.key, 'fled'); X.events.push(`${ENEMIES[r.key].name}沿地圖邊緣脫身`); }
     X.busy = 0;
     const why = X.reason || checkRetreat(s, team);
     if (why) { X.reason = why; X.phase = 'back'; X.backLeft = X.dist / EXP.back; X.backPos = X.dist; X.ret = returnPlan(s, X); }
@@ -456,10 +463,20 @@ export function expStep(s, dt, H) {
     X.sta = (X.sta ?? EXP.sta + Math.max(0, ...team.map((d) => d.staBonus || 0))) - (X.dist - d0) * EXP.staStep;
     if (X.gorgeT == null && !(X.from > 0) && X.dist >= ROUTE[3].from) X.gorgeT = s.t - X.startT;
     const G = rivalGate(s, routeSeg(X.gateI), X.gateI);
-    if (G && X.dist >= G.to) { X.dist = G.to; X.gateI++; const r = fight(s, G.gate, team, H, true, G.scale || 1); X.encN = (X.encN || 0) + 1; X.busy = r.t / 2; X.fights++; const sg = (X.seg[G.id] ??= { enc: 0, kill: 0 }); sg.enc++;
+    if (G && X.dist >= G.to && X.gateI < 3) {
+      X.dist = G.to; X.gateI++; X.encN = (X.encN || 0) + 1; X.fights++;
+      const sg = (X.seg[G.id] ??= { enc: 0, kill: 0 }); sg.enc++;
+      for (const d of team) seeEnemy(s, G.gate, 'fight', d); seeEnemy(s, G.gate, 'see');
+      const source = G.id === 'foot' ? DEN : RINGS.find(r => r.id === G.id)?.nest || trailAt(X.dist);
+      startMapBout(s, X, G.gate, G, team, trailAt(X.dist), source).spotDist = X.dist;
+      X.pendingGate = G;
+      X.events.push(`在${G.name}遇見${G.gateName}，逐招在${G.id === 'slope' ? '山腰小地圖' : '主地圖'}交手`);
+    }
+    else if (G && X.dist >= G.to) { X.dist = G.to; X.gateI++; const r = fight(s, G.gate, team, H, true, G.scale || 1); X.encN = (X.encN || 0) + 1; X.busy = r.t / 2; X.fights++; const sg = (X.seg[G.id] ??= { enc: 0, kill: 0 }); sg.enc++;
       if (r.won) { sg.kill++; X.gates.push(G.gateName); rivalWon(s, G); if (LS_FIRST24.includes(G.id) && !((s.records ??= {}).lsFirst ??= {})[G.id]) { s.records.lsFirst[G.id] = 1; X.loot.lingshi = (X.loot.lingshi || 0) + 1; X.events.push(`首次闖過${G.gateName}，在關後石縫撿到 1 顆靈石`); } /* loop159 v2.4 P5/P6：深谷、斷崖守關首通保底靈石 */ const cp = CAMPS.find((c) => c.seg === X.gateI - 1); if (cp) campAt(s, X, cp, team); else if (G.endless || G.id === 'peak') { const w = secondWind(team); if (w > 0) { X.sta = Math.min(EXP.sta, X.sta + EXP.sta * HS.secondWind * w); X.pat = Math.min(X.patMax, X.pat + 10 * w); for (const d of team) if (d.hp > 0 && (guardOf(d) < 0.95 || d.dugu?.length)) d.hp = Math.min(100, d.hp + 100 * HS.windHp); X.events.push(`過了${G.gateName}，眾人回了一口真氣（體力 +${Math.round(HS.secondWind * w * 100)}%）`); } } } else if (r.bail) { X.reason = `被${G.gateName}擋在${G.name}（見勢不妙及早撤退）`; X.blocked = G.gateName; } else if (team.some((d) => d.hp <= 0 && awaken(s, d))) { for (const d of team) d.hp = Math.max(d.hp, 60); X.gateI--; X.events.push(`${team.find((d) => d.awakened)?.name || ''}瀕死覺醒`); } else { for (const d of team) if (d.hp <= 0) d.hp = 10; X.reason = `被${G.gateName}擋在${G.name}`; X.blocked = G.gateName; } }
     else if (X.dist >= X.nextAt) { const seg = segAt(X.nextAt - 0.01); X.nextAt += seg.every; X.busy = encounter(s, pickEnemy(s, seg, H), seg, team, H) / 2; lootRoll(s, X.loot, seg.find, H); }
     if (X.fights > f0) { const lazy = team.filter((d) => (d.personality || []).includes('lazy')).length; X.sta -= (X.fights - f0) * EXP.staFight; X.pat -= (X.fights - f0) * (EXP.patFight + lazy * EXP.patLazy); }
+    if (X.bout) return;
     const why = X.reason || checkRetreat(s, team); if (why) { X.reason = why; X.phase = 'back'; X.backLeft = X.dist / EXP.back; X.backPos = X.dist; X.ret = returnPlan(s, X); log(s, `巡山隊在${segAt(X.dist).name}（${X.dist.toFixed(0)} 步）回頭：${why}`); }
     return;
   }
