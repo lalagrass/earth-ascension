@@ -24,6 +24,26 @@
       "known": [],
       "progress": {
         "disarm": 0.0076533893590456726
+      },
+      "contexts": {
+        "disarm": {
+          "seen": 179,
+          "lost": 100,
+          "heroSeen": 14,
+          "heroLost": 10
+        },
+        "staffSweep": {
+          "seen": 57,
+          "lost": 26,
+          "heroSeen": 0,
+          "heroLost": 0
+        },
+        "bodyThrow": {
+          "seen": 2,
+          "lost": 0,
+          "heroSeen": 0,
+          "heroLost": 0
+        }
       }
     },
     {
@@ -34,6 +54,26 @@
       "known": [],
       "progress": {
         "disarm": 0.00029595573663391373
+      },
+      "contexts": {
+        "staffSweep": {
+          "seen": 20,
+          "lost": 15,
+          "heroSeen": 0,
+          "heroLost": 0
+        },
+        "disarm": {
+          "seen": 46,
+          "lost": 18,
+          "heroSeen": 14,
+          "heroLost": 8
+        },
+        "bodyThrow": {
+          "seen": 1,
+          "lost": 0,
+          "heroSeen": 0,
+          "heroLost": 0
+        }
       }
     },
     {
@@ -44,6 +84,26 @@
       "known": [],
       "progress": {
         "disarm": 0
+      },
+      "contexts": {
+        "disarm": {
+          "seen": 29,
+          "lost": 14,
+          "heroSeen": 1,
+          "heroLost": 1
+        },
+        "staffSweep": {
+          "seen": 12,
+          "lost": 8,
+          "heroSeen": 0,
+          "heroLost": 0
+        },
+        "bodyThrow": {
+          "seen": 1,
+          "lost": 0,
+          "heroSeen": 0,
+          "heroLost": 0
+        }
       }
     },
     {
@@ -54,6 +114,26 @@
       "known": [],
       "progress": {
         "disarm": 0
+      },
+      "contexts": {
+        "staffSweep": {
+          "seen": 15,
+          "lost": 10,
+          "heroSeen": 0,
+          "heroLost": 0
+        },
+        "disarm": {
+          "seen": 38,
+          "lost": 14,
+          "heroSeen": 6,
+          "heroLost": 3
+        },
+        "bodyThrow": {
+          "seen": 1,
+          "lost": 0,
+          "heroSeen": 0,
+          "heroLost": 0
+        }
       }
     },
     {
@@ -62,7 +142,21 @@
       "wu": 3,
       "firstDay": null,
       "known": [],
-      "progress": {}
+      "progress": {},
+      "contexts": {
+        "staffSweep": {
+          "seen": 30,
+          "lost": 20,
+          "heroSeen": 1,
+          "heroLost": 0
+        },
+        "disarm": {
+          "seen": 69,
+          "lost": 26,
+          "heroSeen": 0,
+          "heroLost": 0
+        }
+      }
     },
     {
       "seed": 1006,
@@ -70,7 +164,27 @@
       "wu": 3,
       "firstDay": null,
       "known": [],
-      "progress": {}
+      "progress": {},
+      "contexts": {
+        "bodyThrow": {
+          "seen": 13,
+          "lost": 4,
+          "heroSeen": 3,
+          "heroLost": 0
+        },
+        "disarm": {
+          "seen": 67,
+          "lost": 31,
+          "heroSeen": 3,
+          "heroLost": 0
+        },
+        "staffSweep": {
+          "seen": 32,
+          "lost": 14,
+          "heroSeen": 0,
+          "heroLost": 0
+        }
+      }
     },
     {
       "seed": 1007,
@@ -80,6 +194,20 @@
       "known": [],
       "progress": {
         "disarm": 0.0032612924653560122
+      },
+      "contexts": {
+        "staffSweep": {
+          "seen": 62,
+          "lost": 31,
+          "heroSeen": 0,
+          "heroLost": 0
+        },
+        "disarm": {
+          "seen": 154,
+          "lost": 67,
+          "heroSeen": 6,
+          "heroLost": 3
+        }
       }
     },
     {
@@ -90,6 +218,26 @@
       "known": [],
       "progress": {
         "disarm": 0.09405501445735635
+      },
+      "contexts": {
+        "staffSweep": {
+          "seen": 43,
+          "lost": 19,
+          "heroSeen": 0,
+          "heroLost": 0
+        },
+        "disarm": {
+          "seen": 141,
+          "lost": 70,
+          "heroSeen": 23,
+          "heroLost": 12
+        },
+        "bodyThrow": {
+          "seen": 4,
+          "lost": 2,
+          "heroSeen": 0,
+          "heroLost": 0
+        }
       }
     },
     {
@@ -98,7 +246,27 @@
       "wu": 3,
       "firstDay": null,
       "known": [],
-      "progress": {}
+      "progress": {},
+      "contexts": {
+        "staffSweep": {
+          "seen": 9,
+          "lost": 7,
+          "heroSeen": 0,
+          "heroLost": 0
+        },
+        "disarm": {
+          "seen": 32,
+          "lost": 9,
+          "heroSeen": 0,
+          "heroLost": 0
+        },
+        "bodyThrow": {
+          "seen": 1,
+          "lost": 0,
+          "heroSeen": 0,
+          "heroLost": 0
+        }
+      }
     },
     {
       "seed": 1010,
@@ -108,6 +276,20 @@
       "known": [],
       "progress": {
         "disarm": 0.12732438530630147
+      },
+      "contexts": {
+        "staffSweep": {
+          "seen": 69,
+          "lost": 36,
+          "heroSeen": 0,
+          "heroLost": 0
+        },
+        "disarm": {
+          "seen": 176,
+          "lost": 96,
+          "heroSeen": 13,
+          "heroLost": 9
+        }
       }
     },
     {
@@ -118,6 +300,26 @@
       "known": [],
       "progress": {
         "disarm": 0.0005622627842698712
+      },
+      "contexts": {
+        "staffSweep": {
+          "seen": 79,
+          "lost": 47,
+          "heroSeen": 1,
+          "heroLost": 0
+        },
+        "disarm": {
+          "seen": 131,
+          "lost": 58,
+          "heroSeen": 3,
+          "heroLost": 2
+        },
+        "bodyThrow": {
+          "seen": 7,
+          "lost": 1,
+          "heroSeen": 0,
+          "heroLost": 0
+        }
       }
     },
     {
@@ -129,9 +331,67 @@
       "progress": {
         "bodyThrow": 0.6187112289982936,
         "disarm": 0.0006856165351116231
+      },
+      "contexts": {
+        "staffSweep": {
+          "seen": 22,
+          "lost": 12,
+          "heroSeen": 0,
+          "heroLost": 0
+        },
+        "disarm": {
+          "seen": 62,
+          "lost": 20,
+          "heroSeen": 10,
+          "heroLost": 8
+        },
+        "bodyThrow": {
+          "seen": 6,
+          "lost": 5,
+          "heroSeen": 1,
+          "heroLost": 1
+        }
       }
     }
   ],
+  "contexts": {
+    "disarm": {
+      "seen": 1124,
+      "lost": 523,
+      "heroSeen": 93,
+      "heroLost": 56
+    },
+    "flankStrike": {
+      "seen": 0,
+      "lost": 0,
+      "heroSeen": 0,
+      "heroLost": 0
+    },
+    "staffSweep": {
+      "seen": 450,
+      "lost": 245,
+      "heroSeen": 2,
+      "heroLost": 0
+    },
+    "bodyThrow": {
+      "seen": 36,
+      "lost": 12,
+      "heroSeen": 4,
+      "heroLost": 1
+    },
+    "dustCast": {
+      "seen": 0,
+      "lost": 0,
+      "heroSeen": 0,
+      "heroLost": 0
+    },
+    "stoneOpening": {
+      "seen": 0,
+      "lost": 0,
+      "heroSeen": 0,
+      "heroLost": 0
+    }
+  },
   "firstDays": [],
   "medianFirstDay": null
 }

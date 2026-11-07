@@ -8,8 +8,12 @@ export const CONDITIONS={hands:f=>f.hands>0,opponentWeapon:f=>!!f.weapon&&f.weap
 export const matchesTechnique=(row,facts)=>row.conditions.every(word=>CONDITIONS[word]?.(facts));
 export const learningRate=p=>learningWeight(p)*(1-p); // 只供期望診斷；真正失手時只加w，不再乘(1-p)。
 export function learnFromLoss(s,d,parents,facts,p,{lost,expected=false}={}){
-  if(!lost||expected)return [];const memory=d.glimmer??={progress:{},known:[],firstDay:null},learned=[];
-  for(const row of TECHNIQUES){if(memory.known.includes(row.id)||!row.parents.some(tag=>parents.includes(tag))||!matchesTechnique(row,facts))continue;
+  if((!lost&&!s?.captureTechniqueContexts)||expected)return [];
+  const matching=TECHNIQUES.filter(row=>row.parents.some(tag=>parents.includes(tag))&&matchesTechnique(row,facts));
+  // Bot 診斷逐次記「母招＋情境」是否遇到；僅在工具打開旗標時存計數，不進存檔或規則。
+  if(s?.captureTechniqueContexts)for(const row of matching){const count=(s.techniqueContextCounts??={})[row.id]??={seen:0,lost:0,heroSeen:0,heroLost:0};count.seen++;if(lost)count.lost++;if(d.id==='hero'){count.heroSeen++;if(lost)count.heroLost++;}}
+  if(!lost)return [];const memory=d.glimmer??={progress:{},known:[],firstDay:null},learned=[];
+  for(const row of matching){if(memory.known.includes(row.id))continue;
     const gain=learningWeight(p),n=memory.progress[row.id]=(memory.progress[row.id]||0)+gain,threshold=row.difficulty/(d.wu||d.root||3);
     emitPractice(s,{type:'glimmerProgress',who:d.id||d.uid||d.k,move:row.id,p,w:gain,n,threshold,lost:true});
     if(n<threshold)continue;memory.known.push(row.id);memory.firstDay??=s.day;memory.firstAt??=s.t;(d.moves??=[]).push(row.id);learned.push(row);emitPractice(s,{type:'discovery',who:d.id||d.uid||d.k,move:row.id,n,threshold});
