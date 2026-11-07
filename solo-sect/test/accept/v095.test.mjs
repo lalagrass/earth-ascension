@@ -5,9 +5,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import { tick, save, load, MIGRATIONS, scoreActs, startExpedition, canExpedition, codexRows, byId, skipGuide, startBuild, dpsOf } from '../../src/sim.mjs';
-import { RULES_VERSION, ROUTE, ENEMIES, DAY, PHASES } from '../../src/data.mjs';
+import { RULES_VERSION, ROUTE, ENEMIES, DAY, PHASES, TIERS } from '../../src/data.mjs';
 import { pipeline, MUL_CLAMP } from '../../src/util.mjs';
-import { artMulParts, artById, seedArts, gainArt } from '../../src/arts.mjs';
+import { artMulParts, artById, seedArts, gainArt, learnArt } from '../../src/arts.mjs';
 const FIX = new URL('../fixtures/', import.meta.url);
 const runDays = (s, n) => { for (let i = 0; i < n * DAY * 4; i++) tick(s); };
 const hash = (s) => crypto.createHash('sha256').update(save(s)).digest('hex').slice(0, 16);
@@ -63,8 +63,11 @@ test('敵人種類齊全；圖鑑未見為？？？，交手累積觀破值', ()
 });
 
 // 5 巡山遠征
-const expRun = (seed, lvl, n, thr) => { const s = createState(seed); tick(s);
-  for (const d of s.ds) { d.skills.palm = d.skills.leg = Math.max(d.skills.palm, lvl); d.skills.agility = d.skills.strength = lvl / 2; }
+const expRun = (seed, lvl, n, thr, trained = false) => { const s = createState(seed); tick(s);
+  for (const d of s.ds) { d.skills.palm = d.skills.leg = Math.max(d.skills.palm, lvl); d.skills.agility = d.skills.strength = lvl / 2;
+    // N32/N45：光把身體數字拉高仍是白身拳腳，破不了野豬硬皮；高手情境要明寫已習得的招。
+    if (trained && lvl > 0) { learnArt(d, 'pushPalm'); d.arts.pushPalm.xp = TIERS[lvl >= 90 ? 3 : 1][0]; }
+  }
   s.res.food = 20; const r = startExpedition(openExp(s), s.ds.slice(0, n).map((d) => d.id), { thr }); let i = 0; while (s.exp && i++ < 40000) tick(s); return { s, r, rep: s.lastExp }; };
 test('派遣 1–4 人；雇工、傷者不可；同時只一隊', () => {
   const s = createState(1); assert.equal(canExpedition(openExp(s), []).ok, false); assert.equal(canExpedition(openExp(s), ['a', 'b', 'c', 'd', 'e']).ok, false);
@@ -76,10 +79,10 @@ test('戰報：距離、各類擊倒、逃走、傷、帶回、回頭原因；�
   assert.ok(s.ds.every((d) => d.hp > 0 && !d.away)); assert.ok(s.log.some((l) => /巡山戰報/.test(l.msg)));
 });
 test('固定難度：戰力隨能力增加，強者均較零基礎走更遠', () => {
-  const d = [0, 60, 90].map((l) => expRun(11, l, 1).rep.dist); assert.ok(d[0] < d[1] && d[0] < d[2], d.join()); // N33 交手學習會分岔後續遭遇，單種子中段與高段距離非嚴格單調
+  const d = [0, 60, 90].map((l) => expRun(11, l, 1, undefined, true).rep.dist); assert.ok(d[0] < d[1] && d[0] < d[2], d.join()); // N33 交手學習會分岔後續遭遇，單種子中段與高段距離非嚴格單調
   const power = [0, 60, 90].map((l) => { const s = createState(11), hero = s.ds[0]; hero.skills.palm = hero.skills.leg = Math.max(hero.skills.palm,l); hero.skills.agility = hero.skills.strength = l / 2; return dpsOf(s,hero); });
   assert.ok(power[0] < power[1] && power[1] < power[2], power.join());
-  assert.ok(expRun(11, 90, 4).rep.dist >= ROUTE[3].from, '強隊至少進深谷');
+  assert.ok(expRun(11, 90, 4, undefined, true).rep.dist >= ROUTE[3].from, '強隊至少進深谷');
 });
 test('撤退線：相同局面 70% 比 30% 先回頭；整趟決定性', () => {
   const s = createState(8), hero = s.ds[0]; hero.hp = 50; s.exp = { thr: .7, supplies: 0, sta: 100, pat: 100, dist: 0, target: 1000 };

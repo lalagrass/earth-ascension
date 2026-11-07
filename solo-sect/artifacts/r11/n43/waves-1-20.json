@@ -1,0 +1,581 @@
+{
+  "days": [
+    0,
+    30,
+    60
+  ],
+  "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+  ],
+  "scenario": "自然日程每日 bot 建寢舍／可收則收；第 0、30、60 日各複製局面，正常派前三人出獵至多 900 遊戲秒；不灌能力或野獸，探針不回寫原局",
+  "rows": [
+    {
+      "seed": 1,
+      "probes": {
+        "0": {
+          "best": 0,
+          "unfinished": true,
+          "waited": 0,
+          "effectiveDay": 2
+        },
+        "30": {
+          "best": 2,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 31
+        },
+        "60": {
+          "best": 4,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 61
+        }
+      }
+    },
+    {
+      "seed": 2,
+      "probes": {
+        "0": {
+          "best": 1,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 1
+        },
+        "30": {
+          "best": 2,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 31
+        },
+        "60": {
+          "best": 2,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 61
+        }
+      }
+    },
+    {
+      "seed": 3,
+      "probes": {
+        "0": {
+          "best": 0,
+          "unfinished": true,
+          "waited": 0,
+          "effectiveDay": 2
+        },
+        "30": {
+          "best": 2,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 31
+        },
+        "60": {
+          "best": 2,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 61
+        }
+      }
+    },
+    {
+      "seed": 4,
+      "probes": {
+        "0": {
+          "best": 1,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 1
+        },
+        "30": {
+          "best": 2,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 31
+        },
+        "60": {
+          "best": 3,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 61
+        }
+      }
+    },
+    {
+      "seed": 5,
+      "probes": {
+        "0": {
+          "best": 0,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 1
+        },
+        "30": {
+          "best": 3,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 31
+        },
+        "60": {
+          "best": 4,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 61
+        }
+      }
+    },
+    {
+      "seed": 6,
+      "probes": {
+        "0": {
+          "best": 0,
+          "unfinished": true,
+          "waited": 0,
+          "effectiveDay": 2
+        },
+        "30": {
+          "best": 2,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 31
+        },
+        "60": {
+          "best": 2,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 61
+        }
+      }
+    },
+    {
+      "seed": 7,
+      "probes": {
+        "0": {
+          "best": 0,
+          "unfinished": true,
+          "waited": 0,
+          "effectiveDay": 2
+        },
+        "30": {
+          "best": 3,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 31
+        },
+        "60": {
+          "best": 3,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 61
+        }
+      }
+    },
+    {
+      "seed": 8,
+      "probes": {
+        "0": {
+          "best": 0,
+          "unfinished": true,
+          "waited": 0,
+          "effectiveDay": 2
+        },
+        "30": {
+          "best": 2,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 31
+        },
+        "60": {
+          "best": 3,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 61
+        }
+      }
+    },
+    {
+      "seed": 9,
+      "probes": {
+        "0": {
+          "best": 1,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 1
+        },
+        "30": {
+          "best": 2,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 31
+        },
+        "60": {
+          "best": 3,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 61
+        }
+      }
+    },
+    {
+      "seed": 10,
+      "probes": {
+        "0": {
+          "best": 0,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 1
+        },
+        "30": {
+          "best": 2,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 31
+        },
+        "60": {
+          "best": 2,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 61
+        }
+      }
+    },
+    {
+      "seed": 11,
+      "probes": {
+        "0": {
+          "best": 0,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 1
+        },
+        "30": {
+          "best": 3,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 31
+        },
+        "60": {
+          "best": 3,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 61
+        }
+      }
+    },
+    {
+      "seed": 12,
+      "probes": {
+        "0": {
+          "best": 1,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 1
+        },
+        "30": {
+          "best": 3,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 31
+        },
+        "60": {
+          "best": 4,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 61
+        }
+      }
+    },
+    {
+      "seed": 13,
+      "probes": {
+        "0": {
+          "best": 1,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 1
+        },
+        "30": {
+          "best": 3,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 31
+        },
+        "60": {
+          "best": 3,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 61
+        }
+      }
+    },
+    {
+      "seed": 14,
+      "probes": {
+        "0": {
+          "best": 0,
+          "unfinished": true,
+          "waited": 0,
+          "effectiveDay": 2
+        },
+        "30": {
+          "best": 5,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 31
+        },
+        "60": {
+          "best": 5,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 61
+        }
+      }
+    },
+    {
+      "seed": 15,
+      "probes": {
+        "0": {
+          "best": 1,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 1
+        },
+        "30": {
+          "best": 3,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 31
+        },
+        "60": {
+          "best": 4,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 61
+        }
+      }
+    },
+    {
+      "seed": 16,
+      "probes": {
+        "0": {
+          "best": 0,
+          "unfinished": true,
+          "waited": 0,
+          "effectiveDay": 2
+        },
+        "30": {
+          "best": 2,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 31
+        },
+        "60": {
+          "best": 4,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 61
+        }
+      }
+    },
+    {
+      "seed": 17,
+      "probes": {
+        "0": {
+          "best": 0,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 1
+        },
+        "30": {
+          "best": 2,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 31
+        },
+        "60": {
+          "best": 3,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 61
+        }
+      }
+    },
+    {
+      "seed": 18,
+      "probes": {
+        "0": {
+          "best": 0,
+          "unfinished": true,
+          "waited": 0,
+          "effectiveDay": 2
+        },
+        "30": {
+          "best": 2,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 31
+        },
+        "60": {
+          "best": 2,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 61
+        }
+      }
+    },
+    {
+      "seed": 19,
+      "probes": {
+        "0": {
+          "best": 0,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 1
+        },
+        "30": {
+          "best": 3,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 31
+        },
+        "60": {
+          "best": 4,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 61
+        }
+      }
+    },
+    {
+      "seed": 20,
+      "probes": {
+        "0": {
+          "best": 0,
+          "unfinished": true,
+          "waited": 0,
+          "effectiveDay": 2
+        },
+        "30": {
+          "best": 4,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 31
+        },
+        "60": {
+          "best": 4,
+          "unfinished": false,
+          "waited": 0,
+          "effectiveDay": 61
+        }
+      }
+    }
+  ],
+  "summary": {
+    "0": {
+      "n": 20,
+      "median": 0,
+      "q1": 0,
+      "q3": 1,
+      "unfinished": 9,
+      "values": [
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "30": {
+      "n": 20,
+      "median": 2,
+      "q1": 2,
+      "q3": 3,
+      "unfinished": 0,
+      "values": [
+        2,
+        2,
+        2,
+        2,
+        3,
+        2,
+        3,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        5,
+        3,
+        2,
+        2,
+        2,
+        3,
+        4
+      ]
+    },
+    "60": {
+      "n": 20,
+      "median": 3,
+      "q1": 2.75,
+      "q3": 4,
+      "unfinished": 0,
+      "values": [
+        4,
+        2,
+        2,
+        3,
+        4,
+        2,
+        3,
+        3,
+        3,
+        2,
+        3,
+        4,
+        3,
+        5,
+        4,
+        4,
+        3,
+        2,
+        4,
+        4
+      ]
+    }
+  }
+}

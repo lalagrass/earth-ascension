@@ -256,10 +256,10 @@ export const HABITAT = { c: [1450, 60], r: 70 };
 /* #419 N15 合法出生點：敵人只從這張表出來——離地圖邊緣 ≤ edge、離大殿 ≥ hall。獸從獸穴、棲地、東嶺；山賊從山門。
    via：出生點到守點山路的座標（都在山那一側，不從門派背後冒出來）；接上 guard 之後沿原山路走。 */
 export const SOURCES = {
-  den: { pos: [1475, 22], for: 'beast', via: [] },
-  habitat: { pos: [1440, 40], for: 'beast', via: [[1392, 96]] },
-  ridge: { pos: [1585, 120], for: 'beast', via: [[1470, 150]] },
-  gate: { pos: [1475, 875], for: 'bandit', via: [] },
+  den: { pos: [1475, 22], for: 'beast', via: [], organization: 2 },
+  habitat: { pos: [1440, 40], for: 'beast', via: [[1392, 96]], organization: 2 },
+  ridge: { pos: [1585, 120], for: 'beast', via: [[1470, 150]], organization: 2 },
+  gate: { pos: [1475, 875], for: 'bandit', via: [], organization: 2 },
 };
 export const SRC_RULE = { edge: 80, hall: 400 };
 export const srcOk = (p) => Math.min(p[0], p[1], WORLD.w - p[0], WORLD.h - p[1]) <= SRC_RULE.edge && Math.hypot(p[0] - NODES.hall[0], p[1] - NODES.hall[1]) >= SRC_RULE.hall;
@@ -350,7 +350,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '3.9'; /* 第十輪 N40–N42：羅漢拳與共用成長底層 */
+export const RULES_VERSION = '4.0'; /* 第十一輪 N43–N45／N51／N44：守山與遠行 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -648,6 +648,9 @@ export const ENEMIES = {
   swordtomb:{ name: '劍塚守者', kind: '人', weapon: '玄鐵重劍', hp: 600, dmg: 24, cd: 1.3, flee: 0, loot: { coin: 30, page2: 1 } },
   peakguard:{ name: '無名高手', kind: '人', weapon: '？', hp: 560, dmg: 22, cd: 1.2, flee: 0, loot: { coin: 20, page2: 1 } },
 };
+// N51：登門高手的承傷／每招損傷沿用本作同級遠段敵人的尺度，差別由招式秒數和理由資料決定。
+ENEMIES.dfbb = { ...ENEMIES.peakguard, name: '東方不敗', weapon: '繡花針', loot: {} };
+ENEMIES.hy = { ...ENEMIES.whiteape, name: '火雲邪神', kind: '人', weapon: '掌', loot: {} };
 // 觀破值：照面 +1、交手 +2、擊倒 +5；10 識其來路、30 熟其招式、60 看破（對其傷害 +10%）
 export const INSIGHT = { see: 1, fight: 2, kill: 5, tiers: [[10, '識其來路'], [30, '熟其招式'], [60, '看破']], dmgAt: 60, dmg: 0.1 };
 // ---- v0.95 巡山遠征：固定名單，從不讀玩家強度 ----
@@ -789,7 +792,7 @@ export const JH = {
   comedyWeek: 2, comedyDays: 7,
   anranMood: 30, anranMax: 1.5, twin: 1.3, kongming: 1.15, pair: 0.25,
   gambleBase: 2, gambleCap: 6, recruitBonus: 0.4, baoyi: 0.5, reflect: 0.3, jiuyangSta: 30,
-  hiddenMax: 3, hiddenP: 0.35, residueXp: 20, dfbbPow: 40, hyPow: 50, diaoFeeds: 3, honeyHeal: 15,
+  hiddenMax: 3, hiddenP: 0.35, residueXp: 20, diaoFeeds: 3, honeyHeal: 15,
 };
 Object.assign(TRAITS, { quiet: { name: '清冷', desc: '心情起伏減半，不喜熱鬧', composure: 'steady', mods: { train: 1.05, leisure: 0.9 } }, chi: { name: '癡', desc: '心情隨意中人起伏', mods: {}, mods24: { train: 1.25, study: 1.2, chat: 0.8 } } }); /* loop187 v2.9 mods24：只 d.v24 新局生效（舊局 mods 不動） */
 TRAITS.quiet.mods24 = { meditate: 1.35, study: 1.2, chat: 0.75 };

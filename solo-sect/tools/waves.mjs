@@ -8,6 +8,12 @@ import {RING} from '../src/combat-space.mjs';
 import {foeAction} from '../src/starter-combat.mjs';
 import {practiceWindow} from '../src/practice.mjs';
 import {growthSnapshots} from './growth-scenario.mjs';
+// N43 公開日程的 waveBest 分位報告；未帶 --days 時保留原 N36 人海交手探針。
+if (process.argv.some(x => x === '--days' || x.startsWith('--days='))) {
+  const { waveBestReport } = await import('./wave-best.mjs');
+  console.log(JSON.stringify(waveBestReport(process.argv.slice(2)), null, 2));
+  process.exit(0);
+}
 const argv=process.argv.slice(2),get=(key,fallback)=>{const i=argv.indexOf('--'+key);return i<0?argv.find(x=>x.startsWith('--'+key+'='))?.split('=')[1]??fallback:argv[i+1];};
 const seed=Number(get('seed',1)),traits=get('trait','normal').split(',');
 const traitMap={calm:['honest'],rash:['brave'],normal:[]};

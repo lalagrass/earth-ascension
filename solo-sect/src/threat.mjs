@@ -1,11 +1,11 @@
 import {transferredDamage} from './arts.mjs';
 import {RING} from './combat-space.mjs';
-import {movementSpeed,moveToward,ringCapacity,rememberEscape,restoreSurvivor,distance} from './tactics.mjs';
+import {movementSpeed,moveToward,ringCapacity,attackTokenLimit,rememberEscape,restoreSurvivor,distance} from './tactics.mjs';
 import { combatMoves,combatTacticStep,fretStep,chooseCombatMove, fastestMove, windOf } from './arts.mjs';
 import { practiceWindow } from './practice.mjs';
 import { foeAction } from './starter-combat.mjs';
-import { log, seedMix, resAdd, recordDeed, tallyAct } from './util.mjs';
-import { NODES, EDGES, DAY, FACILITIES, MOVES, ARTS } from './data.mjs';
+import { log, seedMix, resAdd, recordDeed, tallyAct, chronOf } from './util.mjs';
+import { NODES, EDGES, SOURCES, DAY, SEASON_DAYS, FACILITIES, MOVES, ARTS } from './data.mjs';
 import { noteFret, interceptOpening, breakWindup, taijiReturn, zjHas, zjMark, zjIntercept, ZJ, partHit, resolveSwing, postureOf, postureRegen, postureHit, handleTake, topTierOf, windFrac, CLASH, perfectDodge, witchK, lightCross, WITCH } from './arts.mjs';
 import { qiInjuryFight28, qiInjuryAdd28, innerDrive28, mainOuterArt, CHAMP28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
 import { power } from './jianghu.mjs';
@@ -13,14 +13,15 @@ import { valorAdd, valorThreatMul, valorHtml, VALOR, def24Of as sectDefenseFacto
 import { peaceDelay } from './economy.mjs';
 import { mates } from './bonds.mjs';
 import { cancelTask } from './core.mjs';
-import { dpsOf } from './world.mjs';
+import { dpsOf, guardOf } from './world.mjs';
+import { startMapBout, stepMapBout } from './exp-map-combat.mjs';
 // ==== （原 raidkind.mjs）====
 // loop17 山賊多樣：只在 s.m9（江湖規則「太平與備料」）時抽類型；舊局／golden 無 kind＝原樣。
 // 期望點數 ≈ 原值（0.5×0.8+0.3×1.25+0.2×1.0=0.975），夜襲不能付錢、敗了只偷不傷人 → 不推高重傷。
 export const RAID_KINDS = {
-  liukou: { name: '流寇', w: 0.5, pts: 0.8, demand: 0.8, steal: 1, winHurt: 0.5, loseHurt: true, desc: '烏合之眾，好打發' },
-  hanfei: { name: '悍匪', w: 0.3, pts: 1.25, demand: 1.3, steal: 1.2, winHurt: 1, loseHurt: true, desc: '亡命之徒，下手狠' },
-  yexi: { name: '夜襲', w: 0.2, pts: 1, demand: 0, steal: 0.6, winHurt: 0.5, loseHurt: false, noPay: true, desc: '趁夜摸進來偷，不談價；只偷不傷人' },
+  liukou: { name: '流寇', organization: 2, w: 0.5, pts: 0.8, demand: 0.8, steal: 1, winHurt: 0.5, loseHurt: true, desc: '烏合之眾，好打發' },
+  hanfei: { name: '悍匪', organization: 4, w: 0.3, pts: 1.25, demand: 1.3, steal: 1.2, winHurt: 1, loseHurt: true, desc: '亡命之徒，下手狠' },
+  yexi: { name: '夜襲', organization: 2, w: 0.2, pts: 1, demand: 0, steal: 0.6, winHurt: 0.5, loseHurt: false, noPay: true, desc: '趁夜摸進來偷，不談價；只偷不傷人' },
 };
 export function pickKind(r) { let a = 0; for (const [id, k] of Object.entries(RAID_KINDS)) { a += k.w; if (r < a) return id; } return 'liukou'; }
 export const kindOf = (id) => (id && RAID_KINDS[id]) || null;
@@ -172,10 +173,16 @@ function bandHit(s, b, m, dmg, who) {
   m.hp = Math.max(0,m.hp-dmg); if(m.hp>0)return;
   // 餘力不是已命中下一人；範圍招必須逐人判接法與力層，禁止spill繞過承受。
   m.state = 'down'; m.downT = s.t; m.path = nodePath(FENCE.node, BAND.from).slice(1); (s.fx ||= []).push({ kind: 'clash', word: '退', color: '#c9b37a', pos: [...(m.pos || b.pos)], ttl: 1 });
-  b.downN = (b.downN || 0) + 1; if (who) log(s, `${who.name}擊退一名山賊（${b.downN}/${b.members.length}）`);
+  b.downN = (b.downN || 0) + 1; if (who) {
+    log(s, `${who.name}擊退一名山賊（${b.downN}/${b.members.length}）`);
+    const n = (b.killsBy ??= {})[who.id] = (b.killsBy[who.id] || 0) + 1;
+    if (n > (who.waveBest || 0)) { who.waveBest = n; if (n >= 2) chronOf(s, who, 'waveBest', { chron: `${who.name}一波擊退 ${n} 名山賊，破了自己的紀錄` }); }
+  }
 }
 function bandClash(s, b, defs, dt) {
   const fight = defs.filter((d) => d.hp >= BAND.hpMin && d.pos), live = () => b.members.filter((m) => m.hp > 0&&!m.gone);
+  // 守者退到不能應戰時，已對準他的來招失去目標；權杖立即釋出，不能保留空指向的前搖。
+  if (!fight.length) for (const m of live()) m.swing = null;
   for(const d of fight){fretStep(s,d);postureRegen(s,d,dt);if(d.downUntil>s.t)continue; d.bcool = (d.bcool ?? 0) - dt; /* 冷卻含前搖（收招＝冷卻剩下的時間） */
     if (d.bswing) { if (s.t + 1e-9 < d.bswing.at) continue; const w = d.bswing; d.bswing = null; const m = b.members.find((x) => x.uid === w.tgt && x.hp > 0); if (!m) continue;
       const r = resolveSwing(s, d, m, () => R(s), { depth: topTierOf(d) + 1, move: w.mv, wind: w.wind, map: true, targetApproachingAtWindup:w.targetApproachingAtWindup }); (b.cl ??= {})[r.kind] = (b.cl[r.kind] || 0) + 1;
@@ -191,7 +198,7 @@ function bandClash(s, b, defs, dt) {
   }
   if (b.state !== 'yard') return;
   const ready = [];
-  for(const m of live()){postureRegen(s,m,dt);if(m.downUntil>s.t)continue; fretStep(s,m);const d = fight.find((x) => x.id === m.foe) || fight[0]; if (!d) break;
+  for(const m of live()){postureRegen(s,m,dt);if(m.downUntil>s.t)continue; fretStep(s,m);const d = m.swing ? fight.find(x=>x.id===m.swing.tgt) : fight.find((x) => x.id === m.foe) || fight[0]; if (!d) { m.swing=null; continue; }
     m.intentTarget=d.id;
     if(!m.swing&&combatTacticStep(s,m,dt,{exit:a=>{rememberEscape(s,a);a.gone=true;a.state='gone';}}))continue;
     const wk = witchK(s, m.pos), mdt = dt * wk; if (m.swing && wk < 1) m.swing.at += dt - mdt; /* #425 林克時間圈內的山賊放慢 */ m.cool = (m.cool ?? 0) - mdt;
@@ -212,12 +219,18 @@ function bandClash(s, b, defs, dt) {
   }
   // 先讓每個人走完本步的冷卻，再看同伴還需多久；避免陣列順序決定能否合擊。
   const delays = ready.map(({ m }) => bandSyncDelay(m, live()));
+  const tokens = attackTokenLimit(kindOf(b.kind)?.organization ?? SOURCES.gate.organization,
+    Math.max(0,...fight.map(d=>ringCapacity(d,s))));
+  let freeTokens = Math.max(0,tokens-live().filter(m=>m.swing).length);
+  b.tokenLimit = tokens; b.tokenPeak = Math.max(b.tokenPeak||0,tokens-freeTokens);
   for (let i = 0; i < ready.length; i++) {
     const { m, d } = ready[i];
+    if (freeTokens <= 0) continue;
     if (delays[i] > 0) { m.cool = delays[i]; continue; }
+    freeTokens--; b.tokenPeak = Math.max(b.tokenPeak||0,tokens-freeTokens);
     if (zjIntercept(s, m, fight)) { m.cool = BAND_CLASH.monCd; continue; }
     const pick=chooseCombatMove(s,m,d,()=>R(s)),action=pick?.move||foeAction(m,Math.hypot(m.pos[0]-d.pos[0],m.pos[1]-d.pos[1])),wind=practiceWindow(m,action.id,action.wind).wind+(pick?.seconds||0), start = interceptOpening(s, m, d, () => R(s), { depth: 2, move: action.id, wind }); m.cool=BAND_CLASH.monCd+(pick?.seconds||0);m.energy=(m.energy??100)-1;
-    if (start.read?.kind === 'read') { bandHit(s, b, m, start.read.counterDamage, d); (b.cl ??= {}).mread = (b.cl.mread || 0) + 1; continue; }
+    if (start.read?.kind === 'read') { bandHit(s, b, m, start.read.counterDamage, start.helper||d); (b.cl ??= {}).mread = (b.cl.mread || 0) + 1; continue; }
     m.opened = true; m.swing = { mv: action.id,tgt:d.id, at: s.t + wind, wind, opening: start.opening };
     (s.fx ||= []).push({ kind: 'warn', from: [...(m.pos || b.pos)], to: [...d.pos], r: 26, dur: wind, ttl: wind, t0: s.t });
   }
@@ -230,7 +243,7 @@ function placeMembers(s,b,defs,dt){
  if(b.state==='go'||!defs.length){live.forEach((m,k)=>{if(!m.pos)m.pos=[...c];if(!(m.downUntil>s.t)&&!m.swing&&!['flee','cover'].includes(m.tactics?.action))moveToward(m,[c[0]+((k%3)-1)*BAND_MEMBER.gap,c[1]+Math.floor(k/3)*8],movementSpeed(m),dt);m.ring=0;});return;}
  const held={};
  for(const[k,m]of live.entries()){
-   const d=defs[k%defs.length],capacity=ringCapacity(d),slot=held[d.id]||0;held[d.id]=slot+1;
+   const d=defs[k%defs.length],capacity=ringCapacity(d,s),slot=held[d.id]||0;held[d.id]=slot+1;
    if(m.downUntil>s.t||m.tactics?.action==='flee'||m.tactics?.action==='cover')continue;
    const near=slot<capacity,angle=Math.PI*(.25+.5*slot),radius=near?(b.state==='yard'?22:34):BAND_MEMBER.outer;
    const target=[d.pos[0]+Math.cos(angle)*radius,d.pos[1]-Math.sin(angle)*radius*.55];
@@ -260,7 +273,36 @@ export const RAID = { minPop: 8, minPopRules: 4, // loop12：開了「太平與�
   adaptMin: 0.6, adaptMax: 1.2, adaptDropLoss: 0.15, adaptDropHurt: 0.10, adaptRecover: 0.05,
   logAfter: 30, logK: 0.2, hurtCool: 2, // v2.1：第 30 日後天數係數改對數；山門重傷後下次上門再晚 hurtCool 日
   demand: { base: 20, k: 0.6, coinMax: 0.35, min: 10 }, wait: DAY / 2, hurtCost: 80, hurtHp: 15, winHurt: 0.4, steal: { coin: 0.15, food: 0.2 }, rep: 3 };
-export function T(s) { return (s.threat ??= { next: RAID.first, n: 0, paid: 0, fought: 0, won: 0, homeHurt: 0, deaths: 0, pending: null, rng: 0, hist: [], adapt: 1 }); }
+// N43：一季風聲緊，重傷後原本給的養傷日數用作喘息；單次來犯的點數公式仍照舊。
+export const RAID_RHYTHM = { pressureDays: SEASON_DAYS, respiteDays: RAID.hurtCool,
+  minGap: RAID.every - RAID.jitter, maxBig: Math.ceil(SEASON_DAYS / (RAID.every - RAID.jitter)) };
+export function raidPhase(s) {
+  const day = s.day || 1, cycleDays = RAID_RHYTHM.pressureDays + RAID_RHYTHM.respiteDays;
+  if (day < RAID.first) return { id: 'respite', cycle: -1, start: 1, nextPressure: RAID.first };
+  const cycle = Math.floor((day - RAID.first) / cycleDays), start = RAID.first + cycle * cycleDays;
+  return { id: day - start < RAID_RHYTHM.pressureDays ? 'pressure' : 'respite', cycle, start, nextPressure: start + cycleDays };
+}
+function advanceRaidRhythm(s, X, phase) {
+  if (X.lastBigDay == null) X.lastBigDay = Math.max(0, ...(X.hist || []).map(h => h.day || 0), X.pending?.day || 0, s.band?.day || 0);
+  if (X.rhythmCycle === phase.cycle) return;
+  X.rhythmCycle = phase.cycle;
+  // 3.9 舊檔若正好讀在來犯期中，已排定或已結算的來犯仍佔本期名額；第二波同 n 不重算。
+  X.rhythmStrikes = new Set([...(X.hist || []).filter(h => h.day >= phase.start && h.day < phase.nextPressure).map(h => h.n),
+    ...(X.pending?.day >= phase.start && X.pending?.day < phase.nextPressure ? [X.pending.n] : []),
+    ...(s.band?.day >= phase.start && s.band?.day < phase.nextPressure ? [s.band.n] : [])]).size;
+}
+export function T(s) { return (s.threat ??= { next: RAID.first, n: 0, paid: 0, fought: 0, won: 0, homeHurt: 0, deaths: 0, pending: null, rng: 0, hist: [], adapt: 1, rhythmCycle: null, rhythmStrikes: 0, lastBigDay: 0 }); }
+// N51：江湖客也是同一期的大威脅，與山賊共用名額／最短間隔，不另造時序門檻。
+export function majorThreatAvailable(s) {
+  const X = T(s), phase = raidPhase(s); advanceRaidRhythm(s, X, phase);
+  return phase.id === 'pressure' && X.rhythmStrikes < RAID_RHYTHM.maxBig && s.day >= (X.lastBigDay || 0) + RAID_RHYTHM.minGap
+    && !X.pending && !X.wave && !s.band && !s.jh?.visitor && !s.jh?.visitorPending;
+}
+export function reserveMajorThreat(s) {
+  if (!majorThreatAvailable(s)) return false;
+  const X = T(s); X.rhythmStrikes++; X.lastBigDay = s.day; X.next = Math.max(X.next, s.day + RAID_RHYTHM.minGap);
+  return true;
+}
 const R = (s) => { const X = T(s); X.rng = ((X.rng || seedMix(s.seed || 1, 7477)) * 16807) % 2147483647; return X.rng / 2147483647; };
 export const headcount = (s) => s.ds.filter((d) => !d.removed).length;
 export function wealth(s) { const W = RAID.w, r = s.res; return Math.max(0, r.coin || 0) * W.coin + (r.food || 0) * W.food + (r.pill || 0) * W.pill + (r.herb || 0) * W.herb + FACILITIES.reduce((a, f) => a + (s.fac[f.id]?.stage || 0), 0) * W.stage; }
@@ -320,21 +362,27 @@ export const raidAuto = (s) => { const P = T(s).pending; if (P?.noPay) return 1;
 export const RUMOR = { lead: 2, fenceK: 1.5 };
 export const rumorDays = (s) => { const X = T(s); return !X.pending && X.rumorFor != null && X.rumorFor === X.next ? Math.max(1, X.next - (s.day || 0)) : 0; };
 function rumorDaily(s) {
-  const X = T(s); if (X.pending || X.rumorFor === X.next) return; const left = X.next - (s.day || 0);
+  const X = T(s); if (X.pending || s.band || s.jh?.visitor || s.jh?.visitorPending || X.rumorFor === X.next) return; const left = X.next - (s.day || 0);
   if (left > RUMOR.lead || left < 1 || points(s) <= 0) return; X.rumorFor = X.next;
   log(s, `【傳聞】山下茶攤有人說，有夥山賊在打聽本門的家底，怕是${left <= 1 ? '這一兩日' : `約 ${left} 日內`}就會上山。`);
   if (s.exp && s.exp.phase !== 'back' && s.exp.phase !== 'done') log(s, '【傳聞】遠行的弟子若想回山守門，可以下令召回。');
 }
 // M2（loop147）山賊餘黨反撲：剿寨後 BOSS.after 日殺回（前一日傳聞）；撐過＝山道永享太平
 export const BOSS = { after: 3, k: 1.4, min: 8, peaceMul: 0.4, peaceGap: 3, valor: 10 };
-function bossDaily(s) {
+function bossDaily(s, phase) {
   const X = T(s), B = X.boss; if (!B || B.state !== 'wait') return;
   const day = s.day || 0;
+  const earliest = Math.max(day, B.day, (X.lastBigDay || 0) + RAID_RHYTHM.minGap);
+  const duePhase = raidPhase({ day: earliest });
+  if (duePhase.id === 'respite' || (duePhase.cycle === phase.cycle && X.rhythmStrikes >= RAID_RHYTHM.maxBig)) {
+    B.day = Math.max(earliest, duePhase.nextPressure); B.rumored = false;
+  } else if (earliest > B.day) { B.day = earliest; B.rumored = false; }
   if (day === B.day - 1 && !B.rumored) { B.rumored = true; log(s, '【傳聞】山腳獵戶說，被剿散的山寨餘黨聚在後山，揚言明日就要殺回來報仇！'); }
   if (day < B.day) return;
-  if (X.pending || s.band) { B.day = day + 1; return; } // 撞上別的山賊就順延一日
+  if (phase.id === 'respite' || X.rhythmStrikes >= RAID_RHYTHM.maxBig) { B.day = Math.max(day + 1, phase.nextPressure); return; }
+  if (X.pending || s.band || s.jh?.visitor || s.jh?.visitorPending) { B.day = day + 1; return; } // 撞上別的大威脅就順延一日
   const pts = Math.max(BOSS.min, Math.round(points(s) * BOSS.k)), p = winP(s, pts);
-  B.state = 'on'; X.n++;
+  B.state = 'on'; X.n++; X.rhythmStrikes++; X.lastBigDay = day;
   X.pending = { n: X.n, pts, demand: 0, p: +p.toFixed(2), at: s.t, until: s.t + RAID.wait / 4, day, noPay: true, boss: true };
   log(s, `【餘黨反撲】山寨餘黨的頭目帶人殺回山門（威脅 ${pts}），不談價錢！迎戰勝算約 ${Math.round(p * 100)}%。`);
 }
@@ -346,18 +394,23 @@ export function bossEnd(s, src, win, defs = []) {
   else { recordDeed(s, null, 'bossLost', { chron: '山寨餘黨反撲得手，山門受挫' }); log(s, '【餘黨反撲】這回沒擋住；若再剿寨，餘黨恐怕還會再來。'); }
 }
 export function threatDaily(s) {
-  bossDaily(s);
+  const X = T(s), phase = raidPhase(s);
+  advanceRaidRhythm(s, X, phase);
+  X.next = Math.max(X.next, (X.lastBigDay || 0) + RAID_RHYTHM.minGap);
+  const scheduledPhase = raidPhase({ day: X.next });
+  if (scheduledPhase.id === 'respite') X.next = scheduledPhase.nextPressure;
+  if (phase.id === 'respite' || X.rhythmStrikes >= RAID_RHYTHM.maxBig) X.next = Math.max(X.next, phase.nextPressure);
+  bossDaily(s, phase);
   rumorDaily(s);
-  const X = T(s);
   if (X.adapt == null) X.adapt = 1;
   else if (X.adapt < 1) X.adapt = Math.min(1, +(X.adapt + (RAID.adaptRecover ?? 0.05)).toFixed(2));
   else if (X.adapt > 1) X.adapt = Math.max(1, +(X.adapt - (RAID.adaptRecover ?? 0.05)).toFixed(2));
-  if (X.pending || (s.day || 0) < X.next) return null;
+  if (X.pending || s.band || s.jh?.visitor || s.jh?.visitorPending || phase.id === 'respite' || X.rhythmStrikes >= RAID_RHYTHM.maxBig || (s.day || 0) < X.next) return null;
   X.next = s.day + RAID.every + Math.floor(R(s) * (2 * RAID.jitter + 1)) - RAID.jitter;
   if (X.taiping) X.next += BOSS.peaceGap; X.next += peaceDelay(s); // loop9 巡山太平→山賊延後
   let pts = points(s); if (pts <= 0) return null;
   const kind = pickKind(R(s)), K = kindOf(kind); if (K) pts = Math.max(1, Math.round(pts * K.pts)); // loop17 類型
-  X.n++; const demand = K ? Math.round(demandOf(s, pts) * K.demand) : demandOf(s, pts), p = winP(s, pts);
+  X.n++; X.rhythmStrikes++; X.lastBigDay = s.day; const demand = K ? Math.round(demandOf(s, pts) * K.demand) : demandOf(s, pts), p = winP(s, pts);
   X.pending = { n: X.n, pts, demand, p: +p.toFixed(2), at: s.t, until: s.t + RAID.wait, day: s.day, ...(kind ? { kind } : {}), ...(K?.noPay ? { noPay: true } : {}) };
   if (K?.noPay) { log(s, `【${K.name}】一夥山賊（威脅 ${pts}）趁夜摸上山來，不談價錢！迎戰勝算約 ${Math.round(p * 100)}%。`); return X.pending; }
   log(s, `${K ? `【${K.name}】` : ''}【山賊勒索】一夥山賊盯上本門的家底（威脅 ${pts}）：「留下 ${demand} 兩香火錢，保你們平安。」迎戰勝算約 ${Math.round(p * 100)}%（半日內不決定就由執事代為處置）`);
@@ -366,7 +419,17 @@ export function threatDaily(s) {
 // loop18：打贏第一波後排第二波
 function nextWave(s, src, win) { const X = T(s); if (!win || !src.kind || src.wave) return; if (R(s) >= (WAVE.p[src.kind] || 0)) return;
   X.wave = { at: s.t + WAVE.gap, pts: Math.max(1, Math.round(src.pts * WAVE.k)), kind: src.kind, n: src.n, day: src.day }; log(s, `【${kindOf(src.kind).name}】山賊退到山腳重整，揚言還要再殺上來！`); }
-function waveStep(s) { const X = T(s), W = X.wave; if (!W || s.t < W.at || X.pending || s.band) return; X.wave = null; const p = winP(s, W.pts);
+function waveStep(s) {
+  const X = T(s), W = X.wave, phase = raidPhase(s);
+  if (!W || s.t < W.at || X.pending || s.band || s.jh?.visitor || s.jh?.visitorPending || phase.id === 'respite') return;
+  advanceRaidRhythm(s, X, phase);
+  // 同一期第二波是原來犯的延續；跨到下一期則佔下一期名額，也要留足原最短間隔。
+  if (W.day < phase.start) {
+    if (X.rhythmStrikes >= RAID_RHYTHM.maxBig || s.day < (X.lastBigDay || 0) + RAID_RHYTHM.minGap) return;
+    X.rhythmStrikes++; X.lastBigDay = s.day;
+    W.originDay = W.day; W.day = s.day; // 戰報以真正再次上山的日子歸入新一期。
+  }
+  X.wave = null; const p = winP(s, W.pts);
   X.pending = { n: W.n, pts: W.pts, demand: 0, p: +p.toFixed(2), at: s.t, until: s.t + RAID.wait / 4, day: W.day, kind: W.kind, noPay: true, wave: 2 }; log(s, `【第二波】${kindOf(W.kind).name}重整殺回（威脅 ${W.pts}），不談價錢！迎戰勝算約 ${Math.round(p * 100)}%。`); }
 export function threatStep(s, H) { waveStep(s); const P = T(s).pending; if (P && s.t >= P.until) raidResolve(s, raidAuto(s), H, true); }
 function hurtOne(s, H) {
@@ -441,7 +504,8 @@ export function lairLine(s) {
 export function threatHtml(s) {
   const X = T(s), P = X.pending, pts = points(s), n = headcount(s);
   const bd = threatBreakdown(s);
-  const head = `<div class="threat" data-threat><b>山賊</b>：${s.band ? `【${s.band.state === 'go' ? '正沿山路逼近' : '正在撞柵'}，山賊 ${Math.max(0, Math.round(s.band.hp))}/${s.band.max}】` : ''}${n < minPopOf(s) ? `門裡才 ${n} 人，山賊還看不上（${minPopOf(s)} 人起）` /* loop125：顯示用實際門檻 */ : `家底 ${Math.round(wealth(s))}，威脅 ${pts}（${bd.text}・戰力 ${Math.round(defense(s))}）${(rumorDays(s) ? `；傳聞約 ${rumorDays(s)} 日內來犯` : '；暫無風聲')}`}・來過 ${X.n} 次（付錢 ${X.paid}／迎戰 ${X.fought}，勝 ${X.won}）・山門重傷 ${X.homeHurt}${valorHtml(s)}`;
+  const signs = raidPhase(s).id === 'pressure' ? '山下最近風聲緊' : '這陣子山路太平';
+  const head = `<div class="threat" data-threat><b>山賊</b>：${s.band ? `【${s.band.state === 'go' ? '正沿山路逼近' : '正在撞柵'}，山賊 ${Math.max(0, Math.round(s.band.hp))}/${s.band.max}】` : ''}${n < minPopOf(s) ? `門裡才 ${n} 人，山賊還看不上（${minPopOf(s)} 人起）` /* loop125：顯示用實際門檻 */ : `家底 ${Math.round(wealth(s))}，威脅 ${pts}（${bd.text}・戰力 ${Math.round(defense(s))}）；${signs}${(rumorDays(s) ? `；傳聞約 ${rumorDays(s)} 日內來犯` : '')}`}・來過 ${X.n} 次（付錢 ${X.paid}／迎戰 ${X.fought}，勝 ${X.won}）・山門重傷 ${X.homeHurt}${valorHtml(s)}`;
   const lr = lairLine(s) + crusadeHtml27(s); /* loop179 */
   if (!P) return head + lr + '</div>' + fenceHtml(s);
   return `${head}${lr}<div class="raid-ask" data-raid-ask>${kindOf(P.kind) ? `【${kindOf(P.kind).name}】${kindOf(P.kind).desc}；` : ''}${P.noPay ? '不談價錢：' : `山賊要 ${P.demand} 兩：<button data-raid="0" ${s.res.coin < P.demand ? 'disabled' : ''}>付錢了事</button>`} <button data-raid="1">迎戰（勝算 ${Math.round(P.p * 100)}%）</button></div></div>${fenceHtml(s)}`;
@@ -450,8 +514,7 @@ export function threatHtml(s) {
 // ==== （原 lair.mjs）====
 // loop19 遠征剿寨：山賊來過幾次後，執事查出山寨所在；有閒人、糧夠時自主組隊出山剿寨。
 // 剿成→山賊很久不來（下次來犯延後 peaceDays）；剿敗→一人重傷、空手而回。只在 s.m9 生效（golden 不變）。
-export const LAIR = { after: 3, team: 2, supply: 2, dur: DAY / 2, k: 1.0, peaceDays: 10, minHp: 60, winHurt: 0.3, cool: 5 };
-const RL = (s) => { const L = s.lair; L.rng = ((L.rng || seedMix(s.seed || 1, 4219)) * 16807) % 2147483647; return L.rng / 2147483647; };
+export const LAIR = { after: 3, team: 2, supply: 2, dur: DAY / 2, k: 1.0, peaceDays: 10, minHp: 60, cool: 5 };
 const okD = (s, d) => d.role !== 'laborer' && d.adult !== false && !d.away && d.hp > LAIR.minHp && !d.order && !s.hunt?.team?.includes(d.id);
 const sumPow = (s, team) => power({ ...s, ds: team });
 // loop29（選用 s.lairpow）：寨子點數＝門派最強 top 人戰力×k，不再隨財富漲；預估 隊伍≈top3 的 2/3 → p≈.6
@@ -466,15 +529,21 @@ export function lairDaily(s, H) {
   const c = s.ds.filter((d) => okD(s, d)).sort((a, b) => sumPow(s, [b]) - sumPow(s, [a])); if (c.length < LAIR.team + 1) return null; // 至少留一人看家
   let team = c.slice(0, LAIR.team); { const lead = c[0], m = mates(s, lead).map((id) => c.find((d) => d.id === id)).filter(Boolean); if (m.length) team = [lead, ...m].slice(0, LAIR.team); } /* loop20 同派同行 */ const pts = Math.max(1, Math.round(sumPow(s, c.slice(0, LAIRP.top)) * LAIRP.k)); /* loop29 寨強看戰力（選用） */ if (pts <= 0) return null; const pow = sumPow(s, team);
   resAdd(s, 'food', -need, 'travel'); for (const d of team) { H?.cancelTask?.(s, d, '出山剿寨'); d.away = true; d.path = []; d.reason = '出山剿寨'; }
-  L.trip = { ids: team.map((d) => d.id), pts, back: s.t + LAIR.dur, pow }; L.n++;
+  L.trip = { ids: team.map((d) => d.id), pts, back: s.t + LAIR.dur, pow, n: L.n + 1 }; L.n++;
   log(s, `【剿寨】${team.map((d) => d.name).join('、')}帶 ${need} 份糧出山剿寨（寨中約 ${pts} 點）。`); return L.trip;
 }
-// 每 tick：到時間就回來結算
-export function lairStep(s, H) {
-  const L = s.lair, tr = L?.trip; if (!tr || s.t < tr.back) return; L.trip = null;
-  const team = tr.ids.map((id) => s.ds.find((d) => d.id === id)).filter(Boolean); for (const d of team) { d.away = false; d.reason = '剿寨歸來'; if (H?.gate) d.pos = [...H.gate]; }
-  const p = tr.pow / (tr.pow + tr.pts), win = RL(s) < p; let hurt = null;
-  if (!win || RL(s) < LAIR.winHurt) { { hurt = team[Math.floor(RL(s) * team.length)]; if (hurt) { hurt.hp = Math.min(hurt.hp, guardHurt(hurt, RAID.hurtHp)); /* loop117 */ hurt.raidHurt = (hurt.raidHurt || 0) + 1; T(s).homeHurt++; H?.think?.(s, hurt, 'raidHurt'); } } }
+// 到寨時開遠段同規則小地圖；真交手結束才讓隊伍回山並結算。
+export function lairStep(s, H, dt = .25) {
+  const L = s.lair, tr = L?.trip; if (!tr || s.t < tr.back) return;
+  const team = tr.ids.map((id) => s.ds.find((d) => d.id === id)).filter(Boolean);
+  if (!tr.bout && !tr.fought) { const count = Math.max(BAND_MEMBER.min, Math.min(BAND_MEMBER.max, Math.round(tr.pts / BAND_MEMBER.pts)));
+    startMapBout(s, tr, 'bandit', { id: 'lair', from: 250, scale: 1 }, team, [150, 100], null, { count, totalHp: tr.pts });
+    log(s, `【剿寨】${team.map(d => d.name).join('、')}到了山寨，${count} 名賊人從外圍聚攏，逐招交手。`); return; }
+  const bout = stepMapBout(s, tr, dt, { ...H, guardOf }); if (!bout) return;
+  tr.fought = true; L.trip = null;
+  for (const d of team) { d.away = false; d.reason = '剿寨歸來'; if (H?.gate) d.pos = [...H.gate]; if (d.hp <= 0) d.hp = 10; }
+  const p = tr.pow / (tr.pow + tr.pts), win = bout.won; let hurt = team.find(d => d.hp <= RAID.hurtHp) || null;
+  if (hurt) { hurt.raidHurt = (hurt.raidHurt || 0) + 1; T(s).homeHurt++; H?.think?.(s, hurt, 'raidHurt'); }
   const X = T(s); if (win) { L.won++; X.next = Math.max(X.next || 0, s.day) + LAIR.peaceDays; s.rep = (s.rep || 0) + RAID.rep * 2; L.next = X.next; for (const d of team) { tallyAct(d, 'lair', LAIR.dur / 4); recordDeed(s, d, 'lair'); } recordDeed(s, null, 'lair', { chron: `${team.map((d) => d.name).join('、')}大破後山山寨` }); if (!X.taiping && X.boss?.state !== 'wait' && X.boss?.state !== 'on') X.boss = { day: s.day + BOSS.after, state: 'wait' }; log(s, `【剿寨】大破山寨！山賊作鳥獸散，至少 ${LAIR.peaceDays} 日不敢來犯。名聲 +${RAID.rep * 2}${hurt ? `；${hurt.name}重傷` : ''}。`); }
   else { L.next = s.day + LAIR.cool; log(s, `【剿寨】寨子太硬，攻不下來${hurt ? `，${hurt.name}重傷` : ''}，只好先撤回。`); }
   (L.hist ??= []).push({ day: s.day, pts: tr.pts, p: +p.toFixed(2), win, hurt: hurt?.id || null });

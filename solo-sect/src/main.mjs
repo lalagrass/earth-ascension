@@ -223,9 +223,9 @@ function draw() {
     if (f.kind === 'move') { g.strokeStyle = f.color; g.lineWidth = 4; g.globalAlpha = f.ttl / 0.6; g.beginPath(); g.moveTo(f.from[0], f.from[1] - 25); g.lineTo(f.to[0], f.to[1] - 8); g.stroke(); g.beginPath(); g.arc(f.to[0], f.to[1] - 10, f.r, 0, 7); g.stroke(); label(f.name, f.from[0], f.from[1] - 60, f.color); g.globalAlpha = 1; }
     else { g.fillStyle = 'rgba(200,40,40,.6)'; g.beginPath(); g.arc(f.pos[0], f.pos[1] - 30, 10, 0, 7); g.fill(); }
   }
-  g.restore(); drawWorldTop(); g.restore(); drawCloud(); expBar();
+  g.restore(); drawWorldTop(); drawVisitorBout(); g.restore(); drawCloud(); drawExpBout(); expBar();
 }
-// v0.95 巡山進度條：地圖上只畫這條（背景模擬，不出現在地圖上）
+// 巡山進度條：作路程總覽，前三段的交手另外在主圖／小圖逐招顯示。
 function expBar() {
   const X = S.exp, R = S.lastExp; if (!X && !R && !S.records?.sect) return;
   const x0 = 360, x1 = 1240, y = 22, W = x1 - x0, END = Math.max(ROUTE_END, X ? X.dist + 100 : 0, (S.records?.sect || 0) + 50), px = (v) => x0 + W * Math.min(1, v / END);
@@ -497,7 +497,7 @@ function drawWorld(c) { g.fillStyle = '#b9ad8f'; const hw = 800 / c.z, hh = 450 
   drawWorld.fog = fogC;
   { const path = (w, c) => { g.strokeStyle = c; g.lineWidth = w; g.lineCap = g.lineJoin = 'round'; g.beginPath(); TRAIL.forEach((p, i) => (i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]))); g.stroke(); };
     g.save(); path(30, '#6b4f30'); path(22, '#c9a874'); g.setLineDash([3, 14]); path(6, '#a8875a'); g.restore(); } // v1.55b 山徑（黃土路＋路邊）
-  if (lod !== 'far') { const pd = partyDist(S), hit = fightLog.hit; for (const sp of SPOTS) { const done = (pd != null && pd >= sp.d) || hit.has(sp.i), [x, y] = sp.pos; if (fogged(S, Math.floor(x / CHUNK), Math.floor(y / CHUNK))) continue; // 固定怪點：本趟走過＝已處理
+  if (lod !== 'far') { const pd = partyDist(S), hit = fightLog.hit; for (const sp of SPOTS) { if (S.exp?.bout?.near && Math.abs((S.exp.bout.spotDist || 0) - sp.d) < 0.1) continue; const done = (pd != null && pd >= sp.d) || hit.has(sp.i), [x, y] = sp.pos; if (fogged(S, Math.floor(x / CHUNK), Math.floor(y / CHUNK))) continue; // 固定怪點：本趟走過＝已處理
     g.save(); g.globalAlpha = done ? 0.35 : 1; const sn = MONSTERS[sp.k]?.sprite; if (sn) sprite(sn, x, y, SC * 0.8); else { g.fillStyle = '#7a2a1a'; g.beginPath(); g.arc(x, y - 10, 11, 0, 7); g.fill(); g.fillStyle = '#fff'; g.font = 'bold 13px sans-serif'; g.textAlign = 'center'; g.fillText(ENEMIES[sp.k].name[0], x, y - 6); }
     const gi = ROUTE.findIndex((g) => g.id === sp.ring), gn = sp.gate ? (rivalGate(S, routeSeg(gi), gi)?.gateName || sp.gate) : null, fought = fightLog.names.get(sp.i), ev = fightLog.evaded.has(sp.i);
     label(ev ? `殘・${fought}` : done ? (fought ? `✕ ${fought}` : '✕') : gn ? `守關・${gn}` : ENEMIES[sp.k].name, x, y + 14, ev ? '#c05010' : sp.gate ? '#b0301a' : '#7a1a10'); g.restore(); } }
@@ -526,14 +526,43 @@ function drawCloud() { const on = cloudOn(), now = performance.now(); if (on !==
   g.font = 'bold 34px serif'; g.textAlign = 'left'; g.fillStyle = '#3a4a6a'; g.fillText(`☁ 雲海・第${C.k}重`, 40, 860); g.restore();
   if (on && k < 1) { g.fillStyle = `rgba(255,255,255,${Math.sin(k * Math.PI) * 0.9})`; g.fillRect(0, 0, 1600, 900); } } // 拉近轉場：白霧一閃
 window.__cloudOn = () => cloudOn();
+function drawExpBout() { // N45：山腰以上另開同規則小地圖；座標只投影，不在畫面更新勝負。
+  const B = S.exp?.bout || S.lair?.trip?.bout; if (!B || B.near) return;
+  g.save(); g.translate(480, 185); g.scale(2, 2);
+  g.fillStyle = '#d2c8a5'; g.fillRect(-12, -20, 324, 240);
+  g.strokeStyle = '#6c5c43'; g.lineWidth = 3; g.strokeRect(0, 0, 300, 200);
+  g.strokeStyle = '#9a8b69'; g.lineWidth = 16; g.beginPath(); g.moveTo(5, 155); g.quadraticCurveTo(155, 60, 295, 45); g.stroke();
+  g.fillStyle = '#423426'; g.font = 'bold 13px serif'; g.textAlign = 'left'; g.fillText(`${ROUTE.find(r => r.id === B.seg)?.name || (B.seg === 'lair' ? '山寨' : '遠路')}・${ENEMIES[B.key]?.name || B.key} 逐招交手`, 6, -5);
+  for (const id of B.team) { const d = S.ds.find(x => x.id === id); if (!d || d.hp <= 0) continue; g.save(); g.translate(...d.pos); g.scale(.55, .55); drawPoseActor(g, d, dailyPose(d, d.swing ? 'strike' : 'stand', S.t)); g.restore(); label(d.name, d.pos[0], d.pos[1] - 37, '#7a1a10'); }
+  for (const m of B.foes.filter(x => x.hp > 0)) { g.fillStyle = '#7c3824'; g.beginPath(); g.arc(m.pos[0], m.pos[1] - 8, 9, 0, 7); g.fill(); label(ENEMIES[m.k]?.name || m.k, m.pos[0], m.pos[1] - 25, '#7a1a10'); }
+  g.restore();
+}
+function drawVisitorBout() {
+  const V = S.jh?.visitor, B = V?.bout; if (!B) return;
+  for (const id of B.team) {
+    const d = S.ds.find(x => x.id === id); if (!d || d.hp <= 0) continue;
+    g.save(); g.translate(...d.pos); g.scale(.7, .7);
+    drawPoseActor(g, d, dailyPose(d, d.swing ? 'strike' : 'stand', S.t)); g.restore();
+    label(d.name, d.pos[0], d.pos[1] - 45, '#7a1a10');
+  }
+  for (const m of B.foes.filter(x => x.hp > 0)) {
+    g.save(); g.translate(...m.pos); g.scale(.8, .8);
+    const actor = { sprite: m.k === 'dfbb' ? 'red_robe' : 'elder' };
+    drawPoseActor(g, actor, dailyPose(actor, m.swing ? 'strike' : 'stand', S.t)); g.restore();
+    label(ENEMIES[m.k]?.name || m.k, m.pos[0], m.pos[1] - 45, '#a21b1b');
+    hp(m.pos[0], m.pos[1] - 52, m.hp / m.max, '#a21b1b');
+  }
+  label(`${V.reason}・逐招交手`, B.anchor[0], B.anchor[1] - 105, '#7a1a10');
+}
 function drawFog() { // v1.55c 迷霧：未探＝雲霧遮住；已探但不在視野＝淡化（只在巡山中）
   for (const [cx, cy] of drawWorld.fog || []) { const x = cx * CHUNK, y = cy * CHUNK; g.fillStyle = '#4a4a56'; g.fillRect(x - 1, y - 1, CHUNK + 2, CHUNK + 2); if (drawWorld.lod === 'far') continue; g.fillStyle = 'rgba(255,255,255,.07)'; for (let k = 0; k < 4; k++) { g.beginPath(); g.arc(x + 40 + k * 60, y + 80 + (k % 2) * 90, 50, 0, 7); g.fill(); } }
   if (S.exp && drawWorld.lod !== 'far') { g.fillStyle = 'rgba(240,236,225,.35)'; const c = { x: cam.x, y: cam.y, z: cam.z }; for (const [cx, cy] of chunksInView(c)) { const x = cx * CHUNK, y = cy * CHUNK; if (fogged(S, cx, cy) || (x < HOME.w && y >= HOME.y) || inVision(S, [x + CHUNK / 2, y + CHUNK / 2])) continue; g.fillRect(x, y, CHUNK, CHUNK); } } }
 function drawWorldTop() { drawFog(); const rd = raidDescent(S, raidMul(S)); // 獸襲下山（演出）
   if (rd) { const [x, y] = rd.pos; sprite(MONSTERS[rd.k].sprite, x, y, SC); label(`${MONSTERS[rd.k].name}下山中`, x, y - 40, '#a33'); }
-  const pd = partyDist(S); if (pd != null) { const X = S.exp, team = X.team.map((id) => S.ds.find((d) => d.id === id)).filter(Boolean), back = X.phase === 'back', walking = !(X.busy > 0) && !fightLog.cur;
-    const sty = back ? 'steady' : X.style; team.forEach((d, i) => { const [x, y] = styledPos(Math.max(0, pd + (back ? 1 : -1) * i * (sty === 'dash' ? 2 : 4)), sty), bob = walking ? Math.sin(performance.now() / 90 + i) * 2 : 0; if (drawWorld.lod !== 'near') { const r = drawWorld.lod === 'far' ? 34 : 12; g.fillStyle = '#d0281c'; g.strokeStyle = '#fff'; g.lineWidth = r / 4; g.beginPath(); g.arc(x + i * r * 1.6, y, r, 0, 7); g.fill(); g.stroke(); if (drawWorld.lod === 'mid') label(d.name, x + i * r * 1.6, y - 18, '#7a1a10'); return; }
+  const pd = partyDist(S); if (pd != null) { const X = S.exp, B = X.bout?.near ? X.bout : null, team = X.team.map((id) => S.ds.find((d) => d.id === id)).filter(Boolean), back = X.phase === 'back', walking = !B && !(X.busy > 0) && !fightLog.cur;
+    const sty = back ? 'steady' : X.style; team.forEach((d, i) => { const [x, y] = B ? d.pos : styledPos(Math.max(0, pd + (back ? 1 : -1) * i * (sty === 'dash' ? 2 : 4)), sty), bob = walking ? Math.sin(performance.now() / 90 + i) * 2 : 0; if (drawWorld.lod !== 'near') { const r = drawWorld.lod === 'far' ? 34 : 12; g.fillStyle = '#d0281c'; g.strokeStyle = '#fff'; g.lineWidth = r / 4; g.beginPath(); g.arc(x + i * r * 1.6, y, r, 0, 7); g.fill(); g.stroke(); if (drawWorld.lod === 'mid') label(d.name, x + i * r * 1.6, y - 18, '#7a1a10'); return; }
       g.save(); g.translate(x + (i % 2 ? 10 : -10), y + bob); if (back) g.scale(-1, 1); g.scale(.7,.7); drawPoseActor(g,d,dailyPose(d,walking?'walk':'stand',S.t)); g.restore(); });
+    if (B) for (const foe of B.foes.filter(m => m.hp > 0)) { const [x, y] = foe.pos, sn = MONSTERS[foe.k]?.sprite; if (sn) sprite(sn, x, y, SC * .8); else { g.fillStyle = '#823f2c'; g.beginPath(); g.arc(x, y - 13, 13, 0, 7); g.fill(); } label(ENEMIES[foe.k]?.name || B.key, x, y - 39, '#7a1a10'); }
     const [x, y] = trailAt(pd); if (drawWorld.lod === 'far') { g.font = 'bold 90px sans-serif'; g.textAlign = 'center'; g.lineWidth = 14; g.strokeStyle = '#fff'; g.strokeText('巡山隊', x, y - 70); g.fillStyle = '#b0201a'; g.fillText('巡山隊', x, y - 70); } else label(`巡山隊 ${Math.round(pd)} 步${back ? '・回程' : `・${STYLE_PATH[X.style] || ''}`}`, x, y - 70, '#7a1a10');
     for (const L of leftovers(S, fightLog.evaded)) { if (!L.chasing) continue; const t0 = (fightLog.chase[L.i] ??= performance.now()), k = Math.min(1, (performance.now() - t0) / 3000), [px, py] = styledPos(pd, 'steady'), lx = L.pos[0] + (px + 30 - L.pos[0]) * k, ly = L.pos[1] + (py - L.pos[1]) * k; // 溜走的殘餘怪追上來（＝返程驚獸）
       const sn = MONSTERS[L.k]?.sprite; if (sn) sprite(sn, lx, ly, SC * 0.8); else { g.fillStyle = '#a03010'; g.beginPath(); g.arc(lx, ly - 10, 11, 0, 7); g.fill(); } label(`殘餘${fightLog.names.get(L.i) || ''}追來！`, lx, ly - 30, '#c05010'); } }

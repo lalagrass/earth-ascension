@@ -5,12 +5,15 @@ import { createState, tick } from '../src/sim.mjs';
 import { MOVES } from '../src/data.mjs';
 import { CLASH, interceptOpening, resolveSwing, windOf } from '../src/arts.mjs';
 import { BAND_CLASH, bandSyncDelay } from '../src/threat.mjs';
+import { attackTokenLimit } from '../src/tactics.mjs';
 import { teach, TEACH } from '../src/wuxia.mjs';
 
 const KINDS = ['read', 'dodge', 'parry', 'hit'];
 const NUMBERS = [1, 2, 3, 4, 6];
 const SAMPLES = 100;
-const SEED = 21;
+const seedArg = process.argv.find(x => x.startsWith('--seed='))?.slice(7);
+const SEED = seedArg == null ? 21 : Number(seedArg);
+if (!Number.isSafeInteger(SEED)) throw Error('--seed 要整數');
 const CYCLES = 4;
 const bandWind = BAND_CLASH.monCd * CLASH.monWind;
 
@@ -28,28 +31,32 @@ function day20() {
   return { state, master, peerMove };
 }
 
-function attackSchedule(mode, n) {
+function attackSchedule(mode, n, wind, organization = null) {
   const cd = BAND_CLASH.monCd;
   const actors = Array.from({ length: n }, (_, j) => ({ j, left: CYCLES, next: mode === 'staggered' ? j * cd / n : 0 }));
   const starts = [];
   while (actors.some((a) => a.left > 0)) {
     const at = Math.min(...actors.filter((a) => a.left > 0).map((a) => a.next));
     const ready = actors.filter((a) => a.left > 0 && a.next <= at + 1e-9);
+    const active = organization == null ? [] : starts.filter(x => x.at + wind > at + 1e-9);
+    let tokens = organization == null ? ready.length : Math.max(0, attackTokenLimit(organization, 4) - active.length);
+    if (tokens === 0) { const freeAt = Math.min(...active.map(x => x.at + wind)); for (const a of ready) a.next = freeAt; continue; }
     const snapshot = actors.map((a) => ({ hp: a.left > 0 ? 1 : 0, ring: 1, foe: 'master', cool: a.next - at }));
     const delays = ready.map((a) => bandSyncDelay(snapshot[a.j], snapshot));
     for (let i = 0; i < ready.length; i++) {
       const a = ready[i];
       if (delays[i] > 0) a.next = at + delays[i];
-      else { starts.push({ at, j: a.j, cycle: CYCLES - a.left }); a.left--; a.next = at + cd; }
+      else if (tokens > 0) { starts.push({ at, j: a.j, cycle: CYCLES - a.left }); a.left--; a.next = at + cd; tokens--; }
+      else a.next = Math.min(...starts.filter(x => x.at + wind > at + 1e-9).map(x => x.at + wind));
     }
   }
   return starts;
 }
 
-function oneCell(master, state, foe, peerMove, mode, n) {
+function oneCell(master, state, foe, peerMove, mode, n, withTokens = false) {
   const counts = Object.fromEntries(KINDS.map((k) => [k, 0]));
   const wind = foe === 'bandit' ? bandWind : windOf(master, peerMove.id, peerMove.cd);
-  const starts = attackSchedule(mode, n);
+  const starts = attackSchedule(mode, n, wind, withTokens ? foe === 'bandit' ? 2 : 4 : null);
   for (let i = 0; i < SAMPLES; i++) {
     const d = structuredClone(master); d.posture = 100; d.fret = 0; d.raging = false; d.rageUntil = 0; d.busyUntil = state.t;
     const s = { t: state.t, fx: [], log: [], chron: [], codex: structuredClone(state.codex) };
@@ -84,11 +91,12 @@ function oneCell(master, state, foe, peerMove, mode, n) {
 }
 
 export function runCrowd() {
+  const withTokens = process.argv.includes('--tokens');
   const { state, master, peerMove } = day20();
   const rows = [];
   for (const foe of ['bandit', 'peer']) for (const mode of ['simultaneous', 'staggered']) for (const n of NUMBERS)
-    rows.push({ foe, mode, ...oneCell(master, state, foe, peerMove, mode, n) });
-  return { seed: SEED, day: state.day, samples: SAMPLES, cycles: CYCLES, cadence: BAND_CLASH.monCd, syncWait: BAND_CLASH.syncWait, hero: { name: master.name, wu: master.wu, agility: master.skills.agility },
+    rows.push({ foe, mode, ...oneCell(master, state, foe, peerMove, mode, n, withTokens) });
+  return { seed: SEED, day: state.day, samples: SAMPLES, cycles: CYCLES, cadence: BAND_CLASH.monCd, syncWait: BAND_CLASH.syncWait, tokenOrganization: withTokens ? { bandit: 2, peer: 4 } : null, hero: { name: master.name, wu: master.wu, agility: master.skills.agility },
     opponents: { bandit: { name: '持刀嘍囉', wind: bandWind, depth: 2 }, peer: { name: '同級好手', move: peerMove.id, wind: windOf(master, peerMove.id, peerMove.cd) } }, rows };
 }
 

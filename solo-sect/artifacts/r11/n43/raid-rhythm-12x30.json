@@ -1,0 +1,1533 @@
+{
+  "days": 30,
+  "seeds": [
+    1001,
+    1002,
+    1003,
+    1004,
+    1005,
+    1006,
+    1007,
+    1008,
+    1009,
+    1010,
+    1011,
+    1012
+  ],
+  "rows": [
+    {
+      "seed": 1001,
+      "seasons": [
+        {
+          "first": 1,
+          "last": 7,
+          "complete": true,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        },
+        {
+          "first": 8,
+          "last": 14,
+          "complete": true,
+          "raids": 2,
+          "fights": 4,
+          "hurt": 1
+        },
+        {
+          "first": 15,
+          "last": 21,
+          "complete": true,
+          "raids": 1,
+          "fights": 1,
+          "hurt": 0
+        },
+        {
+          "first": 22,
+          "last": 28,
+          "complete": true,
+          "raids": 1,
+          "fights": 2,
+          "hurt": 0
+        },
+        {
+          "first": 29,
+          "last": 30,
+          "complete": false,
+          "raids": 1,
+          "fights": 1,
+          "hurt": 1
+        }
+      ],
+      "cycles": [
+        {
+          "start": 8,
+          "end": 14,
+          "raids": 2
+        },
+        {
+          "start": 17,
+          "end": 23,
+          "raids": 2
+        },
+        {
+          "start": 26,
+          "end": 32,
+          "raids": 1
+        }
+      ],
+      "history": [
+        {
+          "kind": "hanfei",
+          "n": 1,
+          "day": 8,
+          "pts": 84,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "wave": 2,
+          "n": 1,
+          "day": 8,
+          "pts": 151,
+          "fight": "win",
+          "hurt": "aqing",
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "n": 2,
+          "day": 14,
+          "pts": 135,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "wave": 2,
+          "n": 2,
+          "day": 14,
+          "pts": 243,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "yexi",
+          "n": 3,
+          "day": 18,
+          "pts": 195,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "n": 4,
+          "day": 23,
+          "pts": 157,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "wave": 2,
+          "n": 4,
+          "day": 23,
+          "pts": 283,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "yexi",
+          "n": 5,
+          "day": 30,
+          "pts": 227,
+          "fight": "win",
+          "hurt": "guojing",
+          "map": true,
+          "broke": false
+        }
+      ],
+      "homeHurt": 2
+    },
+    {
+      "seed": 1002,
+      "seasons": [
+        {
+          "first": 1,
+          "last": 7,
+          "complete": true,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        },
+        {
+          "first": 8,
+          "last": 14,
+          "complete": true,
+          "raids": 2,
+          "fights": 3,
+          "hurt": 0
+        },
+        {
+          "first": 15,
+          "last": 21,
+          "complete": true,
+          "raids": 1,
+          "fights": 2,
+          "hurt": 0
+        },
+        {
+          "first": 22,
+          "last": 28,
+          "complete": true,
+          "raids": 1,
+          "fights": 2,
+          "hurt": 2
+        },
+        {
+          "first": 29,
+          "last": 30,
+          "complete": false,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        }
+      ],
+      "cycles": [
+        {
+          "start": 8,
+          "end": 14,
+          "raids": 2
+        },
+        {
+          "start": 17,
+          "end": 23,
+          "raids": 1
+        },
+        {
+          "start": 26,
+          "end": 32,
+          "raids": 1
+        }
+      ],
+      "history": [
+        {
+          "kind": "liukou",
+          "n": 1,
+          "day": 8,
+          "pts": 47,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "wave": 2,
+          "n": 1,
+          "day": 8,
+          "pts": 85,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "n": 2,
+          "day": 12,
+          "pts": 102,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "n": 3,
+          "day": 18,
+          "pts": 238,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "wave": 2,
+          "n": 3,
+          "day": 18,
+          "pts": 428,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "n": 4,
+          "day": 26,
+          "pts": 291,
+          "fight": "win",
+          "hurt": "hero",
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "wave": 2,
+          "n": 4,
+          "day": 26,
+          "pts": 524,
+          "fight": "lose",
+          "hurt": "hero",
+          "map": true,
+          "broke": false
+        }
+      ],
+      "homeHurt": 2
+    },
+    {
+      "seed": 1003,
+      "seasons": [
+        {
+          "first": 1,
+          "last": 7,
+          "complete": true,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        },
+        {
+          "first": 8,
+          "last": 14,
+          "complete": true,
+          "raids": 1,
+          "fights": 2,
+          "hurt": 1
+        },
+        {
+          "first": 15,
+          "last": 21,
+          "complete": true,
+          "raids": 1,
+          "fights": 2,
+          "hurt": 0
+        },
+        {
+          "first": 22,
+          "last": 28,
+          "complete": true,
+          "raids": 1,
+          "fights": 1,
+          "hurt": 1
+        },
+        {
+          "first": 29,
+          "last": 30,
+          "complete": false,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        }
+      ],
+      "cycles": [
+        {
+          "start": 8,
+          "end": 14,
+          "raids": 1
+        },
+        {
+          "start": 17,
+          "end": 23,
+          "raids": 1
+        },
+        {
+          "start": 26,
+          "end": 32,
+          "raids": 1
+        }
+      ],
+      "history": [
+        {
+          "kind": "hanfei",
+          "n": 1,
+          "day": 8,
+          "pts": 73,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "wave": 2,
+          "n": 1,
+          "day": 8,
+          "pts": 131,
+          "fight": "win",
+          "hurt": "hero",
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "n": 2,
+          "day": 18,
+          "pts": 182,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "wave": 2,
+          "n": 2,
+          "day": 18,
+          "pts": 328,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "yexi",
+          "n": 3,
+          "day": 26,
+          "pts": 212,
+          "fight": "win",
+          "hurt": "huangrong",
+          "map": true,
+          "broke": false
+        }
+      ],
+      "homeHurt": 2
+    },
+    {
+      "seed": 1004,
+      "seasons": [
+        {
+          "first": 1,
+          "last": 7,
+          "complete": true,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        },
+        {
+          "first": 8,
+          "last": 14,
+          "complete": true,
+          "raids": 1,
+          "fights": 2,
+          "hurt": 1
+        },
+        {
+          "first": 15,
+          "last": 21,
+          "complete": true,
+          "raids": 1,
+          "fights": 2,
+          "hurt": 1
+        },
+        {
+          "first": 22,
+          "last": 28,
+          "complete": true,
+          "raids": 1,
+          "fights": 1,
+          "hurt": 1
+        },
+        {
+          "first": 29,
+          "last": 30,
+          "complete": false,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        }
+      ],
+      "cycles": [
+        {
+          "start": 8,
+          "end": 14,
+          "raids": 1
+        },
+        {
+          "start": 17,
+          "end": 23,
+          "raids": 1
+        },
+        {
+          "start": 26,
+          "end": 32,
+          "raids": 1
+        }
+      ],
+      "history": [
+        {
+          "kind": "hanfei",
+          "n": 1,
+          "day": 8,
+          "pts": 108,
+          "fight": "win",
+          "hurt": "aqing",
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "wave": 2,
+          "n": 1,
+          "day": 8,
+          "pts": 194,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "n": 2,
+          "day": 18,
+          "pts": 186,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "wave": 2,
+          "n": 2,
+          "day": 18,
+          "pts": 335,
+          "fight": "lose",
+          "hurt": "origin-2",
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "n": 3,
+          "day": 26,
+          "pts": 141,
+          "fight": "lose",
+          "hurt": "linghuchong",
+          "map": true,
+          "broke": false
+        }
+      ],
+      "homeHurt": 3
+    },
+    {
+      "seed": 1005,
+      "seasons": [
+        {
+          "first": 1,
+          "last": 7,
+          "complete": true,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        },
+        {
+          "first": 8,
+          "last": 14,
+          "complete": true,
+          "raids": 2,
+          "fights": 3,
+          "hurt": 1
+        },
+        {
+          "first": 15,
+          "last": 21,
+          "complete": true,
+          "raids": 1,
+          "fights": 2,
+          "hurt": 1
+        },
+        {
+          "first": 22,
+          "last": 28,
+          "complete": true,
+          "raids": 1,
+          "fights": 2,
+          "hurt": 1
+        },
+        {
+          "first": 29,
+          "last": 30,
+          "complete": false,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        }
+      ],
+      "cycles": [
+        {
+          "start": 8,
+          "end": 14,
+          "raids": 2
+        },
+        {
+          "start": 17,
+          "end": 23,
+          "raids": 1
+        },
+        {
+          "start": 26,
+          "end": 32,
+          "raids": 1
+        }
+      ],
+      "history": [
+        {
+          "kind": "liukou",
+          "n": 1,
+          "day": 8,
+          "pts": 50,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "n": 2,
+          "day": 12,
+          "pts": 165,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "wave": 2,
+          "n": 2,
+          "day": 12,
+          "pts": 297,
+          "fight": "win",
+          "hurt": "aqing",
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "n": 3,
+          "day": 21,
+          "pts": 173,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "wave": 2,
+          "n": 3,
+          "day": 21,
+          "pts": 311,
+          "fight": "lose",
+          "hurt": "aqing",
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "n": 4,
+          "day": 27,
+          "pts": 173,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "wave": 2,
+          "n": 4,
+          "day": 27,
+          "pts": 311,
+          "fight": "win",
+          "hurt": "hero",
+          "map": true,
+          "broke": false
+        }
+      ],
+      "homeHurt": 3
+    },
+    {
+      "seed": 1006,
+      "seasons": [
+        {
+          "first": 1,
+          "last": 7,
+          "complete": true,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        },
+        {
+          "first": 8,
+          "last": 14,
+          "complete": true,
+          "raids": 1,
+          "fights": 1,
+          "hurt": 0
+        },
+        {
+          "first": 15,
+          "last": 21,
+          "complete": true,
+          "raids": 1,
+          "fights": 1,
+          "hurt": 0
+        },
+        {
+          "first": 22,
+          "last": 28,
+          "complete": true,
+          "raids": 1,
+          "fights": 2,
+          "hurt": 1
+        },
+        {
+          "first": 29,
+          "last": 30,
+          "complete": false,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        }
+      ],
+      "cycles": [
+        {
+          "start": 8,
+          "end": 14,
+          "raids": 1
+        },
+        {
+          "start": 17,
+          "end": 23,
+          "raids": 1
+        },
+        {
+          "start": 26,
+          "end": 32,
+          "raids": 1
+        }
+      ],
+      "history": [
+        {
+          "kind": "liukou",
+          "n": 1,
+          "day": 8,
+          "pts": 40,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "yexi",
+          "n": 2,
+          "day": 17,
+          "pts": 181,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "n": 3,
+          "day": 26,
+          "pts": 186,
+          "fight": "win",
+          "hurt": "hero",
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "wave": 2,
+          "n": 3,
+          "day": 26,
+          "pts": 335,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        }
+      ],
+      "homeHurt": 1
+    },
+    {
+      "seed": 1007,
+      "seasons": [
+        {
+          "first": 1,
+          "last": 7,
+          "complete": true,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        },
+        {
+          "first": 8,
+          "last": 14,
+          "complete": true,
+          "raids": 1,
+          "fights": 2,
+          "hurt": 0
+        },
+        {
+          "first": 15,
+          "last": 21,
+          "complete": true,
+          "raids": 1,
+          "fights": 1,
+          "hurt": 1
+        },
+        {
+          "first": 22,
+          "last": 28,
+          "complete": true,
+          "raids": 1,
+          "fights": 0,
+          "hurt": 0
+        },
+        {
+          "first": 29,
+          "last": 30,
+          "complete": false,
+          "raids": 1,
+          "fights": 2,
+          "hurt": 0
+        }
+      ],
+      "cycles": [
+        {
+          "start": 8,
+          "end": 14,
+          "raids": 1
+        },
+        {
+          "start": 17,
+          "end": 23,
+          "raids": 1
+        },
+        {
+          "start": 26,
+          "end": 32,
+          "raids": 2
+        }
+      ],
+      "history": [
+        {
+          "kind": "hanfei",
+          "n": 1,
+          "day": 8,
+          "pts": 85,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "wave": 2,
+          "n": 1,
+          "day": 8,
+          "pts": 153,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "n": 2,
+          "day": 17,
+          "pts": 74,
+          "fight": "win",
+          "hurt": "linghuchong",
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "n": 3,
+          "day": 26,
+          "pts": 141,
+          "pay": 18
+        },
+        {
+          "kind": "yexi",
+          "n": 4,
+          "day": 30,
+          "pts": 116,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "yexi",
+          "wave": 2,
+          "n": 4,
+          "day": 30,
+          "pts": 209,
+          "fight": "lose",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        }
+      ],
+      "homeHurt": 1
+    },
+    {
+      "seed": 1008,
+      "seasons": [
+        {
+          "first": 1,
+          "last": 7,
+          "complete": true,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        },
+        {
+          "first": 8,
+          "last": 14,
+          "complete": true,
+          "raids": 2,
+          "fights": 3,
+          "hurt": 1
+        },
+        {
+          "first": 15,
+          "last": 21,
+          "complete": true,
+          "raids": 1,
+          "fights": 2,
+          "hurt": 1
+        },
+        {
+          "first": 22,
+          "last": 28,
+          "complete": true,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        },
+        {
+          "first": 29,
+          "last": 30,
+          "complete": false,
+          "raids": 1,
+          "fights": 2,
+          "hurt": 1
+        }
+      ],
+      "cycles": [
+        {
+          "start": 8,
+          "end": 14,
+          "raids": 2
+        },
+        {
+          "start": 17,
+          "end": 23,
+          "raids": 1
+        },
+        {
+          "start": 26,
+          "end": 32,
+          "raids": 1
+        }
+      ],
+      "history": [
+        {
+          "kind": "liukou",
+          "n": 1,
+          "day": 8,
+          "pts": 46,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "wave": 2,
+          "n": 1,
+          "day": 8,
+          "pts": 83,
+          "fight": "win",
+          "hurt": "hero",
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "yexi",
+          "n": 2,
+          "day": 14,
+          "pts": 131,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "n": 3,
+          "day": 21,
+          "pts": 288,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "wave": 2,
+          "n": 3,
+          "day": 21,
+          "pts": 518,
+          "fight": "lose",
+          "hurt": "hero",
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "n": 4,
+          "day": 29,
+          "pts": 319,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "wave": 2,
+          "n": 4,
+          "day": 29,
+          "pts": 574,
+          "fight": "lose",
+          "hurt": "huangrong",
+          "map": true,
+          "broke": false
+        }
+      ],
+      "homeHurt": 3
+    },
+    {
+      "seed": 1009,
+      "seasons": [
+        {
+          "first": 1,
+          "last": 7,
+          "complete": true,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        },
+        {
+          "first": 8,
+          "last": 14,
+          "complete": true,
+          "raids": 2,
+          "fights": 4,
+          "hurt": 1
+        },
+        {
+          "first": 15,
+          "last": 21,
+          "complete": true,
+          "raids": 1,
+          "fights": 2,
+          "hurt": 0
+        },
+        {
+          "first": 22,
+          "last": 28,
+          "complete": true,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        },
+        {
+          "first": 29,
+          "last": 30,
+          "complete": false,
+          "raids": 1,
+          "fights": 0,
+          "hurt": 0
+        }
+      ],
+      "cycles": [
+        {
+          "start": 8,
+          "end": 14,
+          "raids": 2
+        },
+        {
+          "start": 17,
+          "end": 23,
+          "raids": 1
+        },
+        {
+          "start": 26,
+          "end": 32,
+          "raids": 1
+        }
+      ],
+      "history": [
+        {
+          "kind": "liukou",
+          "n": 1,
+          "day": 8,
+          "pts": 51,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "wave": 2,
+          "n": 1,
+          "day": 8,
+          "pts": 92,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "n": 2,
+          "day": 12,
+          "pts": 98,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "wave": 2,
+          "n": 2,
+          "day": 12,
+          "pts": 176,
+          "fight": "win",
+          "hurt": "aqing",
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "n": 3,
+          "day": 21,
+          "pts": 168,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "wave": 2,
+          "n": 3,
+          "day": 21,
+          "pts": 302,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "n": 4,
+          "day": 29,
+          "pts": 350,
+          "pay": 91
+        }
+      ],
+      "homeHurt": 1
+    },
+    {
+      "seed": 1010,
+      "seasons": [
+        {
+          "first": 1,
+          "last": 7,
+          "complete": true,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        },
+        {
+          "first": 8,
+          "last": 14,
+          "complete": true,
+          "raids": 1,
+          "fights": 1,
+          "hurt": 1
+        },
+        {
+          "first": 15,
+          "last": 21,
+          "complete": true,
+          "raids": 1,
+          "fights": 1,
+          "hurt": 1
+        },
+        {
+          "first": 22,
+          "last": 28,
+          "complete": true,
+          "raids": 1,
+          "fights": 1,
+          "hurt": 0
+        },
+        {
+          "first": 29,
+          "last": 30,
+          "complete": false,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        }
+      ],
+      "cycles": [
+        {
+          "start": 8,
+          "end": 14,
+          "raids": 1
+        },
+        {
+          "start": 17,
+          "end": 23,
+          "raids": 1
+        },
+        {
+          "start": 26,
+          "end": 32,
+          "raids": 1
+        }
+      ],
+      "history": [
+        {
+          "kind": "liukou",
+          "n": 1,
+          "day": 8,
+          "pts": 58,
+          "fight": "win",
+          "hurt": "origin-2",
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "yexi",
+          "n": 2,
+          "day": 17,
+          "pts": 202,
+          "fight": "win",
+          "hurt": "origin-2",
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "yexi",
+          "n": 3,
+          "day": 26,
+          "pts": 239,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        }
+      ],
+      "homeHurt": 2
+    },
+    {
+      "seed": 1011,
+      "seasons": [
+        {
+          "first": 1,
+          "last": 7,
+          "complete": true,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        },
+        {
+          "first": 8,
+          "last": 14,
+          "complete": true,
+          "raids": 2,
+          "fights": 4,
+          "hurt": 0
+        },
+        {
+          "first": 15,
+          "last": 21,
+          "complete": true,
+          "raids": 1,
+          "fights": 2,
+          "hurt": 1
+        },
+        {
+          "first": 22,
+          "last": 28,
+          "complete": true,
+          "raids": 1,
+          "fights": 1,
+          "hurt": 0
+        },
+        {
+          "first": 29,
+          "last": 30,
+          "complete": false,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        }
+      ],
+      "cycles": [
+        {
+          "start": 8,
+          "end": 14,
+          "raids": 2
+        },
+        {
+          "start": 17,
+          "end": 23,
+          "raids": 1
+        },
+        {
+          "start": 26,
+          "end": 32,
+          "raids": 1
+        }
+      ],
+      "history": [
+        {
+          "kind": "yexi",
+          "n": 1,
+          "day": 8,
+          "pts": 61,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "yexi",
+          "wave": 2,
+          "n": 1,
+          "day": 8,
+          "pts": 110,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "yexi",
+          "n": 2,
+          "day": 13,
+          "pts": 140,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "yexi",
+          "wave": 2,
+          "n": 2,
+          "day": 13,
+          "pts": 252,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "n": 3,
+          "day": 20,
+          "pts": 164,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "wave": 2,
+          "n": 3,
+          "day": 20,
+          "pts": 295,
+          "fight": "win",
+          "hurt": "shitou",
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "yexi",
+          "n": 4,
+          "day": 28,
+          "pts": 237,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        }
+      ],
+      "homeHurt": 1
+    },
+    {
+      "seed": 1012,
+      "seasons": [
+        {
+          "first": 1,
+          "last": 7,
+          "complete": true,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        },
+        {
+          "first": 8,
+          "last": 14,
+          "complete": true,
+          "raids": 1,
+          "fights": 2,
+          "hurt": 0
+        },
+        {
+          "first": 15,
+          "last": 21,
+          "complete": true,
+          "raids": 1,
+          "fights": 2,
+          "hurt": 1
+        },
+        {
+          "first": 22,
+          "last": 28,
+          "complete": true,
+          "raids": 1,
+          "fights": 1,
+          "hurt": 1
+        },
+        {
+          "first": 29,
+          "last": 30,
+          "complete": false,
+          "raids": 0,
+          "fights": 0,
+          "hurt": 0
+        }
+      ],
+      "cycles": [
+        {
+          "start": 8,
+          "end": 14,
+          "raids": 1
+        },
+        {
+          "start": 17,
+          "end": 23,
+          "raids": 1
+        },
+        {
+          "start": 26,
+          "end": 32,
+          "raids": 1
+        }
+      ],
+      "history": [
+        {
+          "kind": "liukou",
+          "n": 1,
+          "day": 8,
+          "pts": 43,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "liukou",
+          "wave": 2,
+          "n": 1,
+          "day": 8,
+          "pts": 77,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "n": 2,
+          "day": 17,
+          "pts": 226,
+          "fight": "win",
+          "hurt": "hero",
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "hanfei",
+          "wave": 2,
+          "n": 2,
+          "day": 17,
+          "pts": 407,
+          "fight": "win",
+          "hurt": null,
+          "map": true,
+          "broke": false
+        },
+        {
+          "kind": "yexi",
+          "n": 3,
+          "day": 26,
+          "pts": 361,
+          "fight": "win",
+          "hurt": "aqing",
+          "map": true,
+          "broke": false
+        }
+      ],
+      "homeHurt": 2
+    }
+  ],
+  "completeSeasonsAfterFirst": 36,
+  "completeSeasonsWithHurt": 20,
+  "cyclesOverCap": 0
+}
