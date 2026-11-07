@@ -76,7 +76,9 @@ test('戰報：距離、各類擊倒、逃走、傷、帶回、回頭原因；�
   assert.ok(s.ds.every((d) => d.hp > 0 && !d.away)); assert.ok(s.log.some((l) => /巡山戰報/.test(l.msg)));
 });
 test('固定難度：戰力隨能力增加，強者均較零基礎走更遠', () => {
-  const d = [0, 60, 90].map((l) => expRun(11, l, 1).rep.dist); assert.ok(d[0] < d[1] && d[0] < d[2], d.join()); // N33 交手學習會分岔後續遭遇，單種子中段與高段距離非嚴格單調
+  const reps = [0, 60, 90].map((l) => expRun(11, l, 1).rep), d = reps.map(r => r.dist);
+  // N45 同一隻擋路野豬可令 0/60 在同一地圖格倒下；60 仍須比 0 清掉更多山腳敵人。
+  assert.ok(d[0] <= d[1] && d[0] < d[2] && reps[0].clear.foot < reps[1].clear.foot, `${d.join()}；山腳 ${reps.map(r => r.clear.foot).join()}`);
   const power = [0, 60, 90].map((l) => { const s = createState(11), hero = s.ds[0]; hero.skills.palm = hero.skills.leg = Math.max(hero.skills.palm,l); hero.skills.agility = hero.skills.strength = l / 2; return dpsOf(s,hero); });
   assert.ok(power[0] < power[1] && power[1] < power[2], power.join());
   assert.ok(expRun(11, 90, 4).rep.dist >= ROUTE[3].from, '強隊至少進深谷');

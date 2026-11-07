@@ -31,7 +31,9 @@ test('聊天提升關係；未成年不會成道侶', () => {
   assert.ok(!s.families.some((k) => k.includes('cousin')));
 });
 test('狩獵波次會結束並產生戰報', () => {
-  const s = createState(7); s.ds[0].moves.push('push'); s.ds[0].skills.palm = 40; startHunt(s, ['hero', 'senior']); run(s, 200);
+  const s = createState(7); s.ds[0].moves.push('push'); s.ds[0].skills.palm = 40; startHunt(s, ['hero', 'senior']);
+  // N44 逐招權杖與 N45 地圖交手會延長真波次；等任務自己回門，仍設 600 秒上界。
+  let i = 0; while (s.hunt && i++ < 600 * 4) tick(s);
   assert.equal(s.hunt, null); assert.match(s.lastReport, /擊退 \d/);
 });
 test('存檔往返與壞檔拒絕', () => {
