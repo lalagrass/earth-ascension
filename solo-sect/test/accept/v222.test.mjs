@@ -37,8 +37,9 @@ test('M2 剿寨後：前一日傳聞、當日餘黨反撲（不談價錢）', ()
   s.day = 12; threatDaily(s); assert.equal(X.boss.state, 'on'); assert.equal(X.pending.boss, true); assert.equal(X.pending.noPay, true); assert.ok(X.pending.pts >= BOSS.min);
 });
 test('M2 撞上別的山賊就順延一日', () => {
-  const s = mk(); const X = T(s); X.next = 99; X.boss = { day: 5, state: 'wait' }; X.pending = { n: 1, pts: 3 }; s.day = 5; threatDaily(s);
-  assert.equal(X.boss.state, 'wait'); assert.equal(X.boss.day, 6);
+  // N43 第 8 日前是開山喘息；把這個「撞上別人順延一日」情境排在第 8 日的來犯期。
+  const s = mk(); const X = T(s); X.next = 99; X.boss = { day: 8, state: 'wait' }; X.pending = { n: 1, pts: 3 }; s.day = 8; threatDaily(s);
+  assert.equal(X.boss.state, 'wait'); assert.equal(X.boss.day, 9);
 });
 test('M2 撐過＝山道永享太平：威脅大減、武名 +10、大事紀', () => {
   const s = mk(); s.res.coin = 300; s.day = 20; const X = T(s); X.boss = { day: 20, state: 'on' };

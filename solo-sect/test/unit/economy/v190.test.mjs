@@ -37,9 +37,10 @@ test('勒索：付錢扣錢；迎戰勝負都只重傷不死、孩子不上陣�
   const s = grow(createState(3), 9); s.day = RAID.first; s.res.coin = 400; s.ds[1].adult = false; const P = threatDaily(s); assert.ok(P && P.demand > 0);
   assert.match(threatHtml(s), /付錢了事/); const c0 = s.res.coin; assert.ok(raidResolve(s, 0, H).paid); assert.equal(s.res.coin, c0 - P.demand); assert.equal(T(s).paid, 1);
   for (const d of s.ds) d.needs.energy = 0; /* #431：只有無人能迎戰才即時結算 */
-  for (let k = 0; k < 40; k++) { T(s).next = s.day; const p = threatDaily(s); p.p = 0; raidResolve(s, 1, H); for (const d of s.ds) d.hp = 100; }
+  // N43 一期最多兩次大威脅；此舊測試要隔離的是「迎戰只傷不死」，逐場明建待決事件，不偽造同一天來 40 夥。
+  for (let k = 0; k < 40; k++) { const X = T(s); X.pending = { ...P, n: ++X.n, p: 0, at: s.t, until: s.t + RAID.wait }; raidResolve(s, 1, H); for (const d of s.ds) d.hp = 100; }
   assert.equal(s.ds.length, 9, '不死人'); assert.equal(T(s).deaths, 0); assert.ok(T(s).homeHurt > 0); assert.equal(s.ds[1].raidHurt || 0, 0, '反例：孩子不會被打傷');
-  s.res.coin = 0; T(s).next = s.day; threatDaily(s); assert.equal(raidAuto(s), 1, '付不起只能迎戰'); s.t = T(s).pending.until; threatStep(s, H); assert.equal(T(s).pending, null, '過期自動處置');
+  s.res.coin = 0; T(s).pending = { ...P, n: ++T(s).n, p: 0, at: s.t, until: s.t + RAID.wait }; assert.equal(raidAuto(s), 1, '付不起只能迎戰'); s.t = T(s).pending.until; threatStep(s, H); assert.equal(T(s).pending, null, '過期自動處置');
 });
 test('A9 因才派巡：排除傷員／雜工；專長優先、附理由；老搭檔加分', () => {
   const s = createState(7); for (let i = 0; s.t < 2 * DAY; i++) tick(s); const g = suggestTeam(s, 2); assert.equal(g.ids.length, 2); assert.ok(g.why[0].includes('專長'));
