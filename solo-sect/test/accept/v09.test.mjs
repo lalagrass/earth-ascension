@@ -11,8 +11,11 @@ test('五階門檻：入門0 小成25 大成55 圓滿85 化境100', () => {
   assert.deepEqual(TIERS.map((t) => t[0]), [0, 25, 55, 85, 100]);
   assert.deepEqual([0, 24.9, 25, 60, 90, 100].map(tierOf), [0, 0, 1, 2, 3, 4]);
 });
-test('八門武學，前置都指向存在的武學', () => {
-  assert.equal(ARTS.filter((a) => !a.secret && !a.v24).length, 8); /* loop160：v2.4 新武學（v24:true）舊局看不到，另見 v24.test */ for (const a of ARTS) for (const r of a.req) assert.ok(artById(r.art), a.id);
+test('舊八門武學與隱居羅漢三門武學，前置都指向存在的武學', () => {
+  // v2.4 武學與 Phase 6 隱居專屬武學都不屬於 v0.9 的八門候選；原八門數量斷言保留。
+  assert.equal(ARTS.filter((a) => !a.secret && !a.v24 && !a.phase6Only).length, 8);
+  assert.deepEqual(ARTS.filter((a) => a.phase6Only).map((a) => a.id), ['shaolinXinfa', 'shaolinStep', 'shaolinArhat']);
+  for (const a of ARTS) for (const r of a.req) assert.ok(artById(r.art), a.id);
 });
 test('笨功夫：悟性低練凡階快、練高階慢；悟性高相反', () => {
   const lo = mk(1), hi = mk(5), fist = artById('basicFist'), wave = artById('wavePalm');

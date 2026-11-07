@@ -648,6 +648,8 @@ CI 第三輪 quick 與 golden 全過，accept 296/301。五項逐項處置：
 | golden | Node 22 `node solo-sect/tools/golden.mjs --write --tier hermitage` 僅重產兩線，再 `--check --tier all`：舊 quick4、full32、舊檔6 逐格相符，新隱居2 相符。規則 4.5 遷移只為已在隱居者補欄位；舊局不加狀態。 |
 | 畫面 A/B | `python3 solo-sect/tools/phase6-visual.py --seed=17`，正常 UI 開隱居局後固定展示未學／已學身法狀態。[盲測 A](artifacts/phase6/blind-A.png)／[盲測 B](artifacts/phase6/blind-B.png)，[答案另存](artifacts/phase6/blind-answers.json)。判準：一張平地挑水，一張身法縱躍且可見崖壁、飛瀑與青色氣流；`--seed` 可換圖序。 |
 
-bot12 同尺命令：分別在 Phase 4 與本輪 checkout 根目錄執行 `docker run --rm -v "$PWD:/app" -w /app node:22-bookworm-slim node solo-sect/tools/bot12.mjs solo-sect --json > solo-sect/artifacts/phase5/bot12-{base,head}.json`，一次只選一個輸出檔。base 原始輸出由 Phase 4 已驗證 head 複製，與當輪 head 比較。
+舊驗收更新：Node 22 山門紀 accept 首次 300/301，唯一失敗為 `test/accept/v09.test.mjs` 的「舊八門」候選數把 Phase 6 新增的三門羅漢隱居武學也算入。現保留舊八門 `== 8` 斷言，明列三門 `phase6Only` 武學，再對所有武學逐一檢查前置確實存在；沒有放寬原八門數量或前置完整性。以 CI 的 accept job 驗證最終結果。
 
-舊名 → 新名：本輪觸及的公開接口已具意義名稱，無編號名稱改動。最沒把握三處：① 採藥／市集購藥都能提供灶房原料，因實際判斷是 `res.herb >= 1`；② 自然 5 日樣本不會自己採藥，藥膳 A 驗收以實際煮／吃任務另驗；③ `+35%` 落在純陽拳／羅漢手外功 XP，沿原入內回饋傳遞，沒有另造內功悟性倍率。
+bot12 同尺命令：分別在 Phase 5 與本輪 checkout 根目錄執行 `docker run --rm -v "$PWD:/app" -w /app node:22-bookworm-slim node solo-sect/tools/bot12.mjs solo-sect --json > solo-sect/artifacts/phase6/bot12-head.json`；base checkout 輸出到 `bot12-base.json`。兩份原始輸出逐位元組相同。
+
+舊名 → 新名：`feedInner31` → `feedInnerFromOuter`、`stepDrive28` → `stepDrive`；原公式保持。最沒把握三處：① 採藥／市集購藥都能提供灶房原料，因實際判斷是 `res.herb >= 1`；② 自然 5 日樣本不會自己採藥，藥膳 A 驗收以實際煮／吃任務另驗；③ `+35%` 落在純陽拳／羅漢手外功 XP，沿原入內回饋傳遞，沒有另造內功悟性倍率。
