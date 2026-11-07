@@ -380,7 +380,7 @@ function hurtOne(s, H) {
 function raidLose(s, H, who) {
   const X = T(s);
   X.adapt = Math.max(RAID.adaptMin, +((X.adapt ?? 1) - (RAID.adaptDropLoss ?? 0.15)).toFixed(2));
-  const K = kindOf(X.cur), m = K?.steal ?? 1; const c = Math.floor(Math.max(0, s.res.coin) * RAID.steal.coin * m), f = Math.floor((s.res.food || 0) * RAID.steal.food * m); if (c) resAdd(s, 'coin', -c); if (f) resAdd(s, 'food', -f); const hurt = K && !K.loseHurt ? null : hurtOne(s, H); log(s, `${who}迎戰山賊——敗了：被搶走 ${c} 錢、${f} 飯${hurt ? `，${hurt.name}重傷` : ''}（不會死人）。`); return hurt;
+  const K = kindOf(X.cur), m = K?.steal ?? 1; const c = Math.floor(Math.max(0, s.res.coin) * RAID.steal.coin * m), f = Math.floor((s.res.food || 0) * RAID.steal.food * m); if (c) resAdd(s, 'coin', -c); if (f) resAdd(s, 'food', -f, 'raid'); const hurt = K && !K.loseHurt ? null : hurtOne(s, H); log(s, `${who}迎戰山賊——敗了：被搶走 ${c} 錢、${f} 飯${hurt ? `，${hurt.name}重傷` : ''}（不會死人）。`); return hurt;
 }
 // loop3：地圖上的山賊；每 tick 呼叫。守柵者＝task.act 'defend' 且已在柵邊動手
 export function bandStep(s, dt, H) {
@@ -465,7 +465,7 @@ export function lairDaily(s, H) {
   const need = LAIR.team * LAIR.supply; if ((s.res.food || 0) < need + 4) return null;
   const c = s.ds.filter((d) => okD(s, d)).sort((a, b) => sumPow(s, [b]) - sumPow(s, [a])); if (c.length < LAIR.team + 1) return null; // 至少留一人看家
   let team = c.slice(0, LAIR.team); { const lead = c[0], m = mates(s, lead).map((id) => c.find((d) => d.id === id)).filter(Boolean); if (m.length) team = [lead, ...m].slice(0, LAIR.team); } /* loop20 同派同行 */ const pts = Math.max(1, Math.round(sumPow(s, c.slice(0, LAIRP.top)) * LAIRP.k)); /* loop29 寨強看戰力（選用） */ if (pts <= 0) return null; const pow = sumPow(s, team);
-  resAdd(s, 'food', -need); for (const d of team) { H?.cancelTask?.(s, d, '出山剿寨'); d.away = true; d.path = []; d.reason = '出山剿寨'; }
+  resAdd(s, 'food', -need, 'travel'); for (const d of team) { H?.cancelTask?.(s, d, '出山剿寨'); d.away = true; d.path = []; d.reason = '出山剿寨'; }
   L.trip = { ids: team.map((d) => d.id), pts, back: s.t + LAIR.dur, pow }; L.n++;
   log(s, `【剿寨】${team.map((d) => d.name).join('、')}帶 ${need} 份糧出山剿寨（寨中約 ${pts} 點）。`); return L.trip;
 }
@@ -572,7 +572,7 @@ const cruWaves27 = (s, day) => CRU27.E.map((E, i) => ({ name: CRU27.waves[i], n:
 /* 執事用的預估全勝率（不擲骰）：各波 p 連乘，含疲勞 */
 export function crusadeOdds27(s, team = crusadeTeam27(s)) { let pr = 1, tire = 1; cruWaves27(s, s.day || 0).forEach((W, w) => { const P = wavePower27(s, team, w).pow * tire; pr *= Math.max(WAVE27.pMin, Math.min(WAVE27.pMax, P * P / (P * P + W.E * W.E))); tire *= WAVE27.tire; }); return pr; }
 export function startCrusade27(s, H, auto = false) {
-  const c = canCrusade27(s); if (!c.ok) return c; const N = s27(s); resAdd(s, 'food', -c.food);
+  const c = canCrusade27(s); if (!c.ok) return c; const N = s27(s); resAdd(s, 'food', -c.food, 'travel');
   for (const d of c.team) { H?.cancelTask?.(s, d, '傾巢討伐'); d.away = true; d.path = []; d.reason = '討伐魔教分舵'; }
   N.cru = { ids: c.team.map((d) => d.id), back: s.t + CRU27.dur, day: s.day, auto: !!auto }; N.cNext = (s.day || 0) + CRU27.cool;
   log(s, `【傾巢討伐】${auto ? '執事調度：' : ''}全派 ${c.team.length} 人帶 ${c.food} 份糧下山，討伐${foe27(s).name}分舵（${c.team.map((d) => d.name).join('、')}），留人看守山門。`);

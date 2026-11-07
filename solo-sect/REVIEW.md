@@ -1,5 +1,22 @@
 # 可重跑驗收
 
+## N57：糧食收支查因（#487，規則 3.7）
+
+實際主筆 grass／Codex Cloud。N57 只在原帳本標糧食來源，沒有改產出、消耗、招募機率或門檻。舊檔 3.6→3.7 把未標來源的原總額列為 `legacy`；庫存不變。世界內理由：灶房烹出的飯要供日常三餐，送飯和來客同席是額外真消耗；三人小門派的產出因而很難存到下一位入門的一日份。詳 [逐日原帳與機制](docs/systems/food-ledger.md)。
+
+| 類 | 指令（repo 根目錄） | 門檻／預期輸出 |
+|---|---|---|
+| A 逐日守恆 | `node solo-sect/tools/food-ledger.mjs --seed=17 --days=30 --json` | 任意整數 seed：每行 `closing-opening=incoming-outgoing`；`balanceError=0`、`sourceError=0`。 |
+| A 舊檔遷移 | `bash solo-sect/test/run.sh smoke` 與 CI quick 的 `n57-food-ledger.test.mjs` | 庫存不變，原帳來源標 `legacy`，重複遷移不重計。 |
+| C 同版 bot | `node solo-sect/tools/bot12.mjs solo-sect --json` | 與 9c base 數值相同；原始 [base](artifacts/n57/bot12-base.json)、[head](artifacts/n57/bot12-head.json)。人數／來犯只報數字。 |
+| C 舊新版差異 | `node solo-sect/tools/food-ledger.mjs <9b 或 9c 的 solo-sect 絕對目錄> --seed=1001 --days=30 --json` | 9b 第 10／30 日住民中位 15／29、名俠 7／11、來犯 84；9c 住民 3／3、名俠 0／0、來犯 5；兩版每日帳差皆 0。原始 [9b](artifacts/n57/ledger-9b-1001.json)、[9c](artifacts/n57/ledger-9c-1001.json)，其餘種子同目錄。 |
+
+9b 同 seed 1001 30 日入 1739／出 1743／收盤 2；9c 入 378／出 374／收盤 10。9c 支出 311 日常餐、36 次端飯、27 份來客；9b 固定 3 份招募，9c 全門加候選人一日份 14。9c 第 10 日僅存 9，未達入門條件；`51d9feb` 已移除共餐重記，現行逐日守恆不支持再次扣糧的假說。12 種子 9c 第 10／30 日存糧中位皆 10，均不足 14；這是 C 類結果，沒有調參。畫面仍在既有資源頁看「昨日收支」，本 PR 的來源明細可由 JSON 讀。
+
+正常遊戲第 11 日的[門派收支畫面](artifacts/n57/ledger-ui.png)與[畫面原數](artifacts/n57/ledger-ui.json)可用 `PW=/tmp/ss-playwright/node_modules/playwright-core/index.mjs node solo-sect/tools/n57-shots.mjs` 重拍；頁面只顯示原有的倉存與昨日總帳，來源分類是 JSON 帳本的稽核欄。
+
+首次 CI quick 630/631：`v220.test.mjs` 的 30 日完整存檔 hash 仍釘 3.6 的序列化內容。3.7 增加 `foodBySource` 後，Node 22 同一 seed 42 的新 hash 為 `01c88b908115b6aa`；只重產 `golden-30d-v22.txt`，原斷言和測試場景不改。bot12 base/head 原始輸出逐位相同，並非藉新 hash 掩蓋糧食數值回歸。
+
 ## 第九輪 9c：N50／N38 與 #445 新增情境可達性（規則 3.6）
 
 本輪承接已由擁有人合併的 #485（merge `4885eb8`），實際主筆 grass／Codex Cloud。N50 出身普通同行、共同食宿與真雙人指導時數及同一招募公式；N38 用真接法機率即時命名等級，沒有第二套 XP。N33 新生者過往手眼熟不再沿用他人的記憶，N32 正式譜必須來自真授藝或教材。#445 追加的三種悟招情境修在同一輪；悟招難度、失手時 `w=4p(1−p)` 和原始 N22／N27 高手截鼠斷言不變。

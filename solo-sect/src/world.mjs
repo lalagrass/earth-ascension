@@ -315,9 +315,9 @@ export function startExpedition(s, ids, opt = {}, H) {
   const c = canExpedition(s, ids); if (!c.ok) return c;
   const thr = EXP.thr.includes(opt.thr) ? opt.thr : EXP.thrDefault, target = opt.target === 'inf' ? 1e9 : Math.max(50, opt.target || ROUTE_END);
   const camp = opt.from ? CAMPS.find((c) => c.id === opt.from && s.camps?.[c.id]) : null; if (opt.from && !camp) return { ok: false, why: '營地還沒設' };
-  const carry = camp ? EXP.campCarry * ids.length : 0; if (s.res.food < carry) return { ok: false, why: `從營地出發要帶 ${carry} 份糧上山` }; resAdd(s, 'food', -carry);
+  const carry = camp ? EXP.campCarry * ids.length : 0; if (s.res.food < carry) return { ok: false, why: `從營地出發要帶 ${carry} 份糧上山` }; resAdd(s, 'food', -carry, 'travel');
   const want = opt.supplies == null ? ids.length * EXP.supplyPer : Math.max(0, Math.min(opt.supplies, ids.length * EXP.supplyMax));
-  const supplies = Math.min(Math.floor(s.res.food), want); resAdd(s, 'food', -supplies);
+  const supplies = Math.min(Math.floor(s.res.food), want); resAdd(s, 'food', -supplies, 'travel');
   for (const id of ids) { const d = s.ds.find((x) => x.id === id); H.cancelTask(s, d, '出發巡山'); d.order = null; d.away = true; d.path = []; d.reason = '巡山中'; }
   s.expN = (s.expN || 0) + 1;
   const tm = ids.map((id) => s.ds.find((x) => x.id === id)), order = STYLES[opt.order] ? opt.order : null, style = order || teamStyle(tm);

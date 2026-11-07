@@ -65,6 +65,11 @@ export const MIGRATIONS = [
   { to: '3.6', note: '第九輪 9c（#464/#449）：新局按出身決定同行；舊局門人與師承保留，補真指導時間帳', up(o) {
     for (const d of o.ds || []) { d.timeToday ??= { day: o.day, elapsed: 0, free: 0, guided: 0 }; d.guidanceTotal ??= 0; }
   } },
+  { to: '3.7', note: 'N57（#487）：糧食帳本補來源欄；舊帳無來源，原數完整標為 legacy，不倒推假來源或更改庫存', up(o) {
+    for (const L of [o.ledger, o.ledgerPrev]) if (L && !L.foodBySource) L.foodBySource = {
+      in: L.in?.food ? { legacy: L.in.food } : {}, out: L.out?.food ? { legacy: L.out.food } : {},
+    };
+  } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
 export function v150Up(o) {

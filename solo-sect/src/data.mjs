@@ -347,7 +347,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '3.6'; /* 第九輪 9c：入門生活與白身接法能力 */
+export const RULES_VERSION = '3.7'; /* N57：糧食帳本補收支來源，不改庫存或招募規則 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
