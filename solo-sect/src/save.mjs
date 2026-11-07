@@ -86,6 +86,9 @@ export const MIGRATIONS = [
       }
     }
   } },
+  { to: '4.0', note: '第十一輪（#454）：來犯與喘息輪替；舊威脅點數及已到山門的事件保留，從現有戰報重建本期來犯次數', up(o) {
+    if (o.threat) { o.threat.rhythmCycle = null; o.threat.rhythmStrikes = 0; o.threat.lastBigDay = null; }
+  } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
 export function v150Up(o) {
