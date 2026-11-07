@@ -42,6 +42,10 @@ export const POSTURES = {
   axeReady: { legs:'horse',arms:'bladeReady',lean:0,weapon:'axe' },
   axeSwing: { legs:'horse',arms:'bladeCut',lean:4,weapon:'axe' },
   carry: { legs:'stand',arms:'carry',lean:0 },
+  walkLeft: { legs:'leftBow',arms:'rightPalm',lean:-2 },
+  walkRight: { legs:'rightBow',arms:'leftPalm',lean:2 },
+  sit: { legs:'sit',arms:'sit',lean:1 },
+  pick: { legs:'crouch',arms:'pick',lean:6 },
 };
 
 const form = (name, poses) => ({ name, poses });
@@ -91,7 +95,18 @@ export const COMBAT_POSES = {
 export { COMBAT_MOVE_SETS } from './combat-pose-sets.mjs';
 
 // 每種動作只有此一序列；初學/熟練只讀不同的播放參數。
-export const WORK_POSES = {chop:['axeReady','axeReady','axeSwing','axeReady'],water:['carry','carry']};
+// Smart object 的 pose 名稱只選此表；任務／地點缺資料時由 renderer 選 stand。
+export const DAILY_POSES = {
+  stand: ['ready', 'ready'],
+  walk: ['walkLeft', 'ready', 'walkRight', 'ready'],
+  crouch: ['ready', 'crouch', 'pick', 'crouch'],
+  sit: ['sit', 'sit'],
+  chop: ['axeReady', 'axeReady', 'axeSwing', 'axeReady'],
+  pick: ['crouch', 'pick', 'crouch'],
+  carry: ['carry', 'carry'],
+  water: ['carry', 'carry'],
+};
+export const EXTRA_TASK_POSES = { water: 'water' };
 export function routineFrame(art, d, t, suppliedPlayback=null) {
   const routine=ROUTINES[art?.routine]||ROUTINES.fist, playback=suppliedPlayback||playbackParams(d,art);
   const f=Math.floor(t/playback.formSeconds)%routine.forms.length;

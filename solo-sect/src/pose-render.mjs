@@ -1,8 +1,8 @@
 import {impactVisual} from './contact-view.mjs';
-import { MOVES } from './data.mjs';
+import { MOVES, ACTIVITIES } from './data.mjs';
 import { windOf, artTier } from './arts.mjs';
 import { playbackParams, PLAYBACK } from './growth-playback.mjs';
-import { POSTURES, COMBAT_POSES, WORK_POSES, routineFrame } from './routines.mjs';
+import { POSTURES, COMBAT_POSES, DAILY_POSES, EXTRA_TASK_POSES, routineFrame } from './routines.mjs';
 import { isFemaleVisual } from './visual-gender.mjs';
 
 // 同一個骨架與補間器套在每名人物，人物只提供外觀色與朝向。
@@ -13,11 +13,14 @@ const LEGS = {
   rightBow: [[-12, -14, -16, 0], [13, -12, 21, 0]],
   oneLeg: [[-6, -13, -9, 0], [13, -18, 18, -15]],
   crouch: [[-15, -8, -18, 0], [13, -8, 18, 0]],
+  sit: [[-10, -9, -15, 0], [10, -9, 15, 0]],
   leftKick: [[-6, -13, -8, 0], [-20, -18, -28, -21]],
   rightKick: [[6, -13, 8, 0], [20, -18, 28, -21]],
 };
 const ARMS = {
   carry: [[-15,-25,-23,-17],[15,-25,23,-17]],
+  sit: [[-15,-29,-9,-18],[15,-29,9,-18]],
+  pick: [[-13,-31,-5,-32],[19,-24,22,-4]],
   salute: [[-8, -31, -3, -27], [8, -31, 3, -27]],
   guard: [[-13, -31, -3, -34], [13, -31, 4, -32]],
   leftChop: [[-21, -38, -28, -20], [9, -31, 3, -30]],
@@ -49,6 +52,11 @@ const ARMS = {
 };
 const mix = (a, b, u) => a + (b - a) * u;
 const mixArray = (a, b, u) => a.map((v, i) => mix(v, b[i], u));
+export function dailyPose(d, action = 'stand', clock = 0, playback = playbackParams(d)) {
+  const key=DAILY_POSES[action]?action:'stand', pause=key==='chop'?playback.chopPause:0, moving=key==='chop'?4*.7:2;
+  const u=Math.max(0,((clock%(moving+pause))-pause)/moving);
+  return { poses:DAILY_POSES[key],u,key,work:key,clock,playback };
+}
 export function displayPose(s, d, art, move, time=s.t, hitstop=true) {
   s={...s,t:impactVisual(s,d,time,hitstop).clock};
   // 不會的套路不因main的fallback而憑空顯示；白身即使無ARTS也可練身體招。
@@ -69,13 +77,9 @@ export function displayPose(s, d, art, move, time=s.t, hitstop=true) {
     const f = routineFrame(art,d,s.t,playback);
     return { poses:f.poses,u:f.phase,key:f.formName,frame:f,...extra };
   }
-  const act=d.task?.act;
-  if(WORK_POSES[act]) {
-    const pause=act==='chop'?playback.chopPause:0, moving=act==='chop'?4*.7:2;
-    const phase=Math.max(0,((s.t%(moving+pause))-pause)/moving);
-    return {poses:WORK_POSES[act],u:phase,key:act,work:act,...extra};
-  }
-  return null;
+  const task=d.task, travel=!!d.path?.length;
+  const action=travel?'walk':(ACTIVITIES[task?.act]?.pose || EXTRA_TASK_POSES[task?.act] || 'stand');
+  return dailyPose(d,action,s.t,playback);
 }
 
 export function drawPoseActor(g, d, view) {

@@ -1,0 +1,13 @@
+{
+  "seed": 17,
+  "A": "base",
+  "B": "head",
+  "states": [
+    "idle-none",
+    "train-do",
+    "farm-do",
+    "eat-do",
+    "chat-do",
+    "rest-do"
+  ]
+}

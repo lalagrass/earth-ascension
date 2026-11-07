@@ -1,0 +1,72 @@
+{
+  "seed": 17,
+  "observed": [
+    {
+      "label": "idle-none",
+      "time": 0
+    },
+    {
+      "label": "train-go",
+      "time": 0.25
+    },
+    {
+      "label": "train-do",
+      "time": 4
+    },
+    {
+      "label": "spar-go",
+      "time": 34
+    },
+    {
+      "label": "spar-do",
+      "time": 36.75
+    },
+    {
+      "label": "rest-go",
+      "time": 70.25
+    },
+    {
+      "label": "rest-do",
+      "time": 74
+    },
+    {
+      "label": "farm-go",
+      "time": 121.75
+    },
+    {
+      "label": "farm-do",
+      "time": 131.5
+    },
+    {
+      "label": "eat-go",
+      "time": 139.5
+    },
+    {
+      "label": "chat-go",
+      "time": 140.25
+    },
+    {
+      "label": "chat-do",
+      "time": 148.75
+    },
+    {
+      "label": "eat-do",
+      "time": 159
+    },
+    {
+      "label": "farm-return",
+      "time": 230.5
+    },
+    {
+      "label": "trial-go",
+      "time": 390
+    },
+    {
+      "label": "trial-do",
+      "time": 392.5
+    }
+  ],
+  "checked": 7200,
+  "missingPose": 0,
+  "wholeSpriteDraws": []
+}
