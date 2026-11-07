@@ -25,7 +25,10 @@ test('Phase 5：未採藥的一日做活至疲勞滿，體魄受 18 與 1.2 上�
 
 test('Phase 5：黃蓉煮飯和用飯走真任務，藥膳消疲勞、四週期並破 18', () => {
   const s = createState(17, { hermitage: true, partner: 'huangrong' }), d = s.ds[1];
-  s.res.veg = 10; s.res.herb = 1;
+  s.res.veg = 10;
+  assert.equal(setOrder(s, d.id, 'forage'), true);
+  for (let i = 0; i < 4000 && !s.res.herb; i++) tick(s);
+  assert.ok(s.res.herb >= 1, '採藥任務將草藥帶回庫存');
   assert.equal(setOrder(s, d.id, 'cook'), true);
   for (let i = 0; i < 4000 && !s.res.medFood; i++) tick(s);
   assert.equal(s.res.medFood, 1); assert.equal(s.res.herb, 0);
