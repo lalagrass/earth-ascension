@@ -186,6 +186,8 @@ N35 的 firstDay 目標在自然 bot12 日程沒有達到。12 種子 × 60 日�
 
 依 #441、#444–#446 的同日更新，上方寫「門檻」的設計目標（無傷比例、三倍、悟招日數、個性搶攻方向）現屬 **C 平衡報告**。保留實測和未達原目標的事實，不為貼近目標改常數。A 是固定抽樣的規則檢查；B 是公式或 99.9% 信賴區間檢查，兩者接到山門紀 quick。指令：`node solo-sect/tools/r9b-acceptance.mjs --seed=17`，可換任何整數種子；原始輸出見 [17](artifacts/round9b/acceptance-17.json)、[23](artifacts/round9b/acceptance-23.json)。`bash solo-sect/test/run.sh quick` 在 CI 先執行 seed17，再跑既有單測；本地每步仍只跑 smoke。此工具固定排場，數字不冒充自然日程或設計平衡比例。
 
+`duel.mjs` 的 `summary.balanceTargets` 保留舊七成／三倍／五次數字的達標與否供 C 報告，`summary.pass`／退出碼只檢查成功接法的 `r+m≤T` 及第60日最小閃接比例沒有比第1日反向下降。`waves.mjs` 的 `personality.balanceDirection` 逐項列搶攻與失血方向；依 #446 明文例外，即使搶攻方向相反也不改 `summary.pass`／退出碼，A 類超載與一、二路反擊仍擋。其他輪次的一般 C 類若方向相反，仍依各該 issue 擋合併。
+
 | 類 | 排場、公式與通過條件 | seed17 實測 |
 |---|---|---|
 | N34 A | 同樣 0.4 秒來招，反應取中位；第1日 `r+step>T`，第60日 `r+step+strike<T` 且真 `resolveSwing` 側身反擊。 | 第1日 `0.600+0.250>0.400`，中招；第60日 `0.233+0.100+0.004<0.400`，側身反擊。 |

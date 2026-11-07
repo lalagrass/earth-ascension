@@ -40,6 +40,10 @@ function run(seed,a0,b0){
 const results=seeds.map(n=>run(n,aName==='day60'?master:novice,bName==='day60'?master:novice)),baseline=aName==='day60'?seeds.map(n=>run(n,novice,novice)):results;
 const med=v=>[...v].sort((a,b)=>a-b)[Math.floor(v.length/2)],sum=(arr,f)=>arr.reduce((a,r)=>a+f(r),0),ratio=(arr,k)=>sum(arr,r=>r.minimal[k])/Math.max(1,sum(arr,r=>r.incoming[k]));
 const summary={a:aName,b:bName,trainingSeed,combatSeeds:seeds,medianExchanges:med(results.map(r=>r.exchanges)),uninjured:sum(results,r=>r.uninjured*r.exchanges)/Math.max(1,sum(results,r=>r.exchanges)),meanBreaths:sum(results,r=>r.breaths.A+r.breaths.B)/results.length,minimalA:ratio(results,'A'),baselineMinimalA:ratio(baseline,'A'),sameBeatCountersA:sum(results,r=>r.counters.A)};
-summary.pass=aName==='day60'?summary.minimalA>0&&summary.minimalA>=3*summary.baselineMinimalA&&summary.sameBeatCountersA>=5:summary.medianExchanges>=30&&summary.uninjured>=.7;
+// #444 2026-11-07：原七成／三倍／五次是 C 平衡報告；只有真正的秒數規則和反向成長擋驗收。
+summary.balanceTargets=aName==='day60'?{minimalThreefold:summary.minimalA>0&&summary.minimalA>=3*summary.baselineMinimalA,countersAtLeastFive:summary.sameBeatCountersA>=5}:{exchangesAtLeastThirty:summary.medianExchanges>=30,uninjuredAtLeastSeventyPercent:summary.uninjured>=.7};
+summary.timingPass=results.every(result=>result.rows.every(row=>row.forced||row.kind==='hit'||row.margin>=-1e-9));
+summary.directionPass=aName!=='day60'||summary.minimalA>=summary.baselineMinimalA;
+summary.pass=summary.timingPass&&summary.directionPass;
 for(const r of results)console.log(JSON.stringify({seed:r.seed,exchanges:r.exchanges,injuries:r.injuries,breaths:r.breaths,uninjured:r.uninjured}));console.log(JSON.stringify(summary));
 const log=get('log',null);if(log){await mkdir(path.dirname(path.resolve(log)),{recursive:true});await writeFile(log,JSON.stringify({summary,results},null,2));}if(!summary.pass)process.exitCode=1;
