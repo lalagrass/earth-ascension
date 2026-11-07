@@ -1,7 +1,7 @@
 /* loop191 v3.0：武學／門派／特質的結構不變量。載入即驗，不跑對局。 */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { ARTS, MOVES, SECTS, TRAITS, OPPOSE, OPPOSE24, LIKES, LIKES24, RECRUIT29, WUMING_KIT24 } from '../src/data.mjs';
+import { ARTS, MOVES, SECTS, TRAITS, OPPOSE, OPPOSE24, LIKES, LIKES24, RECRUIT_TRAIT_VARIATION, WUMING_KIT24 } from '../src/data.mjs';
 import { ART_CAT, CAT_ORDER, MODE31, PUBLIC28, TEMPER29, attrOf, artById, artTier, isInner, modeDefault31, normalizeArts, sectClasses24, gainArt, lockedArt24, yunvOpen24 } from '../src/arts.mjs';
 import { CHARM29 } from '../src/social.mjs';
 
@@ -110,7 +110,7 @@ test('loop191 特質引用都在 TRAITS；價值門檻落在 [-30, 40]', () => {
   const ids = new Set();
   for (const [p, q] of [...OPPOSE, ...OPPOSE24, ...LIKES24]) { ids.add(p); ids.add(q); }
   for (const [k, vs] of Object.entries(LIKES)) { ids.add(k); for (const v of vs) ids.add(v); }
-  for (const t of RECRUIT29.pool) ids.add(t);
+  for (const t of RECRUIT_TRAIT_VARIATION.pool) ids.add(t);
   for (const t of TEMPER29.zheng) ids.add(t);
   for (const t of ids) assert.ok(TRAITS[t], t);
   for (const [k, v] of Object.entries(TEMPER29)) if (k.endsWith('V')) assert.ok(v >= -30 && v <= 40, `TEMPER29.${k}=${v}`);

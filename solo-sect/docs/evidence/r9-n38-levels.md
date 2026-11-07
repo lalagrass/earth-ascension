@@ -1,5 +1,9 @@
 # N38 工程checkpoint：真自然玩法護欄仍FAIL
 
+## 9c 收尾量測（取代下方施工 checkpoint）
+
+`node solo-sect/tools/white-body.mjs --seed 17 --days 30 --check` 使用真模擬與三種公開人格；[完整輸出](../../artifacts/round9c/white-body-seed17-final.json)。A 類級名即時投影 `rulePass=true`。ISTJ／INTP／ESTP 首達 1 級 d8／d2／d3，3–5 級均 d8，2 級均未達；拿手招揮拳／踢／踢，單人對豬逼退均 null。到達日數是 C 報告，與設計日期偏差；d8 舊江湖葵花殘頁及後續真授藝促成正式級名，不表示白身自然悟到拳譜。規則 3.6、Node22 golden 重產完成；CI 狀態以 9c PR 為準。
+
 2026-11-07 台北時間；N50 2eecc07、出生記憶隔離a60ae75/f73f34d、正式知識來源1ff212b之後的N38碼。沒有升3.4、沒有重產golden、沒有push/PR/新head CI。不是整輪完成。
 
 ## 可重跑與真數字

@@ -1,5 +1,9 @@
 # N50 工程checkpoint，非整輪／bot12全部通過
 
+## 9c 收尾量測（取代下方施工 checkpoint）
+
+用同一版工具 `node solo-sect/tools/bot12.mjs solo-sect --json` 比對已合併 9b 的[base](../../artifacts/round9c/bot12-base.json)與 9c [head](../../artifacts/round9c/bot12-head-final.json)。d10/d30 常住名俠中位數 7/11→0/0，未達原 C 日數與人頭目標；拒絕紀錄的共同主因是全門一日存糧不足，例如 9.0/14.0。這是食宿與普通人共用的真門檻，沒有調名俠出現頻率補人頭。自然山賊從 84 場降至 5 場，招募造成威脅點數 687→0 的同時連動須由 reviewer 看玩法；不可拿 5 場的 4 勝對比前輪 84 場當同分布勝率。N50 固定情境小測試仍驗床位剩一時只接受一人、師父時間與舊名單保留；9c smoke 19/19，golden Node22 相符，完整 CI 以 PR 為準。
+
 來源：本工作樹N50碼，2026-11-07台北時間；指定工具直接跑真主模擬，沒有補血/灌手熟眼熟的probe fixture。`node solo-sect/tools/bot12.mjs --seed 17 --json --trace`，固定.25s（新舊比較都應用本輪這份工具）。原始`/workspace/specs/t200u-live/n50-bot-release-seed17.{json,log}`；本表是加入blocked原因欄之前的相同模擬碼輸出，後續只加唯讀診斷欄。
 
 |欄|實測|

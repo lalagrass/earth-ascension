@@ -23,7 +23,12 @@ for(const mbti of types){
  console.error(`seed ${seed} ${mbti}: ${days}日完成`);
 }
 const specialties=new Set(runs.map(r=>r.favorite.move).filter(Boolean));
-const summary={seed,days,dt:.25,scenario:'自然bot，無指派輪替/補血/補資源/灌n/f；只換日botDaily，真主模擬',runs,specialtyKinds:specialties.size,guards:{dog3to5:runs.every(r=>r.reached[1]>=3&&r.reached[1]<=5),dodge10to15:runs.every(r=>r.reached[2]>=10&&r.reached[2]<=15),soloBoar10to15:runs.every(r=>r.firstSoloBoarEscapeDay>=10&&r.firstSoloBoarEscapeDay<=15),farmer20to30:runs.every(r=>r.reached[4]>=20&&r.reached[4]<=30),specialtiesAtLeast2:specialties.size>=2}};
+const summary={seed,days,dt:.25,scenario:'自然bot，無指派輪替/補血/補資源/灌n/f；只換日botDaily，真主模擬',runs,specialtyKinds:specialties.size,
+ // #441: arrival dates and the number of favourite moves are C design observations.
+ // Keep every value visible, but only gate the A rule that a displayed rank follows
+ // the current probability projection instead of a second XP or stored rank.
+ balanceTargets:{dog3to5:runs.every(r=>r.reached[1]>=3&&r.reached[1]<=5),dodge10to15:runs.every(r=>r.reached[2]>=10&&r.reached[2]<=15),soloBoar10to15:runs.every(r=>r.firstSoloBoarEscapeDay>=10&&r.firstSoloBoarEscapeDay<=15),farmer20to30:runs.every(r=>r.reached[4]>=20&&r.reached[4]<=30),specialtiesAtLeast2:specialties.size>=2},
+ rulePass:runs.every(r=>r.levels.every(a=>a.level===a.rows.reduce((level,row)=>row.probability>.5?row.level:level,0)))};
 console.log(JSON.stringify(summary,null,2));
 
-if(argv.includes('--check')&&!Object.values(summary.guards).every(Boolean))process.exitCode=1;
+if(argv.includes('--check')&&!summary.rulePass)process.exitCode=1;

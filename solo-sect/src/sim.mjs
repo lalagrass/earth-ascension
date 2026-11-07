@@ -10,7 +10,7 @@ import { BODY_TIMING, BODY_MOVES, BODY_BASE, makeBare, acquireWorkTool, moveAvai
 import { combatTacticStep, chooseCombatMove, fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuterArt, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
 import { SOURCES } from './data.mjs';
-import { RECRUIT29, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, ROUTINE_DEFAULT, ROUTINE_MODES, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
+import { RECRUIT_TRAIT_VARIATION, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, ROUTINE_DEFAULT, ROUTINE_MODES, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
 import { chronOf, clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
 import { MENTOR, think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits, relStage, relAdd, compat, aff, initPair, coTrain, askStrong, pairBoost, drawBoost, pickChatMate, admire, archRecruit } from './social.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf, raidMul, popStep, fogStep, unlockStep, chapterStep } from './world.mjs';
@@ -146,12 +146,12 @@ export function personalityFrom(p, answers = defaultAnswers(p)) {
   const hidden = (p.personality || []).find((t) => !shown.includes(t));
   return { personality: hidden ? [...shown, hidden] : shown, known: shown };
 }
-const fnv29 = (str) => { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967296; };
+const stableTraitHash = (str) => { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967296; };
 export function recruit(s, answers) {
   const c = canRecruit(s); if (!c.ok) return c;
   const { personality, known } = personalityFrom(c.next, answers);
   if (rand(s) < 0.3) { const x = rand(s) < 0.5 ? 'lazy' : 'stubborn'; if (!personality.includes(x)) personality.push(x); } // v0.97 一般弟子也可能懶散／較真（暗）
-  s.res.food -= ACTIVITIES.eat.use.food; book(s,'out','food',ACTIVITIES.eat.use.food); { const h = fnv29(`${s.seed}:trait29:${c.next.id}:${s.ds.length}`); if (h < RECRUIT29.p) { const x = RECRUIT29.pool[Math.floor(fnv29(`${s.seed}:trait29b:${c.next.id}:${s.ds.length}`) * RECRUIT29.pool.length)]; if (!personality.includes(x)) { const old = personality[1]; personality[1] = x; const k = known.indexOf(old); if (k >= 0) known[k] = x; (s.v29n ??= {}).recruitTrait = (s.v29n.recruitTrait || 0) + 1; } } } /* loop188 v2.9 經典特質（雜湊，不吃亂數流） */
+  s.res.food -= ACTIVITIES.eat.use.food; book(s,'out','food',ACTIVITIES.eat.use.food); { const h = stableTraitHash(`${s.seed}:trait29:${c.next.id}:${s.ds.length}`); if (h < RECRUIT_TRAIT_VARIATION.p) { const x = RECRUIT_TRAIT_VARIATION.pool[Math.floor(stableTraitHash(`${s.seed}:trait29b:${c.next.id}:${s.ds.length}`) * RECRUIT_TRAIT_VARIATION.pool.length)]; if (!personality.includes(x)) { const old = personality[1]; personality[1] = x; const k = known.indexOf(old); if (k >= 0) known[k] = x; (s.v29n ??= {}).recruitTrait = (s.v29n.recruitTrait || 0) + 1; } } } /* loop188 v2.9 經典特質（雜湊，不吃亂數流） */
   const d = makeBare(mkDisciple(c.next,1,'gate',personality,known)); d.guidanceMentor=c.mentor;d.admissionReason=c.reason; d.together = 0; Object.assign(d, { role: 'outer', root: 2 + Math.floor(rand(s) * 4), rootKnown: false }); { const A = archRecruit(() => rand(s)); Object.assign(d, { arch: A.id, root: A.root, wu: A.wu }); if (!d.personality.includes(A.trait)) d.personality.push(A.trait); } /* loop21 原型 */ s.ds.push(d); if (c.next.school) econOf(s).pool.shift();
   for (const o of s.ds) if (o !== d) initPair(s, o, d, 5); sectRecruit(s, d);
   log(s, `${d.name}慕名從村路上山，拜入門下。`); recordDeed(s, d, 'join', { chron: `${d.name}慕名上山，拜入門下` }); return { ok: true, d };
@@ -494,15 +494,15 @@ function doTask(s,d,dt){
       if (t.act === 'farm') { const p = s.plots[t.plot]; t.resv = []; grow(s, d, 'farming', 6); if (p.st === 'ripe') { p.st = 'empty'; p.g = 0; d.carry = { veg: HARVEST }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; } p.st = 'grow'; p.g = 0; finish(s, d); return; }
       if (A.use) { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } s.res.food -= 1; book(s, 'out', 'food', 1); }
       if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) { d.needs.social = clamp(d.needs.social + b / 2, 0, 100); think(s, d, 'hallMeal'); } likeMeal(s, d, think); }
-      let trained31 = null;
+      let trainedArt = null;
       acquireWorkTool(d, t.act);
       finishTrainingWish(d,t.act);
       if (t.act === 'train' || t.act === 'spar') { const moves = d.moves.map((id) => MOVES.find((m) => m.id === id)).filter((m) => m && moveAvailable(d,m)); rehearse(s,d,moves,effDur*guidanceLearning(d),{partner:t.act === 'spar' ? byId(s,t.partner) : null}); }
       else if (['chop','quarry','water','farm','forage'].includes(t.act)) practiceWork(s,d,t.act,effDur);
-      if (A.skill) for (const [k, v] of Object.entries(A.skill)) { const o = grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? (facStage(s, 'yard').trainMul || 1)*guidanceLearning(d) : 1), isWorkAct(t.act) ? 'labor' : 'train'); if (t.act === 'train' && o?.trained) trained31 = o.trained; }
+      if (A.skill) for (const [k, v] of Object.entries(A.skill)) { const o = grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? (facStage(s, 'yard').trainMul || 1)*guidanceLearning(d) : 1), isWorkAct(t.act) ? 'labor' : 'train'); if (t.act === 'train' && o?.trained) trainedArt = o.trained; }
       if (A.skill) cliqueTrain(s, d, t.act, A.skill, grow); // loop20 小派同修
       if (t.act === 'train') coTrain(s, d, A.skill?.style || 0, grow, relAdd, log); // loop8 同修
-      if (trained31) noteTrain31(d, artById(trained31)); /* 一次練功只記一次，同修再長的熟練不另計 */
+      if (trainedArt) noteTrain31(d, artById(trainedArt)); /* 一次練功只記一次，同修再長的熟練不另計 */
       if ((t.act === 'chat' || t.act === 'spar') && t.partner && d.id < t.partner) askStrong(s, d, byId(s, t.partner), grow, think, log); // loop8 請教
       comprehend(s, d, t.act, t.partner ? byId(s, t.partner) : null, think, log); comprehendVariant(s, d, t.act, t.partner ? byId(s, t.partner) : null, think, log); // loop7 領悟＋loop16 變式
       if (t.act === 'spar' && t.partner) { const p = byId(s, t.partner); if (d.id < p.id) { relAdd(s, d, p, 2); log(s, `${d.name}與${p.name}在${facStage(s, 'yard').offers.includes('spar') ? '木樁場' : '空地上徒手'}切磋`); addMem(s, d, p, 'spar'); } }

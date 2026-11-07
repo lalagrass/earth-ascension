@@ -1,5 +1,34 @@
 # 可重跑驗收
 
+## 第九輪 9c：N50／N38 與 #445 新增情境可達性（規則 3.6）
+
+本輪承接已由擁有人合併的 #485（merge `4885eb8`），實際主筆 grass／Codex Cloud。N50 出身普通同行、共同食宿與真雙人指導時數及同一招募公式；N38 用真接法機率即時命名等級，沒有第二套 XP。N33 新生者過往手眼熟不再沿用他人的記憶，N32 正式譜必須來自真授藝或教材。#445 追加的三種悟招情境修在同一輪；悟招難度、失手時 `w=4p(1−p)` 和原始 N22／N27 高手截鼠斷言不變。
+
+9c 的 A 規則由 `bash solo-sect/test/run.sh smoke` 的原 N35 小測試擴充驗證：真閃野豬衝撞後以踢招側擊，負傷或失衡被逼住時撒土，山路上真撿石並於敵人在途時起手投出。野豬只選真射程內的招，倖存者假衝不能同場無限重複；投石與側擊把起手時的真情境保留到出手，不造出不存在的來敵。N50／N38 各只有一個本 milestone 小測試；最終 smoke 與 CI 數字見本節後續驗收表。
+
+完整量測指令從 repo 根目錄執行：
+
+```sh
+bash solo-sect/test/run.sh smoke
+node solo-sect/tools/bot12.mjs solo-sect --json
+node solo-sect/tools/white-body.mjs --seed 17 --days 30 --check
+node solo-sect/tools/glimmer-metrics.mjs --days=60
+node solo-sect/tools/glimmer-metrics.mjs --days=60 --hunt-every=3
+docker run --rm -v "$PWD":/repo -w /repo node:22-bookworm-slim node solo-sect/tools/golden.mjs --write --tier all
+```
+
+`glimmer-metrics` 不注入敵人、熟練或血量。純經營 bot 不主動出獵；`--hunt-every=3` 是玩家每三日選一次正常出獵的輸入，兩者不混稱。兩者皆只將真 `resolveSwing` 的情境次數列 C；首次悟招日期、白身級名到達日與名俠人頭也按 #441/#445 的新版驗收列 C，不靠改常數湊目標。截圖由 `PW=/tmp/ss-playwright/node_modules/playwright-core/index.mjs node solo-sect/tools/round9c-shots.mjs` 從正常頁面取得：[人物卡](artifacts/round9c/people.png)／[入門原因](artifacts/round9c/admission.png)；[原始畫面文字](artifacts/round9c/shots.json)。
+
+規則 3.6 遷移保留舊名單與已學武學，為舊角色補 `timeToday`／`guidanceTotal`；新局同行仍由出身真資料產生。Node 22 是 CI 的 canonical golden runtime；Node 24 的前輪 N33 浮點計算曾有 1 ULP 差異，不混用兩版 hash。
+
+本輪觸及舊招募／練功程式的可讀名稱：`fnv29 → stableTraitHash`、`RECRUIT29 → RECRUIT_TRAIT_VARIATION`、`trained31 → trainedArt`。歷史文件中的舊名保留為當時紀錄；舊存檔鍵 `v29n` 仍照 3.6 遷移讀取，不靠改鍵名破壞回放。
+
+bot12 取已合併 9b 的相同工具重跑 base，與 9c head 的[完整原始輸出](artifacts/round9c/bot12-head-final.json)對照（[base](artifacts/round9c/bot12-base.json)）。第10／30日常住名俠中位數為 **7／11 → 0／0**，後者兩日均低於 N50 原 C 目標；候選人的拒絕理由明記「存糧不足全門一日」，例如 9.0/14.0，並保留每人床位／師父空檔／處境效用。這是食宿共用門檻對舊免費名俠的真影響，沒有為湊人頭轉動出現頻率。其餘 C 指標：單人狩獵擊退 317→248、溜走 139→331、失血 9→66；**有柵探針** 96/96→96/96，守柵 26→87，重傷 28→4；**自然日常山賊** 84/84→4/5、重傷 20→1，兩個分母不能混用。自然山賊戰數隨招募和威脅點數 687→0 一起下降，五場的勝率不可和前輪 84 場當同分布的強弱結論。巫時自然 1→0、柵探針 1→39，惱羞 125→167，常見武學 DPS 中位 144.4→492.6（樣本 155→2）；後一個中位數因新規則讓該類僅餘兩人，不能代表通常武學被整體加強。
+
+N38 指定 seed17 的[自然 30 日原始輸出](artifacts/round9c/white-body-seed17-final.json)：A 類每筆即時級名與機率投影一致，`rulePass=true`；ISTJ／INTP／ESTP 首到 1 級分別為 d8／d2／d3，3／4／5 級均在 d8，2 級未到，單人對豬逼退日皆 null。拿手招依真交手選招次數分別為揮拳／踢／踢，故三人格只有兩種最常用招。原設計日期與單豬日未達 C 目標，d8 出現正式級名與原江湖葵花殘頁、後續授藝事件有關，不能誤寫為土招自然磨練。Node 22 重產 golden quick 4、full 32、舊檔矩陣皆相符（[原始日誌](artifacts/round9c/golden-write-node22.log)）；本地 smoke 19/19（[日誌](artifacts/round9c/smoke.log)），完整 quick 與 golden 仍由 PR CI 驗證。
+
+N35 [純經營日程 12 種子 × 60 日](artifacts/round9c/glimmer-60-final.json) 的六情境「出現／失手」為奪械 421/315、側擊 0/0、掃 53/21、摔 8/4、撒土 223/179、擲石 0/0；主角首悟日 12 人皆 null。這個日程沒有玩家主動出獵，故沒有野豬衝撞或山路撿石，不能把零次說成招式規則不可能。固定野豬閃後踢、被逼住失手與來敵時擲石三段真 `resolveSwing` 都在原 N35 小測試中出現，A 由 smoke 通過。下一份同種子、每三日正常出獵的 C 原始檔另列主動玩法數字，不會把輸入隱藏在「自然 bot」名下。
+
 以下指令由 repo 根目錄執行；需要比對逐位元組 golden hash 時用 CI 相同的 Node 22，其他功能驗收可用 Node 22 或 24，無需下載素材／套件。N33 的長尾反應運算在兩版 V8 有末位浮點差異，規則公式保持原樣，不能混用不同 runtime 產生的 golden。工具可接受 `--seed`，標籤工具使用該種子的真實模擬快照，不以種子選擇門檻。素材檢查無隨機資料，傳入種子不影響結果。
 
 ## 第八輪：N53／N48／N52／N49，N54 review 修正（#468、#482）

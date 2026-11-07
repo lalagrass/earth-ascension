@@ -90,7 +90,7 @@ test('loop188 第 27 日圍山再降約 5%', async () => {
   const { SIEGE27 } = await import('../src/threat.mjs'); assert.deepEqual(SIEGE27.days[27].E, [1000, 1330, 1750, 2140]);
 });
 test('loop188 招收：新局約 35% 第二特質換成經典特質', async () => {
-  const { RECRUIT29 } = await import('../src/data.mjs'); assert.equal(RECRUIT29.p, 0.35); assert.equal(RECRUIT29.pool.length, 10); assert.ok(RECRUIT29.pool.includes('hypocrite'));
+  const { RECRUIT_TRAIT_VARIATION } = await import('../src/data.mjs'); assert.equal(RECRUIT_TRAIT_VARIATION.p, 0.35); assert.equal(RECRUIT_TRAIT_VARIATION.pool.length, 10); assert.ok(RECRUIT_TRAIT_VARIATION.pool.includes('hypocrite'));
 });
 test('loop194 面板露出主運內功、催動階與習性徽章', async () => {
   const { artsGrowHtml } = await import('../src/panel-ui.mjs');

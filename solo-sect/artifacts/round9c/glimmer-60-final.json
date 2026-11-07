@@ -1,0 +1,815 @@
+{
+  "days": 60,
+  "wu": 2,
+  "huntEvery": 0,
+  "seeds": [
+    1001,
+    1002,
+    1003,
+    1004,
+    1005,
+    1006,
+    1007,
+    1008,
+    1009,
+    1010,
+    1011,
+    1012
+  ],
+  "rows": [
+    {
+      "seed": 1001,
+      "day": 61,
+      "wu": 2,
+      "firstDay": null,
+      "known": [],
+      "progress": {},
+      "contexts": {
+        "bodyThrow": {
+          "seen": 1,
+          "lost": 0,
+          "heroSeen": 1,
+          "heroLost": 0
+        }
+      },
+      "prerequisites": {
+        "disarm": {
+          "parents": 11,
+          "heroParents": 6,
+          "words": {
+            "hands": 6,
+            "opponentWind": 10
+          }
+        },
+        "dustCast": {
+          "parents": 10,
+          "heroParents": 5,
+          "words": {
+            "hands": 5,
+            "cornered": 2,
+            "losing": 2
+          }
+        },
+        "bodyThrow": {
+          "parents": 1,
+          "heroParents": 1,
+          "words": {
+            "hands": 1,
+            "opponentUnbalanced": 1
+          }
+        },
+        "flankStrike": {
+          "parents": 1,
+          "heroParents": 1,
+          "words": {}
+        }
+      },
+      "stone": 0,
+      "hunts": 0,
+      "boarVisible": 2820,
+      "boarMoves": {},
+      "boarCharges": 0,
+      "boarDodges": 0,
+      "heroBoarDodges": 0
+    },
+    {
+      "seed": 1002,
+      "day": 61,
+      "wu": 2,
+      "firstDay": null,
+      "known": [],
+      "progress": {},
+      "contexts": {},
+      "prerequisites": {
+        "disarm": {
+          "parents": 28,
+          "heroParents": 14,
+          "words": {
+            "hands": 14,
+            "opponentWind": 28
+          }
+        },
+        "dustCast": {
+          "parents": 28,
+          "heroParents": 14,
+          "words": {
+            "hands": 14,
+            "cornered": 2,
+            "losing": 12
+          }
+        },
+        "flankStrike": {
+          "parents": 4,
+          "heroParents": 4,
+          "words": {}
+        }
+      },
+      "stone": 1,
+      "hunts": 0,
+      "boarVisible": 2827,
+      "boarMoves": {},
+      "boarCharges": 0,
+      "boarDodges": 0,
+      "heroBoarDodges": 0
+    },
+    {
+      "seed": 1003,
+      "day": 61,
+      "wu": 2,
+      "firstDay": null,
+      "known": [],
+      "progress": {
+        "disarm": 0.03905734149007958,
+        "dustCast": 0.01565310602892057
+      },
+      "contexts": {
+        "disarm": {
+          "seen": 46,
+          "lost": 31,
+          "heroSeen": 12,
+          "heroLost": 11
+        },
+        "dustCast": {
+          "seen": 12,
+          "lost": 9,
+          "heroSeen": 6,
+          "heroLost": 5
+        },
+        "bodyThrow": {
+          "seen": 4,
+          "lost": 2,
+          "heroSeen": 0,
+          "heroLost": 0
+        },
+        "staffSweep": {
+          "seen": 12,
+          "lost": 8,
+          "heroSeen": 0,
+          "heroLost": 0
+        }
+      },
+      "prerequisites": {
+        "disarm": {
+          "parents": 99,
+          "heroParents": 23,
+          "words": {
+            "hands": 96,
+            "opponentWind": 94,
+            "opponentWeapon": 51
+          }
+        },
+        "dustCast": {
+          "parents": 96,
+          "heroParents": 23,
+          "words": {
+            "hands": 93,
+            "cornered": 21,
+            "losing": 52
+          }
+        },
+        "flankStrike": {
+          "parents": 28,
+          "heroParents": 4,
+          "words": {
+            "afterDodge": 1
+          }
+        },
+        "staffSweep": {
+          "parents": 21,
+          "heroParents": 1,
+          "words": {
+            "surrounded": 12
+          }
+        },
+        "bodyThrow": {
+          "parents": 5,
+          "heroParents": 0,
+          "words": {
+            "hands": 5,
+            "opponentUnbalanced": 4
+          }
+        },
+        "stoneOpening": {
+          "parents": 2,
+          "heroParents": 0,
+          "words": {}
+        }
+      },
+      "stone": 0,
+      "hunts": 0,
+      "boarVisible": 2692,
+      "boarMoves": {},
+      "boarCharges": 0,
+      "boarDodges": 0,
+      "heroBoarDodges": 0
+    },
+    {
+      "seed": 1004,
+      "day": 61,
+      "wu": 2,
+      "firstDay": null,
+      "known": [],
+      "progress": {},
+      "contexts": {},
+      "prerequisites": {
+        "disarm": {
+          "parents": 8,
+          "heroParents": 4,
+          "words": {
+            "hands": 4,
+            "opponentWind": 8
+          }
+        },
+        "dustCast": {
+          "parents": 8,
+          "heroParents": 4,
+          "words": {
+            "hands": 4,
+            "cornered": 2,
+            "losing": 3
+          }
+        },
+        "flankStrike": {
+          "parents": 1,
+          "heroParents": 1,
+          "words": {}
+        }
+      },
+      "stone": 1,
+      "hunts": 0,
+      "boarVisible": 2797,
+      "boarMoves": {},
+      "boarCharges": 0,
+      "boarDodges": 0,
+      "heroBoarDodges": 0
+    },
+    {
+      "seed": 1005,
+      "day": 61,
+      "wu": 2,
+      "firstDay": null,
+      "known": [],
+      "progress": {
+        "disarm": 3.064243962176893,
+        "dustCast": 1.1511846667218337
+      },
+      "contexts": {
+        "disarm": {
+          "seen": 179,
+          "lost": 131,
+          "heroSeen": 83,
+          "heroLost": 64
+        },
+        "dustCast": {
+          "seen": 116,
+          "lost": 88,
+          "heroSeen": 60,
+          "heroLost": 44
+        },
+        "staffSweep": {
+          "seen": 27,
+          "lost": 6,
+          "heroSeen": 0,
+          "heroLost": 0
+        },
+        "bodyThrow": {
+          "seen": 1,
+          "lost": 0,
+          "heroSeen": 0,
+          "heroLost": 0
+        }
+      },
+      "prerequisites": {
+        "disarm": {
+          "parents": 324,
+          "heroParents": 120,
+          "words": {
+            "hands": 322,
+            "opponentWind": 315,
+            "opponentWeapon": 186
+          }
+        },
+        "dustCast": {
+          "parents": 321,
+          "heroParents": 120,
+          "words": {
+            "hands": 319,
+            "cornered": 166,
+            "losing": 182
+          }
+        },
+        "flankStrike": {
+          "parents": 74,
+          "heroParents": 2,
+          "words": {
+            "afterDodge": 1
+          }
+        },
+        "staffSweep": {
+          "parents": 68,
+          "heroParents": 1,
+          "words": {
+            "surrounded": 27
+          }
+        },
+        "stoneOpening": {
+          "parents": 7,
+          "heroParents": 0,
+          "words": {}
+        },
+        "bodyThrow": {
+          "parents": 10,
+          "heroParents": 0,
+          "words": {
+            "hands": 10,
+            "opponentUnbalanced": 1
+          }
+        }
+      },
+      "stone": 0,
+      "hunts": 0,
+      "boarVisible": 2856,
+      "boarMoves": {},
+      "boarCharges": 0,
+      "boarDodges": 0,
+      "heroBoarDodges": 0
+    },
+    {
+      "seed": 1006,
+      "day": 61,
+      "wu": 2,
+      "firstDay": null,
+      "known": [],
+      "progress": {
+        "bodyThrow": 1.9314509115114014,
+        "disarm": 0.22873069553159656,
+        "dustCast": 0.2570921825905488
+      },
+      "contexts": {
+        "bodyThrow": {
+          "seen": 2,
+          "lost": 2,
+          "heroSeen": 2,
+          "heroLost": 2
+        },
+        "disarm": {
+          "seen": 92,
+          "lost": 71,
+          "heroSeen": 41,
+          "heroLost": 36
+        },
+        "staffSweep": {
+          "seen": 2,
+          "lost": 2,
+          "heroSeen": 0,
+          "heroLost": 0
+        },
+        "dustCast": {
+          "seen": 49,
+          "lost": 41,
+          "heroSeen": 40,
+          "heroLost": 33
+        }
+      },
+      "prerequisites": {
+        "disarm": {
+          "parents": 204,
+          "heroParents": 84,
+          "words": {
+            "hands": 182,
+            "opponentWind": 201,
+            "opponentWeapon": 92
+          }
+        },
+        "dustCast": {
+          "parents": 204,
+          "heroParents": 81,
+          "words": {
+            "hands": 182,
+            "cornered": 79,
+            "losing": 101
+          }
+        },
+        "bodyThrow": {
+          "parents": 4,
+          "heroParents": 3,
+          "words": {
+            "hands": 4,
+            "opponentUnbalanced": 2
+          }
+        },
+        "flankStrike": {
+          "parents": 29,
+          "heroParents": 1,
+          "words": {}
+        },
+        "staffSweep": {
+          "parents": 26,
+          "heroParents": 0,
+          "words": {
+            "surrounded": 2
+          }
+        },
+        "stoneOpening": {
+          "parents": 4,
+          "heroParents": 0,
+          "words": {}
+        }
+      },
+      "stone": 0,
+      "hunts": 0,
+      "boarVisible": 2630,
+      "boarMoves": {},
+      "boarCharges": 0,
+      "boarDodges": 0,
+      "heroBoarDodges": 0
+    },
+    {
+      "seed": 1007,
+      "day": 61,
+      "wu": 2,
+      "firstDay": null,
+      "known": [],
+      "progress": {
+        "disarm": 0.044677567307042025,
+        "staffSweep": 0.24996967798986997,
+        "dustCast": 0.04281582453067916
+      },
+      "contexts": {
+        "disarm": {
+          "seen": 35,
+          "lost": 27,
+          "heroSeen": 17,
+          "heroLost": 14
+        },
+        "staffSweep": {
+          "seen": 7,
+          "lost": 2,
+          "heroSeen": 1,
+          "heroLost": 1
+        },
+        "dustCast": {
+          "seen": 10,
+          "lost": 9,
+          "heroSeen": 10,
+          "heroLost": 9
+        }
+      },
+      "prerequisites": {
+        "disarm": {
+          "parents": 75,
+          "heroParents": 26,
+          "words": {
+            "hands": 70,
+            "opponentWind": 73,
+            "opponentWeapon": 36
+          }
+        },
+        "dustCast": {
+          "parents": 73,
+          "heroParents": 26,
+          "words": {
+            "hands": 68,
+            "cornered": 19,
+            "losing": 31
+          }
+        },
+        "flankStrike": {
+          "parents": 18,
+          "heroParents": 5,
+          "words": {}
+        },
+        "staffSweep": {
+          "parents": 11,
+          "heroParents": 1,
+          "words": {
+            "surrounded": 7
+          }
+        },
+        "bodyThrow": {
+          "parents": 2,
+          "heroParents": 0,
+          "words": {
+            "hands": 2
+          }
+        }
+      },
+      "stone": 1,
+      "hunts": 0,
+      "boarVisible": 2685,
+      "boarMoves": {},
+      "boarCharges": 0,
+      "boarDodges": 0,
+      "heroBoarDodges": 0
+    },
+    {
+      "seed": 1008,
+      "day": 61,
+      "wu": 2,
+      "firstDay": null,
+      "known": [],
+      "progress": {},
+      "contexts": {},
+      "prerequisites": {
+        "disarm": {
+          "parents": 8,
+          "heroParents": 4,
+          "words": {
+            "hands": 4,
+            "opponentWind": 8
+          }
+        },
+        "dustCast": {
+          "parents": 8,
+          "heroParents": 4,
+          "words": {
+            "hands": 4,
+            "cornered": 2,
+            "losing": 1
+          }
+        },
+        "flankStrike": {
+          "parents": 2,
+          "heroParents": 2,
+          "words": {}
+        }
+      },
+      "stone": 1,
+      "hunts": 0,
+      "boarVisible": 2767,
+      "boarMoves": {},
+      "boarCharges": 0,
+      "boarDodges": 0,
+      "heroBoarDodges": 0
+    },
+    {
+      "seed": 1009,
+      "day": 61,
+      "wu": 2,
+      "firstDay": null,
+      "known": [],
+      "progress": {},
+      "contexts": {},
+      "prerequisites": {
+        "disarm": {
+          "parents": 2,
+          "heroParents": 1,
+          "words": {
+            "hands": 1,
+            "opponentWind": 2
+          }
+        },
+        "dustCast": {
+          "parents": 2,
+          "heroParents": 1,
+          "words": {
+            "hands": 1,
+            "cornered": 1
+          }
+        }
+      },
+      "stone": 0,
+      "hunts": 0,
+      "boarVisible": 2737,
+      "boarMoves": {},
+      "boarCharges": 0,
+      "boarDodges": 0,
+      "heroBoarDodges": 0
+    },
+    {
+      "seed": 1010,
+      "day": 61,
+      "wu": 2,
+      "firstDay": null,
+      "known": [],
+      "progress": {},
+      "contexts": {},
+      "prerequisites": {
+        "disarm": {
+          "parents": 2,
+          "heroParents": 1,
+          "words": {
+            "hands": 1,
+            "opponentWind": 2
+          }
+        },
+        "dustCast": {
+          "parents": 2,
+          "heroParents": 1,
+          "words": {
+            "hands": 1,
+            "cornered": 1,
+            "losing": 1
+          }
+        }
+      },
+      "stone": 0,
+      "hunts": 0,
+      "boarVisible": 2767,
+      "boarMoves": {},
+      "boarCharges": 0,
+      "boarDodges": 0,
+      "heroBoarDodges": 0
+    },
+    {
+      "seed": 1011,
+      "day": 61,
+      "wu": 2,
+      "firstDay": null,
+      "known": [],
+      "progress": {
+        "disarm": 0.01538452165891994,
+        "dustCast": 0.01538452165891994,
+        "staffSweep": 0.5798776314854492
+      },
+      "contexts": {
+        "disarm": {
+          "seen": 28,
+          "lost": 21,
+          "heroSeen": 4,
+          "heroLost": 4
+        },
+        "dustCast": {
+          "seen": 11,
+          "lost": 10,
+          "heroSeen": 3,
+          "heroLost": 3
+        },
+        "staffSweep": {
+          "seen": 2,
+          "lost": 2,
+          "heroSeen": 2,
+          "heroLost": 2
+        }
+      },
+      "prerequisites": {
+        "flankStrike": {
+          "parents": 14,
+          "heroParents": 5,
+          "words": {}
+        },
+        "staffSweep": {
+          "parents": 10,
+          "heroParents": 4,
+          "words": {
+            "surrounded": 2
+          }
+        },
+        "disarm": {
+          "parents": 76,
+          "heroParents": 14,
+          "words": {
+            "opponentWind": 74,
+            "hands": 70,
+            "opponentWeapon": 29
+          }
+        },
+        "dustCast": {
+          "parents": 78,
+          "heroParents": 14,
+          "words": {
+            "hands": 72,
+            "cornered": 21,
+            "losing": 37
+          }
+        },
+        "stoneOpening": {
+          "parents": 4,
+          "heroParents": 0,
+          "words": {}
+        },
+        "bodyThrow": {
+          "parents": 2,
+          "heroParents": 0,
+          "words": {
+            "hands": 2
+          }
+        }
+      },
+      "stone": 0,
+      "hunts": 0,
+      "boarVisible": 2655,
+      "boarMoves": {},
+      "boarCharges": 0,
+      "boarDodges": 0,
+      "heroBoarDodges": 0
+    },
+    {
+      "seed": 1012,
+      "day": 61,
+      "wu": 2,
+      "firstDay": null,
+      "known": [],
+      "progress": {
+        "disarm": 0.09629405066395204,
+        "dustCast": 0.12041373923415169
+      },
+      "contexts": {
+        "disarm": {
+          "seen": 41,
+          "lost": 34,
+          "heroSeen": 22,
+          "heroLost": 20
+        },
+        "dustCast": {
+          "seen": 25,
+          "lost": 22,
+          "heroSeen": 19,
+          "heroLost": 17
+        },
+        "staffSweep": {
+          "seen": 3,
+          "lost": 1,
+          "heroSeen": 0,
+          "heroLost": 0
+        }
+      },
+      "prerequisites": {
+        "disarm": {
+          "parents": 82,
+          "heroParents": 33,
+          "words": {
+            "hands": 81,
+            "opponentWind": 81,
+            "opponentWeapon": 41
+          }
+        },
+        "dustCast": {
+          "parents": 81,
+          "heroParents": 32,
+          "words": {
+            "hands": 80,
+            "cornered": 39,
+            "losing": 43
+          }
+        },
+        "flankStrike": {
+          "parents": 9,
+          "heroParents": 0,
+          "words": {}
+        },
+        "staffSweep": {
+          "parents": 9,
+          "heroParents": 0,
+          "words": {
+            "surrounded": 3
+          }
+        },
+        "bodyThrow": {
+          "parents": 1,
+          "heroParents": 1,
+          "words": {
+            "hands": 1
+          }
+        }
+      },
+      "stone": 1,
+      "hunts": 0,
+      "boarVisible": 2680,
+      "boarMoves": {},
+      "boarCharges": 0,
+      "boarDodges": 0,
+      "heroBoarDodges": 0
+    }
+  ],
+  "contexts": {
+    "disarm": {
+      "seen": 421,
+      "lost": 315,
+      "heroSeen": 179,
+      "heroLost": 149
+    },
+    "flankStrike": {
+      "seen": 0,
+      "lost": 0,
+      "heroSeen": 0,
+      "heroLost": 0
+    },
+    "staffSweep": {
+      "seen": 53,
+      "lost": 21,
+      "heroSeen": 3,
+      "heroLost": 3
+    },
+    "bodyThrow": {
+      "seen": 8,
+      "lost": 4,
+      "heroSeen": 3,
+      "heroLost": 2
+    },
+    "dustCast": {
+      "seen": 223,
+      "lost": 179,
+      "heroSeen": 138,
+      "heroLost": 111
+    },
+    "stoneOpening": {
+      "seen": 0,
+      "lost": 0,
+      "heroSeen": 0,
+      "heroLost": 0
+    }
+  },
+  "firstDays": [],
+  "medianFirstDay": null
+}
