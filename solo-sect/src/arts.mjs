@@ -101,7 +101,7 @@ export const nextLvXp = (xp) => { const p = profOf(xp); if (!p.lv) return null; 
 export const artById = (id) => ARTS.find((a) => a.id === id);
 /* loop160：v2.4 新武學只對 v2.4 新局的人開放（舊局、舊存檔看不到） */
 export const artOk = (d, a) => {
-  if ((a?.v24 && !d) || (a?.hermitageLineage && (d?.hermitagePartner || !['quanzhen', 'zhongnan'].includes(d?.sectId))) || (a?.phase6Only && d?.hermitageStarter !== 'luohanHands')) return false;
+  if ((a?.v24 && !d) || (a?.hermitageLineage && !(d?.foundedLineage && d?.stree?.includes(a.id)) && (d?.hermitagePartner || !['quanzhen', 'zhongnan'].includes(d?.sectId))) || (a?.phase6Only && d?.hermitageStarter !== 'luohanHands' && !(d?.foundedLineage && d?.stree?.includes(a.id)))) return false;
   if (d?.hermitageStarter && ['quanzhenXinfa', 'shaolinXinfa'].includes(a?.id) && (d.skills?.strength || 0) < 15) return false;
   if (a?.id === 'shaolinXinfa' && d?.hermitageStarter === 'luohanHands' && (d.arts?.luohanHands?.xp || 0) < 25) return false;
   if (d?.hermitageStarter && ['jinyanStep', 'shaolinStep'].includes(a?.id) && (d.skills?.agility || 0) < 16) return false;
@@ -549,7 +549,7 @@ const PARTNER_AWAKENING = {
   ],
 };
 export function checkPartnerAwakening(d, hero, s) {
-  if (!s?.hermitage?.active || !d || !hero || d.xia !== s.hermitage.partnerId) return null;
+  if (!s?.hermitage || !d || !hero || d.xia !== s.hermitage.partnerId) return null; // 出自 Phase 7 規格：開山後原有雙人共修鏈繼續。
   const stage = d.partnerStage || 0, row = PARTNER_AWAKENING[d.xia]?.[stage];
   if (!row) return null;
   const shared = (...kinds) => (s.mem || []).some((m) => m.p === [d.id, hero.id].sort().join('|') && kinds.includes(m.k)) || (kinds.includes('surrounded') && (s.socialThoughts || []).some((e) => e.kind === 'surrounded' && [d.id, hero.id].includes(e.actor) && [d.id, hero.id].includes(e.target)));
@@ -563,7 +563,7 @@ export function checkPartnerAwakening(d, hero, s) {
 // 出自 Phase 6 規格：入門外功 XP25＋臂力15 悟心法，心法 XP25＋身法16 悟輕功；無抽籤。
 const HERMITAGE_CHAIN = Object.freeze({ chunyangFist: ['quanzhenXinfa', 'jinyanStep'], luohanHands: ['shaolinXinfa', 'shaolinStep'] });
 export function checkExteriorToInteriorAwakening(d, s) {
-  if (!s?.hermitage?.active || d?.id !== 'hero') return null;
+  if (!s?.hermitage || d?.id !== 'hero') return null; // 出自 Phase 7 規格：開山不抹掉未完的外入內成長。
   const outer = d.hermitageStarter || (d.arts?.chunyangFist ? 'chunyangFist' : d.arts?.luohanHands ? 'luohanHands' : null);
   const chain = HERMITAGE_CHAIN[outer]; if (!chain) return null;
   d.hermitageStarter ??= outer;
@@ -1078,7 +1078,7 @@ export function normalizeArts(list = ARTS) {
 normalizeArts();
 export const BAN28 = ['jiuyinClaw', 'qishangFist'];
 /* 本門專屬：own24＝本門；或沒有 own24 的本門樹名門 classic（如華山紫霞） */
-export const ownLineageArt = (d, a) => !!(a && d && !PUBLIC28.includes(a.id) && (a.own24 ? a.own24 === d.sectId || (d.sectId === 'zhongnan' && ['quanzhen', 'gumu'].includes(a.own24) && d.stree?.includes(a.id)) : !!(a.classic && d.stree?.includes(a.id)))); // 出自 Phase 4 規格：終南雙脈在本門正統判定上可共存，開山仍待 Phase 7。
+export const ownLineageArt = (d, a) => !!(a && d && !PUBLIC28.includes(a.id) && ((d.foundedLineage && d.stree?.includes(a.id)) || (a.own24 ? a.own24 === d.sectId || (d.sectId === 'zhongnan' && ['quanzhen', 'gumu'].includes(a.own24) && d.stree?.includes(a.id)) : !!(a.classic && d.stree?.includes(a.id))))); // 出自 Phase 7 規格：雙堂共樹與秘傳特許由角色的正宗名冊判定。
 /* loop183（t194 addendum）主修內功＝有效分最高 */
 export const innerScore28 = (d, m) => artTier(d, m.id) * 30 + (m.grade || 1) * 15 + (d.arts?.[m.id]?.xp || 0) * 0.2 + (m.own24 === d.sectId ? 20 : 0);
 /* loop202：練法把本次 gx 的 30% 回饋內功，築基回饋 15%。打法不回饋。只在有修練結算時 */

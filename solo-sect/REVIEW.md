@@ -1,5 +1,24 @@
 # 可重跑驗收
 
+## Phase 7：雙人異派開山立宗（#512，規則 4.6）
+
+實作 grass／Codex Cloud。全真純陽＋小龍女可選終南雙堂，少林羅漢＋黃蓉可選剛巧合宗；正宗立匾讓另一脈只由掌門、伴侶與首徒親傳，無名派可自訂牌匾。自然武道小成、首崖或守山勝場會排出三選一卡；手動按鈕在固定頁首可直接立匾。決定一定由玩家點選，其他事件即使設為自動抉擇也不替玩家定道統。立宗後秘傳、雙堂、俸期、招募和山崖使用同一狀態；雙劍 ×1.35 僅作用於真同隊且都能戰鬥時的全真劍／玉女劍招，舊局不受影響。規則理由與規格常數見 [隱居與開山](docs/systems/hermitage.md)、[戰鬥](docs/systems/combat.md)。
+
+| 類 | 指令（repo 根目錄） | 門檻與預期輸出 |
+|---|---|---|
+| A 固定情境 | Node 22：`bash solo-sect/test/run.sh smoke` | exit 0，Phase 7 小測試驗三選一卡、雙堂兩脈 `ownLineageArt=true` 且外門倍率 1、弟子按根骨性格分堂、俸期從開山日＋10、正宗秘傳只給掌門／伴侶／首徒、雙劍成對 ×1.35 且離隊變回 1、無名匾。|
+| A 真畫面盲測 | `python3 solo-sect/tools/phase7-visual.py --seed=17`，`--seed` 可換整數 | `pageerror=[]`、兩張 1600×900 正常 UI 截圖；先辨 [A](artifacts/phase7/blind-A.png)、[B](artifacts/phase7/blind-B.png)，後讀獨立 [答案](artifacts/phase7/blind-answers.json)。畫面可點固定欄立匾、看三種道統及開山牌匾；同工具再開一局點伴侶主脈正宗，核對 `gumu`、自訂匾與秘傳。|
+| A golden／遷移 | Node 22：`node solo-sect/tools/golden.mjs --check --tier all`；CI 山門紀 quick＋golden＋accept | quick 4、full 32、舊存檔 6、隱居 2 皆過；非隱居 golden 三檔逐欄不變，新增 4.6 遷移僅更新隱居欄位。|
+| B 公式 | `bash solo-sect/test/run.sh smoke` | 本 Phase 沒新增隨機抽樣公式；雙劍傷害是固定 1.35，已在 A 查是否成對及失效。|
+| C 自然日程 | Node 22：`node solo-sect/tools/phase7-check.mjs solo-sect --days=10`；可加 `--seed=17` | 正常 0.25 秒步長，唯獨警示由探針自動按過；不提供玩家道統決策。逐種子列首崖、伴侶階段、待選卡、開山日與俸期。原始 [base](artifacts/phase7/founding-base.json)／[head](artifacts/phase7/founding-head.json)；有卡但未成立是此受控條件的預期，不能當作玩家自然玩法無法立宗。|
+| C bot12 | Node 22：`node solo-sect/tools/bot12.mjs solo-sect --json` | 原始 [Phase 6 base](artifacts/phase7/bot12-base.json)／[Phase 7 head](artifacts/phase7/bot12-head.json) 逐位相同；bot12 不選隱居，所以不拿其數字調道統常數。|
+
+12 種子各十日的 C 報告：base／head 都有 11 位伴侶達第二階、6 位登首崖，名聲總和同為 532；head **6/12** 有待玩家選的開山卡，base 0/12。兩側成立數皆為 0/12，因探針沒有供給玩家抉擇；這是可達路徑已觸發、尚未點卡的結果，不代表自然玩法無法立派。舊局 bot12 完整 JSON 逐位相同。
+
+舊測試變更：`schema-invariants` 的原「舊選單三種指定門派」斷言仍為三，僅將 Phase 7 專用少林／剛巧資料列顯式排除舊局；`v145-review`、`v145`、`v150` 精確遷移序列補 4.6，原舊檔／重複升級斷言保留。`test/golden/scenarios.mjs` 只對**沒有** `hermitage` 的舊局略去空 4.6 遷移步，隱居 golden 已以 Node 22 重產。舊名 → 新名：本 Phase 改到的舊 API `sectOf`、`artOk`、`heroAuto` 保持外部存檔／呼叫契約；新增名稱 `lineageTreeFor`、`applySectLineage`、`queueHermitageFounding`、`twinSwordsDamageFactor` 均為語意名稱，未新增帶輪次數字的函式。
+
+最沒把握三處：手動立匾只要求兩人同山，可能比「基本條件」的玩家理解更寬（依規格將手動路徑與自然里程碑分開）；正宗立匾可選伴侶主脈但現行卡仍把三種道統與主脈放在同一卡，後續可依玩家閱讀負擔調整；自然日程無人點卡時立宗數為零，原始 C 報告特別區分待選卡與成立。
+
 ## 第十一輪 N45：巡山前三段與剿寨逐招（#457）
 
 後續補齊前三段段尾守關：野豬、狼王、哨卡也使用同一逐招地圖，入口分別沿用獸穴、環巢與山腰小地圖邊緣；勝負及營地等在交手結束後結算。原 N45 smoke 小測試增查三處守關 `bout`，守關未打完仍在去程。這會改變實際巡山結果，故 4.0 golden 已重新產生；Node 22 同命令重跑 bot12 的完整 JSON 與本輪原始 head 逐位相同（`cmp` exit 0），原 C 表仍適用。

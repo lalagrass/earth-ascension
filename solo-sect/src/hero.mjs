@@ -104,7 +104,7 @@ export function resolveChoice(s, id, i) {
   if (flag) s.rep = (s.rep || 0) + 2;
   log(s, `${d.name}決定：${text}。${flag ? '（主線推進，下一步待續）' : '（主線暫緩）'}`); return true;
 }
-export function heroAuto(s) { if (!s.hero || s.hero.askMajor || s.autoAt == null || s.t < s.autoAt) return; for (const ch of [...s.choices]) resolveChoice(s, ch.id, autoPick(s, ch)); s.autoAt = null; }
+export function heroAuto(s) { if (!s.hero || s.hero.askMajor || s.autoAt == null || s.t < s.autoAt) return; for (const ch of [...s.choices]) if (!ch.forcePrompt) resolveChoice(s, ch.id, autoPick(s, ch)); s.autoAt = null; } // 出自 Phase 7 規格：玩家親點立匾時即使平日自動抉擇，也讓玩家選道統。
 
 // ---- v0.97 模板特色 ----
 // 阿星覺醒：巡山瀕死或重傷時，封印的根骨解開（屬性共 +8）並起手如來神掌

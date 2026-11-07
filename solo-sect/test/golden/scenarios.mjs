@@ -12,7 +12,7 @@ import { ALL_ON, botDaily } from '../harness/bot.mjs';
 export const hash = (s) => {
   const state = JSON.parse(save(s));
   // Phase 4：舊局行為 golden 仍逐欄比較；僅排除 4.2→4.3 的存檔版號與空遷移步。
-  if (!state.hermitage?.active) { state.rules = '4.2'; if (state.migSteps) state.migSteps = state.migSteps.filter((step) => !['4.3', '4.4', '4.5'].includes(step)); }
+  if (!state.hermitage) { state.rules = '4.2'; if (state.migSteps) state.migSteps = state.migSteps.filter((step) => !['4.3', '4.4', '4.5', '4.6'].includes(step)); }
   return crypto.createHash('sha256').update(JSON.stringify(state)).digest('hex').slice(0, 16);
 };
 export const STRATS = ['idle', 'bot', 'farm', 'exp'];

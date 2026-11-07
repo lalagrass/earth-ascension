@@ -432,7 +432,10 @@ export function crowdSynergyFrame(d, s = {}, view = {}) {
   }
 
   let synergyMode;
-  const isCoupleSynergy = Boolean(
+  const isCoupleSynergy = s?.hermitage?.founded ? Boolean(
+    s.sect?.doctrine === 'dualHall' && partner && !!d?.fem !== !!partner.fem &&
+    ((d?.arts?.quanzhenSword && partner.arts?.yunvSword) || (d?.arts?.yunvSword && partner.arts?.quanzhenSword))
+  ) : Boolean(
     view.isCouple ||
     (s?.gen?.couples || []).some((c) => Array.isArray(c) && c.includes(d?.id) && c.includes(partner?.id)) ||
     (d?.arts?.yunv && partner?.arts?.yunv) ||
@@ -440,7 +443,7 @@ export function crowdSynergyFrame(d, s = {}, view = {}) {
     d?.xia === 'xiaolongnv' ||
     partner?.xia === 'yangguo' ||
     d?.xia === 'yangguo'
-  );
+  ); // 出自 Phase 7 規格：新合宗畫面須有兩脈雙劍，舊局沿原 Phase 3 展示條件。
 
   let isBackToBack = false;
   if (partner && (view.backToBack || view.synergyMode === 'backToBack')) {

@@ -24,7 +24,7 @@ import { recordSocialEvent, fadeSocialThoughts } from './social-thoughts.mjs';
 import { readLuohanBook } from './luohan-book.mjs';
 import { xiaStep, onCook, xiaInit, hsStep, hsInit } from './wuxia.mjs';
 import { jhStep, jhInit, jhevDaily } from './jianghu.mjs';
-import { sectStep, sectInit, sectRecruit, genStep, genInit, removeDisciple, canBuildFac, buildFac } from './sect.mjs';
+import { sectStep, sectInit, sectRecruit, genStep, genInit, removeDisciple, canBuildFac, buildFac, queueHermitageFounding, foundHermitageSect, canFoundHermitageSect, twinSwordsDamageFactor } from './sect.mjs';
 import { applyHero, valueMul, easeWexin, onAssign, heroStep, heroAuto, pairBonus, awaken, econCoin, cookBonus } from './hero.mjs';
 import { SAVE_VERSION, freshV095 } from './save.mjs';
 import { cancelTask, removeActor, whAvail, freeSlot, freeSpot, reserve, sweepResv, actorBusy, needStep, boredMul, markDone, durOf, holder, CORE, STOCK_RESV, stockKey, stockReserved } from './core.mjs';
@@ -37,6 +37,7 @@ export { think, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, k
 
 const EH = { rand: (s) => rand(s), cancelTask: (s, d, w) => cancelTask(s, d, w), think: (s, d, id) => think(s, d, id), removeDisciple: (s, d, w) => removeDisciple(s, d, w), gate: NODES.gate };
 export { SAVE_VERSION };
+export { foundHermitageSect, canFoundHermitageSect, queueHermitageFounding }; // 出自 Phase 7 規格：模擬 API 與玩家抉擇共用同一條開山路。
 
 function rng(seed) { let s = seed >>> 0; return () => { s = (s + 0x6d2b79f5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 
@@ -174,6 +175,7 @@ export { book }; // v1.8 移到 util.mjs（各模組共用）
 export function capacity(s) { return FACILITIES.reduce((a, f) => a + (facStage(s, f.id).beds || 0), 0); }
 export function recruitNeed(s) { return RECRUIT.baseRep + RECRUIT.stepRep * (disciples(s).length - 3); }
 export function canRecruit(s) {
+  if (s.hermitage?.active) return { ok: false, why: '荒山隱居中，立匾後才收徒' }; // 出自 Phase 7 規格：收徒在開山後解鎖。
   const next = econOf(s).pool.find((p) => !applicantAway(s,p.id)) || RECRUIT_POOL.find((p) => !s.ds.some((d) => d.id === p.id || (d.id === 'hero' && s.hero?.id === p.id)) && !applicantAway(s,p.id)); // 義學帶回的人先評估食宿與師父
   if (!next) return { ok: false, why: '暫無人選' };
   if(!next.school&&attraction(s)<recruitNeed(s))return {ok:false,why:`還未聽說山門（名聲與自產成績 ${attraction(s).toFixed(1)}/${recruitNeed(s)}）`,heard:false};
@@ -217,10 +219,11 @@ export const MATS = ['wood', 'stone'];
 export const lotsOf = (s) => (s.lots ??= { n: LOTS.start, bought: 0 });
 export const lotsUsed = (s) => FACILITIES.filter((f) => f.v16 && !f.sig && (s.fac[f.id]?.stage > 0 || s.fac[f.id]?.site)).length;
 export const lotCost = (s) => Math.round(LOTS.cost * LOTS.rise ** lotsOf(s).bought);
-export function lotWhy(s) { const L = lotsOf(s); if (L.n >= LOTS.max) return '山頭已經沒有地可擴'; if (s.res.coin < lotCost(s)) return `錢不夠（擴地 ${lotCost(s)}）`; return null; }
+export function lotWhy(s) { if (s.hermitage?.active) return '立匾開山後才能擴地'; const L = lotsOf(s); if (L.n >= LOTS.max) return '山頭已經沒有地可擴'; if (s.res.coin < lotCost(s)) return `錢不夠（擴地 ${lotCost(s)}）`; return null; } // 出自 Phase 7 規格：隱居期尚無門派土地帳。
 export function buyLot(s) { const w = lotWhy(s); if (w) return { ok: false, why: w }; const c = lotCost(s), L = lotsOf(s); resAdd(s, 'coin', -c); L.n++; L.bought++; log(s, `擴地：花 ${c} 錢整出一塊新地（地塊 ${lotsUsed(s)}/${L.n}）`); return { ok: true, c }; }
 export const LIB23_REP = 10;
 export function buildWhy(s, id) {
+  if (s.hermitage?.active) return '荒山隱居中，立匾後才擴建'; // 出自 Phase 7 規格：開山後開放完整建設。
   const f = facDef(id), st = s.fac[id], next = f.stages[st.stage + 1];
   if (!next || (false)) return '已到頂'; if (st.site) return '施工中'; if (f.sig || next.noBlueprint) return '鎮派建築走門派面板';
   const rq = id === 'library' && st.stage === 0 ? LIB23_REP : next.rep; /* loop157 P7：v23 藏經閣名聲 15→10 */
@@ -263,7 +266,7 @@ export function setForayPolicy(s, policy) { if (!['allow', 'forbid'].includes(po
 export function setOrder(s, id, order) {
   const d = byId(s, id); if (!d) return false;
   if (order && order !== 'hunt' && !ACTIVITIES[order]) return false;
-  if (CLIFF_ACT_NODE[order] && (!s.hermitage?.active || !canLeapCliff(d, CLIFF_ACT_NODE[order]))) return false; // 出自 Phase 6 規格：玩家指派前即擋掉爬不到的崖。
+  if (CLIFF_ACT_NODE[order] && (!s.hermitage || !canLeapCliff(d, CLIFF_ACT_NODE[order]))) return false; // 出自 Phase 7 規格：立派後仍可上崖，門檻不變。
   d.order = order || null; cancelTask(s, d, '玩家改派');
   return true;
 }
@@ -350,7 +353,7 @@ export function scoreActs(s, d) {
   for (const R of SCORE) { if (R.gen) { for (const [act, A] of GEN_ACTS) { if (!offered(s, act).length) continue; const g = genOf(s, act, A); if (!g || !GEN_COND[g.cond]?.(s, d) || !dayOk(s, act, g.perDay)) continue; if (g.base > 0) out.push({ act, score: g.base, why: g.why, ...(g.layer ? { layer: g.layer } : {}) }); } continue; }
     if (R.when && !R.when.every((k) => PRED[k](c))) continue; const T = R.tiers ? R.tiers.find((x) => !x.if || PRED[x.if](c)) : R; if (!T) continue;
     const score = valOf(T.v, c); if (score > 0) out.push({ act: R.act, score, why: fillWhy(T.why, c), ...(T.layer || R.layer ? { layer: T.layer || R.layer } : {}) }); }
-  if (s.hermitage?.active) for (const [act, base] of Object.entries({ cliffForage1: 'forage', cliffTrain: 'train', cliffWater: 'water', waterfallTrain: 'train', cliffComprehend: 'meditate' })) {
+  if (s.hermitage) for (const [act, base] of Object.entries({ cliffForage1: 'forage', cliffTrain: 'train', cliffWater: 'water', waterfallTrain: 'train', cliffComprehend: 'meditate' })) {
     const cliffId = CLIFF_ACT_NODE[act], source = out.find(o => o.act === base);
     if (source && canLeapCliff(d, cliffId)) out.push({ act, score: source.score, why: `輕功可到${CLIFFS[cliffId].name}，${ACTIVITIES[act].name}` });
   } // 出自 Phase 6 規格：解鎖後 AI 借原活動分數選崖上同類工作，不另立任意偏好常數。
@@ -384,7 +387,7 @@ export function scoreActs(s, d) {
 
 function assign(s, d, act, why) {
   if (CLIFF_ACT_NODE[act]) {
-    const cliffId = CLIFF_ACT_NODE[act]; if (!s.hermitage?.active || !canLeapCliff(d, cliffId)) return false;
+    const cliffId = CLIFF_ACT_NODE[act]; if (!s.hermitage || !canLeapCliff(d, cliffId)) return false;
     d.task = { act, node: cliffId, phase: 'go' }; goto(d, cliffId); d.reason = why || `上${CLIFFS[cliffId].name}${ACTIVITIES[act].name}`; return true;
   }
   if (act === 'foray' || act === 'patrol') {
@@ -523,7 +526,7 @@ function grow(s, d, sk, amt, src = 'train') {
   if (bodyConditionOn(s) && src === 'labor' && ['strength', 'agility'].includes(sk)) return; // 出自 Phase 5 規格：新局體魄由疲勞週期結算，不能從舊勞作通路繞過 18 點上限。
   const before = d.skills[sk]; d.skills[sk] = Math.min(100, before + amt * (d.traits.diligent || 1) * 0.3 * (1 - before / 130) * focusMul(d));
   if (src === 'labor' && sk === 'strength' && d.lg) d.skills[sk] = before + workStrCap(d, Math.floor(s.t / DAY), d.skills[sk] - before); // loop127 做活力氣每日軟上限
-  if (sk === d.style) { growEnsure(d); const o = gainArt(d, amt * (d.arts ? teachMul(s, d, focusOf(d)) : 1), focusMul(d), s.t, { raw, src }); /* #415 N12 師父傳授時段：這門名功練得快 */ if (o.feed) log(s, `${d.name}【${o.feed.label}】內功《${o.feed.name}》長進 ${o.feed.xp.toFixed(2)}`); if (o.next) log(s, `${d.name}功夫到了火候，可向師父求學「${o.next.name}」`); for (const m of o.moves) log(s, `${d.name}把已學套路的「${MOVES.find((x) => x.id === m).name}」練成了`); if (o.star) log(s, `${d.name}的基本功又添一顆星`); if (s.hermitage?.active) checkExteriorToInteriorAwakening(d, s); return o; }
+  if (sk === d.style) { growEnsure(d); const o = gainArt(d, amt * (d.arts ? teachMul(s, d, focusOf(d)) : 1), focusMul(d), s.t, { raw, src }); /* #415 N12 師父傳授時段：這門名功練得快 */ if (o.feed) log(s, `${d.name}【${o.feed.label}】內功《${o.feed.name}》長進 ${o.feed.xp.toFixed(2)}`); if (o.next) log(s, `${d.name}功夫到了火候，可向師父求學「${o.next.name}」`); for (const m of o.moves) log(s, `${d.name}把已學套路的「${MOVES.find((x) => x.id === m).name}」練成了`); if (o.star) log(s, `${d.name}的基本功又添一顆星`); if (s.hermitage) checkExteriorToInteriorAwakening(d, s); return o; }
 }
 
 const CLIFF_TRAIN_MUL = Object.freeze({ cliffTrain: 1.25, waterfallTrain: 1.4 }); // 出自 Phase 6 規格：試劍崖／飛瀑外功練體速度。
@@ -547,7 +550,7 @@ function doTask(s,d,dt){
   }
   if (t.phase === 'go' && !d.path.length) {
   if (t.partner) { const p = byId(s, t.partner); if (!p || p.task?.partner !== d.id) { d.task = null; return; } if (p.path.length) return; }
-    if (CLIFFS[t.node] && s.hermitage?.active && !s.hermitage.exploredCliffs?.includes(t.node)) { (s.hermitage.exploredCliffs ??= []).push(t.node); log(s, `${d.name}踏上${CLIFFS[t.node].name}，望見山路又開了一層。`); }
+    if (CLIFFS[t.node] && s.hermitage && !s.hermitage.exploredCliffs?.includes(t.node)) { (s.hermitage.exploredCliffs ??= []).push(t.node); log(s, `${d.name}踏上${CLIFFS[t.node].name}，望見山路又開了一層。`); if (s.hermitage.active) queueHermitageFounding(s); }
     t.phase = 'do'; t.timer = 0; d.anim = t.act;
   }
   if (t.phase === 'do') {
@@ -585,7 +588,7 @@ function doTask(s,d,dt){
       if ((t.act === 'chat' || t.act === 'spar') && t.partner && d.id < t.partner) askStrong(s, d, byId(s, t.partner), grow, think, log); // loop8 請教
       // N42：平常練習只累積 N33 的手眼熟；整門功夫須有師父或譜。
       if (t.act === 'spar' && t.partner) { const p = byId(s, t.partner); if (d.id < p.id) { relAdd(s, d, p, 2); log(s, `${d.name}與${p.name}在${facStage(s, 'yard').offers.includes('spar') ? '木樁場' : '空地上徒手'}切磋`); addMem(s, d, p, 'spar'); const strength = (x) => (x.skills?.palm || 0) + (x.skills?.leg || 0) + (x.skills?.agility || 0); if (strength(d) !== strength(p)) recordSocialEvent(s, 'sparLoss', strength(d) > strength(p) ? d : p, strength(d) > strength(p) ? p : d); } }
-      if (s.hermitage?.active && (t.act === 'train' || t.act === 'spar')) checkPartnerAwakening(byId(s, s.hermitage.partnerId === 'huangrong' ? 'partner-hr' : 'partner-xln'), byId(s, 'hero'), s);
+      if (s.hermitage && (t.act === 'train' || t.act === 'spar')) checkPartnerAwakening(byId(s, s.hermitage.partnerId === 'huangrong' ? 'partner-hr' : 'partner-xln'), byId(s, 'hero'), s);
       if (A.fun) d.needs.fun = clamp((d.needs.fun ?? 60) + A.fun, 0, 100);
       if (t.act === 'leisure') think(s, d, 'idled');
       if (t.act === 'forage') d.needs.fun = clamp((d.needs.fun ?? 60) + (d.personality.includes('playful') ? 20 : 8), 0, 100);
@@ -604,7 +607,7 @@ function doTask(s,d,dt){
       if (t.act === 'pass' && t.lead && t.partner) { const p = byId(s, t.partner); if (p) passDo(s, d, p, t.art); }
       if (t.act === 'study') { const w = readStudy(s, d); if (w) log(s, `${d.name}在藏經閣讀了許久，忽然開竅——悟性長進了${d.rootKnown ? `（${w}）` : ''}。`); } // loop140 讀書長悟性
       if (t.act === 'study' && t.fac === 'library') { const page = readLuohanBook(d, effDur, s.t); if (page.learned) { log(s, `【拳譜】${d.name}對照身體起手，把《少林羅漢十八手》的二十二段讀完，開始依譜練掌。`); think(s, d, 'learned'); } else if (page.form) log(s, `${d.name}讀《羅漢十八手》到「${page.form}」，照著圖譜試擺。`, 'low'); }
-      if (t.act === 'cliffComprehend' && s.hermitage?.active) {
+      if (t.act === 'cliffComprehend' && s.hermitage) {
         const candidates = d.hermitageStarter === 'luohanHands' ? ['shaolinArhat'] : ['quanzhenSword', 'xiantianGong'];
         const next = candidates.find(id => !d.arts?.[id] && (id !== 'xiantianGong' || (d.arts?.quanzhenXinfa?.xp || 0) >= 55)); // 出自 Phase 6 規格：全真劍或先天功、羅漢路高階心法沿同崖逐次參悟。
         if (next) { learnArt(d, next, s.t); log(s, `【絕頂石刻】${d.name}對照前人刻痕，悟出《${artById(next).name}》。`); }
@@ -751,7 +754,7 @@ function dStrike(s, h, d, live, w) {
   const mv = MOVES.find((x) => x.id === w.mv), tgt = live.find((m) => m.uid === w.tgt);
   if (!mv || !tgt || dist(tgt.pos, d.pos) > w.reach * 1.25) { d.anim = null; return null; } /* 目標走遠或已倒：招落空 */
   const lv = d.skills[mv.skill];
-  let power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id, s.t); /* #410 玉女合擊、蛤蟆蓄勢改走內功被動與 on，避免和出手再乘一次 */
+  let power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id, s.t) * twinSwordsDamageFactor(s, d, mv.id); /* 出自 Phase 7 規格：同隊異脈雙劍合璧 ×1.35，其他招／舊局倍率 1。 */
   const ar = mv.aoe ? mv.aoe + qiAoeAdd(d, mv) : 0, hitList = mv.aoe ? live.filter(m=>dist(m.pos,mv.aoeCenter==='actor'?d.pos:tgt.pos)<=ar) : [tgt];
   const r = resolveSwing(s, d, tgt, () => rand(s), { depth: depthOf(d, mv.id), wind: w.wind, move: mv.id, force: w.force, map: true, targetApproachingAtWindup:w.targetApproachingAtWindup, dodgeAtWindup:w.dodgeAtWindup });
   if(r.counter){d.hp=Math.max(0,d.hp-r.counterDamage);clashFx(s,tgt,'read');}
@@ -989,12 +992,13 @@ export function temperDaily29(s) { const W = (s.v29n ??= {}), B = (W.baseByTrait
 function injuryDaily(s) { for (const d of [...s.ds,...s.mons,...(s.band?.members||[])]) if (d.part||d.wounds?.length) partHeal(s,d,'day'); /* 新層1–4遊戲日；舊部位傷仍可遷移 */ for (const d of s.ds) { if (!d.qiInjury) continue; if (d.qiInjury >= DRIVE28.injHeavy) { d.hp = clamp(d.hp - DRIVE28.hp, 1, 100); d.mood = clamp((d.mood ?? 50) - DRIVE28.mood, 0, 100); } const a = mainOuterArt(d); if (!a || innerDrive28(d, a).tier !== 4) qiInjuryCure28(s, d, DRIVE28.rest); } }
 export function dailyPipeline(s) {
   if (bodyConditionOn(s)) for (const d of s.ds) ensureBodyCondition(d, s.day); // 出自 Phase 5 規格：睡眠換日恢復並歸零每日週期。
-  if (s.hermitage?.active) {
+  if (s.hermitage) {
     const partner = s.ds.find((d) => d.id === (s.hermitage.partnerId === 'huangrong' ? 'partner-hr' : 'partner-xln'));
     const hero = s.ds.find((d) => d.id === 'hero');
     if (hero && partner && !hero.away && !partner.away) s.hermitage.livedDays = (s.hermitage.livedDays || 0) + 1;
     checkPartnerAwakening(partner, hero, s);
     checkExteriorToInteriorAwakening(hero, s);
+    if (s.hermitage.active) queueHermitageFounding(s);
   }
   fadeSocialThoughts(s);
   for (const x of returnFromWork(s)) log(s, `${x.id}下山做工攢足束脩，回到山門口等掌門決定。`);
@@ -1092,7 +1096,7 @@ function trialStep(s,d,dt){
   if(d.swing){if(s.t+1e-9<d.swing.at)return;const w=d.swing;d.swing=null;const mv=MOVES.find(x=>x.id===w.mv);if(!mv||dist(m.pos,d.pos)>mv.range*1.3)return;
     const r=resolveSwing(s,d,m,()=>rand(s),{move:mv.id,wind:w.wind,opening:w.opening,targetApproachingAtWindup:w.targetApproachingAtWindup,dodgeAtWindup:w.dodgeAtWindup});d.anim='strike';
     if(r.counter)d.hp=Math.max(30,d.hp-r.counterDamage);
-    if(r.kind==='hit'){m.hp-=landOn(s,d,m,mv,mv.dmg*(1+d.skills[mv.skill]/50)*moveMul(d,mv.id,s.t),MONSTERS[m.k].name)*(r.heavy?CLASH.heavy:1)*r.contact.damageFactor;breakWindup(s,d,m,mv.id,w.wind,r.contact);}
+    if(r.kind==='hit'){m.hp-=landOn(s,d,m,mv,mv.dmg*(1+d.skills[mv.skill]/50)*moveMul(d,mv.id,s.t)*twinSwordsDamageFactor(s,d,mv.id),MONSTERS[m.k].name)*(r.heavy?CLASH.heavy:1)*r.contact.damageFactor;breakWindup(s,d,m,mv.id,w.wind,r.contact);}
     else clashFx(s,m,r.kind==='parry'?(r.jolt?'jolt':null):r.kind);
     s.fx.push({kind:'move',mfx:mv.fx,name:mv.name,color:mv.color,from:[...d.pos],to:[...m.pos],r:16,ttl:.6,tier:visTier(d,mv.id),sprite:d.sprite,face:d.face});
     if(m.hp<=0)finishTrial(s,d,m,mv);return;

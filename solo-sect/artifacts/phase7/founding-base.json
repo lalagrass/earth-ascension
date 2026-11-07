@@ -1,0 +1,176 @@
+{
+  "days": 10,
+  "dt": 0.25,
+  "alertPolicy": "automatically acknowledge before next tick",
+  "scope": "headless fixed schedule; player decisions are not supplied",
+  "rows": [
+    {
+      "seed": 1001,
+      "partner": "xiaolongnv",
+      "starterArt": "chunyangFist",
+      "pendingFounding": false,
+      "foundedDay": null,
+      "doctrine": null,
+      "sectId": "quanzhen",
+      "partnerStage": 1,
+      "exploredCliffs": [],
+      "graceUntil": null,
+      "rep": 49
+    },
+    {
+      "seed": 1002,
+      "partner": "huangrong",
+      "starterArt": "luohanHands",
+      "pendingFounding": false,
+      "foundedDay": null,
+      "doctrine": null,
+      "sectId": "quanzhen",
+      "partnerStage": 4,
+      "exploredCliffs": [
+        "cliff1"
+      ],
+      "graceUntil": null,
+      "rep": 39
+    },
+    {
+      "seed": 1003,
+      "partner": "xiaolongnv",
+      "starterArt": "chunyangFist",
+      "pendingFounding": false,
+      "foundedDay": null,
+      "doctrine": null,
+      "sectId": "quanzhen",
+      "partnerStage": 3,
+      "exploredCliffs": [],
+      "graceUntil": null,
+      "rep": 49
+    },
+    {
+      "seed": 1004,
+      "partner": "huangrong",
+      "starterArt": "luohanHands",
+      "pendingFounding": false,
+      "foundedDay": null,
+      "doctrine": null,
+      "sectId": "quanzhen",
+      "partnerStage": 3,
+      "exploredCliffs": [
+        "cliff1"
+      ],
+      "graceUntil": null,
+      "rep": 45
+    },
+    {
+      "seed": 1005,
+      "partner": "xiaolongnv",
+      "starterArt": "chunyangFist",
+      "pendingFounding": false,
+      "foundedDay": null,
+      "doctrine": null,
+      "sectId": "quanzhen",
+      "partnerStage": 3,
+      "exploredCliffs": [],
+      "graceUntil": null,
+      "rep": 47
+    },
+    {
+      "seed": 1006,
+      "partner": "huangrong",
+      "starterArt": "luohanHands",
+      "pendingFounding": false,
+      "foundedDay": null,
+      "doctrine": null,
+      "sectId": "quanzhen",
+      "partnerStage": 3,
+      "exploredCliffs": [
+        "cliff1"
+      ],
+      "graceUntil": null,
+      "rep": 45
+    },
+    {
+      "seed": 1007,
+      "partner": "xiaolongnv",
+      "starterArt": "chunyangFist",
+      "pendingFounding": false,
+      "foundedDay": null,
+      "doctrine": null,
+      "sectId": "quanzhen",
+      "partnerStage": 4,
+      "exploredCliffs": [],
+      "graceUntil": null,
+      "rep": 43
+    },
+    {
+      "seed": 1008,
+      "partner": "huangrong",
+      "starterArt": "luohanHands",
+      "pendingFounding": false,
+      "foundedDay": null,
+      "doctrine": null,
+      "sectId": "quanzhen",
+      "partnerStage": 3,
+      "exploredCliffs": [
+        "cliff1"
+      ],
+      "graceUntil": null,
+      "rep": 45
+    },
+    {
+      "seed": 1009,
+      "partner": "xiaolongnv",
+      "starterArt": "chunyangFist",
+      "pendingFounding": false,
+      "foundedDay": null,
+      "doctrine": null,
+      "sectId": "quanzhen",
+      "partnerStage": 3,
+      "exploredCliffs": [],
+      "graceUntil": null,
+      "rep": 43
+    },
+    {
+      "seed": 1010,
+      "partner": "huangrong",
+      "starterArt": "luohanHands",
+      "pendingFounding": false,
+      "foundedDay": null,
+      "doctrine": null,
+      "sectId": "quanzhen",
+      "partnerStage": 3,
+      "exploredCliffs": [
+        "cliff1"
+      ],
+      "graceUntil": null,
+      "rep": 39
+    },
+    {
+      "seed": 1011,
+      "partner": "xiaolongnv",
+      "starterArt": "chunyangFist",
+      "pendingFounding": false,
+      "foundedDay": null,
+      "doctrine": null,
+      "sectId": "quanzhen",
+      "partnerStage": 4,
+      "exploredCliffs": [],
+      "graceUntil": null,
+      "rep": 43
+    },
+    {
+      "seed": 1012,
+      "partner": "huangrong",
+      "starterArt": "luohanHands",
+      "pendingFounding": false,
+      "foundedDay": null,
+      "doctrine": null,
+      "sectId": "quanzhen",
+      "partnerStage": 3,
+      "exploredCliffs": [
+        "cliff1"
+      ],
+      "graceUntil": null,
+      "rep": 45
+    }
+  ]
+}

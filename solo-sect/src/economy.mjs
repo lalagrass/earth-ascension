@@ -55,6 +55,7 @@ export const priceOf = (s, k) => (!!s && k === 'lingshi' ? CARAVAN24.lsPrice : M
 export const left = (s, k) => (MARKET.rare[k] ? (rareOn(s, k) ? (k === 'lingshi' ? lsStock24(s) : MARKET.rare[k].max) : 0) : k === 'pill' ? MARKET.pill.max : MARKET.stock[k]) - (market(s).sold[k] || 0);
 const armable = (s) => s.ds.filter((d) => d.role !== 'laborer' && d.adult !== false && !d.weapon).sort((a, b) => (b.best || 0) - (a.best || 0) || (a.id === 'hero' ? -1 : 1))[0];
 export function marketWhy(s, k) {
+  if (s.hermitage?.active) return '立匾開山後才能經營山下市集'; // 出自 Phase 7 規格：開山後解鎖完整市集。
   if (MARKET.rare[k] && !rareOn(s, k)) return '市集沒有這項貨';
   if (left(s, k) <= 0) return '這期賣完了，等下次補貨';
   if (k === 'pill') return (s.res.pill || 0) > 0 ? null : '沒有療傷丹可賣';
