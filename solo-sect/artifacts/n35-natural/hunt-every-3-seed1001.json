@@ -1,0 +1,1950 @@
+{
+  "days": 30,
+  "wu": 2,
+  "huntEvery": 3,
+  "seeds": [
+    1001
+  ],
+  "rows": [
+    {
+      "seed": 1001,
+      "day": 31,
+      "wu": 2,
+      "firstDay": null,
+      "known": [],
+      "progress": {
+        "dustCast": 2.319954969297842,
+        "bodyThrow": 1.4824333042925146,
+        "disarm": 0.055338998353183885,
+        "stoneOpening": 0.8421022383277412
+      },
+      "progressResets": [],
+      "contexts": {
+        "bodyThrow": {
+          "seen": 107,
+          "lost": 31,
+          "heroSeen": 11,
+          "heroLost": 4
+        },
+        "stoneOpening": {
+          "seen": 15,
+          "lost": 1,
+          "heroSeen": 3,
+          "heroLost": 1
+        },
+        "dustCast": {
+          "seen": 58,
+          "lost": 29,
+          "heroSeen": 15,
+          "heroLost": 10
+        },
+        "disarm": {
+          "seen": 28,
+          "lost": 11,
+          "heroSeen": 6,
+          "heroLost": 4
+        },
+        "staffSweep": {
+          "seen": 5,
+          "lost": 3,
+          "heroSeen": 0,
+          "heroLost": 0
+        }
+      },
+      "prerequisites": {
+        "disarm": {
+          "parents": 2064,
+          "heroParents": 170,
+          "words": {
+            "hands": 576,
+            "opponentWind": 1913,
+            "opponentWeapon": 193
+          }
+        },
+        "dustCast": {
+          "parents": 1922,
+          "heroParents": 149,
+          "words": {
+            "hands": 434,
+            "losing": 1075,
+            "cornered": 1409
+          }
+        },
+        "bodyThrow": {
+          "parents": 170,
+          "heroParents": 24,
+          "words": {
+            "hands": 170,
+            "opponentUnbalanced": 107
+          }
+        },
+        "flankStrike": {
+          "parents": 403,
+          "heroParents": 201,
+          "words": {
+            "afterDodge": 4,
+            "opponentCharge": 10
+          }
+        },
+        "stoneOpening": {
+          "parents": 28,
+          "heroParents": 3,
+          "words": {
+            "approaching": 15
+          }
+        },
+        "staffSweep": {
+          "parents": 5,
+          "heroParents": 0,
+          "words": {
+            "surrounded": 5
+          }
+        }
+      },
+      "tools": {
+        "stone": true
+      },
+      "stone": 12,
+      "hunts": 10,
+      "boarVisible": 1074,
+      "boarMoves": {
+        "boarToss": 295,
+        "boarCharge": 52,
+        "survivorFeint": 8
+      },
+      "boarCharges": 52,
+      "boarDodges": 0,
+      "heroBoarDodges": 0,
+      "daily": [
+        {
+          "day": 1,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 1,
+              "lost": 0,
+              "heroSeen": 1,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {},
+          "heroKnown": [],
+          "gains": {
+            "count": 0,
+            "w": 0,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": null
+        },
+        {
+          "day": 2,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {},
+          "heroKnown": [],
+          "gains": {
+            "count": 0,
+            "w": 0,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": null
+        },
+        {
+          "day": 3,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 44,
+              "lost": 12,
+              "heroSeen": 1,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 16,
+              "lost": 10,
+              "heroSeen": 4,
+              "heroLost": 4
+            },
+            "stoneOpening": {
+              "seen": 2,
+              "lost": 0,
+              "heroSeen": 1,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 22,
+            "w": 11.607512041359115,
+            "heroCount": 4,
+            "heroW": 2.319954969297842
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 3.6496595152938704,
+            "threshold": 24,
+            "ratio": 0.15206914647057793
+          }
+        },
+        {
+          "day": 4,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 0,
+            "w": 0,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 3.6496595152938704,
+            "threshold": 24,
+            "ratio": 0.15206914647057793
+          }
+        },
+        {
+          "day": 5,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 0,
+            "w": 0,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 3.6496595152938704,
+            "threshold": 24,
+            "ratio": 0.15206914647057793
+          }
+        },
+        {
+          "day": 6,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 45,
+              "lost": 13,
+              "heroSeen": 8,
+              "heroLost": 4
+            },
+            "dustCast": {
+              "seen": 17,
+              "lost": 4,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 3,
+              "lost": 0,
+              "heroSeen": 1,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 17,
+            "w": 5.114850655924847,
+            "heroCount": 4,
+            "heroW": 1.4824333042925146
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 6.902867287642613,
+            "threshold": 24,
+            "ratio": 0.2876194703184422
+          }
+        },
+        {
+          "day": 7,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 0,
+            "w": 0,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 6.902867287642613,
+            "threshold": 24,
+            "ratio": 0.2876194703184422
+          }
+        },
+        {
+          "day": 8,
+          "contexts": {
+            "disarm": {
+              "seen": 13,
+              "lost": 6,
+              "heroSeen": 4,
+              "heroLost": 3
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 2,
+              "lost": 2,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 1,
+              "lost": 1,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 5,
+              "lost": 2,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.0546965402238262
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 11,
+            "w": 6.283030909465167,
+            "heroCount": 3,
+            "heroW": 0.0546965402238262
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 7.862742243812315,
+            "threshold": 24,
+            "ratio": 0.3276142601588465
+          }
+        },
+        {
+          "day": 9,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 8,
+              "lost": 3,
+              "heroSeen": 1,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 4,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.0546965402238262
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 3,
+            "w": 1.3594898164977982,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 7.862742243812315,
+            "threshold": 24,
+            "ratio": 0.3276142601588465
+          }
+        },
+        {
+          "day": 10,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.0546965402238262
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 0,
+            "w": 0,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 7.862742243812315,
+            "threshold": 24,
+            "ratio": 0.3276142601588465
+          }
+        },
+        {
+          "day": 11,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.0546965402238262
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 0,
+            "w": 0,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 7.862742243812315,
+            "threshold": 24,
+            "ratio": 0.3276142601588465
+          }
+        },
+        {
+          "day": 12,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 2,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.0546965402238262
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 0,
+            "w": 0,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 7.862742243812315,
+            "threshold": 24,
+            "ratio": 0.3276142601588465
+          }
+        },
+        {
+          "day": 13,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.0546965402238262
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 0,
+            "w": 0,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 7.862742243812315,
+            "threshold": 24,
+            "ratio": 0.3276142601588465
+          }
+        },
+        {
+          "day": 14,
+          "contexts": {
+            "disarm": {
+              "seen": 3,
+              "lost": 1,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 1,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 8,
+              "lost": 6,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.0546965402238262
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 7,
+            "w": 1.3521974284591054,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 7.862742243812315,
+            "threshold": 24,
+            "ratio": 0.3276142601588465
+          }
+        },
+        {
+          "day": 15,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 1,
+              "lost": 1,
+              "heroSeen": 1,
+              "heroLost": 1
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.0546965402238262,
+            "stoneOpening": 0.8421022383277412
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 1,
+            "w": 0.8421022383277412,
+            "heroCount": 1,
+            "heroW": 0.8421022383277412
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 7.862742243812315,
+            "threshold": 24,
+            "ratio": 0.3276142601588465
+          }
+        },
+        {
+          "day": 16,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.0546965402238262,
+            "stoneOpening": 0.8421022383277412
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 0,
+            "w": 0,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 7.862742243812315,
+            "threshold": 24,
+            "ratio": 0.3276142601588465
+          }
+        },
+        {
+          "day": 17,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.0546965402238262,
+            "stoneOpening": 0.8421022383277412
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 0,
+            "w": 0,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 7.862742243812315,
+            "threshold": 24,
+            "ratio": 0.3276142601588465
+          }
+        },
+        {
+          "day": 18,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 1,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 1,
+              "lost": 1,
+              "heroSeen": 1,
+              "heroLost": 1
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.0546965402238262,
+            "stoneOpening": 0.8421022383277412
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 1,
+            "w": 0,
+            "heroCount": 1,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 7.862742243812315,
+            "threshold": 24,
+            "ratio": 0.3276142601588465
+          }
+        },
+        {
+          "day": 19,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.0546965402238262,
+            "stoneOpening": 0.8421022383277412
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 0,
+            "w": 0,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 7.862742243812315,
+            "threshold": 24,
+            "ratio": 0.3276142601588465
+          }
+        },
+        {
+          "day": 20,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.0546965402238262,
+            "stoneOpening": 0.8421022383277412
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 0,
+            "w": 0,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 7.862742243812315,
+            "threshold": 24,
+            "ratio": 0.3276142601588465
+          }
+        },
+        {
+          "day": 21,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 2,
+              "lost": 2,
+              "heroSeen": 2,
+              "heroLost": 2
+            },
+            "stoneOpening": {
+              "seen": 1,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.0546965402238262,
+            "stoneOpening": 0.8421022383277412
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 2,
+            "w": 0,
+            "heroCount": 2,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 7.862742243812315,
+            "threshold": 24,
+            "ratio": 0.3276142601588465
+          }
+        },
+        {
+          "day": 22,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.0546965402238262,
+            "stoneOpening": 0.8421022383277412
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 0,
+            "w": 0,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 7.862742243812315,
+            "threshold": 24,
+            "ratio": 0.3276142601588465
+          }
+        },
+        {
+          "day": 23,
+          "contexts": {
+            "disarm": {
+              "seen": 12,
+              "lost": 4,
+              "heroSeen": 2,
+              "heroLost": 1
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 3,
+              "lost": 1,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 2,
+              "lost": 2,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 1,
+              "lost": 1,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.055338998353183885,
+            "stoneOpening": 0.8421022383277412
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 8,
+            "w": 4.176452025685446,
+            "heroCount": 1,
+            "heroW": 0.0006424581293576801
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 9.506907958197475,
+            "threshold": 24,
+            "ratio": 0.3961211649248948
+          }
+        },
+        {
+          "day": 24,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 4,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 5,
+              "lost": 1,
+              "heroSeen": 5,
+              "heroLost": 1
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.055338998353183885,
+            "stoneOpening": 0.8421022383277412
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 1,
+            "w": 0,
+            "heroCount": 1,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 9.506907958197475,
+            "threshold": 24,
+            "ratio": 0.3961211649248948
+          }
+        },
+        {
+          "day": 25,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.055338998353183885,
+            "stoneOpening": 0.8421022383277412
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 0,
+            "w": 0,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 9.506907958197475,
+            "threshold": 24,
+            "ratio": 0.3961211649248948
+          }
+        },
+        {
+          "day": 26,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.055338998353183885,
+            "stoneOpening": 0.8421022383277412
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 0,
+            "w": 0,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 9.506907958197475,
+            "threshold": 24,
+            "ratio": 0.3961211649248948
+          }
+        },
+        {
+          "day": 27,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 3,
+              "lost": 2,
+              "heroSeen": 3,
+              "heroLost": 2
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.055338998353183885,
+            "stoneOpening": 0.8421022383277412
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 2,
+            "w": 0,
+            "heroCount": 2,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 9.506907958197475,
+            "threshold": 24,
+            "ratio": 0.3961211649248948
+          }
+        },
+        {
+          "day": 28,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.055338998353183885,
+            "stoneOpening": 0.8421022383277412
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 0,
+            "w": 0,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 9.506907958197475,
+            "threshold": 24,
+            "ratio": 0.3961211649248948
+          }
+        },
+        {
+          "day": 29,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.055338998353183885,
+            "stoneOpening": 0.8421022383277412
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 0,
+            "w": 0,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 9.506907958197475,
+            "threshold": 24,
+            "ratio": 0.3961211649248948
+          }
+        },
+        {
+          "day": 30,
+          "contexts": {
+            "disarm": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "flankStrike": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "staffSweep": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "bodyThrow": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "dustCast": {
+              "seen": 0,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            },
+            "stoneOpening": {
+              "seen": 2,
+              "lost": 0,
+              "heroSeen": 0,
+              "heroLost": 0
+            }
+          },
+          "heroProgress": {
+            "dustCast": 2.319954969297842,
+            "bodyThrow": 1.4824333042925146,
+            "disarm": 0.055338998353183885,
+            "stoneOpening": 0.8421022383277412
+          },
+          "heroKnown": [],
+          "gains": {
+            "count": 0,
+            "w": 0,
+            "heroCount": 0,
+            "heroW": 0
+          },
+          "peak": {
+            "who": "origin-1",
+            "move": "bodyThrow",
+            "progress": 9.506907958197475,
+            "threshold": 24,
+            "ratio": 0.3961211649248948
+          }
+        }
+      ]
+    }
+  ],
+  "contexts": {
+    "disarm": {
+      "seen": 28,
+      "lost": 11,
+      "heroSeen": 6,
+      "heroLost": 4
+    },
+    "flankStrike": {
+      "seen": 0,
+      "lost": 0,
+      "heroSeen": 0,
+      "heroLost": 0
+    },
+    "staffSweep": {
+      "seen": 5,
+      "lost": 3,
+      "heroSeen": 0,
+      "heroLost": 0
+    },
+    "bodyThrow": {
+      "seen": 107,
+      "lost": 31,
+      "heroSeen": 11,
+      "heroLost": 4
+    },
+    "dustCast": {
+      "seen": 58,
+      "lost": 29,
+      "heroSeen": 15,
+      "heroLost": 10
+    },
+    "stoneOpening": {
+      "seen": 15,
+      "lost": 1,
+      "heroSeen": 3,
+      "heroLost": 1
+    }
+  },
+  "firstDays": [],
+  "medianFirstDay": null
+}
