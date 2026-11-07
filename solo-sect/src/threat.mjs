@@ -284,6 +284,17 @@ function advanceRaidRhythm(s, X, phase) {
     ...(s.band?.day >= phase.start && s.band?.day < phase.nextPressure ? [s.band.n] : [])]).size;
 }
 export function T(s) { return (s.threat ??= { next: RAID.first, n: 0, paid: 0, fought: 0, won: 0, homeHurt: 0, deaths: 0, pending: null, rng: 0, hist: [], adapt: 1, rhythmCycle: null, rhythmStrikes: 0, lastBigDay: 0 }); }
+// N51：江湖客也是同一期的大威脅，與山賊共用名額／最短間隔，不另造時序門檻。
+export function majorThreatAvailable(s) {
+  const X = T(s), phase = raidPhase(s); advanceRaidRhythm(s, X, phase);
+  return phase.id === 'pressure' && X.rhythmStrikes < RAID_RHYTHM.maxBig && s.day >= (X.lastBigDay || 0) + RAID_RHYTHM.minGap
+    && !X.pending && !X.wave && !s.band && !s.jh?.visitor && !s.jh?.visitorPending;
+}
+export function reserveMajorThreat(s) {
+  if (!majorThreatAvailable(s)) return false;
+  const X = T(s); X.rhythmStrikes++; X.lastBigDay = s.day; X.next = Math.max(X.next, s.day + RAID_RHYTHM.minGap);
+  return true;
+}
 const R = (s) => { const X = T(s); X.rng = ((X.rng || seedMix(s.seed || 1, 7477)) * 16807) % 2147483647; return X.rng / 2147483647; };
 export const headcount = (s) => s.ds.filter((d) => !d.removed).length;
 export function wealth(s) { const W = RAID.w, r = s.res; return Math.max(0, r.coin || 0) * W.coin + (r.food || 0) * W.food + (r.pill || 0) * W.pill + (r.herb || 0) * W.herb + FACILITIES.reduce((a, f) => a + (s.fac[f.id]?.stage || 0), 0) * W.stage; }
@@ -343,7 +354,7 @@ export const raidAuto = (s) => { const P = T(s).pending; if (P?.noPay) return 1;
 export const RUMOR = { lead: 2, fenceK: 1.5 };
 export const rumorDays = (s) => { const X = T(s); return !X.pending && X.rumorFor != null && X.rumorFor === X.next ? Math.max(1, X.next - (s.day || 0)) : 0; };
 function rumorDaily(s) {
-  const X = T(s); if (X.pending || s.band || X.rumorFor === X.next) return; const left = X.next - (s.day || 0);
+  const X = T(s); if (X.pending || s.band || s.jh?.visitor || s.jh?.visitorPending || X.rumorFor === X.next) return; const left = X.next - (s.day || 0);
   if (left > RUMOR.lead || left < 1 || points(s) <= 0) return; X.rumorFor = X.next;
   log(s, `【傳聞】山下茶攤有人說，有夥山賊在打聽本門的家底，怕是${left <= 1 ? '這一兩日' : `約 ${left} 日內`}就會上山。`);
   if (s.exp && s.exp.phase !== 'back' && s.exp.phase !== 'done') log(s, '【傳聞】遠行的弟子若想回山守門，可以下令召回。');
@@ -361,7 +372,7 @@ function bossDaily(s, phase) {
   if (day === B.day - 1 && !B.rumored) { B.rumored = true; log(s, '【傳聞】山腳獵戶說，被剿散的山寨餘黨聚在後山，揚言明日就要殺回來報仇！'); }
   if (day < B.day) return;
   if (phase.id === 'respite' || X.rhythmStrikes >= RAID_RHYTHM.maxBig) { B.day = Math.max(day + 1, phase.nextPressure); return; }
-  if (X.pending || s.band) { B.day = day + 1; return; } // 撞上別的山賊就順延一日
+  if (X.pending || s.band || s.jh?.visitor || s.jh?.visitorPending) { B.day = day + 1; return; } // 撞上別的大威脅就順延一日
   const pts = Math.max(BOSS.min, Math.round(points(s) * BOSS.k)), p = winP(s, pts);
   B.state = 'on'; X.n++; X.rhythmStrikes++; X.lastBigDay = day;
   X.pending = { n: X.n, pts, demand: 0, p: +p.toFixed(2), at: s.t, until: s.t + RAID.wait / 4, day, noPay: true, boss: true };
@@ -386,7 +397,7 @@ export function threatDaily(s) {
   if (X.adapt == null) X.adapt = 1;
   else if (X.adapt < 1) X.adapt = Math.min(1, +(X.adapt + (RAID.adaptRecover ?? 0.05)).toFixed(2));
   else if (X.adapt > 1) X.adapt = Math.max(1, +(X.adapt - (RAID.adaptRecover ?? 0.05)).toFixed(2));
-  if (X.pending || s.band || phase.id === 'respite' || X.rhythmStrikes >= RAID_RHYTHM.maxBig || (s.day || 0) < X.next) return null;
+  if (X.pending || s.band || s.jh?.visitor || s.jh?.visitorPending || phase.id === 'respite' || X.rhythmStrikes >= RAID_RHYTHM.maxBig || (s.day || 0) < X.next) return null;
   X.next = s.day + RAID.every + Math.floor(R(s) * (2 * RAID.jitter + 1)) - RAID.jitter;
   if (X.taiping) X.next += BOSS.peaceGap; X.next += peaceDelay(s); // loop9 巡山太平→山賊延後
   let pts = points(s); if (pts <= 0) return null;
@@ -402,7 +413,7 @@ function nextWave(s, src, win) { const X = T(s); if (!win || !src.kind || src.wa
   X.wave = { at: s.t + WAVE.gap, pts: Math.max(1, Math.round(src.pts * WAVE.k)), kind: src.kind, n: src.n, day: src.day }; log(s, `【${kindOf(src.kind).name}】山賊退到山腳重整，揚言還要再殺上來！`); }
 function waveStep(s) {
   const X = T(s), W = X.wave, phase = raidPhase(s);
-  if (!W || s.t < W.at || X.pending || s.band || phase.id === 'respite') return;
+  if (!W || s.t < W.at || X.pending || s.band || s.jh?.visitor || s.jh?.visitorPending || phase.id === 'respite') return;
   advanceRaidRhythm(s, X, phase);
   // 同一期第二波是原來犯的延續；跨到下一期則佔下一期名額，也要留足原最短間隔。
   if (W.day < phase.start) {

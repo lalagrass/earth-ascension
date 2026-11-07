@@ -86,8 +86,10 @@ export const MIGRATIONS = [
       }
     }
   } },
-  { to: '4.0', note: '第十一輪（#454）：來犯與喘息輪替、巡山前三段和剿寨改真地圖交手；舊威脅點數及已到山門的事件保留，從現有戰報重建本期來犯次數', up(o) {
+  { to: '4.0', note: '第十一輪（#454）：來犯與喘息輪替、早段巡山及江湖客改真地圖交手；舊威脅點數及山賊事件保留，未有理由的舊敵意登門卡撤回', up(o) {
     if (o.threat) { o.threat.rhythmCycle = null; o.threat.rhythmStrikes = 0; o.threat.lastBigDay = null; }
+    o.choices = (o.choices || []).filter(c => !['dfbb', 'hy'].includes(c.jh));
+    if (o.jh) { o.jh.visitor = null; o.jh.visitorPending = null; }
   } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored

@@ -648,6 +648,9 @@ export const ENEMIES = {
   swordtomb:{ name: '劍塚守者', kind: '人', weapon: '玄鐵重劍', hp: 600, dmg: 24, cd: 1.3, flee: 0, loot: { coin: 30, page2: 1 } },
   peakguard:{ name: '無名高手', kind: '人', weapon: '？', hp: 560, dmg: 22, cd: 1.2, flee: 0, loot: { coin: 20, page2: 1 } },
 };
+// N51：登門高手的承傷／每招損傷沿用本作同級遠段敵人的尺度，差別由招式秒數和理由資料決定。
+ENEMIES.dfbb = { ...ENEMIES.peakguard, name: '東方不敗', weapon: '繡花針', loot: {} };
+ENEMIES.hy = { ...ENEMIES.whiteape, name: '火雲邪神', kind: '人', weapon: '掌', loot: {} };
 // 觀破值：照面 +1、交手 +2、擊倒 +5；10 識其來路、30 熟其招式、60 看破（對其傷害 +10%）
 export const INSIGHT = { see: 1, fight: 2, kill: 5, tiers: [[10, '識其來路'], [30, '熟其招式'], [60, '看破']], dmgAt: 60, dmg: 0.1 };
 // ---- v0.95 巡山遠征：固定名單，從不讀玩家強度 ----
@@ -789,7 +792,7 @@ export const JH = {
   comedyWeek: 2, comedyDays: 7,
   anranMood: 30, anranMax: 1.5, twin: 1.3, kongming: 1.15, pair: 0.25,
   gambleBase: 2, gambleCap: 6, recruitBonus: 0.4, baoyi: 0.5, reflect: 0.3, jiuyangSta: 30,
-  hiddenMax: 3, hiddenP: 0.35, residueXp: 20, dfbbPow: 40, hyPow: 50, diaoFeeds: 3, honeyHeal: 15,
+  hiddenMax: 3, hiddenP: 0.35, residueXp: 20, diaoFeeds: 3, honeyHeal: 15,
 };
 Object.assign(TRAITS, { quiet: { name: '清冷', desc: '心情起伏減半，不喜熱鬧', composure: 'steady', mods: { train: 1.05, leisure: 0.9 } }, chi: { name: '癡', desc: '心情隨意中人起伏', mods: {}, mods24: { train: 1.25, study: 1.2, chat: 0.8 } } }); /* loop187 v2.9 mods24：只 d.v24 新局生效（舊局 mods 不動） */
 TRAITS.quiet.mods24 = { meditate: 1.35, study: 1.2, chat: 0.75 };
