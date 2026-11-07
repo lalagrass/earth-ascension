@@ -40,7 +40,7 @@ export const FENCE = {
   boarRams: 2,                      // loop4：每次下山最多連撞 2 下（長跑比較 3 下＝等於沒柵），柵破就闖進去拱菜（不再「有柵就全擋」）
   warnAt: 0.5,                      // loop4：耐久跌破一半才記一次日誌（防洗版）；修回一半以上重置
   floor: 4,                         // loop4：修柵後倉裡至少留這麼多料，不和建造搶光
-  levels: [null, { name: '木柵', max: 60, mat: 'wood', hp: 15 }, { name: '石牆', max: 150, mat: 'stone', hp: 25, cost: { stone: 12 } }],
+  levels: [null, { name: '木柵', max: 60, mat: 'wood', hp: 15 }, { name: '石牆', max: 150, mat: 'stone', hp: 25, cost: { stone: 12 } }, { name: '山門壘', max: 240, mat: 'stone', hp: 35, cost: { stone: 12 } }],
   bandit: { k: 0.15, min: 15 },     // 山賊落敗時對柵傷害＝max(min, 威脅點數×k)
   repair: { hp: 15, wood: 1 },      // 一次修柵：耗 1 木、回 15 耐久（石牆見 levels：耗 1 石、回 25）
   score: { base: 30, dmgK: 50, broken: 25 }, // 修柵分數＝base＋受損比例×dmgK（全毀再＋broken）
@@ -96,16 +96,20 @@ export function repairDone(s, d) {
 }
 export function fenceHtml(s) {
   const F = s.fence, v = fenceSite(s), prog = v ? `<span class="k">工地：${v.need.wood ? `木 ${v.delivered.wood}/${v.need.wood} ` : ''}${v.need.stone ? `石 ${v.delivered.stone}/${v.need.stone} ` : ''}工時 ${Math.floor(v.work)}/${v.workNeed}</span>` : '';
-  if (!F) return `<div class="fence"><b>菜園木柵</b>：還沒築 ${v ? prog : `<button data-fence>立藍圖：築木柵（${FENCE.cost.wood} 木，弟子搬料施工）</button>`}</div>`;
+  const speaker = s.ds?.find((d) => d.role !== 'laborer')?.name || '弟子';
+  if (!F) return `<div class="fence"><b>菜園木柵</b>：還沒築 ${v ? prog : `<button data-fence>立藍圖：築木柵（${FENCE.cost.wood} 木，弟子搬料施工）</button>`}<span class="k"> ${speaker}：「${FENCE_FAC.stages[1].proposal}」</span></div>`;
   const nx = FENCE.levels[(F.lv || 1) + 1];
-  return `<div class="fence"><b>菜園${lvOf(F).name}</b>${v ? ' ' + prog : nx ? ` <button data-fence-up>立藍圖：加砌${nx.name}（${nx.cost.stone} 石）</button>` : ''}：耐久 ${F.hp}/${F.max}${F.hp <= 0 ? '（已破）' : ''}・擋下 ${F.blocked} 次・被破 ${F.broken} 次・修補 ${F.repaired} 次</div>`;
+  return `<div class="fence"><b>菜園${lvOf(F).name}</b>${v ? ' ' + prog : nx ? ` <button data-fence-up>立藍圖：加砌${nx.name}（${nx.cost.stone} 石）</button>` : ''}：耐久 ${F.hp}/${F.max}${F.hp <= 0 ? '（已破）' : ''}・擋下 ${F.blocked} 次・被破 ${F.broken} 次・修補 ${F.repaired} 次${nx ? `<span class="k"> ${speaker}：「${FENCE_FAC.stages[(F.lv || 1) + 1].proposal}」</span>` : ''}</div>`;
 }
 
 // ---- loop11：築柵／加砌改走既有工地搬運流程（藍圖→弟子從院倉搬料到菜園→施工）。只限柵牆。 ----
 function placeFence(s) { s.fence = { lv: 1, hp: FENCE.max, max: FENCE.max, hits: 0, broken: 0, repaired: 0, blocked: 0 }; log(s, `菜園圍起了木柵（耐久 ${FENCE.max}）。`); }
 function raiseFence(s, nx) { const F = s.fence; F.lv = (F.lv || 1) + 1; F.hp = Math.min(nx.max, F.hp + (nx.max - F.max)); F.max = nx.max; F.warned = false; log(s, `菜園木柵加砌成${nx.name}（耐久 ${F.hp}/${F.max}）。`); }
 export const FENCE_SITE = { work: { build: 12, up: 20 } };
-export const FENCE_FAC = { id: 'fence', name: '菜園柵', node: FENCE.node, stages: [{ name: '菜園柵', offers: [] }] };
+export const FENCE_FAC = { id: 'fence', name: '菜園柵', node: FENCE.node, stages: [
+  { name: '未築', offers: [], proposal: '上次被圍時沒有牆可以靠，先把柵築起來' }, { name: '木柵', offers: ['defend'], coverSlots: 2, proposal: '先築木柵，守門時有地方靠' },
+  { name: '石牆', offers: ['defend'], coverSlots: 1, proposal: '上次被圍時木柵守不住，把通道收窄' }, { name: '山門壘', offers: ['defend'], coverSlots: 1, proposal: '把石牆加固，守住窄處' },
+] };
 export const fenceSite = (s) => s.fac?.fence?.site || null;
 export function canStartFenceSite(s) {
   if (fenceSite(s)) return { ok: false, why: '柵牆工地施工中' };

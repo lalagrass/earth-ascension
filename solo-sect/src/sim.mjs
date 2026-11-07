@@ -62,7 +62,7 @@ export function createState(seed = 1, heroSpec = null) {
   // #390：每個新局都用現行規則（含「照舊」開局 spec＝null，擁有人 2026-11-02 決定）。spec 只決定主角與玩家選項。
   const withHero = !!heroSpec;
   const s = {
-    v: SAVE_VERSION, rules: RULES_VERSION, seed, t: 0, xia: xiaInit(), hs: hsInit(), jh: jhInit(), routine: { ...ROUTINE_DEFAULT }, forayPolicy: 'allow', forayStats: { starts: 0, patrols: 0, hurt: 0, discoveries: 0, targets: [] }, res: { wood: 0, stone: 0, coin: ECON.coinStart, food: 6, herb: 0, veg: 0, water: 0, pill: 0, tiemu: 0, lingshi: 0 }, lots: { n: LOTS.start, bought: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })),  cap: { wood: 12, stone: 12, water: 12, pill: 10 }, day: 1, ledger: { day: 1, in: {}, out: {} }, ledgerPrev: null, laborGone: [],
+    v: SAVE_VERSION, rules: RULES_VERSION, seed, t: 0, xia: xiaInit(), hs: hsInit(), jh: jhInit(), routine: { ...ROUTINE_DEFAULT }, socialThoughts: [], forayPolicy: 'allow', forayStats: { starts: 0, patrols: 0, hurt: 0, discoveries: 0, targets: [] }, res: { wood: 0, stone: 0, coin: ECON.coinStart, food: 6, herb: 0, veg: 0, water: 0, pill: 0, tiemu: 0, lingshi: 0 }, lots: { n: LOTS.start, bought: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })),  cap: { wood: 12, stone: 12, water: 12, pill: 10 }, day: 1, ledger: { day: 1, in: {}, out: {} }, ledgerPrev: null, laborGone: [],
     fac: Object.fromEntries(FACILITIES.map((f) => [f.id, { stage: 0, site: null }])),
     ds: DISCIPLES.slice(0,1).map((d,i)=>mkDisciple(d,i)),
     rel: {}, aff: {}, families: [], eco: Object.fromEntries(Object.entries(ECO).map(([k, e]) => [k, { n: e.start, timer: 0 }])), wild: [], post: 'guard', raidT: 0, rep: 0, log: [], hunt: null, mons: [], fx: [], rngN: 0,
@@ -218,6 +218,7 @@ export function togglePause(s, id) {
 function finishBuild(s, id) {
   if (id === 'fence') { finishFenceSite(s); return; } // loop11
   const f = facDef(id), st = s.fac[id]; st.stage++; st.site = null; s.rep = (s.rep || 0) + REP.build;
+  while (s.plots.length < (f.stages[st.stage].plots || 0)) s.plots.push({ st: 'empty', g: 0 });
   recordDeed(s, null, 'build', { chron: `${f.name}落成「${f.stages[st.stage].name}」` }); for (const d of s.ds) think(s, d, 'newLook'); log(s, `完工：${f.name}成了「${f.stages[st.stage].name}」${f.stages[st.stage].offers.length ? '，解鎖：' + f.stages[st.stage].offers.map((a) => ACTIVITIES[a].name).join('、') : ''}`);
 }
 const siteOf = (s) => { const e = Object.entries(s.fac).find(([, v]) => v.site && !v.site.paused); return e ? [e[0], e[1].site] : null; };
@@ -556,9 +557,10 @@ function doTask(s,d,dt){
         finishTrainingWish(d,t.act);
       if (t.act === 'train' || t.act === 'spar') { const w = qiInjuryAdd28(s, d); if (w) log(s, `【經脈暗傷】${d.name}強以異種內息催動他派武學《${w.name}》，真氣逆行，經脈隱隱作痛！`); }
         if (t.act === 'meditate') qiInjuryCure28(s, d, DRIVE28.med);
-        if (t.act === 'heal' && (d.part||d.wounds?.length)) partHeal(s, d, specK(bestSpec(s, 'yishu')) > 0 ? 'doctor' : 'heal'); /* #427 療傷 */
+        if (t.act === 'heal' && (d.part||d.wounds?.length)) for (let i = 0; i < (facStage(s, t.fac).woundSteps || 1); i++) partHeal(s, d, specK(bestSpec(s, 'yishu')) > 0 ? 'doctor' : 'heal'); /* #427 療傷 */
         if (t.act === 'heal' && d.qiInjury) qiInjuryCure28(s, d, specK(bestSpec(s, 'yishu')) > 0 || s.ds.some((o) => o.arts?.linjiZhuang) ? 100 : DRIVE28.heal);
       const hp0 = d.hp, pill0 = s.res.pill || 0; if (A.eff) applyEff(s, d, A.eff, A.name);
+      if (t.act === 'heal' && facStage(s, t.fac).healBonus) applyEff(s, d, { hp: facStage(s, t.fac).healBonus, log: false }, A.name);
       specGrow(d, t.act); /* loop151 v2.3 專長 */
         if (t.act === 'heal' && d.hp > hp0) { const k = specK(bestSpec(s, 'yishu')); if (k > 0) d.hp = Math.min(100, d.hp + (d.hp - hp0) * SPEC.healMax * k); }
         if (t.act === 'brew' && (s.res.pill || 0) > pill0 && specM(d, 'yishu') > 0) { d.brewN = (d.brewN || 0) + 1; if (d.brewN % SPEC.brewEvery === 0) { resAdd(s, 'pill', 1); log(s, `${d.name}依醫書配伍，多煉出一顆丹藥。`); } }

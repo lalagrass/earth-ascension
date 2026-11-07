@@ -1442,7 +1442,7 @@ export function techniqueFacts(s,a,t,move=null){
   const close=enemies.filter(d=>d.pos&&a.pos&&Math.hypot(d.pos[0]-a.pos[0],d.pos[1]-a.pos[1])<=RING.outer);
   const weapon=t.weapon||incoming?.tool||incoming?.weapon||(t.k&&FOE_ACTIONS[t.k]?.moves.some(m=>m.weapon)?['blade','staff','fist'][(t.i||0)%3]:null);
   const burden=assessLoad(s,a).L;
-  return {hands:FOE_ACTIONS[a.k]?.hands??2,weapon,opponentWind:!!(t.swing||t.bswing),afterDodge,opponentCharge:!!(afterDodge?last.charging:incoming?.travel),enemies:close.length,opponentUnbalanced:(t.posture??postureMax(t))<postureMax(t)/2,losing:a.hp<(a.max||100)/2||(a.posture??postureMax(a))<postureMax(a)/2,cornered:!!coverFor(a)||burden>=1,approaching:!!t.path?.length&&!t.swing&&!t.bswing,force:moveStats(a,move).force,opponentForce:moveStats(t).force};
+  return {hands:FOE_ACTIONS[a.k]?.hands??2,weapon,opponentWind:!!(t.swing||t.bswing),afterDodge,opponentCharge:!!(afterDodge?last.charging:incoming?.travel),enemies:close.length,opponentUnbalanced:(t.posture??postureMax(t))<postureMax(t)/2,losing:a.hp<(a.max||100)/2||(a.posture??postureMax(a))<postureMax(a)/2,cornered:!!coverFor(a,s)||burden>=1,approaching:!!t.path?.length&&!t.swing&&!t.bswing,force:moveStats(a,move).force,opponentForce:moveStats(t).force};
 }
 function moveParents(move){const m=MOVES.find(m=>m.id===move)||Object.values(FOE_ACTIONS).flatMap(p=>p.moves).find(m=>m.id===move);return [move,m?.type,m?.skill,m?.weapon,m?.tool==='stone'?'stone':null].filter(Boolean);}
 function noteDiscoveries(s,d,rows){for(const row of rows){const text=`${d.name||d.k}在吃虧後悟出「${row.name}」`;log(s,text);if(d.id)chronOf(s,d,'glimmer',{chron:text});}}

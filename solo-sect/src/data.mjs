@@ -161,7 +161,12 @@ export const FACILITIES = [
     { name: '大膳房', sprite: 'kitchen_s1', offers: ['cook', 'eat'], cookDur: 5, cookYield: 5, mealBonus: 18, cost: { wood: 12, stone: 6, coin: 40 }, rare: { tiemu: 1 }, work: 26, rep: 25 },
   ] },
   { id: 'veg', name: '菜園', node: 'veg', stages: [{ name: '荒地菜畦', sprite: 'grass', offers: ['farm'], plots: 4 }] },
-  { id: 'herb', name: '藥園', node: 'herb', stages: [{ name: '野藥圃', sprite: 'herb', offers: ['forage'] }] },
+  { id: 'herb', name: '藥園', node: 'herb', stages: [
+    { name: '野藥圃', sprite: 'herb', offers: ['forage'] },
+    { name: '整理藥圃', sprite: 'herb', offers: ['forage', 'heal'], slots: { heal: 1 }, cost: { wood: 6 }, work: 15, proposal: '把野藥圃整理好，傷了可以就近敷藥' },
+    { name: '藥園 Lv1', sprite: 'herb', offers: ['forage', 'heal'], slots: { heal: 2 }, healBonus: 12, woundSteps: 2, cost: { wood: 12 }, work: 30, proposal: '多闢一處治傷位，藥草也能敷得更仔細' },
+    { name: '藥園 Lv2', sprite: 'herb', offers: ['forage', 'heal'], slots: { heal: 3 }, healBonus: 25, woundSteps: 3, cost: { wood: 18 }, work: 45, proposal: '再添藥床，傷重的人不用等別人敷完' },
+  ] },
   { id: 'forest', name: '林緣枯木', node: 'forest2', stages: [{ name: '枯木', sprite: 'log', offers: ['chop'] }] },
   { id: 'quarry', name: '後山石場', node: 'quarry', stages: [{ name: '亂石坡', sprite: null, offers: ['quarry'] }] },
   { id: 'shed', name: '工寮', node: 'shed', stages: [
@@ -352,7 +357,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '4.1'; /* N62：自主出獵門規與效用活動 */
+export const RULES_VERSION = '4.2'; /* 第十二輪：人際想法與四階設施 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -816,7 +821,7 @@ FACILITIES.push(
   B('quiet', '靜室', 'quiet', '靜室', { wood: 6, stone: 4 }, 18, ['meditate'], { spots: [{ id: 'mat0', offset: [-18, 0], acts: ['meditate'], kind: 'mat' }, { id: 'mat1', offset: [18, 0], acts: ['meditate'], kind: 'mat' }], medEase: 2 }),
   B('shrine', '祠堂', 'shrine', '祠堂', { wood: 8, stone: 6, coin: 4 }, 22, ['worship'], { slots: { worship: 2 } }, 10),
   B('alchemy', '丹房', 'alchemy', '丹房', { wood: 6, stone: 8, coin: 6 }, 24, ['brew'], { slots: { brew: 1 } }, 12),
-  B('clinic', '醫館', 'clinic', '醫館', { wood: 8, stone: 4, coin: 4 }, 20, ['heal'], { slots: { heal: 2 } }),
+  B('clinic', '醫館', 'clinic', '醫館', { wood: 8, stone: 4, coin: 4 }, 20, ['heal'], { slots: { heal: 2 }, upgrade: { healBonus: [12, 25], woundSteps: [2, 3] } }),
   B('guest', '客房', 'guest', '客房', { wood: 10, stone: 4, coin: 6 }, 22, ['host'], { slots: { host: 1 } }, 18),
   B('well', '井', 'well', '水井', { stone: 6 }, 14, ['water'], { slots: { water: 2 } }),
   B('bell', '鐘樓', 'bell', '鐘樓', { wood: 8, stone: 6 }, 20, ['bell'], { slots: { bell: 1 } }, 8),
@@ -824,6 +829,41 @@ FACILITIES.push(
   // 鎮派建築的地：不能從藍圖蓋，跟著「鎮派」落成一起開（sect.buildFac 把 stage 設成 1）；活動內容依門派查 SIG_ACTS
   { id: 'sig', name: '鎮派地', node: 'sig', v16: true, sig: true, stages: [{ name: '空地', sprite: null, offers: [] }, { name: '鎮派建築', sprite: null, offers: ['sig'], slots: { sig: 2 }, noBlueprint: true }] },
 );
+// N47: A built smart object keeps its original repair stage, then gains Lv1/Lv2.
+// Material and time follow the already calibrated first build at 2x/3x;
+// each upgrade adds one work place. No new activity-specific condition is needed.
+for (const f of FACILITIES.filter((o) => o.v16 && !o.sig)) {
+  const repair = f.stages[1];
+  for (let level = 2; level <= 3; level++) f.stages.push({ ...repair,
+    name: `${f.name} Lv${level - 1}`,
+    slots: Object.fromEntries(Object.entries(repair.slots || {}).map(([act, cap]) => [act, cap + level - 1])),
+    spots: repair.spots ? [...repair.spots, ...Array.from({ length: level - 1 }, (_, i) => ({ ...repair.spots[i % repair.spots.length], id: `extension${i}`, offset: [(i + 1) * 18, 18] }))] : undefined,
+    cost: Object.fromEntries(Object.entries(repair.cost).map(([material, amount]) => [material, amount * level])),
+    work: repair.work * level,
+    ...Object.fromEntries(Object.entries(repair.upgrade || {}).map(([field, values]) => [field, values[level - 2]])),
+    proposal: `把${f.name}再擴一處，多一個人能同時在這裡做事`,
+  });
+}
+// The kitchen had three stages; its last stage uses the preceding stage's
+// material/time scale and keeps the same cooking activity with one more place.
+{ const kitchen = FACILITIES.find((f) => f.id === 'kitchen'), prev = kitchen.stages[2];
+  kitchen.stages.push({ ...prev, name: '膳房 Lv2', slots: { cook: 2, eat: 3 }, cost: Object.fromEntries(Object.entries(prev.cost).map(([k, v]) => [k, v + (kitchen.stages[1].cost[k] || 0)])), work: prev.work + kitchen.stages[1].work, proposal: '多設一口灶，出獵的人回來不用等飯' }); }
+// The natural work sites are facilities too: repair them in the same four-stage
+// sequence. Six wood / fifteen seconds is the existing yard-repair work pack.
+const NATURAL_SITES = { veg: { capacity: 'plots', start: 4, gain: 2 }, forest: { capacity: 'chop', start: 1, gain: 1 }, quarry: { capacity: 'quarry', start: 1, gain: 1 }, store: { capacity: 'chat', start: 1, gain: 1 } };
+for (const [id, rule] of Object.entries(NATURAL_SITES)) {
+  const f = FACILITIES.find((row) => row.id === id), base = f.stages[0];
+  if (rule.capacity !== 'plots') base.slots = Object.fromEntries(base.offers.map((act) => [act, rule.start]));
+  for (let stage = 1; stage <= 3; stage++) f.stages.push({ ...base,
+    name: `${f.name}${stage === 1 ? '修復' : ` Lv${stage - 1}`}`,
+    cost: { wood: 6 * stage }, work: 15 * stage,
+    [rule.capacity]: rule.start + rule.gain * stage,
+    ...(rule.capacity === 'plots' ? {} : { slots: Object.fromEntries(base.offers.map((act) => [act, rule.start + rule.gain * stage])) }),
+    proposal: `把${f.name}整理好，讓${rule.start + rule.gain * stage}個人能同時在這裡做事`,
+  });
+}
+for (const f of FACILITIES.filter((o) => o.stages.length === 4))
+  for (let i = 1; i < f.stages.length; i++) f.stages[i].proposal ??= `把${f.name}修到${f.stages[i].name}，大家才有地方做${f.stages[i].offers.map((a) => ACTIVITIES[a]?.name || a).join('、') || '日常事'}`;
 Object.assign(ACTIVITIES, {
   study:   { name: '藏經閣研讀', dur: 10, energy: -4, skill: { style: 3 }, gen: { base: 40, why: '去藏經閣翻殘頁', cond: 'always' }, eff: { pageXP: 1 } },
   worship: { name: '祠堂上香', dur: 6, energy: -1, gen: { base: 46, why: '給祖師爺上炷香', cond: 'always', perDay: 3 }, eff: { mood: 6, rep: 0.3 } },

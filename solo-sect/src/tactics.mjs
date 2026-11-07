@@ -6,7 +6,7 @@ import {familiarUses,PRACTICE,emitPractice} from './practice.mjs';
 import {pickupDrop} from './techniques.mjs';
 export const COVERS=[
  {id:'hallWall',kind:'wall',pos:NODES.hall,stand:[NODES.hall[0]+RING.step,NODES.hall[1]],slots:1},
- {id:'gate',kind:'gate',pos:NODES.gate,stand:[NODES.gate[0]-RING.step,NODES.gate[1]],slots:2},
+ {id:'gate',kind:'gate',pos:NODES.gate,stand:[NODES.gate[0]-RING.step,NODES.gate[1]],slots:2,slotsByStage:[2,2,1,1]},
  {id:'guardTree',kind:'tree',pos:[NODES.guard[0]+RING.engage,NODES.guard[1]],stand:[NODES.guard[0]+RING.step,NODES.guard[1]],slots:1},
  {id:'trailTree',kind:'tree',pos:[NODES.trail2[0]+RING.engage,NODES.trail2[1]],stand:[NODES.trail2[0]+RING.step,NODES.trail2[1]],slots:1},
 ];
@@ -16,14 +16,14 @@ export const combatants=s=>[...(s.ds||[]),...(s.mons||[]),...(s.band?.members||[
 export function opponents(s,a,extra=null){const list=combatants(s).filter(t=>t!==a&&!t.gone&&!t.away&&(t.hp??1)>0&&faction(t)!==faction(a));if(extra&&!list.includes(extra))list.push(extra);return list;}
 export function allies(s,a){return combatants(s).filter(t=>t!==a&&!t.gone&&!t.away&&(t.hp??1)>0&&faction(t)===faction(a));}
 export function movementSpeed(a){return a.k?(MONSTERS[a.k]?.speed||BASE_SPEED*(1+(a.agi||0)/100)):BASE_SPEED*(1+(a.skills?.agility||0)/100);}
-export function coverFor(a){return COVERS.filter(c=>distance(a.pos,c.stand)<=RING.engage/2).sort((a,b)=>a.slots-b.slots)[0]||null;}
+export function coverFor(a,s){return COVERS.filter(c=>distance(a.pos,c.stand)<=RING.engage/2).map(c=>({...c,slots:c.slotsByStage?.[s?.fence?.lv||0]??c.slots})).sort((a,b)=>a.slots-b.slots)[0]||null;}
 export function backToBackPartner(s,a) {
  if(!s || !a?.pos) return null;
  return allies(s,a).filter(b=>b.pos&&distance(a.pos,b.pos)<=RING.step*2
    && (b.pos[0]-a.pos[0])*(a.face||1)<0 && (b.pos[0]-a.pos[0])*(b.face||1)>0)
    .sort((x,y)=>distance(a.pos,x.pos)-distance(a.pos,y.pos)||String(x.id).localeCompare(String(y.id)))[0]||null;
 }
-export const ringCapacity=(a,s)=>Math.min(coverFor(a)?.slots||RING.slots,backToBackPartner(s,a)?RING.slots/2:RING.slots);
+export const ringCapacity=(a,s)=>Math.min(coverFor(a,s)?.slots||RING.slots,backToBackPartner(s,a)?RING.slots/2:RING.slots);
 export function loadFromForecast(a,rows,s){
  const slots=ringCapacity(a,s),active=rows.filter(r=>r.active),waiting=rows.filter(r=>!r.active).sort((x,y)=>x.window+x.travel-y.window-y.travel);
  // 開放地形仍照 N28 將所有可預見來招計入；實際背靠背／掩體才排除站不進來的候補。

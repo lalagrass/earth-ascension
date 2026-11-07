@@ -566,3 +566,29 @@ CI 第三輪 quick 與 golden 全過，accept 296/301。五項逐項處置：
 既有 CI 回歸逐項判斷：首次 [42376074334](https://github.com/lalagrass/earth-ascension/actions/runs/42376074334) quick 343/345，`v155a` 因真交手變長期間族群自然繁殖 7 隻，fixture 改起始承載量，原擊倒扣一隻的嚴格斷言保持；`v155b` 因召回被 90 秒交手壓住，改收到命令即脫離，原返程位置斷言保持。第二次 [42376476687](https://github.com/lalagrass/earth-ascension/actions/runs/42376476687) quick 345/345、golden 全綠、accept 295/301；其中 `v110`／`v120` 名功距離失敗出自已撤回的深谷真交手，現恢復深谷原批次路徑；`v160` 全建築專測設不准私自下山，原活動出現與不變式斷言保持。縮範圍的 [42379395548](https://github.com/lalagrass/earth-ascension/actions/runs/42379395548) quick／golden 全綠，accept 298/301：前三段地圖仍漏掉原批次 `fight()` 的破皮選招、逃兵追擊、守關瀕死覺醒。接回既有公式後，固定 seed 11 的 0／60／90 級距離為 100／271／361，seed 21–24 的郭靖追逃數為 6／1／1／2，阿星巡山瀕死真覺醒且戰報留句。[42381089119](https://github.com/lalagrass/earth-ascension/actions/runs/42381089119) quick 343/343、golden 全綠、accept 300/301，剩下 `v097` 因地圖逃走令該段清場率為零，戰報記零而歷史紀錄把零誤作未到過；現將零寫入歷史紀錄，原 `v095`、`v097` 斷言均未放寬。新 CI 仍須以新 head 結果判定。
 
 新分數、出行資格、負荷量尺與遷移理由見[自主出獵系統](docs/systems/autonomous-foray.md)及[交手規則](docs/systems/combat.md)。最沒把握三處：① 原效用的缺糧／菜畦和出獵相互競爭，A 固定場景可獨立查；② `hp×dmg` 只作取糧風險排序，不保證真交手勝率；③ 前三段可達性及自然作息可能令 C 的出行或悟招數與舊參考差很多，本輪不為 C 調常數。
+
+## 第十二輪 N46／N47：師兄弟與四階設施（#458）
+
+實作 grass／Codex Cloud；疊在 N62 PR #505 head `51ecb63`，PR 目標基底為 `codex/solo-sect-grok`。N46 commit `82b336d`；N47 與本輪文件、4.2 遷移、golden、原始證據在下一 commit。N58 已另輪完成，本輪只含 #460/#461。
+
+| 類 | 驗收及目前證據 |
+|---|---|
+| A 人際 | `bash solo-sect/test/run.sh smoke`：被掩護者單向好感 +8、人物面板有原因、第 100 日仍銘記；共守、切磋落敗、拉住惱羞、傳藝共用 `SOCIAL_EVENTS` 資料列。短期想法按日撤回當時實際加值；掩護成功事件接 N44。 |
+| A 設施 | 同一 smoke：外功場升 Lv1 後 `registry` 真站位增加，可逐個預約直到滿；石牆將山門貼身位 2→1。醫館、藥園各階治傷資料和自然工作點四階見[設施階段](docs/systems/facility-stages.md)。 |
+| B 公式 | 本輪沒有新抽機率；沿用 N62 的 6,000 次出獵效用期望測試，smoke 期望 0.4926757803、實測 0.4978333333、容差 0.021407701，沒有改斷言。 |
+| golden | Node 22：`docker run --rm -v "$PWD:/work" -w /work node:22-bookworm-slim node solo-sect/tools/golden.mjs --write --tier all`；quick 4 格、full 32 格及舊檔重產並自檢「✓ 全部相符」。山門紀 CI 仍是正式門檻。 |
+
+| C 指標（Node 22 bot12） | #505 head | 本輪 head |
+|---|---:|---:|
+| 自然山賊勝場／交手場 | 65/69（出現 70 場） | 62/67（出現 67 場） |
+| 有柵欄探針勝場／96 | 91/96 | 91/96 |
+| 有柵欄探針守住／96、受傷數 | 34/96、23 | 49/96、20 |
+| 惱羞、林克時間 | 678、122 | 792、92 |
+| 出獵擊倒／逃脫 | 295／241 | 293／256 |
+| `winP` 中位數 | 0.966 | 0.986 |
+
+同尺原始輸出：[N62 base](artifacts/r12/bot12-base.json)、[第十二輪 head](artifacts/r12/bot12-head.json)。產生命令各在對應 checkout 根目錄：`docker run --rm -v "$PWD:/work" -w /work node:22-bookworm-slim node solo-sect/tools/bot12.mjs solo-sect --json > solo-sect/artifacts/r12/bot12-{base,head}.json`（實際執行時分別指定單一檔名）。自然山賊、柵欄探針與出獵是不同樣本，分母不混用。C 只回報，未為貼近數字調參。
+
+畫面：[四階藍圖及弟子理由](artifacts/r12/facility-panel.png)為正常白身開局後的門派面板；[可讀救援記憶](artifacts/r12/social-memory-panel.png)在白身開局後透過公用 `recordSocialEvent` 注入一筆救援事件以展示面板，不代表該局已實戰救援。
+
+舊名 → 新名：本輪改動的 N46/N47 接口新設 `SOCIAL_EVENTS`／`recordSocialEvent`／`fadeSocialThoughts`；原有鄰近輪次編號函式未改名或移動，故無舊名改名。三處最沒把握：① 自然工作點由原不限同時使用改為階段容量，可能推移日常山賊樣本與練功日程；② 守柵窄處改變群戰時機，柵探針守住率 34→49 的主因尚須用 CI 長跑及事件追蹤再判；③ 惱羞與林克時間 C 指標變動，不能單從兩個總數推出是人際事件還是新工作容量的影響，不為 C 數字改公式。
