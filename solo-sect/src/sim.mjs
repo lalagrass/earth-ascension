@@ -5,7 +5,7 @@ import {ringCapacity,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} fr
 import {pickupDrop} from './techniques.mjs';
 import {finishTrainingWish,TRAINING_CAUSES} from './decision.mjs';
 import { ensurePractice, rehearse, practiceWork, practiceWindow } from './practice.mjs';
-import { BODY_TIMING, BODY_BASE, makeBare, acquireWorkTool, moveAvailable, foeAction, FOE_ACTIONS } from './starter-combat.mjs';
+import { BODY_TIMING, BODY_MOVES, BODY_BASE, makeBare, acquireWorkTool, moveAvailable, foeAction, FOE_ACTIONS } from './starter-combat.mjs';
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
 import { combatTacticStep, chooseCombatMove, fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuterArt, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
@@ -666,7 +666,7 @@ function dStrike(s, h, d, live, w) {
   const lv = d.skills[mv.skill];
   let power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id, s.t); /* #410 玉女合擊、蛤蟆蓄勢改走內功被動與 on，避免和出手再乘一次 */
   const ar = mv.aoe ? mv.aoe + qiAoeAdd(d, mv) : 0, hitList = mv.aoe ? live.filter(m=>dist(m.pos,mv.aoeCenter==='actor'?d.pos:tgt.pos)<=ar) : [tgt];
-  const r = resolveSwing(s, d, tgt, () => rand(s), { depth: depthOf(d, mv.id), wind: w.wind, move: mv.id, force: w.force, map: true });
+  const r = resolveSwing(s, d, tgt, () => rand(s), { depth: depthOf(d, mv.id), wind: w.wind, move: mv.id, force: w.force, map: true, targetApproachingAtWindup:w.targetApproachingAtWindup });
   if(r.counter){d.hp=Math.max(0,d.hp-r.counterDamage);clashFx(s,tgt,'read');}
   flairName(s, d, mv);
   h.hits[d.id] = (h.hits[d.id] || 0) + 1; grow(s, d, mv.skill, 1.5, 'fight');
@@ -732,6 +732,16 @@ function huntStep(s, dt) {
     d.cool -= dt;
     const live = s.mons.filter((m) => !m.gone && m.hp > 0 && !m.raid);
     if (d.swing) { if (s.t + 1e-9 >= d.swing.at) { const w = d.swing; d.swing = null; dStrike(s, h, d, live, w); } continue; } /* #418 前搖 → 出手；收招＝冷卻剩下的時間 */
+    // 山路上有散石：看見尚在來路上的敵人時，空手者彎身撿一顆。
+    // 一人一次巡山只拿得住一顆，動作花 N32 的真 .2 秒；不是免費發射物。
+    const stoneMove=BODY_MOVES.find(m=>m.id==='toolStone');
+    if(!d.tools?.stone&&!(h.stonePicked||[]).includes(d.id)&&d.cool<=0&&(d.busyUntil||0)<=s.t&&
+       live.some(m=>m.path?.length&&!m.swing&&dist(m.pos,d.pos)<=stoneMove.range&&dist(m.pos,d.pos)>RING.outer)&&
+       !live.some(m=>dist(m.pos,d.pos)<=RING.outer)){
+      (h.stonePicked??=[]).push(d.id);(d.tools??={}).stone=true;
+      if(!d.moves.includes(stoneMove.id))d.moves.push(stoneMove.id);
+      d.busyUntil=s.t+BODY_TIMING.simple;d.reason='山路上撿起一顆石頭迎敵';continue;
+    }
     if(combatTacticStep(s,d,dt,{speed:speedOf(d),help:(a,id)=>{const helper=byId(s,id);if(helper&&!h.team.includes(id)){h.team.push(id);helper.order='hunt';cancelTask(s,helper,`${a.name}喊來幫手`);assign(s,helper,'hunt','同門喊援，沿山路趕去');}},exit:a=>{a.order=null;cancelTask(s,a,'不敵先退');assign(s,a,'rest','退到山門後歇息');}}))continue;
     if(d.cool>0||(d.busyUntil||0)>s.t||(d.downUntil||0)>s.t) continue;
     const aim=live.sort((a,b)=>dist(a.pos,d.pos)-dist(b.pos,d.pos))[0];if(!aim)continue;
@@ -744,7 +754,7 @@ function huntStep(s, dt) {
       const cd = mv.cd * cdMul(d, mv.id, s.t), kh = artOfMove(mv.id)?.id === 'kuihua' && zjHas(d, 'kuihua'), wind = (kh ? 0 : windOf(d,mv.id,cd))+(pick?.seconds||0); /* #426 葵花：沒有前搖 */
       if (kh) zjMark(s, d, 'kuihua');
       if (mv.consumable) delete d.tools?.[mv.tool];
-      d.swing = { mv: mv.id, tgt: tgt.uid, at: s.t + wind, wind, reach }; d.cool = cd+(pick?.seconds||0); d.face = tgt.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'wind';
+      d.swing = { mv: mv.id, tgt: tgt.uid, at: s.t + wind, wind, reach, targetApproachingAtWindup:!!tgt.path?.length&&!tgt.swing&&!tgt.bswing }; d.cool = cd+(pick?.seconds||0); d.face = tgt.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'wind';
       warnFx(s, d, tgt, reach, wind);
       break;
     }
@@ -971,7 +981,7 @@ function trialStep(s,d,dt){
   if(!d.swing&&combatTacticStep(s,d,dt,{speed:speedOf(d),exit:a=>{a.tactics={action:'brace'};}}))return;
   task.phase='do';task.timer+=dt;d.face=m.pos[0]>=d.pos[0]?1:-1;d.cool=(d.cool||0)-dt;
   if(d.swing){if(s.t+1e-9<d.swing.at)return;const w=d.swing;d.swing=null;const mv=MOVES.find(x=>x.id===w.mv);if(!mv||dist(m.pos,d.pos)>mv.range*1.3)return;
-    const r=resolveSwing(s,d,m,()=>rand(s),{move:mv.id,wind:w.wind,opening:w.opening});d.anim='strike';
+    const r=resolveSwing(s,d,m,()=>rand(s),{move:mv.id,wind:w.wind,opening:w.opening,targetApproachingAtWindup:w.targetApproachingAtWindup});d.anim='strike';
     if(r.counter)d.hp=Math.max(30,d.hp-r.counterDamage);
     if(r.kind==='hit'){m.hp-=landOn(s,d,m,mv,mv.dmg*(1+d.skills[mv.skill]/50)*moveMul(d,mv.id,s.t),MONSTERS[m.k].name)*(r.heavy?CLASH.heavy:1)*r.contact.damageFactor;breakWindup(s,d,m,mv.id,w.wind,r.contact);}
     else clashFx(s,m,r.kind==='parry'?(r.jolt?'jolt':null):r.kind);
@@ -982,7 +992,7 @@ function trialStep(s,d,dt){
   const pick=chooseCombatMove(s,d,m,()=>rand(s)),mv=pick?.move;if(!mv||dist(m.pos,d.pos)>mv.range)return;
   const wind=windOf(d,mv.id,mv.cd)+pick.seconds,start=interceptOpening(s,d,m,()=>rand(s),{move:mv.id,wind});d.cool=mv.cd+pick.seconds;if(mv.consumable)delete d.tools?.[mv.tool];
   if(start.read){d.hp=Math.max(30,d.hp-start.read.counterDamage);return;}
-  d.swing={mv:mv.id,tgt:m.uid,at:s.t+wind,wind,opening:start.opening};d.anim='wind';warnFx(s,d,m,mv.range,wind);
+  d.swing={mv:mv.id,tgt:m.uid,at:s.t+wind,wind,opening:start.opening,targetApproachingAtWindup:!!m.path?.length&&!m.swing&&!m.bswing};d.anim='wind';warnFx(s,d,m,mv.range,wind);
 }
 // ---- 存檔（v0.95 移到 save.mjs，逐版遷移）----
 export { save, load, migrate, MIGRATIONS } from './save.mjs';

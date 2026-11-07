@@ -1415,9 +1415,10 @@ export function techniqueFacts(s,a,t,move=null){
   const enemies=isMon(a)?(s?.ds||[]).filter(d=>!d.away&&d.hp>0):(s?.mons||[]).concat(s?.band?.members||[]).filter(d=>!d.gone&&d.hp>0);
   const close=enemies.filter(d=>d.pos&&a.pos&&Math.hypot(d.pos[0]-a.pos[0],d.pos[1]-a.pos[1])<=RING.outer);
   const weapon=t.weapon||incoming?.tool||incoming?.weapon||(t.k&&FOE_ACTIONS[t.k]?.moves.some(m=>m.weapon)?['blade','staff','fist'][(t.i||0)%3]:null);
-  return {hands:FOE_ACTIONS[a.k]?.hands??2,weapon,opponentWind:!!(t.swing||t.bswing),afterDodge,opponentCharge:!!(afterDodge?last.charging:incoming?.travel),enemies:close.length,opponentUnbalanced:(t.posture??postureMax(t))<postureMax(t)/2,losing:a.hp<(a.max||100)/2,cornered:!!coverFor(a),approaching:!!t.path?.length&&!t.swing&&!t.bswing,force:moveStats(a,move).force,opponentForce:moveStats(t).force};
+  const burden=assessLoad(s,a).L;
+  return {hands:FOE_ACTIONS[a.k]?.hands??2,weapon,opponentWind:!!(t.swing||t.bswing),afterDodge,opponentCharge:!!(afterDodge?last.charging:incoming?.travel),enemies:close.length,opponentUnbalanced:(t.posture??postureMax(t))<postureMax(t)/2,losing:a.hp<(a.max||100)/2||(a.posture??postureMax(a))<postureMax(a)/2,cornered:!!coverFor(a)||burden>=1,approaching:!!t.path?.length&&!t.swing&&!t.bswing,force:moveStats(a,move).force,opponentForce:moveStats(t).force};
 }
-function moveParents(move){const m=MOVES.find(m=>m.id===move)||Object.values(FOE_ACTIONS).flatMap(p=>p.moves).find(m=>m.id===move);return [move,m?.type,m?.weapon,m?.tool==='stone'?'stone':null].filter(Boolean);}
+function moveParents(move){const m=MOVES.find(m=>m.id===move)||Object.values(FOE_ACTIONS).flatMap(p=>p.moves).find(m=>m.id===move);return [move,m?.type,m?.skill,m?.weapon,m?.tool==='stone'?'stone':null].filter(Boolean);}
 function noteDiscoveries(s,d,rows){for(const row of rows){const text=`${d.name||d.k}在吃虧後悟出「${row.name}」`;log(s,text);if(d.id)chronOf(s,d,'glimmer',{chron:text});}}
 function reportContact(s,a,t,m,c){if(!c.layer)return;const row=TISSUES.blunt.find(r=>r.id===c.layer);log(s,`${a.name||a.k}以${m.name||m.id}打在${t.name||t.k}的${c.where==='body'?'':c.side}${BODY_PARTS[c.where].name}，${row.name}${c.layer==='bruise'?'，只痛未失血':''}`);}
 export function transferredDamage(s,a,t,damage,force,move){const action=MOVES.find(m=>m.id===move)||{id:move||'redirect',type:moveStats(a,move).type},contact=contactImpact(s,a,t,{move:action,force,armor:moveStats(t).armor});reportContact(s,a,t,action,contact);return damage*contact.damageFactor;}
@@ -1425,6 +1426,7 @@ export function transferredDamage(s,a,t,damage,force,move){const action=MOVES.fi
 export function resolveSwing(s, atk, def, rnd, ctx = {}) {
   const move = timedMoveId(atk,ctx.move), odds = clashOdds(s,atk,def,{ ...ctx, move });
   const initialT=ctx.opening?.T||clashTimes(s,atk,def,ctx),atkFacts=techniqueFacts(s,atk,def,move),defFacts={...techniqueFacts(s,def,atk),opponentWind:true};
+  if(ctx.targetApproachingAtWindup)atkFacts.approaching=true;
   atk.lastCombatMove=move;
   const result = resolveSwingCore(s,atk,def,rnd,{ ...ctx, move });
   result.learning = recordExchange(s,atk,def,move,ctx.opening?.p ?? odds.hit,result);

@@ -11,6 +11,7 @@ export function learnFromLoss(s,d,parents,facts,p,{lost,expected=false}={}){
   if((!lost&&!s?.captureTechniqueContexts)||expected)return [];
   const matching=TECHNIQUES.filter(row=>row.parents.some(tag=>parents.includes(tag))&&matchesTechnique(row,facts));
   // Bot 診斷逐次記「母招＋情境」是否遇到；僅在工具打開旗標時存計數，不進存檔或規則。
+  if(s?.captureTechniqueContexts)for(const row of TECHNIQUES.filter(row=>row.parents.some(tag=>parents.includes(tag)))){const diag=(s.techniquePrereqCounts??={})[row.id]??={parents:0,heroParents:0,words:{}};diag.parents++;if(d.id==='hero')diag.heroParents++;for(const word of row.conditions)if(CONDITIONS[word]?.(facts))diag.words[word]=(diag.words[word]||0)+1;}
   if(s?.captureTechniqueContexts)for(const row of matching){const count=(s.techniqueContextCounts??={})[row.id]??={seen:0,lost:0,heroSeen:0,heroLost:0};count.seen++;if(lost)count.lost++;if(d.id==='hero'){count.heroSeen++;if(lost)count.heroLost++;}}
   if(!lost)return [];const memory=d.glimmer??={progress:{},known:[],firstDay:null},learned=[];
   for(const row of matching){if(memory.known.includes(row.id))continue;

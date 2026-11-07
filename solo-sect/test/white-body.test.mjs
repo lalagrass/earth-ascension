@@ -109,6 +109,19 @@ test('N35 母招/條件/效果全資料化，只有真失手加w，弱敵期望�
   const out=applyTechnique(s,d,boar,'flankStrike',facts);assert.equal(out.armorBypass,true);assert.equal(out.interrupt,true);assert.equal(boar.swing,null);
   assert.equal(TECHNIQUES.length,6);const enemy={k:'bandit',uid:'bandit',wu:3};
   for(let i=0;i<24;i++)learnFromLoss(s,enemy,['guard'],{hands:2,weapon:'blade',opponentWind:true},.5,{lost:true});assert.ok(enemy.glimmer.known.includes('disarm'));
+  // #445 9c: the three contexts are reachable through actual exchanges, including
+  // the opponent's real windup/approach state and the defender's real dodge record.
+  const q=createState(17,{kind:'bare'}),hero=q.ds[0];hero.pos=[0,0];q.ds=[hero];q.captureTechniqueContexts=true;
+  const boar2={k:'boar',uid:'boar2',hp:48,max:48,pos:[50,0],posture:70,practice:{hands:{},eyes:{},origin:{}}};q.mons=[boar2];
+  assert.equal(resolveSwing(q,boar2,hero,()=>.5,{move:'boarCharge',wind:1}).kind,'dodge');
+  resolveSwing(q,hero,boar2,()=>.99,{move:'bodyKick',wind:.6});assert.ok(q.techniqueContextCounts.flankStrike.heroSeen);
+  const {COVERS}=await import('../src/tactics.mjs');hero.hp=40;hero.pos=[...COVERS[0].stand];
+  const dog={k:'dog',uid:'dog',hp:14,max:14,pos:[hero.pos[0]+20,hero.pos[1]],practice:{hands:{},eyes:{},origin:{}}};q.mons=[dog];
+  assert.equal(resolveSwing(q,dog,hero,()=>.99,{move:'dogBite',wind:.4}).kind,'hit');assert.ok(q.techniqueContextCounts.dustCast.heroLost);
+  hero.pos=[0,0];hero.tools.stone=true;hero.moves.push('toolStone');
+  const traveler={k:'bandit',uid:'traveler',hp:60,max:60,pos:[90,0],path:[[0,0]],practice:{hands:{},eyes:{},origin:{}}};q.mons=[traveler];
+  const approaching=(await import('../src/arts.mjs')).techniqueFacts(q,hero,traveler,'toolStone').approaching;assert.equal(approaching,true);
+  traveler.path=[];resolveSwing(q,hero,traveler,()=>.99,{move:'toolStone',wind:.8,targetApproachingAtWindup:approaching});assert.ok(q.techniqueContextCounts.stoneOpening.heroSeen);
 });
 
 
@@ -168,7 +181,7 @@ test('N37 共用受力/分層/手側/長破綻，局部hitstop不改模擬',asyn
 
 test('N50 兩個普通出身同伴與真床位剩一時第二名俠不入門',async()=>{
  const {admissionStatus,bedCount}=await import('../src/admission.mjs'),{join,makeXiaCandidate}=await import('../src/wuxia.mjs');
- const s=createState(17,{kind:'bare'});assert.equal(s.ds.length,3);assert.ok(s.ds.slice(1).every(d=>d.bare&&d.originRelation&&!Object.keys(d.arts).length));assert.ok(s.ds.every(d=>!['senior','junior'].includes(d.id)));
+ const s=createState(17,{kind:'bare'});assert.equal(s.ds.length,3);assert.ok(s.ds.slice(1).every(d=>d.bare&&d.originRelation&&!Object.keys(d.arts).length));assert.ok(s.ds.every(d=>!['senior','junior'].includes(d.id)));assert.deepEqual(s.ds.slice(1).map(d=>d.sprite),['senior','cousin']);
  // Controlled capacity fixture: hall3+dorm2, four residents, one physical free bed.
  s.fac.dorm.stage=1;s.res.food=100;s.ds.push({...structuredClone(s.ds[1]),id:'resident',companion:false});const master=s.ds[0];master.practice.hands=Object.fromEntries((await import('../src/starter-combat.mjs')).BODY_BASE.map(id=>[id,500]));master.skills.palm=100;master.timePrev={day:0,elapsed:DAY,free:400,guided:0};
  const first=makeXiaCandidate(s,'guojing'),before=JSON.stringify(s),preview=admissionStatus(s,first);assert.equal(JSON.stringify(s),before);assert.equal(bedCount(s)-s.ds.length,1);assert.equal(preview.ok,true,preview.why);
