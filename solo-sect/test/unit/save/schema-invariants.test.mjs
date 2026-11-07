@@ -37,7 +37,7 @@ test('loop191 練滿本門樹可成三才（無名派無本門專屬，除外）
   for (const [id, S] of Object.entries(SECTS)) {
     if (id === 'wuming') continue;
     const ids = [...new Set([...(S.tree || []), ...(S.tree24 || [])])];
-    const d = { v24: true, sectId: id, stree: ids, arts: {} };
+    const d = { v24: true, sectId: id, stree: ids, arts: {}, foundedLineage: !!S.phase7Only }; // 出自 Phase 7 規格：新合宗資料列只能由已開山的雙堂人物使用，舊派情境不改。
     for (const artId of ids) d.arts[artId] = { xp: 60, last: 0 };
     assert.equal(sectClasses24(d), 3, id);
   }

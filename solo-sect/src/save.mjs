@@ -114,6 +114,12 @@ export const MIGRATIONS = [
     const hero = o.ds?.find(d => d.id === 'hero');
     if (hero) hero.hermitageStarter ??= Object.keys(hero.arts || {}).find(id => ['chunyangFist', 'luohanHands'].includes(id)) || 'chunyangFist'; // 舊隱居檔的起手拳譜是兩者中先加入者。
   } },
+  { to: '4.6', note: 'Phase 7（#512）：隱居局補開山道統欄位；舊門派局不加欄位', up(o) {
+    if (!o.hermitage) return;
+    o.hermitage.founded ??= false;
+    o.hermitage.doctrine ??= null;
+    if (o.hermitage.founded) { o.herbalDiet ??= true; o.sect.doctrine ??= o.hermitage.doctrine || 'dualHall'; }
+  } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
 export function v150Up(o) {

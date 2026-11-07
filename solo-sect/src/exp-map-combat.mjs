@@ -5,6 +5,7 @@ import { BODY_TIMING, FOE_ACTIONS, foeAction } from './starter-combat.mjs';
 import { movementSpeed, moveToward, distance, restoreSurvivor, rememberEscape, ringCapacity, attackTokenLimit } from './tactics.mjs';
 import { practiceWindow } from './practice.mjs';
 import { RING } from './combat-space.mjs';
+import { twinSwordsDamageFactor } from './twin-swords.mjs';
 
 export const EXP_BOUT = { maxSeconds: 90, halfWidth: 150, halfHeight: 100, fleeAt: .35 };
 const alive = (a) => a && a.hp > 0 && !a.gone;
@@ -31,12 +32,12 @@ export function startMapBout(s, owner, key, seg, team, anchor, source, options =
   return owner.bout;
 }
 
-function applyStrike(s, B, atk, def, swing, H) {
+function applyStrike(s, B, atk, def, swing, H, fighters) {
   const result = resolveSwing(s, atk, def, () => H.rand(s), { move: swing.move, wind: swing.wind, opening: swing.opening });
   B.exchanges++; B.strikes.push({ at: +B.elapsed.toFixed(2), who: idOf(atk), target: idOf(def), move: swing.move, reaction: result.kind });
   if (result.counter) atk.hp = Math.max(0, atk.hp - result.counterDamage);
   if (result.kind !== 'hit') return;
-  const force = swing.damage * (result.heavy ? CLASH.heavy : 1) * (result.contact?.damageFactor ?? 1) * (H.guardOf?.(def) ?? 1) * (def.takeMul ?? 1);
+  const force = swing.damage * (atk.k ? 1 : twinSwordsDamageFactor(s, atk, swing.move, fighters)) * (result.heavy ? CLASH.heavy : 1) * (result.contact?.damageFactor ?? 1) * (H.guardOf?.(def) ?? 1) * (def.takeMul ?? 1);
   def.hp = Math.max(0, def.hp - shieldHit(def, force, s.t));
   if (atk.k) atk.opened = true;
 }
@@ -63,7 +64,7 @@ export function stepMapBout(s, owner, dt, H) {
     if (a.swing && s.t + 1e-9 >= a.swing.at) {
       const swing = a.swing; a.swing = null;
       const target = [...team, ...foes].find(x => idOf(x) === swing.target);
-      if (alive(target) && distance(a.pos, target.pos) <= swing.range * 1.3) applyStrike(s, B, a, target, swing, H);
+      if (alive(target) && distance(a.pos, target.pos) <= swing.range * 1.3) applyStrike(s, B, a, target, swing, H, team);
     }
     if (!alive(a) || a.swing || (a.busyUntil || 0) > s.t || (a.cool || 0) > s.t) continue;
     const target = closest(a, a.k ? team : foes); if (!target) continue;

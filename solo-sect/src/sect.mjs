@@ -3,10 +3,12 @@ import {makeBare} from './starter-combat.mjs';
 import { DAY, NODES, SECTS, SECT_K, RULE_LIB, HERO_SECT, CUSTOM_BY_VALUE, CUSTOM_RIVALS, WUMING_KIT24, ARTS, SECT_PICK24 } from './data.mjs';
 import { seedArts, learnArt, artTier, artById, artOk, reqMissing, curCap, focusOf, specK, bestSpec, chiefLocked24, mastery, primaryCat, CATS, qiInjuryFight28, temperOf, TEMPER29, yunvOpen24, ponderLuoying, practiceLuoying } from './arts.mjs';
 import { dpsOf } from './world.mjs';
-import { compat } from './social.mjs';
+import { compat, think } from './social.mjs';
+import { UPKEEP, E as econOf } from './economy.mjs';
 import { affKey, relKey, log, resAdd, resSet, recordDeed } from './util.mjs';
 import { removeActor, cancelTask } from './core.mjs';
 import { addWexin } from './hero.mjs';
+export { TWIN_SWORDS_DAMAGE, twinSwordsPartner, twinSwordsDamageFactor } from './twin-swords.mjs';
 import { xidOf } from './wuxia.mjs';
 // ==== （原 gen.mjs）====
 // v1.4 第二代（ROADMAP §9.2 G、§4 v1.4；擁有人決定：後代只做收養，不做生育）
@@ -113,12 +115,80 @@ export function genResolve(s, ch, i) {
 // ==== （原 sect.mjs）====
 // v1.35 門派身分（ROADMAP §18）：門規、鎮派設施、招人風格、宿敵守關、名俠加權、外門武學、叛派
 export function sectOf(hero) {
-  const id = SECTS[hero?.sect24] && (SECTS[hero.sect24].v24 || SECT_PICK24.includes(hero.sect24)) ? hero.sect24 : /* loop169 自創主角也可選華山二宗、丐幫、明教 */ hero?.kind === 'template' ? HERO_SECT[hero.id] || 'wuming' : 'wuming', B = SECTS[id]; /* loop163 v2.4 新門派只由 heroSpec.sect24 指定 */
+  const id = SECTS[hero?.sect24] && (!SECTS[hero.sect24].phase7Only || hero.phase7Founded) && (SECTS[hero.sect24].v24 || SECT_PICK24.includes(hero.sect24)) ? hero.sect24 : /* loop169 自創主角也可選華山二宗、丐幫、明教 */ hero?.kind === 'template' ? HERO_SECT[hero.id] || 'wuming' : 'wuming', B = SECTS[id]; /* 出自 Phase 7 規格：新合宗門派只由隱居開山選擇，舊開局不可偷選。 */
   const o = { id, name: B.name, plaque: B.plaque, color: B.color, flag: B.flag, bias: { ...B.bias }, tree: [...B.tree], ban: [...B.ban], rules: [...B.rules], rivals: [...B.rivals], rep: 0, fac: false, viol: {}, violN: 0, lastViolT: -1e9, keptDay: 0, day: -1, questioned: {}, defect: {}, expelled: [], beaten: {}, rivalI: 0 };
   if (id === 'wuming' && hero?.kind === 'custom') { const [tag, rule] = CUSTOM_BY_VALUE[hero.main] || ['拙', 'rescue']; o.bias = { [tag]: SECT_K.biasCap }; o.rules = [rule]; o.rivals = [CUSTOM_RIVALS[(hero.name || '').length % CUSTOM_RIVALS.length]]; o.plaque = `${hero.name || '無名'}派`; o.name = o.plaque; }
   return o;
 }
 export const sectInit = (s) => { s.sect = sectOf(s.hero); grantSectRoots(s); return s.sect; };
+// 出自 Phase 7 規格：按兩人的實際起手脈絡組樹，牌匾不是放行外門武學的唯一依據。
+const hermitageLineages = (s) => {
+  const yang = s.ds.find((d) => d.id === 'hero')?.hermitageStarter === 'luohanHands' ? 'shaolin' : 'quanzhen';
+  const yin = s.hermitage.partnerId === 'huangrong' ? 'taohua' : 'gumu';
+  return { yang, yin, yangTree: [...SECTS[yang].tree], yinTree: [...SECTS[yin].tree] };
+};
+const lineageTreeFor = (s, d) => {
+  const S = s.sect; if (!s.hermitage?.founded || !S?.secretLineage?.length) return S.tree;
+  return ['hero', S.partnerDiscipleId, S.firstDiscipleId].includes(d.id) ? [...new Set([...S.tree, ...S.secretLineage])] : S.tree;
+};
+export function applySectLineage(s, d) {
+  if (!s.sect || !d) return d;
+  d.sectId = s.sect.id; d.stree = lineageTreeFor(s, d); d.sbias = s.sect.bias;
+  d.foundedLineage = !!s.hermitage?.founded && (s.sect.doctrine !== 'orthodox' || d.stree.length > s.sect.tree.length);
+  return d;
+}
+export function canFoundHermitageSect(s, manual = false) {
+  if (!s.hermitage?.active || s.hermitage.founded) return { ok: false, why: '已非荒山隱居時期' };
+  const h = s.ds.find((d) => d.id === 'hero'), p = s.ds.find((d) => d.id === (s.hermitage.partnerId === 'huangrong' ? 'partner-hr' : 'partner-xln'));
+  if (!h || !p || h.away || p.away || h.hp <= 0 || p.hp <= 0) return { ok: false, why: '雙人尚未同在山中' };
+  const heart = h.hermitageStarter === 'luohanHands' ? 'shaolinXinfa' : 'quanzhenXinfa', step = h.hermitageStarter === 'luohanHands' ? 'shaolinStep' : 'jinyanStep';
+  const martial = !!(h.arts?.[heart] && h.arts?.[step] && (p.partnerStage || 0) >= 2);
+  const trial = !!(s.hermitage.exploredCliffs?.length || s.threat?.won > 0);
+  return { ok: manual || martial || trial, martial, trial, why: '尚須武道小成、上崖或守山勝場' };
+}
+export function queueHermitageFounding(s, manual = false) {
+  const ready = canFoundHermitageSect(s, manual); if (!ready.ok) return ready;
+  if (s.choices?.some((c) => c.sect === 'hermitageFounding')) return { ok: true };
+  s.choices ??= []; s.choices.push({ id: `hermitage-found-${s.day}`, sect: 'hermitageFounding', forcePrompt: true, title: '開山立宗・道統抉擇', text: '兩路功夫在荒山相遇。立匾後以哪一脈傳人？', opts: ['陰陽合宗・雙堂並立', '正宗立匾・內堂秘傳', '萬流歸宗・無名自創派'], portrait: null, at: s.t }); // 出自 Phase 7 規格：三條道統由玩家決定，即使其他大事採自動處理也須顯示決策卡。
+  return { ok: true };
+}
+export function assignDiscipleHall(s, d) {
+  if (!s.hermitage?.founded || !d || d.id === 'hero') return null;
+  const S = s.sect, hero = heroD(s), partner = s.ds.find((x) => x.id === S.partnerDiscipleId);
+  if (S.doctrine === 'wuming') return null;
+  if (S.doctrine === 'orthodox') { d.hall = d.id === S.partnerDiscipleId ? 'yin' : S.bannerHall; const mentor = S.bannerHall === 'yin' ? partner : hero; if (mentor && mentor !== d && d.id !== S.partnerDiscipleId) setMaster(s, d, mentor); return d.hall; }
+  const traits = d.personality || [];
+  d.hall = traits.includes('honest') || traits.includes('stubborn') ? 'yang' : traits.includes('gentle') || traits.includes('free') || (d.wu || 0) > (d.root || 0) ? 'yin' : 'yang';
+  const mentor = d.hall === 'yin' ? partner : hero; if (mentor && mentor !== d && d.id !== S.partnerDiscipleId) setMaster(s, d, mentor);
+  return d.hall; // 出自 Phase 7 規格：憨厚剛健隨外堂，輕靈聰穎隨內堂；同分依根骨。
+}
+export function foundHermitageSect(s, doctrine = 'dualHall', customPlaque = '') {
+  const ready = canFoundHermitageSect(s, true); if (!ready.ok) return ready;
+  if (!['dualHall', 'orthodox', 'wuming'].includes(doctrine)) return { ok: false, why: '未知道統' };
+  const opts = typeof customPlaque === 'object' && customPlaque ? customPlaque : { plaque: customPlaque };
+  const { yang, yin, yangTree, yinTree } = hermitageLineages(s);
+  const banner = doctrine === 'orthodox' && opts.banner === 'partner' ? yin : yang;
+  const sectId = doctrine === 'wuming' ? 'wuming' : doctrine === 'orthodox' ? banner : yang === 'quanzhen' && yin === 'gumu' ? 'zhongnan' : yang === 'shaolin' && yin === 'taohua' ? 'longrong' : 'wuming';
+  const hero = s.ds.find((d) => d.id === 'hero'), partner = s.ds.find((d) => d.id === (s.hermitage.partnerId === 'huangrong' ? 'partner-hr' : 'partner-xln'));
+  s.hero.phase7Founded = true; s.hero.sect24 = sectId; const S = sectOf(s.hero);
+  S.doctrine = doctrine; S.lineages = { yang, yin }; S.partnerDiscipleId = partner.id; S.bannerHall = opts.banner === 'partner' ? 'yin' : 'yang';
+  S.dualTree = { yang: yangTree, yin: yinTree };
+  S.tree = doctrine === 'orthodox' ? [...SECTS[banner].tree] : [...new Set([...S.tree, ...yangTree, ...yinTree])];
+  S.secretLineage = doctrine === 'orthodox' ? [...SECTS[banner === yang ? yin : yang].tree] : [];
+  S.firstDiscipleId = null;
+  const defaultPlaque = doctrine === 'dualHall' ? sectId === 'zhongnan' ? '終南山・雙劍山莊' : sectId === 'longrong' ? '隱龍山莊' : '雙脈山莊' : S.plaque;
+  S.plaque = String(opts.plaque || defaultPlaque).replace(/[<>&"'`]/g, '');
+  S.name = S.plaque; s.sect = S;
+  s.hermitage.active = false; s.hermitage.founded = true; s.hermitage.foundedDay = s.day; s.hermitage.doctrine = doctrine;
+  s.herbalDiet = true; // 出自 Phase 5 規格：立派後沿用隱居時已建立的疲勞與藥膳週期。
+  econOf(s).graceUntil = s.day + UPKEEP.graceDay; // 出自 Phase 7 規格：開山日重新起算十天寬限，不追溯隱居日。
+  s.rep = (s.rep || 0) + 10; // 出自 Phase 7 規格：初始名聲 +10。
+  for (const d of s.ds) { applySectLineage(s, d); think(s, d, 'newLook'); }
+  hero.hall = 'yang'; partner.hall = 'yin';
+  s.choices = (s.choices || []).filter((c) => c.sect !== 'hermitageFounding');
+  log(s, `【開山立宗】${hero.name}與${partner.name}立匾「${S.plaque}」，定下${doctrine === 'dualHall' ? '陰陽雙堂' : doctrine === 'orthodox' ? '正宗與內堂秘傳' : '萬流歸宗'}之路；名聲 +10。`);
+  return { ok: true, sect: S };
+}
 /* loop164 v2.4 Batch 4.1⑥／4.2：華山劍宗、氣宗補華山劍法線；掌門開局自帶本門 T1 根基（無前置的入門內功＋外功）；自創無名派依主價值帶家傳三件套並納入本門樹 */
 export const T1_XP24 = 12;
 export function grantSectRoots(s) {
@@ -162,7 +232,7 @@ function checkRules(s) {
 // ---- 外門武學與叛派 ----
 export function artKind(s, d, id) {
   const S = s.sect, a = artById(id); if (!S || !a) return 'common';
-  if (S.ban.includes(id)) return 'ban'; if (S.tree.includes(id)) return 'own'; if (a.self24 && d?.sectId === a.own24) return 'own'; if (a.signature) return 'guest'; if (a.classic) return 'outside'; return 'common';
+  if (S.ban.includes(id)) return 'ban'; if (S.tree.includes(id) || (S.secretLineage?.includes(id) && d?.stree?.includes(id))) return 'own'; if (a.self24 && d?.sectId === a.own24) return 'own'; if (a.signature) return 'guest'; if (a.classic) return 'outside'; return 'common';
 }
 export const KIND_NAME = { own: '本門', guest: '客傳', outside: '外門', ban: '禁學', common: '通用' };
 function checkArts(s) {
@@ -175,13 +245,14 @@ function checkArts(s) {
 }
 export function sectResolve(s, ch, i) {
   if (ch.sect === 'huiwu') return huiwuResolve(s, ch, i); /* loop166 */
+  if (ch.sect === 'hermitageFounding') return foundHermitageSect(s, ['dualHall', 'orthodox', 'wuming'][i], ch.foundingOptions || '');
   s.choices = s.choices.filter((c) => c !== ch); const d = s.ds.find((x) => x.id === ch.who), r = d?.arts?.[ch.art];
   if (i === 1 && r) { r.xp = Math.max(0, r.xp - 10); log(s, `${d.name}收起了${artById(ch.art).name}，回頭練本門功夫。`); } else log(s, `${d?.name || '弟子'}的${artById(ch.art).name}照練不誤——武學無門戶之見。`);
   return true;
 }
 // ---- 鎮派設施 ----
 export function canBuildFac(s) {
-  const F = sectFac(s), S = s.sect; if (!F) return { ok: false, why: '無' }; if (S.fac) return { ok: false, why: '已建成' };
+  const F = sectFac(s), S = s.sect; if (s.hermitage?.active) return { ok: false, why: '立匾開山後才能建鎮派設施' }; if (!F) return { ok: false, why: '無' }; if (S.fac) return { ok: false, why: '已建成' };
   if (S.rep < SECT_K.facRep && !((s.rep || 0) >= SECT_K.facRep)) return /* loop183 v2.8：v24 門派名聲（s.rep）達標亦可 */ { ok: false, why: `門派聲望不足（${S.rep}/${SECT_K.facRep}）` };
   for (const [k, v] of Object.entries(F.cost)) if ((s.res[k] || 0) < v) return { ok: false, why: `${k} 不足 ${v}` };
   return { ok: true };
@@ -212,7 +283,10 @@ export function sectRecruit(s, d) {
   if (R.root) d.root = Math.min(5, d.root + R.root); if (R.wu) d.wu = Math.max(1, Math.min(5, (d.wu ?? d.root) + R.wu)); if (R.hp) d.hp = Math.min(d.hp, R.hp); if (R.mood) d.mood = Math.min(100, d.mood + R.mood);
   if (R.trait && !d.personality.includes(R.trait)) d.personality.push(R.trait); if (R.skill) d.skills[R.skill] = Math.min(100, d.skills[R.skill] + 6);
   if (R.art24) { d.arts ??= {}; d.arts[R.art24] ??= { xp: 0, last: s.t }; } /* loop163 星宿派：新人帶《百毒譜》 */
-  d.recruitNote = R.text; log(s, `【${S.name}收徒】${R.text}`);
+  if (s.hermitage?.founded) {
+    S.firstDiscipleId ??= d.id; applySectLineage(s, d); assignDiscipleHall(s, d);
+  }
+  d.recruitNote = R.text || (s.hermitage?.founded ? '新弟子拜入山門。' : undefined); log(s, `【${S.name}收徒】${d.recruitNote}`); // 出自 Phase 7 規格：新合宗無舊派收徒列；舊局逐欄、逐字不變。
 }
 // ---- 宿敵守關：第 2、4、6… 道關卡由宿敵門派把守；打贏得門派聲望 ----
 export function rivalGate(s, G, i) {
@@ -226,7 +300,7 @@ export function favSort(s, keys) { const f = SECTS[s.sect?.id]?.fav || []; retur
 // ---- 每 tick ----
 export function sectStep(s) {
   if (!s.sect) return; const S = s.sect;
-  for (const d of s.ds) { d.sbias = S.bias; d.stree = S.tree; d.sgain = S.fac ? sgainOf(s) : 1; }
+  for (const d of s.ds) { d.sbias = S.bias; d.stree = lineageTreeFor(s, d); d.sgain = S.fac ? sgainOf(s) : 1; }
   if (s.hermitage?.active) return; // 出自 Phase 4 規格：門規與門派會武延後到開山。
   { const F = sectFac(s), on = S.fac && F; const mk = on && F.med24 && sgainOf(s) > 1 ? F.med24 : 1; for (const d of s.ds) d.medK24 = mk; s.psnK24 = on && F.psn24 ? F.psn24 : 1; } /* loop168 寒玉床打坐 ×1.5、神木王鼎毒傷 ×1.35 */
   if (s.day === S.day) return; S.day = s.day; checkRules(s); checkArts(s); facDaily(s); luoyingDaily(s);

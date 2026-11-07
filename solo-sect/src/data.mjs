@@ -372,7 +372,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '4.5'; /* Phase 6 規格：由外而內與三階山崖 */
+export const RULES_VERSION = '4.6'; /* 出自 Phase 7 規格：隱居開山與雙堂傳承 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -999,6 +999,9 @@ export const SECTS = {
     recruit: { text: '一個慕名而來的年輕人上山拜師。' } },
   quanzhen: { v24: true, name: '全真派', plaque: '終南・全真', color: '#a8804a', flag: '真', bias: {}, tree: ['chunyangFist', 'quanzhenXinfa', 'jinyanStep', 'haotianPalm', 'quanzhenSword', 'xiantianGong'], ban: [], rules: [], rivals: [], fav: [] },
   zhongnan: { v24: true, name: '終南雙劍宗', plaque: '終南・雙劍', color: '#8c7192', flag: '雙', bias: {}, tree: ['chunyangFist', 'quanzhenXinfa', 'quanzhenSword', 'yunvJian', 'yunvSword'], ban: [], rules: [], rivals: [], fav: [] },
+  // 出自 Phase 7 規格：羅漢外堂與桃花內堂只由隱居開山選擇，不進舊局可選門派清單。
+  shaolin: { v24: true, phase7Only: true, name: '少林別院', plaque: '少林別院', color: '#9c784e', flag: '禪', bias: {}, tree: ['luohanHands', 'shaolinXinfa', 'shaolinStep', 'shaolinArhat'], ban: [], rules: [], rivals: [], fav: [] },
+  longrong: { v24: true, phase7Only: true, name: '剛巧合宗', plaque: '隱龍山莊', color: '#a17b6b', flag: '龍', bias: {}, tree: ['luohanHands', 'shaolinXinfa', 'shaolinStep', 'shaolinArhat', 'lanhuaHand', 'biboXinfa', 'yuxiaoSword'], ban: [], rules: [], rivals: [], fav: [], recruit: { text: '聽聞兩堂並立，來人請求拜師學藝。' } },
 };
 /* loop169 t190 待決 4：自創主角開局可選的開山道統（custom-sect24 下拉；wuming＝不指定） */
 export const SECT_PICK24 = ['wuming', 'emei', 'wudang', 'taohua', 'gumu', 'xingxiu', 'qizong', 'jianzong', 'gaibang', 'mingjiao', 'tiandihui']; /* loop174 加天地會 */

@@ -56,7 +56,7 @@ test('P2-2 未來規則版本拒讀、原檔不變', () => {
   const r = load(str); assert.equal(r.ok, false); assert.match(r.err, /規則版本/); assert.equal(JSON.parse(str).rules, '99.0');
   o.rules = 'banana'; assert.equal(load(JSON.stringify(o)).ok, false);
   o.rules = RULES_VERSION; assert.equal(load(JSON.stringify(o)).ok, true);
-  o.rules = '1.4'; const r2 = load(JSON.stringify(o)); assert.ok(r2.ok); assert.deepEqual(r2.state.migSteps, ['1.45', '1.5', '1.8', '1.85', '1.9', '1.95', '2.4', '2.5', '2.6', '2.7', '2.8', '2.9', '3.0', '3.1', '3.2', '3.3', '3.4', '3.5', '3.6', '3.7', '3.8', '3.81', '3.9', '4.0', '4.1', '4.2', '4.3', '4.4', '4.5']);
+  o.rules = '1.4'; const r2 = load(JSON.stringify(o)); assert.ok(r2.ok); assert.deepEqual(r2.state.migSteps, ['1.45', '1.5', '1.8', '1.85', '1.9', '1.95', '2.4', '2.5', '2.6', '2.7', '2.8', '2.9', '3.0', '3.1', '3.2', '3.3', '3.4', '3.5', '3.6', '3.7', '3.8', '3.81', '3.9', '4.0', '4.1', '4.2', '4.3', '4.4', '4.5', '4.6']);
 });
 test('外觀：堂弟（與所有人）的喜好不會是 undefined', () => {
   const s = mk(); for (const d of s.ds) { delete d.likes; const L = likesOf(d); assert.ok(FOODS.includes(L.food) && DRINKS.includes(L.drink), `${d.name} ${L.drink}`); }
