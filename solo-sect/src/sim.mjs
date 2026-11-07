@@ -9,7 +9,7 @@ import {finishTrainingWish,TRAINING_CAUSES} from './decision.mjs';
 import { ensurePractice, rehearse, practiceWork, practiceWindow } from './practice.mjs';
 import { BODY_TIMING, BODY_MOVES, BODY_BASE, makeBare, acquireWorkTool, moveAvailable, foeAction, FOE_ACTIONS } from './starter-combat.mjs';
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { combatTacticStep, chooseCombatMove, fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuterArt, checkDeriveArt, studyChart24, affix24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, comprehend, comprehendVariant, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
+import { combatTacticStep, chooseCombatMove, fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive28, mastery, mainOuterArt, studyChart24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar } from './economy.mjs';
 import { SOURCES } from './data.mjs';
 import { RECRUIT_TRAIT_VARIATION, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, ROUTINE_DEFAULT, ROUTINE_MODES, PLOT_GROW, HARVEST, NODES, EDGES, FACILITIES, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST } from './data.mjs';
@@ -460,7 +460,7 @@ function grow(s, d, sk, amt, src = 'train') {
   if (sk === 'style') sk = d.style; const raw = amt; /* loop79：造詣只吃原始投入（師父在場倍率前） */
   const before = d.skills[sk]; d.skills[sk] = Math.min(100, before + amt * (d.traits.diligent || 1) * 0.3 * (1 - before / 130) * focusMul(d));
   if (src === 'labor' && sk === 'strength' && d.lg) d.skills[sk] = before + workStrCap(d, Math.floor(s.t / DAY), d.skills[sk] - before); // loop127 做活力氣每日軟上限
-  if (sk === d.style) { growEnsure(d); const o = gainArt(d, amt * (d.arts ? teachMul(s, d, focusOf(d)) : 1), focusMul(d), s.t, { raw, src }); /* #415 N12 師父傳授時段：這門名功練得快 */ if (o.feed) log(s, `${d.name}【${o.feed.label}】內功《${o.feed.name}》長進 ${o.feed.xp.toFixed(2)}`); if (o.next) log(s, `${d.name}功夫到了火候，可向師父求學「${o.next.name}」`); for (const m of o.moves) log(s, `${d.name}練熟了，自悟新招「${MOVES.find((x) => x.id === m).name}」`); if (o.star) log(s, `${d.name}的基本功又添一顆星`); return o; }
+  if (sk === d.style) { growEnsure(d); const o = gainArt(d, amt * (d.arts ? teachMul(s, d, focusOf(d)) : 1), focusMul(d), s.t, { raw, src }); /* #415 N12 師父傳授時段：這門名功練得快 */ if (o.feed) log(s, `${d.name}【${o.feed.label}】內功《${o.feed.name}》長進 ${o.feed.xp.toFixed(2)}`); if (o.next) log(s, `${d.name}功夫到了火候，可向師父求學「${o.next.name}」`); for (const m of o.moves) log(s, `${d.name}把已學套路的「${MOVES.find((x) => x.id === m).name}」練成了`); if (o.star) log(s, `${d.name}的基本功又添一顆星`); return o; }
 }
 
 function doTask(s,d,dt){
@@ -512,7 +512,7 @@ function doTask(s,d,dt){
       if (t.act === 'train') coTrain(s, d, A.skill?.style || 0, grow, relAdd, log); // loop8 同修
       if (trainedArt) noteTrain31(d, artById(trainedArt)); /* 一次練功只記一次，同修再長的熟練不另計 */
       if ((t.act === 'chat' || t.act === 'spar') && t.partner && d.id < t.partner) askStrong(s, d, byId(s, t.partner), grow, think, log); // loop8 請教
-      comprehend(s, d, t.act, t.partner ? byId(s, t.partner) : null, think, log); comprehendVariant(s, d, t.act, t.partner ? byId(s, t.partner) : null, think, log); // loop7 領悟＋loop16 變式
+      // N42：平常練習只累積 N33 的手眼熟；整門功夫須有師父或譜。
       if (t.act === 'spar' && t.partner) { const p = byId(s, t.partner); if (d.id < p.id) { relAdd(s, d, p, 2); log(s, `${d.name}與${p.name}在${facStage(s, 'yard').offers.includes('spar') ? '木樁場' : '空地上徒手'}切磋`); addMem(s, d, p, 'spar'); } }
       if (A.fun) d.needs.fun = clamp((d.needs.fun ?? 60) + A.fun, 0, 100);
       if (t.act === 'leisure') think(s, d, 'idled');
@@ -532,7 +532,7 @@ function doTask(s,d,dt){
       if (t.act === 'pass' && t.lead && t.partner) { const p = byId(s, t.partner); if (p) passDo(s, d, p, t.art); }
       if (t.act === 'study') { const w = readStudy(s, d); if (w) log(s, `${d.name}在藏經閣讀了許久，忽然開竅——悟性長進了${d.rootKnown ? `（${w}）` : ''}。`); } // loop140 讀書長悟性
       if (t.act === 'study' && t.fac === 'library') { const page = readLuohanBook(d, effDur, s.t); if (page.learned) { log(s, `【拳譜】${d.name}對照身體起手，把《少林羅漢十八手》的二十二段讀完，開始依譜練掌。`); think(s, d, 'learned'); } else if (page.form) log(s, `${d.name}讀《羅漢十八手》到「${page.form}」，照著圖譜試擺。`, 'low'); }
-      if ((t.act === 'study' || t.act === 'meditate')) { const dv = checkDeriveArt(s, d); if (dv) { log(s, `【開宗立派】${d.name}融會貫通，將兩門絕藝合參推演出「《${dv.name}》」，納入本門傳承！`); recordDeed(s, d, 'derive', { chron: `${d.name}合參推演出《${dv.name}》，納入本門傳承` }); } } // loop165 Batch 5.1
+      // 合參創派不由讀書或打坐的次數自動送出整門功夫。
       if (t.act === 'study') { const g = studyChart24(s, d, () => rand(s)); if (g) log(s, `【藏經閣】${d.name}在書堆裡翻出一卷《${g.art.name}》，從此略通${CATS[g.cat].name}。`); } // loop160 Batch 1.2
       /* loop181 v2.8 經脈內傷：練功／切磋逆催累積，打坐／醫館化解 */
         finishTrainingWish(d,t.act);
@@ -919,7 +919,7 @@ export { recordDeed, DEED_CAP, CHRON_CAP, tallyAct, bioLine, bioLean } from './u
 export function tick(s, dt = 0.25) {
   s.t += dt; BYID.set(s, new Map(s.ds.map((d) => [d.id, d])));
   for (const d of s.ds) if (!d.pf) d.pf = 1; /* loop91 新入門者也吃熟練度十重 */
-  for (const d of s.ds) { const af = affix24(s, d); if (af) log(s, `【頓悟】${d.name}把「${af.art.name}」練到大成，忽有所悟——得「${af.x.name}」字訣。`); /* loop162 Batch 3 */ d.sectId = s.sect?.id || null; if (d.ng && hasSpec(d, 'jiuyang') && !d.path?.length) { addQi(d, 0.25 * dt); jiuyangEase(d, dt); } /* #405 大成起，不動時內傷緩緩褪 */ } if (s.jh?.poison && bestSpec(s, 'yishu') > 0) { s.jh.poison = null; log(s, '醫者出手，化骨綿掌的餘毒被解了。'); } /* loop151 */
+  for (const d of s.ds) { d.sectId = s.sect?.id || null; if (d.ng && hasSpec(d, 'jiuyang') && !d.path?.length) { addQi(d, 0.25 * dt); jiuyangEase(d, dt); } /* #405 大成起，不動時內傷緩緩褪 */ } if (s.jh?.poison && bestSpec(s, 'yishu') > 0) { s.jh.poison = null; log(s, '醫者出手，化骨綿掌的餘毒被解了。'); } /* loop151 */
   for (const d of s.ds) { if (!d.ng) { d.ng = 1; d.qi ??= 0; } if (!d.ng2) { d.ng2 = 1; d.qi = Math.min(d.qi ?? 0, qiMax(d)); } } /* loop142 一版舊檔改護體真氣 */ /* loop103 */
   for (const d of s.ds) d.lg = 1; /* loop127 新入門者 */
   for (const d of s.ds) { if (!d.gInit) growEnsure(d); d.gdr = 1; } /* loop84 新入門者立即折算，介面不必寫狀態 */
@@ -969,7 +969,7 @@ function paceStep(s) {
 }
 function finishTrial(s,d,m,mv){
   applyArtOn(s,'kill',d,m,{move:mv?.id,foeName:MONSTERS[m.k].name});s.mons=s.mons.filter(x=>x!==m);seeEnemy(s,m.k,'kill',d);resAdd(s,'food',2,'trial');
-  const r=d.arts.basicFist;if(r&&r.xp<25)r.xp=25.5;const learned=gainArt(d,0,1,s.t);for(const id of learned.moves)log(s,`${d.name}練熟了，自悟新招「${MOVES.find(x=>x.id===id).name}」`);
+  const r=d.arts.basicFist;if(r&&r.xp<25)r.xp=25.5;const learned=gainArt(d,0,1,s.t);for(const id of learned.moves)log(s,`${d.name}把已學套路的「${MOVES.find(x=>x.id===id).name}」練成了`);
   log(s,`${d.name}站穩腳步，終於把來犯的野獸趕回山裡。`);think(s,d,'learned');s.pace.trial='done';milestone(s,'trial');d.task=null;d.anim=null;d.swing=null;
 }
 function trialStep(s,d,dt){

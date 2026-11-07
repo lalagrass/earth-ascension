@@ -350,7 +350,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '3.81'; /* N58 小修：束脩工作看當日未預約工作格 */
+export const RULES_VERSION = '3.9'; /* 第十輪 N40–N42：羅漢拳與共用成長底層 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [

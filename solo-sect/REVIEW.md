@@ -326,9 +326,37 @@ N34 的 `duel.mjs --log` 仍輸出每拍的 `T/r/m/margin` 供 reviewer 任取�
 實際主筆 grass／Codex Cloud。base 為 #497 已合併的 `270f746`。Claude 在 #497 複審指出，舊 `plots.length > 0` 讓四塊正在種或被預約的菜畦仍算可做工，無束脩候選無法走下山路徑。現在 `availableAdmissionWork` 查各菜畦真狀態與 `plot:i` 預約，再查未滿庫、當下無工作／預約的林緣和石場；成功入門的抵食宿工作會按日記格，避免同日重複承諾。僅管新人的食宿承諾，不縮現有門人的工序容量。錢 3 是原 `ECON.wage=2` 的一日半食宿及指導時辰機會成本，不是虛構的飯食市價；飯仍真扣。公式及限制見 [收徒系統](docs/systems/recruitment.md)。
 
 - A：`bash test/run.sh smoke`，21/21；新增一支小測試驗菜畦全預約、木石滿庫後無工，`recruit` 真使候選下山，隔 `DAY` 帶糧回來；同測試驗 3.8→3.81 空工作預約欄。原 N58 及 N50 斷言不改。
-- CI 首輪 quick 與 golden 通過，accept 300/301；唯一失敗是 `v220` 的三十日**完整存檔**雜湊仍釘 3.8。新增當日 `workBooked` 欄和規則版 3.81 會改序列化內容，即使同尺 bot12 的戰鬥、招收和資源數字不變。Node 22 同一 seed 42 重產 `golden-30d-v22.txt` 為 `65e97bad8cee89c7`；測試情境和相等斷言保留，待新 CI 驗證。
+- CI 首輪 quick 與 golden 通過，accept 300/301；唯一失敗是 `v220` 的三十日**完整存檔**雜湊仍釘 3.8。新增當日 `workBooked` 欄和規則版 3.81 會改序列化內容，即使同尺 bot12 的戰鬥、招收和資源數字不變。Node 22 同一 seed 42 重產 `golden-30d-v22.txt` 為 `65e97bad8cee89c7`；測試情境和相等斷言保留；[CI 42351968626](https://github.com/lalagrass/earth-ascension/actions/runs/42351968626) 六個 job 全綠。
 - A：Node 22 `docker run --rm -v "$PWD":/repo -w /repo/solo-sect node:22-bookworm-slim node tools/golden.mjs --write`；quick 4、full 32、舊檔 6 格更新。每格存檔 hash 因規則 3.81 與新欄改變，完整模擬輸出差異由 CI `golden --check` 核對。
 - B：無新增機率或權重，工作格是已預約／可工作與否的確定性判斷。
 - C：`node tools/bot12.mjs . --json > artifacts/n58-fix/bot12-head.json`；[原 #497 3.8 輸出](artifacts/n58/bot12-full-head.json)與[3.81 輸出](artifacts/n58-fix/bot12-head.json)。12 種子 30 日，原版／小修：自然下山 0／0、常駐名俠第 10／30 日中位 3／3→3／3、日常山賊 78/82→78/82、有柵探針 90/96→90/96、柵留住 29→29、惱羞 326→326、威脅點中位 267→267。bot 的正常日程未填滿所有工作格，因此這 12 種子沒有下山；A 的合法滿格情境證明路徑可達，不把零次改報成有發生。
 
 舊名→新名：本小修沒有碰到帶輪次編號的函式名；新入口是 `availableAdmissionWork` 與 `bookAdmissionWork`。最沒把握的三處：一個物理林緣／石場每日只承諾一位新人的食宿班，舊工作 AI 本身仍可多人使用；本 bot 的自然下山仍為零，因為工作格沒有被填滿；舊 3.8 已收人沒有可追溯的當日工作格，遷移補空欄而不捏造預約。畫面沿用 #497 的[入門說明截圖](artifacts/n58/admission-ui.png)，本次條件的可見證據在招收按鈕的「先下山做工」提示與 A 小測試。
+
+## 第十輪：N40 一本譜、N41 一生專練、N42 共用成長（#441）
+
+實際主筆 grass／Codex Cloud。前置 #498 N58 小修已合進本分支，沒有 rebase。Node 22 以規則 3.9 重產 quick 4、full 32、舊檔 6 格 golden；三十日全開郭靖舊基準完整存檔 hash 同 seed 42 由 3.81 的 `65e97bad8cee89c7` 重產為 `51c2171f42228370`，原情境和相等斷言不動。公式、歷史名稱來源與常數理由見 [combat.md](docs/systems/combat.md)。畫面見[成長首行](artifacts/r10/growth-panel.webp)。
+
+| 驗收 | 指令與門檻 | 預期／實測 |
+|---|---|---|
+| A N40 | `bash test/run.sh smoke`；一支小測試，同一譜交給有／無白身交手經驗者 | 有經驗者讀得較快，22 段讀完才取得正式羅漢十八手；無需下載圖像。 |
+| A N41 | 同一 smoke；一支小測試 | 同時練一門比五門生鏽慢；六階要實戰與套路同時累積。 |
+| A N42 | 同一 smoke；一支小測試 | 面板前搖、反應下限與真交手讀同一值；同等身體與火候時名功可及前搖比常見武學短。整合後 24/24。 |
+| A 舊檔 | `bash test/run.sh accept` 的原版本遷移斷言及 `node tools/golden.mjs --check`；CI 執行 | 3.8→3.81→3.9 依序遷移，既有武學、手眼熟、XP 不抹；歸真星數換成 lifetime。以本輪 CI 最終 head 為準。 |
+| B | `node --test test/unit/growth/n42-substrate.test.mjs`；規則確定性，無新抽樣率 | 武學 fanR 只縮可達時間下限，不乘傷害或勝率；反應抽樣與解析勝算共用下限。 |
+| C | Node 22：`node tools/bot12.mjs . --json`；1001–1012 種子，各 30 日 | [#498 base 原始輸出](artifacts/r10/bot12-base.json)／[3.9 head 原始輸出](artifacts/r10/bot12-head.json)；下表只報數，不拿 C 目標調常數。 |
+
+| C 指標 | #498 base | 3.9 head |
+|---|---:|---:|
+| 入門 DPS 中位（樣本） | 58.5（43） | 43.9（4） |
+| 常見 DPS 中位（樣本） | 106.8（28） | 44.1（41） |
+| 名門 DPS 中位（樣本） | 127.4（5） | 91.1（1） |
+| 一流 DPS 中位（樣本） | 229.5（18） | 72.4（14） |
+| 絕頂 DPS 中位（樣本） | 216.1（16） | 140.0（25） |
+| 自悟整門／觀摩／變式／詞綴／N35 | 58／359／506／558／0 | 0／0／0／0／0 |
+| 自然山賊勝場／場次 | 78／82 | 65／73 |
+| 有柵探針勝場／場次、柵留住 | 90／96、29 | 89／96、28 |
+
+DPS 下降的主要規則原因是撤去十重、星數、同類造詣及小成／圓滿等重複出手倍率，且普通日課不再自悟整門。名門／常見 30 日樣本比從 1.19 升到 2.07；但 head 名門只有一人，不能把比值當穩定平衡結論。每個樣本的 seed、人物、所用武學、XP 和 DPS 都在兩份原始 JSON 的 `tierDetails`。自悟事件完全歸零，N35 自然日程也仍為零，未達「全派 5–15 次」C 參考值；N35 需真實吃虧情境，不另加掉落機率或保底。普通日程強度下降使山賊場數、勝場改變；有柵探針與自然戰分母分列。
+
+舊名 → 新名：`shenfaCd24` → N33 `practiceWindow` 的時間下限；`catDmg24` → `forceTarget` 的單一勁目標；`profMul` 和 `GUIZHEN.star` 不再進出手傷害，但保留舊檔讀取。最沒把握的三處：名門 head 只有一個樣本；整門自悟拿掉後 N35 在自動日程沒有自然發生；各段 DPS 降幅大，但公式重複倍率已撤，不為接近 C 數字補第二層係數。N40 只借指定的 22 段名稱，不使用未確認授權的圖或現代說明文字。

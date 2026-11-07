@@ -1,5 +1,7 @@
 import {options,growthSnapshots} from './growth-scenario.mjs';
+import {growthSnapshot} from '../src/growth-adapter.mjs';
 const {seed,days,get}=options(), result=growthSnapshots(seed,days), a=result.snapshots[0],b=result.snapshots.at(-1);
+result.substrate=result.snapshots.map(s=>({day:s.day,...(({art,wind,reaction,force,why})=>({art,wind,reaction,force,why}))(growthSnapshot(s.hero))}));
 const names={chopPause:'劈柴每斧間停頓(s)',waterTilt:'挑水最大傾角(deg)',hipHeight:'馬步重心高度(px)',routineSeconds:'通用拳三式秒數(s)',combatWind:'交手直拳前搖(s)',routinePause:'式間停頓(s)',sway:'身體晃動幅度(px)'};
 result.table=Object.keys(names).map(k=>({key:k,name:names[k],day1:a.metrics[k],day60:b.metrics[k],reduction:1-b.metrics[k]/a.metrics[k],pass:b.metrics[k]<=.75*a.metrics[k]}));
 result.pass=result.table.slice(0,5).every(r=>r.pass);

@@ -4,6 +4,7 @@ export {emitPractice} from './practice-events.mjs';
 import { ARTS, MOVES, ENEMIES, TIERS } from './data.mjs';
 import { FOE_ACTIONS, bodyMove } from './starter-combat.mjs';
 import { lifeStage, recordLifeExchange, recordLifeRoutine } from './life-study.mjs';
+import { approachedTime, bodyFloor, reactionTime } from './growth-core.mjs';
 export const PRACTICE = Object.freeze({ halfUses: 50, alpha: Math.log(2) / Math.log(51), bodyScale: 10, reactionFloor: .2, reactionSpan: .4, eyeHalf: 3, ordinaryWu: 3, reactionShape: 2, codexUnit: 1, eventLimit: EVENT_LIMIT, familyTransfer: .5 });
 // Each row is a prior history in effective exchanges. Bare actors use tier -1.
 export const TRAINING_HISTORY = Object.freeze([
@@ -49,13 +50,19 @@ export function familiarReaction(d, attacker, move, codex = {}) {
   const f = familiarUses(d, attacker, move, codex), half = PRACTICE.eyeHalf * PRACTICE.ordinaryWu / (d?.wu || d?.root || PRACTICE.ordinaryWu);
   const art = artForMove(move), stage = art && lifeStage(attacker, art.id);
   const possibilities = stage >= 5 ? 2 : 1;
-  return PRACTICE.reactionFloor + possibilities * PRACTICE.reactionSpan * half / (half + f);
+  return reactionTime(reactionFloor(d), PRACTICE.reactionSpan, half, f, possibilities);
 }
-export function practiceWindow(d, move, start, { tier = d?.k ? veteranTier(d) : 0, skill = 'agility' } = {}) {
+export const reactionFloor = (d) => {
+  const studied = Object.values(d?.arts || {});
+  if (!studied.length) return PRACTICE.reactionFloor;
+  const tier = Math.max(...studied.map((r) => tierOfXp(r.xp || 0)));
+  return PRACTICE.reactionFloor / (1 + tier / PRACTICE.bodyScale + (d?.skills?.agility || 0) / 100);
+};
+export function practiceWindow(d, move, start, { tier = d?.k ? veteranTier(d) : 0, skill = 'agility', artReach = 1 } = {}) {
   const body = d?.skills?.[skill] || d?.agi || 0;
-  const floor = start / (1 + body / PRACTICE.bodyScale + Math.max(0, tier));
+  const floor = bodyFloor(start, body, tier, PRACTICE.bodyScale, artReach);
   const residual = practiceResidual(handUses(d, move));
-  return { start, floor, n: handUses(d, move), residual, wind: floor + (start - floor) * residual };
+  return { start, floor, n: handUses(d, move), residual, wind: approachedTime(start, floor, residual) };
 }
 export function recordExchange(s, attacker, defender, move, p, result) {
   const w = learningWeight(p), priorHand = handUses(attacker, move), priorEye = familiarUses(defender, attacker, move, s?.codex);

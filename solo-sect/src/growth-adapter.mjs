@@ -1,5 +1,7 @@
-import { TIERS } from './data.mjs';
-import { artById, artTier, focusOf } from './arts.mjs';
+import { TIERS, MOVES } from './data.mjs';
+import { artById, artTier, focusOf, windOf } from './arts.mjs';
+import { reactionFloor } from './practice.mjs';
+import { forceTarget } from './growth-core.mjs';
 
 // N52 的唯一成長資料轉接點。N42 改成收斂底層時，只換這裡的讀值。
 export function growthSnapshot(d, since = 0) {
@@ -11,6 +13,9 @@ export function growthSnapshot(d, since = 0) {
   const progress = tier < TIERS.length - 1 ? Math.max(0, Math.min(100, 100 * (xp - lo) / (hi - lo))) : 100;
   const title = `${art.name}・${TIERS[tier][1]}`;
   const today = Math.max(0, xp - since);
-  return { art: id, tier, title, progress, left, today, xp,
-    firstLine: `${title}｜${left ? `距${TIERS[tier + 1][1]} ${left.toFixed(1)}` : tier < TIERS.length - 1 ? '可衝關' : '本階已滿'}｜今日 +${today.toFixed(1)}` };
+  const move = MOVES.find((m) => m.id === art.tech), wind = move ? windOf(d, move.id, move.cd) : null;
+  const reaction = reactionFloor(d), force = forceTarget(art, xp);
+  const why = `${wind == null ? '身體招尚未定型' : `本式前搖 ${wind.toFixed(2)} 秒`}，反應下限 ${reaction.toFixed(2)} 秒，勁 ${force.toFixed(2)}`;
+  return { art: id, tier, title, progress, left, today, xp, wind, reaction, force, why,
+    firstLine: `${title}｜${left ? `距${TIERS[tier + 1][1]} ${left.toFixed(1)}` : tier < TIERS.length - 1 ? '可衝關' : '本階已滿'}｜今日 +${today.toFixed(1)}｜${why}` };
 }

@@ -8,7 +8,9 @@ const study = (d, id) => (d.arts[id].life ??= { exchanges: 0, forms: 0 });
 export function recordLifeExchange(d, move, weight = 1) {
   const art = artForMove(move);
   if (art && d.arts?.[art.id]) {
-    study(d, art.id).exchanges += weight;
+    const r = d.arts[art.id];
+    r.lifetime = (r.lifetime || 0) + weight;
+    if (art.lifeStages) study(d, art.id).exchanges += weight;
     unlockLifeMove(d, art);
   }
 }
@@ -18,7 +20,9 @@ export function recordLifeRoutine(d, seconds) {
   const art = ARTS.find((a) => a.id === id);
   if (!art?.routine || !d.arts?.[id]) return;
   // A training session can traverse the 22 poses; form count is time, not XP.
-  study(d, id).forms += seconds * 22 / ACTIVITIES.train.dur;
+  const forms = seconds * 22 / ACTIVITIES.train.dur;
+  d.arts[id].lifetime = (d.arts[id].lifetime || 0) + forms;
+  study(d, id).forms += forms;
   unlockLifeMove(d, art);
 }
 

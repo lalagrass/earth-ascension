@@ -1,5 +1,5 @@
 import { tierOf, affKey } from './util.mjs';
-import { RULES_VERSION, DISCIPLES, RECRUIT_POOL, MOOD, ECON, FACILITIES, CHORE_ACTS, DAY, ARTS, ROUTINE_DEFAULT } from './data.mjs';
+import { RULES_VERSION, DISCIPLES, RECRUIT_POOL, MOOD, ECON, FACILITIES, CHORE_ACTS, DAY, ARTS, GUIZHEN, ROUTINE_DEFAULT } from './data.mjs';
 import {discipleCount,recruitmentInit} from './recruitment.mjs';
 import { seedArts, growInit } from './arts.mjs';
 import { ensurePractice } from './practice.mjs';
@@ -76,6 +76,15 @@ export const MIGRATIONS = [
   } },
   { to: '3.81', note: 'N58 小修（#488）：未預約工作格；舊局補空的當日抵食宿工作預約，不改已收人與其糧錢', up(o) {
     if (o.recruitment) o.recruitment.workBooked ??= { day: o.day, slots: [] };
+  } },
+  { to: '3.9', note: '第十輪（#450–#452）：舊武學熟練照原值成為招式勁目標，技能為身體下限；歸真星數換算一生投入，已學內容與手眼熟保留', up(o) {
+    for (const d of o.ds || []) {
+      ensurePractice(d, o.codex);
+      for (const [id, r] of Object.entries(d.arts || {})) {
+        r.lifetime ??= (r.stars || 0) * GUIZHEN.cost0 + (r.sxp || 0);
+        if (id === 'luohanHands' && !r.life) r.life = { exchanges: r.lifetime, forms: r.lifetime, legacy: true };
+      }
+    }
   } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
