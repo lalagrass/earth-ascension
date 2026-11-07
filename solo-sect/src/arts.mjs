@@ -9,7 +9,7 @@ import { bodyMove, moveAvailable, BODY_TIMING, FOE_ACTIONS, foeAction } from './
 import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, VARIANTS, BREAK, GUIZHEN, RUST, TRAITS } from './data.mjs';
 import { stampCard, BRANCHES } from './artcard.mjs';
 import { strMul } from './economy.mjs';
-import { pipeline, log, chronOf } from './util.mjs';
+import { pipeline, log, chronOf, affKey } from './util.mjs';
 // ==== （原 growth.mjs）====
 /* loop78 成長分層（開關 s.grow）：成長門類 metadata、造詣單一結算入口、同類學習加速。
    造詣不另存門類值：造詣＝Σ 各武學紀錄 r.gm 的有界貢獻 × 門類權重（衍生值，不會與 skills.palm 漂移）。
@@ -1302,7 +1302,7 @@ export function assessLoad(s,def,extra=null,ctx={}) {
     const guard=def.bare?BODY_TIMING.guard:CLASH.time.guard;
     return {attacker:a.uid||a.id||a.k,move,need:familiarReaction(def,a,move,s?.codex)+guard+busy,window:Math.max(BODY_TIMING.simple,wind),travel:Math.max(travel,ready),active:!!swing};
   });
-  return loadFromForecast(def,rows);
+  return loadFromForecast(def,rows,s);
 }
 export function combatTacticStep(s,d,dt,H={}){
   return stepTactic(s,d,assessLoad(s,d),dt,{temper:composure(d),normalTemper:CLASH.fret.normal,anger:a=>{a.raging=true;a.rageUntil=s.t+CLASH.fret.rageTime;},...H});
@@ -1312,7 +1312,7 @@ export function clashTimes(s, atk, def, ctx = {}) {
   const T = CLASH.time;
   const wind = Math.max(0, ctx.available ?? ctx.wind ?? 0.5);
   const agi = isMon(def) ? (def.agi ?? moveStats(def).speed) : (def.skills?.agility || 0);
-  const move = timedMoveId(atk,ctx.move), reaction = familiarReaction(def, atk, move, s?.codex);
+  const move = timedMoveId(atk,ctx.move), reaction = familiarReaction(def, atk, move, s?.codex, ctx.sharedUses || 0);
   const jitter = (1 / PRACTICE.reactionShape) * (1 + (def.fret || 0) * T.fret);
   const response = fastestMove(def);
   const strike = windOf(def,response.id,response.cd);
@@ -1329,6 +1329,15 @@ export const drawReaction = (T, rnd) => { const u = rnd(), floor = T.floor ?? PR
 const reactionOdds = (T, action) => { const floor = T.floor ?? PRACTICE.reactionFloor, available = T.wind - action - floor; if (!(available > 0)) return 0; return 1 / (1 + ((T.reaction - floor) / available) ** (1 / T.jitter)); };
 /* 起手時先抽反應；截擊立即發生，其餘接法帶同一次抽樣等來招落下。 */
 export function interceptOpening(s, atk, def, rnd, ctx = {}) {
+  // 友軍尚在起手時，身邊空手的人可以在來招完成前攔下；熟悉同伴的動作讀 N33 眼熟量尺。
+  if (ctx.allowCover !== false && (def.swing || def.bswing)) {
+    for (const helper of allies(s || {},def).filter(h=>h.pos&&def.pos&&atk.pos&&distance(h.pos,def.pos)<=RING.step*2&&distance(h.pos,atk.pos)<=RING.engage+RING.step&&!h.swing&&!h.bswing&&(h.busyUntil||0)<=(s?.t||0)).sort((a,b)=>distance(a.pos,def.pos)-distance(b.pos,def.pos))) {
+      const shared=(s?.mem||[]).filter(m=>((m.a===helper.id&&m.b===def.id)||(m.a===def.id&&m.b===helper.id))&&['spar','patrol'].includes(m.k)).length
+        + Math.max(0,s?.aff?.[affKey(helper.id,def.id)]||0)/100*PRACTICE.eyeHalf;
+      const assisted=interceptOpening(s,atk,helper,rnd,{...ctx,allowCover:false,sharedUses:shared});
+      if (assisted.read?.kind === 'read') return { ...assisted, helper };
+    }
+  }
   const T = clashTimes(s, atk, def, ctx), reaction = drawReaction(T,rnd);
   const opening = { T, reaction, odds:clashOdds(s,atk,def,ctx), p: clashOdds(s,atk,def,ctx).hit, at: s?.t ?? 0 };
   if (T.canCounter && postureOf(def) > 0 && !(atk.sure && atk.sure === (def.uid || def.id)) && def.part?.where!=='eye'&&!(def.visionUntil>(s?.t??0)) && !(def.rageUntil > (s?.t ?? 0)) && reaction+T.strike<T.wind && !(T.preferStep&&reaction+T.step+T.strike<T.wind)) {

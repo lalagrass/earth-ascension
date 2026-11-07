@@ -256,10 +256,10 @@ export const HABITAT = { c: [1450, 60], r: 70 };
 /* #419 N15 合法出生點：敵人只從這張表出來——離地圖邊緣 ≤ edge、離大殿 ≥ hall。獸從獸穴、棲地、東嶺；山賊從山門。
    via：出生點到守點山路的座標（都在山那一側，不從門派背後冒出來）；接上 guard 之後沿原山路走。 */
 export const SOURCES = {
-  den: { pos: [1475, 22], for: 'beast', via: [] },
-  habitat: { pos: [1440, 40], for: 'beast', via: [[1392, 96]] },
-  ridge: { pos: [1585, 120], for: 'beast', via: [[1470, 150]] },
-  gate: { pos: [1475, 875], for: 'bandit', via: [] },
+  den: { pos: [1475, 22], for: 'beast', via: [], organization: 2 },
+  habitat: { pos: [1440, 40], for: 'beast', via: [[1392, 96]], organization: 2 },
+  ridge: { pos: [1585, 120], for: 'beast', via: [[1470, 150]], organization: 2 },
+  gate: { pos: [1475, 875], for: 'bandit', via: [], organization: 2 },
 };
 export const SRC_RULE = { edge: 80, hall: 400 };
 export const srcOk = (p) => Math.min(p[0], p[1], WORLD.w - p[0], WORLD.h - p[1]) <= SRC_RULE.edge && Math.hypot(p[0] - NODES.hall[0], p[1] - NODES.hall[1]) >= SRC_RULE.hall;

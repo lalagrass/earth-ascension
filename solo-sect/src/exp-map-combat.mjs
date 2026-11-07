@@ -1,8 +1,8 @@
 // N45：巡山前三段的真地圖交手。與守山／狩獵共用出手、截擊及應接時間式。
-import { ENEMIES, ROUTE } from './data.mjs';
+import { ENEMIES, ROUTE, SOURCES } from './data.mjs';
 import { chooseCombatMove, combatMoves, windOf, interceptOpening, resolveSwing, postureRegen, fretStep, shieldHit, moveMul, cdMul, CLASH } from './arts.mjs';
 import { BODY_TIMING, FOE_ACTIONS, foeAction } from './starter-combat.mjs';
-import { movementSpeed, moveToward, distance, restoreSurvivor, rememberEscape } from './tactics.mjs';
+import { movementSpeed, moveToward, distance, restoreSurvivor, rememberEscape, ringCapacity, attackTokenLimit } from './tactics.mjs';
 import { practiceWindow } from './practice.mjs';
 import { RING } from './combat-space.mjs';
 
@@ -56,6 +56,11 @@ export function stepMapBout(s, owner, dt, H) {
     }
     if (!alive(a) || a.swing || (a.busyUntil || 0) > s.t || (a.cool || 0) > s.t) continue;
     const target = closest(a, a.k ? team : foes); if (!target) continue;
+    if (a.k) {
+      const source = SOURCES[FOE_ACTIONS[a.k]?.escapeSource || 'den'] || SOURCES.den;
+      const limit = attackTokenLimit(source.organization ?? SOURCES.den.organization, ringCapacity(target, s));
+      if (foes.filter(x => x !== a && x.swing?.target === idOf(target)).length >= limit) continue;
+    }
     const dist = distance(a.pos, target.pos), pick = chooseCombatMove(s, a, target, () => H.rand(s), { distance: dist });
     const move = pick?.move || (a.k ? foeAction(a, dist) : combatMoves(a).find(m => m.range >= dist));
     if (!move || dist > move.range) { moveToward(a, target.pos, a.k ? FOE_ACTIONS[a.k]?.speed || movementSpeed(a) : movementSpeed(a), dt); continue; }
