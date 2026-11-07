@@ -85,11 +85,11 @@ test('野豬下山拱菜後回山，族群數不變', () => {
 
 // v0.5
 import { recruit, canRecruit, capacity, mapStage } from '../../src/sim.mjs';
-test('招收受名聲、床位、存糧與師父真空檔約束；成功扣糧且新人從村路上山', () => {
+test('招收受名聲、床位、束脩或工作與師父真空檔約束；新人從村路上山', () => {
   const s = createState(41); s.res.food = 10; assert.equal(canRecruit(s).ok, false); s.rep = 100;
   const cap = capacity(s); assert.equal(cap, 3); assert.match(canRecruit(s).why, /床位/);
-  s.fac.dorm.stage = 1; s.res.food = 20; prepareHistoricalMentor(s); const r = recruit(s); assert.ok(r.ok, r.why); assert.equal(s.res.food, 20 - ACTIVITIES.eat.use.food); assert.equal(r.d.at, 'gate'); assert.equal(s.ds.length, 4);
-  s.res.food = 0; s.fac.dorm.stage = 2; assert.match(canRecruit(s).why, /存糧/);
+  s.fac.dorm.stage = 1; s.res.food = 20; prepareHistoricalMentor(s); const r = recruit(s); assert.ok(r.ok, r.why); assert.equal(s.res.food, 20 + 3 - ACTIVITIES.eat.use.food); assert.equal(r.d.at, 'gate'); assert.equal(s.ds.length, 4);
+  s.res.food = 0; s.fac.dorm.stage = 2; assert.equal(canRecruit(s).workAway, true); assert.match(canRecruit(s).why, /付不起束脩/);
 });
 test('大廳擴建需名聲；母版階段隨建設 S0→S1→S2', () => {
   const s = createState(42); s.res.wood = 12; assert.equal(startBuild(s, 'hall'), false); assert.equal(mapStage(s), 'S0');

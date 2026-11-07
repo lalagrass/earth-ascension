@@ -52,7 +52,7 @@ test('共事揭露根骨；根骨夠＋好感夠才可邀入外門，入門後�
   for (const o of disciples(s)) { s.aff[`${o.id}>${d.id}`] = 30; } s.fac.dorm.stage = 2;
   const r = invite(s, d.id); assert.ok(r.ok, canInvite(s, d.id).why); assert.equal(d.role, 'outer'); assert.equal(laborers(s).length, 0); assert.equal(disciples(s).length, 4);
 });
-test('根骨平平的雇工不能邀入門', () => { const s = withShed(110); hire(s); const d = hire(s).d; d.rootKnown = true; d.root = 1; assert.match(canInvite(s, d.id).why, /不宜/); });
+test('根骨平平的雇工不能邀入門', () => { const s = withShed(110); s.fac.dorm.stage = 1; hire(s); const d = hire(s).d; d.rootKnown = true; d.root = 1; assert.match(canInvite(s, d.id).why, /不宜/); });
 test('雇工讓施工更快', () => {
   const t = (n) => { const s = withShed(111); s.res.wood = 10; s.res.stone = 4; s.rep = 20; s.fac.dorm.stage = 1; for (let i = 0; i < n; i++) hire(s); s.fac.shed.stage = 2; for (let i = 0; i < n - 2; i++) hire(s); startBuild(s, 'dorm');
     let k = 0; while (s.fac.dorm.stage < 2 && k < 4 * 3000) { tick(s); k++; s.res.food = 60; } return k; };
