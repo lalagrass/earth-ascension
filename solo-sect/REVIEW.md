@@ -27,7 +27,17 @@ bot12 取已合併 9b 的相同工具重跑 base，與 9c head 的[完整原始�
 
 N38 指定 seed17 的[自然 30 日原始輸出](artifacts/round9c/white-body-seed17-final.json)：A 類每筆即時級名與機率投影一致，`rulePass=true`；ISTJ／INTP／ESTP 首到 1 級分別為 d8／d2／d3，3／4／5 級均在 d8，2 級未到，單人對豬逼退日皆 null。拿手招依真交手選招次數分別為揮拳／踢／踢，故三人格只有兩種最常用招。原設計日期與單豬日未達 C 目標，d8 出現正式級名與原江湖葵花殘頁、後續授藝事件有關，不能誤寫為土招自然磨練。Node 22 重產 golden quick 4、full 32、舊檔矩陣皆相符（[原始日誌](artifacts/round9c/golden-write-node22.log)）；本地 smoke 19/19（[日誌](artifacts/round9c/smoke.log)），完整 quick 與 golden 仍由 PR CI 驗證。
 
-N35 [純經營日程 12 種子 × 60 日](artifacts/round9c/glimmer-60-final.json) 的六情境「出現／失手」為奪械 421/315、側擊 0/0、掃 53/21、摔 8/4、撒土 223/179、擲石 0/0；主角首悟日 12 人皆 null。這個日程沒有玩家主動出獵，故沒有野豬衝撞或山路撿石，不能把零次說成招式規則不可能。固定野豬閃後踢、被逼住失手與來敵時擲石三段真 `resolveSwing` 都在原 N35 小測試中出現，A 由 smoke 通過。下一份同種子、每三日正常出獵的 C 原始檔另列主動玩法數字，不會把輸入隱藏在「自然 bot」名下。
+N35 [純經營日程 12 種子 × 60 日](artifacts/round9c/glimmer-60-final.json) 的六情境「出現／失手」為奪械 421/315、側擊 0/0、掃 53/21、摔 8/4、撒土 223/179、擲石 0/0；主角首悟日 12 人皆 null。這個日程沒有玩家主動出獵，故沒有野豬衝撞或山路撿石，不能把零次說成招式規則不可能。固定野豬閃後踢、被逼住失手與來敵時擲石三段真 `resolveSwing` 都在原 N35 小測試中出現，A 由 smoke 通過。下段同種子、每三日正常出獵的 C 原始檔另列主動玩法數字，不會把輸入隱藏在「自然 bot」名下。
+
+[同一 12 種子 × 60 日、玩家每三日選一次正常出獵](artifacts/round9c/glimmer-hunt-12seed-final.json) 的六情境「出現／失手」為奪械 351/246、側擊 1/1、掃 39/17、摔 624/171、撒土 374/220、擲石 199/57。134 次真出獵中有 296 次野豬衝撞、3 次真閃，其中主角閃 1 次；seed1003 的主角接上母招讓側擊情境出現 1 次。這證明三種新增可達情境在未注入敵人／熟練的正常主動出獵中皆非零；12 人首悟仍全 null，與第 7–10 日原 C 目標有明顯偏差，因現有難度門檻和失手累積仍須多次同類情境，且側擊本就少見。本輪不調難度或頻率；交 reviewer 與擁有人決定是否要再改世界規則。
+
+| 類 | 指令 | 預期輸出／本輪觀測 |
+|---|---|---|
+| A N50／N35／N38 | `bash solo-sect/test/run.sh smoke` | exit 0、19/19；N50 容量剩一只收一人，N35 三段排定真交手可觸發，N38 名稱隨機率變。 |
+| A N38、C 日期 | `node solo-sect/tools/white-body.mjs --seed 17 --days 30 --check` | exit 0、`rulePass=true`；`balanceTargets` 分項與每人首達日見原始 JSON，不以日期作 exit gate。 |
+| C N50／戰鬥 | `node solo-sect/tools/bot12.mjs solo-sect --json` | 列 12 種子名俠 d10/d30 及探針／自然戰各自分母；與同版工具 9b base 對照如上。 |
+| C N35 | `node solo-sect/tools/glimmer-metrics.mjs --days=60` 及加 `--hunt-every=3` | 每種子真情境與首悟日，兩日程分列；後者六種情境均非零，但首悟 null。 |
+| golden | Node22 `node solo-sect/tools/golden.mjs --write --tier all` | quick4、full32、saves 全相符，PR 山門紀 job 仍需全綠。 |
 
 以下指令由 repo 根目錄執行；需要比對逐位元組 golden hash 時用 CI 相同的 Node 22，其他功能驗收可用 Node 22 或 24，無需下載素材／套件。N33 的長尾反應運算在兩版 V8 有末位浮點差異，規則公式保持原樣，不能混用不同 runtime 產生的 golden。工具可接受 `--seed`，標籤工具使用該種子的真實模擬快照，不以種子選擇門檻。素材檢查無隨機資料，傳入種子不影響結果。
 
