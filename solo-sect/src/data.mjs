@@ -304,7 +304,7 @@ export const REP = { build: 5, kill: 1, learn: 2 };
 export const RECRUIT = { food: 3 }; // R8 #526：束脩量沿 N58；數字名聲招募門檻退場。
 export const RECRUIT_POOL = [
   { id: 'aqing', name: '阿青', adult: true, sprite: 'hero', style: 'palm', skills: { leg: 3, palm: 6, strength: 8, farming: 6, herbal: 4, agility: 9, cooking: 4 }, traits: { diligent: 1.3 }, personality: ['diligent', 'brave'], support: { food: 3 }, situation: { seek: 'teaching', where: 'village', reason: '在村路尋一處願意教人的山門' } },
-  { id: 'shitou', name: '石頭', adult: true, sprite: 'hero', style: 'leg', skills: { leg: 8, palm: 2, strength: 14, farming: 4, herbal: 2, agility: 8, cooking: 2 }, traits: {}, personality: ['honest', 'brave'], situation: { seek: 'safety', where: 'village', reason: '村路屢遭山賊，想學守住家人的本事' } },
+  { id: 'shitou', name: '石頭', adult: true, sprite: 'hero', style: 'leg', skills: { leg: 8, palm: 2, strength: 14, farming: 4, herbal: 2, agility: 8, cooking: 2 }, traits: {}, personality: ['honest', 'brave'], support: { stone: ACTIVITIES.quarry.carry.stone }, situation: { seek: 'safety', where: 'village', reason: '村路屢遭山賊，想學守住家人的本事' } }, // 24g：村民可帶一趟採石所得，數量由既有搬運量推導。
   // N58: the younger version has only an entry art and uses the same pool/admission path.
   // Age 13 is one year below the existing adult threshold 14; skills borrow Shitou's starter tier.
   { id: 'guojing', name: '郭靖', adult: false, age: 13, child: { since: 0, parents: [] }, youngHero: true, sprite: 'cousin', style: 'leg', skills: { leg: 8, palm: 2, strength: 14, farming: 4, herbal: 2, agility: 8, cooking: 2 }, traits: {}, personality: ['honest', 'brave'], support: { food: 3 }, starterArts: ['basicFist'], root: 3, situation: { seek: 'safety', where: 'village', reason: '村路不太平，想學一身護人的功夫' } },

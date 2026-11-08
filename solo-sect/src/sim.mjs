@@ -6,6 +6,7 @@ import { inventable, inventArt, readableRareBook, readRareBook } from './rare-ar
 import { rareBookSearchStep } from './rare-search.mjs';
 import { HERMITAGE_VOLUMES, seedHermitageBooks, bookStatus, readHermitageBook, cliffBook, forestFragment, volumeById } from './hermitage-books.mjs';
 import { spreadRumors, rumorForCandidate } from './rumors.mjs';
+import { donateRepairs } from './repair-donation.mjs';
 import { canLeapCliff, cliffSlopeFactor, CLIFF_ACT_NODE } from './cliff.mjs';
 import {ringCapacity,attackTokenLimit,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} from './tactics.mjs';
 import {pickupDrop} from './techniques.mjs';
@@ -1048,7 +1049,7 @@ export function dailyPipeline(s) {
   }
   fadeSocialThoughts(s);
   for (const x of returnFromWork(s)) log(s, `${x.id}下山做工攢足束脩，回到山門口等掌門決定。`);
-  payday(s); econDaily(s, EH); apprDaily(s); teachDaily(s); threatDaily(s);
+  payday(s); donateRepairs(s); econDaily(s, EH); apprDaily(s); teachDaily(s); threatDaily(s); // 24g：先開本日帳本再記具名捐修。
   cliqueDaily(s);
   lairDaily(s, EH);
   jhevDaily(s);
