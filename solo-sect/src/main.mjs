@@ -15,11 +15,12 @@ import { memsOf, apprCands, takePupil, pupilsOf, XIA_STYLES, MANUALS, canAssembl
 import { ARC13 } from './jianghu.mjs';
 import { pregnancyOf } from './family.mjs';
 import { RARE_BOOKS, rareBookState, selfCastrate, inventable } from './rare-arts.mjs';
+import { askRareBookRumor, rareBookSearchWhy, startRareBookSearch } from './rare-search.mjs';
 import { GEN, canSucceed, succeed, heirs, heirArt, canBuildFac, buildFac, artKind, KIND_NAME, sectFac, rivalGate } from './sect.mjs';
 import { SECTS, SECT_K, RULE_LIB, JH, DAY as DAY13, HS, DUGU, ARTS, TIERS, VARIANTS, AURA, BREAK, ACTIVITIES as ACTS2, ROUTE, EXP, ENEMIES, CHORE_ACTS, CHORE_NAMES, QUOTA, PRIO, PROMOTE, RANK_NAMES, ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES, NODES, EDGES, CLIFFS, FACILITIES, ACTIVITIES, MOVES, MONSTERS, EXP_STYLES, CAMPS, ENDLESS, ROUTINE_MODES, ROUTINE_PERIODS, bindPortraitSet } from './data.mjs';
 import { canLeapCliff } from './cliff.mjs';
 import { bookStatus, volumeName } from './hermitage-books.mjs';
-import { rumorHtml, fameOf } from './rumors.mjs';
+import { rumorHtml, fameOf, rumorForRareBook } from './rumors.mjs';
 import { zxGate, XIA, xiaPool, pickStudent } from './wuxia.mjs';
 import { crusade27, isEliteHermit, startExpedition, recallExpedition, canExpedition, codexRows, reportText, segAt, ROUTE_END, skipGuide, outers, skipsChores, emergency, quotaOf, setDuty, setPrio, canPromote, startTrial, isLabor, disciples, laborers, laborCap, canHire, hire, canInvite, invite, avgAff, togglePause, MATS, moodLabel, moodParts, seasonOf, aff, compat, defaultAnswers, personalityFrom, capacity, canRecruit, recruit, policyCap, setRecruitPolicy, setForayPolicy, mapStage, setPost, phaseOf, setStyle, createState, tick, startBuild, startHunt, setOrder, chooseHermitageBook, save, load, facDef, facStage, relKey, relStage, speedOf, incenseOf, startSchoolTrip, buildWhy, lotsUsed, lotsOf, lotCost, lotWhy, buyLot, resolveRaid, canFoundHermitageSect, queueHermitageFounding } from './sim.mjs';
 import { nearestType, typeLabel, archLabel, think as think10 } from './social.mjs';
@@ -322,6 +323,14 @@ function panel() {
   $('res').innerHTML = `${hermitBadge(S)}${resItem('wood-pile', '木', `${S.res.wood}/${S.cap.wood}`)}${resItem('falling-rocks', '石', `${S.res.stone}/${S.cap.stone}`)}${resItem('coins', '香火錢', S.res.coin)}${resItem('herbs-bundle', '菜', S.res.veg)}${resItem('meal', '飯', S.res.food)}${(S.hermitage?.active || S.herbalDiet) ? resItem('meal', '藥膳', S.res.medFood || 0) : ''}${resItem('herbs-bundle', '藥', S.res.herb)}${S.hermitage?.active ? `${resItem('herbs-bundle', '玉蜂漿', S.res.beeJelly || 0)}${resItem('full-wood-bucket', '寒潭水', S.res.coldWater || 0)}` : ''}${resItem('medicines', '療傷丹', S.res.pill)}${resItem('full-wood-bucket', '水', `${S.res.water}/${S.cap.water}`)}${resItem('wood-beam', '鐵木', S.res.tiemu || 0)}${resItem('crystal-shrine', '靈石', S.res.lingshi || 0)}<div>有名目擊者 ${fameOf(S)}・弟子 ${disciples(S).length}/${capacity(S)} 床・雇工 ${laborers(S).length}/${laborCap(S)}・地圖 ${mapStage(S)}</div><div class="k">菜畦：${S.plots.map((p) => ({ empty: '空', grow: '長', ripe: '熟' })[p.st]).join(' ')}</div>`;
   $('res').insertAdjacentHTML('beforeend', hermitChainProgress(S));
   $('rumors').innerHTML = rumorHtml(S);
+  if (!S.hermitage?.active) {
+    const seeker = S.ds.find(d => d.id === 'hero') || S.ds[0];
+    $('rumors').insertAdjacentHTML('beforeend', `<div class="k"><button data-rare-ask>向市集行商打聽奇書</button>（每期市集一次）</div>`
+      + RARE_BOOKS.filter(b => rumorForRareBook(S, b.id)).map(b => {
+        const why = rareBookSearchWhy(S, b.id, seeker);
+        return `<div class="k">《${b.name}》：${why || '可循線索遠行搜尋'} ${why ? '' : `<button data-rare-search="${b.id}">派人循線索尋書</button>`}</div>`;
+      }).join(''));
+  }
   $('hermit-books').innerHTML = hermitageBooksHtml();
   const blueprints = FACILITIES.filter((f) => f.stages.length > 1 && !f.sig && f.stages[S.fac[f.id].stage + 1]);
   const availableBlueprints = blueprints.filter((f) => S.fac[f.id].site || !buildWhy(S, f.id));
@@ -769,6 +778,13 @@ try {
 document.addEventListener('click', (e) => { const m = e.target.closest('[data-mkt]'); if (m && S) { const r = marketDo(S, m.dataset.mkt); toast(r.ok ? `成交 ${r.p}` : r.why, !r.ok); return; } if (e.target.closest('[data-school]') && S) { const r = startSchoolTrip(S); toast(r.ok ? `${r.d.name}下山義學去了` : r.why, !r.ok); } });
 // R11 #531：自宮由玩家明確確認，不可逆。
 document.addEventListener('click', (e) => { const b = S && e.target.closest('[data-castrate]'); if (!b) return; const d = S.ds.find((x) => x.id === b.dataset.castrate); if (d && window.confirm(`${d.name}要自宮嗎？永久、不可逆，之後不能有後代。`) && selfCastrate(S, d, true)) panel(); });
+document.addEventListener('click', (e) => {
+  if (!S) return;
+  if (e.target.closest('[data-rare-ask]')) { const r = askRareBookRumor(S); panel(); toast(r.ok ? '聽到具名目擊者的奇書見聞' : r.why, !r.ok); }
+  const b = e.target.closest('[data-rare-search]'); if (!b) return;
+  const d = S.ds.find(x => x.id === 'hero') || S.ds[0], r = startRareBookSearch(S, b.dataset.rareSearch, d);
+  panel(); toast(r.ok ? `${d.name}循見聞出門尋書` : r.why, !r.ok);
+});
 document.addEventListener('click', (e) => { if (!S || !e.target.closest('[data-found-hermitage]')) return; const r = queueHermitageFounding(S); if (!r.ok) toast(r.why, true); else { choiceUI(S); panel(); } }); // R3 #522：玩家親自選牌匾與道統。
 
 // v1.9 I-2 擴地、I-6 山賊勒索、A9 因才派巡

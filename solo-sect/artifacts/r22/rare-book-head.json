@@ -1,0 +1,141 @@
+{
+  "scope": "controlled player ask once after founding, then search unheld book; no autonomous request",
+  "dt": 0.25,
+  "seeds": [
+    1001,
+    1002,
+    1003,
+    1004,
+    1005,
+    1006,
+    1007,
+    1008,
+    1009,
+    1010,
+    1011,
+    1012
+  ],
+  "acquired": 12,
+  "rows": [
+    {
+      "seed": 1001,
+      "founding": true,
+      "heard": true,
+      "book": "bixie-robe",
+      "departDay": 1,
+      "returnDay": 6,
+      "daysAway": 5,
+      "acquired": true
+    },
+    {
+      "seed": 1002,
+      "founding": true,
+      "heard": true,
+      "book": "bixie-robe",
+      "departDay": 1,
+      "returnDay": 6,
+      "daysAway": 5,
+      "acquired": true
+    },
+    {
+      "seed": 1003,
+      "founding": true,
+      "heard": true,
+      "book": "bixie-robe",
+      "departDay": 1,
+      "returnDay": 6,
+      "daysAway": 5,
+      "acquired": true
+    },
+    {
+      "seed": 1004,
+      "founding": true,
+      "heard": true,
+      "book": "bixie-robe",
+      "departDay": 1,
+      "returnDay": 6,
+      "daysAway": 5,
+      "acquired": true
+    },
+    {
+      "seed": 1005,
+      "founding": true,
+      "heard": true,
+      "book": "bixie-robe",
+      "departDay": 1,
+      "returnDay": 6,
+      "daysAway": 5,
+      "acquired": true
+    },
+    {
+      "seed": 1006,
+      "founding": true,
+      "heard": true,
+      "book": "bixie-robe",
+      "departDay": 1,
+      "returnDay": 6,
+      "daysAway": 5,
+      "acquired": true
+    },
+    {
+      "seed": 1007,
+      "founding": true,
+      "heard": true,
+      "book": "bixie-robe",
+      "departDay": 1,
+      "returnDay": 6,
+      "daysAway": 5,
+      "acquired": true
+    },
+    {
+      "seed": 1008,
+      "founding": true,
+      "heard": true,
+      "book": "bixie-robe",
+      "departDay": 1,
+      "returnDay": 6,
+      "daysAway": 5,
+      "acquired": true
+    },
+    {
+      "seed": 1009,
+      "founding": true,
+      "heard": true,
+      "book": "bixie-robe",
+      "departDay": 1,
+      "returnDay": 6,
+      "daysAway": 5,
+      "acquired": true
+    },
+    {
+      "seed": 1010,
+      "founding": true,
+      "heard": true,
+      "book": "bixie-robe",
+      "departDay": 1,
+      "returnDay": 6,
+      "daysAway": 5,
+      "acquired": true
+    },
+    {
+      "seed": 1011,
+      "founding": true,
+      "heard": true,
+      "book": "bixie-robe",
+      "departDay": 1,
+      "returnDay": 6,
+      "daysAway": 5,
+      "acquired": true
+    },
+    {
+      "seed": 1012,
+      "founding": true,
+      "heard": true,
+      "book": "bixie-robe",
+      "departDay": 1,
+      "returnDay": 6,
+      "daysAway": 5,
+      "acquired": true
+    }
+  ]
+}

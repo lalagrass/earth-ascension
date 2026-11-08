@@ -42,8 +42,8 @@ export function inventArt(s, d, art) {
 
 // 奇書：世上只有一本的實物，有所在地與持有人；持有人不教，只能讀實物。
 export const RARE_BOOKS = Object.freeze([
-  { id: 'kuihua-book', art: 'kuihua', name: '葵花寶典', place: '黑木崖', holder: '日月神教教主', cost: 'castrated' },
-  { id: 'bixie-robe', art: 'bixie', name: '辟邪劍譜', place: '福州林家老宅', holder: null, cost: 'castrated' },
+  { id: 'kuihua-book', art: 'kuihua', name: '葵花寶典', place: '黑木崖', holder: '日月神教教主', witness: '黑木崖送貨行商', cost: 'castrated' },
+  { id: 'bixie-robe', art: 'bixie', name: '辟邪劍譜', place: '福州林家老宅', holder: null, witness: '林家老宅管事', cost: 'castrated' },
 ]);
 export const rareBookById = (id) => RARE_BOOKS.find((b) => b.id === id) || null;
 // 只能讀實物的武學（持有人與會的人都不教；看人仍可得單招）。
@@ -63,7 +63,8 @@ export function rareBookStatus(s, d, id) {
   const b = rareBookById(id);
   if (!b || !d) return { ok: false, why: '無此書' };
   if (d.arts?.[b.art]) return { ok: false, why: '已會' };
-  if (rareBookState(s, id).holder !== d.id) return { ok: false, why: `書在${rareBookState(s, id).at}，不在手上` };
+  // 第二十二輪：沒聽到可追溯目擊前，不向玩家洩漏資料列的所在地。
+  if (rareBookState(s, id).holder !== d.id) return { ok: false, why: '書不在手上' };
   if (!COSTS[b.cost].paid(d)) return { ok: false, why: `要先${COSTS[b.cost].name}` };
   return { ok: true, why: '可研讀' };
 }

@@ -843,3 +843,18 @@ bot12 同尺命令：分別在 Phase 5 與本輪 checkout 根目錄執行 `docke
 舊測試分類：Phase 3／7 舊斷言所依賴的 ×1.35 傷害已由 R5 明文撤回，因此改成同目標、對側、實際參戰與時間窗斷言；原真任務與招架可阻擋的要求保留。Phase 6 舊 `agility=32` 解鎖高崖改為力量／體重、步法與耐力前提，保留三崖逐階與全部實物回收斷言。沒有放寬非改規部分。
 
 舊名 → 新名：`twinSwordsCouple` → `pairedSwords`；畫面文字「夫妻雙劍／同場 ×1.35」→「同場雙劍／看準空檔」。最沒把握三處：① R5 沿用 N27 的招架收招秒數作配合時間，不新增獨立節拍；② R6 以低崖三丈與入門精力作連續借力基準，攀登量尺屬可推導的遊戲量測；③ 高崖繞行路肩位於兩崖之間，沒有垂繩物件，玩家可由可見路線及能力抵達。
+
+## 第二十二輪：奇書所在地與持有人變成傳聞（#488，規則 5.6）
+
+| 類別 | 指令、門檻與預期輸出 |
+|---|---|
+| A 固定情境 | Node 22 `bash solo-sect/test/run.sh smoke` 包含新 `test/unit/social/r22-rare-book-rumor.test.mjs`，84/84。匿名隱居期不能在市集打聽；立匾後未有目擊時，`rumorHtml` 不含黑木崖／福州林家老宅，`rareBookStatus()` 只說書不在手上。向具名目擊者打聽才得精確位置／持有人；同市集週期第二次打聽被拒。無主袈裟需派人遠行一趟市集商路，未回山前實物仍在原處；回山後 `rareBookState()` 只剩山門的唯一持有人，舊址不可再搜第二本。下一日新目擊傳到聚落並指出新持有人；有主葵花可成見聞，不能在原址白搜。 |
+| B 公式期望 | 本輪無新增亂數公式。原 N62 6,000 次出獵選擇仍在 smoke；期望 0.4926757803，觀測 0.502，99.9% 半寬 0.021407701，落在區間。 |
+| C 受控可達 | Node 22 `node solo-sect/tools/r22-rare-book-report.mjs [--seed=1001]`；1001–1012 共 12 種子，首日由玩家立匾、打聽、派人沿商路搜索，全部 12/12 第 6 日帶回唯一袈裟，遠行五日。這是指定行動的路徑測試，非自主日程產生傳聞；[逐種子原始輸出](artifacts/r22/rare-book-head.json)，不為 C 調參。 |
+| C bot12 | 在各自 checkout 根目錄用 Node 22 `node solo-sect/tools/bot12.mjs solo-sect --json`；[上一版原始輸出](artifacts/r22/bot12-base.json)與[本版](artifacts/r22/bot12-head.json)逐位元組相同。自然山賊 0 場、獨立有柵探針 96/96 勝且守住 84、探針傷 5、出獵擊倒 380、惱羞 254；bot 不主動打聽，故本輪無觸發。自然與探針分母分開。 |
+| golden | Node 22 `node solo-sect/tools/golden.mjs --write`、`--check`，隱居四格全部相符。R5／R6 base 與本輪 seed 42 的前 500 個 6 秒 tick 完整狀態除 `/rules` 外無差異；四格雜湊變化只由 5.5→5.6 版號。異版拒載，依 #488 不加 MIGRATIONS。 |
+| 畫面 A/B | `python3 solo-sect/tools/r22-visual.py --seed 17` 從正常 UI 開局，以真實立匾函式後的市集按鈕截取[盲測 A](artifacts/r22/blind-A.png)／[盲測 B](artifacts/r22/blind-B.png)，[答案另存](artifacts/r22/blind-answers.json)。判準：一張無奇書位置，一張具名目擊寫出福州林家老宅並有派人尋書鈕；seed 奇偶交換圖序；瀏覽器無 pageError。 |
+
+舊驗收分類：R11 `r11-recipe.test.mjs` 先前精確斷言 `rareBookStatus()` 在手上無書時會說「黑木崖」；第二十二輪的 A 明文禁止未聽見目擊就得知位置，因此改為精確斷言「書不在手上」。其餘「奇書只能讀實物、自宮需確認、不教整門」及全部固定斷言不動。沒有放寬原測試。`src/rare-arts.mjs` 的原始地點資料列仍保留給實物狀態，只是不直接顯示給玩家。
+
+舊名 → 新名：本輪碰到的 API `rareBookState`／`handRareBook`／`recordRumor`／`market` 沒有輪次編號名稱；新增 `rumorForRareBook`、`rareBookSearchWhy` 與 `rareBookSearchStep` 按用途命名。最沒把握三處：① 市集打聽是玩家明確行動，見證者是 RARE_BOOKS 的具名資料列；沒有為 C 自動造見聞；② 搜尋先只給無主的林家袈裟，有主的葵花只成傳聞，偷或換需獨立交手／交易設計；③ 五日遠行借市集週期而非真實福州路程，符合目前只有抽象山下商路的地圖尺度。
