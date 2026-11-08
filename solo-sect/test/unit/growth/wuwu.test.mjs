@@ -12,8 +12,8 @@ import { createState, tick } from '../../../src/sim.mjs';
 import { canTeachArt, startTeachArt, stopTeachArt, teachCandidates, teachStage, teachDaily, isFamousArt, teachMul, TEACH_ART } from '../../../src/bonds.mjs';
 import { affKey } from '../../../src/util.mjs';
 import { points, T, raidResolve, threatDaily, threatBreakdown } from '../../../src/threat.mjs';
-import { teach, TEACH, formReady } from '../../../src/wuxia.mjs';
-import { CARDS, jhStep } from '../../../src/jianghu.mjs';
+import { showGuestMove, formReady } from '../../../src/wuxia.mjs';
+import { jhStep } from '../../../src/jianghu.mjs';
 
 const hero = () => createState(3).ds.find((d) => d.id === 'hero');
 
@@ -95,7 +95,7 @@ test('太極劍練功不得高過太極拳；沒有太極拳就不漲；劇情�
   assert.equal(d.arts.taijiSword.xp, 56);
 });
 
-test('大成開第一招，化境招還沒開', () => {
+test('短住高人示範只會一招，不帶整門火候', () => {
   const d = hero();
   d.moves = d.moves.filter((m) => !['jianlong', 'feilong', 'kanglong'].includes(m));
   d.arts.xianglong = { xp: 55, last: 0, bt1: true };
@@ -110,11 +110,11 @@ test('洪七公三段傳功給三招，已傳的招不受火候限制', () => {
   const s = createState(3);
   const d = s.ds.find((x) => x.id === 'hero');
   d.moves = d.moves.filter((m) => !['jianlong', 'feilong', 'kanglong'].includes(m));
-  teach(s, d, 'xianglong', TEACH.xp[2], artById('xianglong').techs.slice(0, 3));
-  assert.ok(artTier(d, 'xianglong') < 4);
+  showGuestMove(s, d, 'xianglong');
+  assert.equal(d.arts.xianglong, undefined);
   assert.ok(d.moves.includes('jianlong'));
-  assert.ok(d.moves.includes('feilong'));
-  assert.ok(d.moves.includes('kanglong'));
+  assert.ok(!d.moves.includes('feilong'));
+  assert.ok(!d.moves.includes('kanglong'));
 });
 
 test('六門絕活各自觸發；內力不夠就不發動；沒看破的獨孤仍然格擋', () => {
@@ -545,7 +545,7 @@ test('第二批絕活與內功被動各自觸發；乾坤只開第一層；觀�
 
   const zw = createState(4, { kind: 'template', id: 'zhangwuji', askMajor: false });
   const z = zw.ds.find((x) => x.id === 'hero');
-  CARDS.zwj3.opts[0][1](zw);
+  learnArt(z, 'qiankun', zw.t); z.arts.qiankun.xp = 1; // Retired template card; start with an already learned art to test its ceiling.
   assert.equal(artTier(z, 'qiankun'), 0);
   assert.ok(z.arts.qiankun.xp < 25);
   assert.equal(z.reflect, undefined);

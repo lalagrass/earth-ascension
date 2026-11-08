@@ -10,8 +10,9 @@ import { XIA, xiaPool, join } from '../../src/wuxia.mjs';
 import { autoPick, resolveChoice } from '../../src/hero.mjs';
 import fs from 'node:fs';
 import { recordRumor } from '../../src/rumors.mjs';
+import { handRareBook } from '../../src/rare-arts.mjs';
 
-const yue = (ask = true) => { const s = createState(7, { kind: 'template', id: 'yuebuqun', companion: 'linghuchong', askMajor: ask }); tick(s); return s; };
+const yue = (ask = true) => { const s = createState(7, { kind: 'template', id: 'yuebuqun', companion: 'linghuchong', askMajor: ask }); learnArt(hero(s), 'zixia', s.t); tick(s); return s; };
 const hero = (s) => s.ds.find((d) => d.id === 'hero');
 const run = (s, sec) => { for (let i = 0; i < sec / 0.25; i++) tick(s); };
 test('v1.2 版本；九劍九式照原著、辟邪三招；都不入秘笈', () => {
@@ -19,22 +20,22 @@ test('v1.2 版本；九劍九式照原著、辟邪三招；都不入秘笈', () 
   assert.deepEqual(DUGU.map((f) => f.name), ['總訣式', '破劍式', '破刀式', '破槍式', '破鞭式', '破索式', '破掌式', '破箭式', '破氣式', '狂風卷地']); /* #423：#410 刻意對齊 MUD 結構，九式之後另有絕招「狂風卷地」 */
   for (const id of ['zixia', 'bixie', 'dugu']) assert.ok(ARTS.find((a) => a.id === id).secret);
 });
-test('岳不群開局紫霞第一層；1→3 靠閉關、4→6 要祕洞壁刻、7→9 要連續 7 天沒有違心', () => {
+test('已會紫霞者第一層；1→3 靠閉關、4→6 要祕洞壁刻、7→9 要連續 7 天沒有違心', () => {
   const s = yue(); const d = hero(s); assert.equal(d.zixia, 1);
   assert.equal(zxGate(s, d), null); zxUp(s, d); zxUp(s, d); assert.equal(d.zixia, 3); assert.ok(s.choices.some((c) => c.hs === 'cave'));
   assert.match(zxGate(s, d), /壁刻/); s.hs.carv = 3; zxUp(s, d); zxUp(s, d); zxUp(s, d); assert.equal(d.zixia, 6);
   d.mood = 80; d.ding = 4; d.lastWexinT = s.t; assert.match(zxGate(s, d), /連續 7 天/); s.t += 7.1 * DAY; assert.equal(zxGate(s, d), null);
 });
-test('辟邪三卡：林平之上山→暗查劍譜→自宮修練；岳不群自動駕駛照名望走，偽君子添違心', () => {
+test('辟邪舊卡不會代替實物與確認；持袈裟明確確認後才學整門', () => {
   const s = yue(false); prepareHistoricalAdmission(s, 'linpingzhi'); run(s, DAY * 3.2);
-  assert.ok(s.ds.some((d) => d.id === 'linpingzhi')); assert.ok(s.hs.bixie === 3, `bixie ${s.hs.bixie}`); const d = hero(s);
-  assert.ok(artTier(d, 'bixie') >= 2); assert.ok(d.duanqing != null);
-  // 晨課靜坐可消去違心；仍要確認違心確實發生過。
-  assert.ok(d.lastWexinT > 0 && d.lastWexinT <= s.t); assert.ok(s.hero.arcStep >= 3);
+  assert.ok(s.ds.some((d) => d.id === 'linpingzhi')); const d = hero(s);
+  assert.ok(!d.arts.bixie && d.castrated == null);
+  handRareBook(s, 'bixie-robe', d); assert.equal(bixie(s, d), false);
+  assert.equal(bixie(s, d, true), true); assert.ok(d.arts.bixie && d.duanqing != null);
 });
 test('辟邪代價：斷情、寧中則好感鎖死、全門心情受衝擊；力量隨斷情天數上升', () => {
   const s = createState(7, { kind: 'template', id: 'yuebuqun', companion: 'ningzhongze' }); tick(s); const d = hero(s), n = s.ds.find((x) => x.id === 'ningzhongze');
-  const a0 = s.aff[`${n.id}>hero`] || 0; bixie(s, d); assert.ok((s.aff[`${n.id}>hero`]) <= a0 - 40); assert.ok(n.lockDown);
+  const a0 = s.aff[`${n.id}>hero`] || 0; handRareBook(s, 'bixie-robe', d); assert.equal(bixie(s, d, true), true); assert.ok((s.aff[`${n.id}>hero`]) <= a0 - 40); assert.ok(n.lockDown);
   hsStep(s, 0.25); const m0 = d.powMul; s.t += 5 * DAY; hsStep(s, 0.25); assert.ok(d.powMul > m0);
 });
 test('嵩山派施壓：第 3 天起每 4 天一張', () => {
@@ -49,22 +50,20 @@ test('思過崖：罰令狐沖面壁→風清揚三晚指點、第四晚對練�
   const sg = s.choices.find((c) => c.hs === 'siguo'); assert.ok(sg); hsResolve(s, sg, 0); assert.ok(s.hs.siguo);
   hsStep(s, 0.25); const f = s.choices.find((c) => c.hs === 'feng'); assert.ok(f && f.portrait.includes('fengqingyang')); hsResolve(s, f, 0);
   const H = { rand: () => 0.5 }; for (let k = 0; k < 4; k++) { s.day++; hsStep(s, 0.25, H); }
-  const l = s.ds.find((d) => d.id === 'linghuchong'); assert.ok(l.dugu.includes('dg0')); assert.ok(s.hs.fengLeft); assert.equal(s.hs.feng, null);
+  const l = s.ds.find((d) => d.id === 'linghuchong'); assert.ok(l.moves.includes('dg0')); assert.ok(!l.arts.dugu); assert.ok(s.hs.fengLeft); assert.equal(s.hs.feng, null);
 });
 test('九劍各式要見過對應敵人（深段）才悟出；破氣式還要化境內功', () => {
-  const s = yue(); const l = s.ds.find((d) => d.id === 'linghuchong'); learnDugu(s, l, 'dg0');
+  const s = yue(); const l = s.ds.find((d) => d.id === 'linghuchong'); learnArt(l, 'dugu', s.t); learnDugu(s, l, 'dg0');
   const pj = DUGU.find((f) => f.id === 'dg1'), pq = DUGU.find((f) => f.id === 'dg8'); assert.ok(!formReady(s, l, pj));
   s.codex.swordtomb = { seen: 1, kills: 1, fled: 0, insight: 40 }; assert.ok(formReady(s, l, pj));
   s.codex.peakguard = { seen: 1, kills: 1, fled: 0, insight: 80 }; assert.ok(!formReady(s, l, pq)); l.zixia = 9; assert.ok(formReady(s, l, pq));
 });
 test('嫉令狐沖：首徒學了九劍 → 逐出抉擇；逐出後他離開（不死）', () => {
   const s = yue(); s.hs.bixie = -1; Object.assign(s.hs.cards, { linJoin: true, siguo: true, feng: true }); s.hs.songLast = 99; s.choices = [];
-  const l = s.ds.find((d) => d.id === 'linghuchong'); learnDugu(s, l, 'dg0'); hsStep(s, 0.25); const ch = s.choices.find((c) => c.hs === 'expel'); assert.ok(ch); assert.ok(s.hs.jealous);
+  const l = s.ds.find((d) => d.id === 'linghuchong'); learnArt(l, 'dugu', s.t); learnDugu(s, l, 'dg0'); hsStep(s, 0.25); const ch = s.choices.find((c) => c.hs === 'expel'); assert.ok(ch); assert.ok(s.hs.jealous);
   assert.equal(autoPick(s, ch), 0); hsResolve(s, ch, 0); assert.ok(!s.ds.includes(l)); assert.equal(s.hs.lhc, 'expelled');
 });
-test('令狐沖模板：進洞→風清揚→總訣式；也能以名俠身分在斷崖遇到', () => {
-  const s = createState(7, { kind: 'template', id: 'linghuchong', companion: 'yuelingshan', askMajor: false }); run(s, DAY * 6.5);
-  assert.ok(hero(s).dugu?.includes('dg0')); assert.ok(s.hero.arcStep >= 3);
+test('令狐沖以名俠身分可在斷崖遇到', () => {
   const t = createState(3); tick(t); t.records.sect = 720; assert.ok(xiaPool(t).includes('linghuchong')); assert.ok(XIA.linghuchong.need(t));
 });
 test('奇遇卡帶立繪；洪七公立繪已補', () => {

@@ -40,7 +40,8 @@ test('黃蓉下廚食誘→洪七公三段傳降龍，打狗棒法給黃蓉，�
   onCook(s, hr); onCook(s, hr); s.fac.kitchen = { stage: 1 }; s.xia.lastT = -1e9; xiaStep(s); const ch = s.choices.find((c) => c.xia === 'hongqigong'); assert.ok(ch);
   xiaResolve(s, ch, 0); assert.ok(s.xia.teacher); assert.equal(pickStudent(s), gj);
   for (let k = 1; k <= 3; k++) { onCook(s, hr); s.t += DAY; xiaStep(s); assert.equal(s.xia.teacher?.stage ?? 3, k); }
-  assert.ok(artTier(gj, 'xianglong') >= 2 && artTier(hr, 'dagou') >= 2);
+  assert.ok(gj.watched?.jianlong && hr.watched?.banzi, '三頓飯讓兩人各看會單招');
+  assert.ok(!gj.arts.xianglong && !hr.arts.dagou, '短住名師不傳整門');
   s.t += 1; xiaStep(s); assert.equal(s.xia.teacher, null); assert.ok(s.xia.left.hongqigong); assert.ok(s.log.some((l) => /飄然下山/.test(l.msg || l)));
 });
 test('沒有吃到菜不傳功', () => {

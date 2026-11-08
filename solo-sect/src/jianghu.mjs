@@ -1,6 +1,7 @@
 import { seedMix, log, resAdd, resSet } from './util.mjs';
-import { DAY, TIERS, JH, TREES, buildCards, destinyStep, ARTS, MOVES, ENEMIES, NODES, SOURCES } from './data.mjs';
-import { lockedArt24, growEnsure, learnArt, artTier, powBonus, autoFocus, artById, curCap, reqMissing, fits, qiMax, mitOf } from './arts.mjs';
+import { DAY, TIERS, JH, TREES, buildCards, destinyStep, ARTS, ENEMIES, NODES, SOURCES } from './data.mjs';
+import { lockedArt24, growEnsure, learnArt, watchMove, artTier, powBonus, autoFocus, artById, curCap, reqMissing, fits, qiMax, mitOf } from './arts.mjs';
+import { rareBookStatus, readRareBook } from './rare-arts.mjs';
 import { dpsOf, toWorld, guardOf } from './world.mjs';
 import { points, majorThreatAvailable, reserveMajorThreat } from './threat.mjs';
 import { rumorForVisitor } from './rumors.mjs';
@@ -22,7 +23,8 @@ const isHero = (s, id) => s.hero?.kind === 'template' && s.hero.id === id;
 const fu = (s) => s.hero?.stats?.fu ?? 3;
 const R = (s, H) => { if (H?.rand) return H.rand(s); const J = s.jh; J.rng = ((J.rng || seedMix(s.seed || 1, 977)) * 16807) % 2147483647; return J.rng / 2147483647; };
 const fighters = (s) => s.ds.filter((d) => d.role !== 'laborer' && !d.away);
-export const teachJ = (s, d, id, xp) => { learnArt(d, id, s.t); const r = d.arts[id]; r.xp = Math.max(r.xp, xp); if (r.xp >= 55) r.bt1 = true; if (r.xp >= 100) r.bt2 = true; learnArt(d, id, s.t); };
+// Only character data at arrival (or the hidden laborer's existing skill), never an event reward.
+export const giveArrivalArt = (s, d, id, xp) => { learnArt(d, id, s.t); const r = d.arts[id]; r.xp = Math.max(r.xp, xp); if (r.xp >= 55) r.bt1 = true; if (r.xp >= 100) r.bt2 = true; learnArt(d, id, s.t); };
 const DA = TIERS[2][0] + 1; // 大成
 // 門派戰力（反派事件用）：最強三人的武學階數×品階＋技藝
 export const power = (s) => fighters(s).map((d) => Object.keys(d.arts || {}).reduce((a, k) => a + (artTier(d, k) + 1) * 3, 0) + (d.skills?.palm || 0) / 4 + (d.powMul || 1) * 5 + powBonus(d) + laborPow(d)).sort((a, b) => b - a).slice(0, 3).reduce((a, b) => a + b, 0) * valorPowMul(s); // loop129 勇名
@@ -44,28 +46,20 @@ const FX = {
   tomb: [(s) => { s.jh.bees = true; }, () => {}],
   zbt: [(s, H) => zbtBet(s, H, 0), (s, H) => zbtBet(s, H, 1), () => {}],
   dfbb: [(s, H) => startVisitorFight(s, H, 'dfbb'), (s) => declineVisitor(s, 'dfbb')],
-  kuihua: [(s) => { const d = heroD(s); teachJ(s, d, 'kuihua', DA); d.duanqing ??= s.t; d.moodCap = 80; log(s, `【葵花寶典】${d.name}斷情練成，出手快得只見紅影。`); }, () => {}],
+  kuihua: [(s) => { const d = heroD(s); if (!rareBookStatus(s, d, 'kuihua-book').ok) { log(s, '【葵花寶典】殘頁只讓人看見一招；整本須先取得實物並親自確認自宮。'); return; } if (readRareBook(s, d, 'kuihua-book').learned) { d.duanqing ??= s.t; d.moodCap = 80; } }, () => {}],
   hy: [(s, H) => startVisitorFight(s, H, 'hy'), (s) => declineVisitor(s, 'hy')],
   axe: [(s) => revealHidden(s), (s) => { resSet(s, 'coin', Math.max(0, s.res.coin - 10)); }],
-  hai: [(s) => { s.jh.hai = s.t; const w = find(s, 'weixiaobao'); if (w) teachJ(s, w, 'huagu', 2); log(s, '海大富住進了柴房，每天咳嗽、偷看韋小寶。'); }, () => {}],
+  hai: [(s) => { s.jh.hai = s.t; const w = find(s, 'weixiaobao'); if (w) watchMove(w, artById('huagu')); log(s, '海大富住進了柴房，每天咳嗽、偷看韋小寶；韋小寶只看會一招。'); }, () => {}],
   paicuo: [(s) => { const l = s.ds.find((d) => d.role === 'laborer'); if (l) { l.role = 'outer'; delete l.unpaid; log(s, `${l.name}糊里糊塗成了外門弟子。`); } else s.rep = (s.rep || 0) + 1; }, () => {}],
   huagu: [(s) => { resSet(s, 'herb', Math.max(0, (s.res.herb || 0) - 2)); log(s, '解藥到手——其實他只是想要藥材。'); }, (s) => { const d = fighters(s)[0]; mood(d, -10); s.jh.poison = { id: d?.id, until: s.t + 3 * DAY }; }],
   zhabo: [(s) => { for (const d of fighters(s)) mood(d, 8); }, () => {}],
   beggar: [(s, H) => { resSet(s, 'coin', Math.max(0, s.res.coin - 10)); if (isHero(s, 'axing')) { s.hero.flags = { ...(s.hero.flags || {}), book: true }; arc(s, 'axing', 2, '如來神掌（十文錢的）'); } else if (R(s, H) < 0.01) { s.jh.realBook = true; log(s, '……竟然是真的！可惜要潛能覺醒才看得懂。'); } else { const d = heroD(s); mood(d, 3); log(s, '翻開一看：九成是插圖。'); } }, () => {}],
   bao: [(s) => { for (const d of fighters(s)) mood(d, 5); }, (s) => { const g = find(s, 'baozugong'); mood(g, 5); }],
-  zwj2: [(s) => { teachJ(s, heroD(s), 'jiuyang', DA); arc(s, 'zhangwuji', 2, '九陽神功'); }],
-  zwj3: [(s) => { const d = heroD(s); teachJ(s, d, 'qiankun', 1); arc(s, 'zhangwuji', 3, '乾坤大挪移'); }, () => {}], /* #410 只開第一層（入門）。反震在武學的 on，不再寫 d.reflect。再往上練不得高過聖火心法或九陽神功 */
-  zwj4: [(s) => { const d = heroD(s); if ((d.wu ?? 3) >= 4) { teachJ(s, d, 'taiji', DA); arc(s, 'zhangwuji', 4, '太極拳：忘光了，才算學會'); } else log(s, '忘是忘了，可是也沒學會。（悟性不足 4）'); }],
   zwj5: [(s) => fourGirls(s, 'zhaomin', { free: 10, qing: 5 }), (s) => fourGirls(s, 'zhouzhiruo', { sect: 10 }), (s) => fourGirls(s, 'xiaozhao', { qing: 10 }), (s) => fourGirls(s, 'yinli', { xia: 10 })],
   wxb2: [(s) => { s.jh.casino = true; arc(s, 'weixiaobao', 2, '賭坊開張'); }, () => {}],
   wxb4: [(s) => { heroD(s).takeMul = JH.baoyi; arc(s, 'weixiaobao', 4, '寶衣護身'); }],
   wxb5: [(s) => { s.rep = (s.rep || 0) + 10; arc(s, 'weixiaobao', 5, '皇上的朋友'); }],
   ax3: [(s) => { const d = heroD(s); d.hp = Math.min(d.hp, 4); arc(s, 'axing', 3, '火雲邪神'); }, () => {}],
-  // v2.1 無名主線：兩條都把本門風雷掌腿教到大成。照舊開局無人值守時走第一條。
-  wuming: [
-    (s) => { const d = heroD(s); if (d) teachJ(s, d, 'fengLei', DA); s.jh.wuming = s.t || 1; log(s, '主角在木樁前把風雷掌腿悟到了大成。'); },
-    (s) => { const d = heroD(s); if (d) teachJ(s, d, 'fengLei', DA); s.jh.wuming = s.t || 1; s.jh.guestUntil = s.t + 7 * DAY; log(s, '過路拳師住了七日，把風雷掌腿教到大成，之後下山去了。'); },
-  ],
 };
 export const CARDS = buildCards(TREES.cards.jianghu, FX);
 const once = (s, k) => { if (s.jh.cards[k]) return false; s.jh.cards[k] = true; return true; };
@@ -78,13 +72,13 @@ export function card(s, id, force, reason = '') {
 export const jhAutoPick = (s, ch) => (ch.jh === 'zwj5' ? ({ qing: 2, free: 0, sect: 1, xia: 3 })[Object.entries(s.hero?.values || {}).filter(([k]) => ['free', 'sect', 'qing', 'xia'].includes(k)).sort((a, b) => b[1] - a[1])[0]?.[0]] ?? 0 : 0);
 export function jhResolve(s, ch, i, H) { const C = CARDS[ch.jh]; s.choices = s.choices.filter((c) => c !== ch); const o = C.opts[Math.min(i, C.opts.length - 1)]; log(s, `決定：${o[0]}`); o[1](s, H); return true; }
 // ---- 機制 ----
-function armLoss(s) { const y = find(s, 'yangguo'); if (!y) return; s.jh.armLost = true; y.oneArm = true; y.skills.agility = Math.round(y.skills.agility * 0.9); teachJ(s, y, 'xuantie', DA); log(s, '【斷臂】楊過單手提起玄鐵重劍——重劍無鋒，大巧不工。（雙手兵器失效、身法 −10%）'); }
+function armLoss(s) { const y = find(s, 'yangguo'); if (!y) return; s.jh.armLost = true; y.oneArm = true; y.skills.agility = Math.round(y.skills.agility * 0.9); log(s, '【斷臂】楊過改用原已會的玄鐵重劍——重劍無鋒，大巧不工。（雙手兵器失效、身法 −10%）'); }
 function zbtBet(s, H, kind) {
   const Z = s.jh.zbt; if (!Z) return; const d = heroD(s), p = kind === 0 ? 0.3 + fu(s) * 0.08 : 0.3 + (d?.ding ?? 3) * 0.08;
   if (R(s, H) < p) { Z.wins++; const art = Z.taught.includes('zuoyou') ? 'kongming' : 'zuoyou';
     // 左右互搏：心無旁騖才學得會（憨厚／悟性低）；空明拳誰都能學
     const c = fighters(s).filter((x) => !x.arts?.[art]); const st = art === 'zuoyou' ? c.sort((a, b) => ((a.personality || []).includes('honest') ? -9 : a.wu ?? 3) - ((b.personality || []).includes('honest') ? -9 : b.wu ?? 3))[0] : c[0];
-    if (st) { teachJ(s, st, art, DA); Z.taught.push(art); log(s, `【老頑童輸了】周伯通耍賴三次才認輸，把${art === 'zuoyou' ? '左右互搏' : '空明拳'}教給了${st.name}。`); }
+    if (st) { const mv = watchMove(st, artById(art)); Z.taught.push(art); log(s, `【老頑童輸了】周伯通耍賴三次才認輸，讓${st.name}看會${art === 'zuoyou' ? '左右互搏' : '空明拳'}${mv ? `的一招「${mv.name}」` : '的一段動作'}；整門仍須師傳。`); }
     if (Z.taught.length >= 2) { s.jh.zbt = null; s.xia.left.zhoubotong = true; log(s, '周伯通：「好玩的都教完啦！」一溜煙跑了。'); }
   } else { Z.losses++; for (const x of fighters(s)) mood(x, 2); log(s, '輸了。全派陪周伯通抓了一下午蟋蟀（心情 +2，沒有損失）。'); }
 }
@@ -148,8 +142,8 @@ function finishVisitorFight(s, result) {
   if (result.won) {
     s.rep = (s.rep || 0) + row.win.rep;
     const d = fighters(s).sort((a, b) => (b.skills?.palm || 0) - (a.skills?.palm || 0))[0];
-    if (d) { learnArt(d, row.win.residue, s.t); d.arts[row.win.residue].xp = Math.max(d.arts[row.win.residue].xp, JH.residueXp); J.residue[row.win.residue] = d.id; }
-    log(s, `【擊退${row.who}】來客留下${row.win.residue}殘頁，${d?.name || '門人'}收起。`);
+    if (d) { watchMove(d, artById(row.win.residue)); J.residue[row.win.residue] = d.id; }
+    log(s, `【擊退${row.who}】${d?.name || '門人'}看會來客一招，留下的殘頁不是整本奇書。`);
     if (row.win.card) card(s, row.win.card);
   } else {
     for (const d of fighters(s)) mood(d, row.lose.mood);
@@ -158,7 +152,7 @@ function finishVisitorFight(s, result) {
   J.visitor = null;
 }
 function revealHidden(s) {
-  const l = s.ds.find((d) => d.hidden && !d.hidden.shown); if (!l) return; l.hidden.shown = true; teachJ(s, l, l.hidden.art, DA); l.noGrow = l.hidden.art; l.hidden.xp = l.arts[l.hidden.art].xp;  /* loop155 v2.3：高人仍當幫工，可守柵；要收入門走邀請 */
+  const l = s.ds.find((d) => d.hidden && !d.hidden.shown); if (!l) return; l.hidden.shown = true; l.noGrow = l.hidden.art; l.hidden.xp = l.arts[l.hidden.art].xp;  /* loop155 v2.3：高人仍當幫工，可守柵；要收入門走邀請 */
   log(s, `【深藏不露】${l.name}一出手就是大成的${({ tantui: '十二路譚腿', tiexian: '洪家鐵線拳', bagua: '五郎八卦棍' })[l.hidden.art]}，斧頭幫抱頭鼠竄！（${'仍在村裡幫工，山賊來時會守柵；可邀入門'}；老了，不再進步）`); s.rep = (s.rep || 0) + 3;
   if (isHero(s, 'axing')) arc(s, 'axing', 3, '豬籠城寨臥虎藏龍');
 }
@@ -166,11 +160,9 @@ function fourGirls(s, who, dv) { const d = heroD(s); s.hero.flags = { ...(s.hero
 export const ARC13 = { zhangwuji: TREES.arcs.zhangwuji, weixiaobao: TREES.arcs.weixiaobao, axing: TREES.arcs.axing };
 function arc(s, id, n, text) { const H = s.hero; if (!isHero(s, id) || (H.arcStep || 0) >= n) return; H.arcStep = n; s.rep = (s.rep || 0) + 2; log(s, `【主線 ${n}/5】${text}`); }
 export function onJoin13(s, d, k) {
-  if (k === 'yangguo') { teachJ(s, d, 'anran', DA); d.personality.push('chi'); }
-  if (k === 'xiaolongnv') teachJ(s, d, 'yunv', DA);
-  if (k === 'baozupo') { teachJ(s, d, 'shihou', DA); if (!find(s, 'baozugong')) join(s, 'baozugong'); }
-  if (k === 'baozugong') teachJ(s, d, 'taiji', DA);
-  if (k === 'chengying') teachJ(s, d, 'qimenZhen', DA); if (k === 'azi') teachJ(s, d, 'xingxiuDu', DA); if (k === 'chenglingsu') teachJ(s, d, 'yaowang', DA); if (['chengying', 'azi', 'chenglingsu'].includes(k)) { d.gInit = false; growEnsure(d); } /* loop151 v2.3：入門帶來的招牌立即折算造詣 */
+  if (k === 'yangguo') d.personality.push('chi');
+  if (k === 'baozupo' && !find(s, 'baozugong')) join(s, 'baozugong');
+  if (['chengying', 'azi', 'chenglingsu'].includes(k)) { d.gInit = false; growEnsure(d); } /* loop151 v2.3：入門帶來的招牌立即折算造詣 */
   if (k === 'weixiaobao') { s.jh.casino = true; if (s.hero?.kind === 'template') { /* 招募 +40% */ } }
 }
 // 每 tick
@@ -201,13 +193,7 @@ export function jhStep(s, dt, H) {
   }
   // 隱藏高手：新雇的具名雜工擲一次（每圖最多 3）
   const NAMES = [['kulijiang', '苦力強', 'tantui'], ['caifeng', '裁縫', 'tiexian'], ['youzhagui', '油炸鬼', 'bagua']];
-  for (const d of s.ds) if (d.role === 'laborer' && !d.hiddenRolled) { d.hiddenRolled = true; if (J.hidden < JH.hiddenMax && R(s, H) < JH.hiddenP) { const [id, nm, art] = NAMES[J.hidden]; J.hidden++; d.name = nm; d.portrait = P(id); d.hidden = { art, shown: false }; } }
-  // v2.1：照舊開局沒有模板主角。檢核在 destiny-trees.json。已掛著的江湖卡不會擋它；沒有人點選，就當場走第一條。
-  if (!s.hero && heroD(s) && destinyStep(s, 'plain', { d0: heroD(s), card, arc, artTier })) {
-    const ch = (s.choices || []).find((c) => c.jh === 'wuming');
-    if (ch) jhResolve(s, ch, jhAutoPick(s, ch), H);
-    return;
-  }
+  for (const d of s.ds) if (d.role === 'laborer' && !d.hiddenRolled) { d.hiddenRolled = true; if (J.hidden < JH.hiddenMax && R(s, H) < JH.hiddenP) { const [id, nm, art] = NAMES[J.hidden]; J.hidden++; d.name = nm; d.portrait = P(id); d.hidden = { art, shown: false }; giveArrivalArt(s, d, art, DA); } }
   if (s.choices?.some((c) => c.jh)) return; // 一次一張
   const d0 = heroD(s);
   // 楊過：神鵰（三次餵食）→ 斷臂；小龍女：玉蜂
@@ -255,13 +241,17 @@ export function jhevDaily(s) {
     if (p < L.refuse.below) return letterOutcome(s, champ, win, true);
     letterOutcome(s, champ, win, false); } }
 }
-export function masterOutcome(s, d, teach) { const E = s.jhev, M = JHEV.master; const id = autoFocus(d), a = artById(id), r = d.arts[id]; r.xp = Math.min(curCap(d, a), r.xp + M.xp); md(d, M.mood); log(s, `【過路高人】一位雲遊高人借宿一晚，指點了${d.name}的「${a.name}」幾招。`);
-      if (teach) { const ok = ARTS.filter((x) => !x.secret && !lockedArt24(d, x) && !d.arts[x.id] && !reqMissing(d, x).length && fits(d, x)), nx = (ok.find((x) => x.school === d.style)) || ok[0]; /* loop41「因材施教」（s.mfit）：優先傳本門路數 */ if (nx) { learnArt(d, nx.id, s.t); if (d.pendingArt === nx.id) d.pendingArt = null; E.t = (E.t || 0) + 1; if (nx.school === d.style) E.ts = (E.ts || 0) + 1; log(s, `【過路高人】臨別前，高人傳了${d.name}一套「${nx.name}」！`); }
-        else if ((() => { /* loop55「殘譜指點」（s.mpool）：無武學可傳時，挑一套合路數、只差前置的武學，替已會的前置武學加 2 倍指點經驗 */
-          const tg = ARTS.filter((x) => !x.secret && !lockedArt24(d, x) && !d.arts[x.id] && fits(d, x) && reqMissing(d, x).length).flatMap((x) => x.req.filter((q) => d.arts[q.art] && reqMissing(d, { req: [q] }).length).map((q) => [x, artById(q.art)])).sort((a, b) => (b[0].school === d.style) - (a[0].school === d.style))[0];
-          if (!tg) return false; const [x, a] = tg, r = d.arts[a.id], before = r.xp; r.xp = Math.min(curCap(d, a), r.xp + 2 * M.xp); if (r.xp === before) return false;
-          E.pg = (E.pg || 0) + 1; log(s, `【過路高人】臨別前，高人留下一頁殘譜，講解「${a.name}」的要訣（往「${x.name}」的路）。`); return true; })()) { /* 已處理 */ }
-        else { const mv = Object.keys(d.arts).map(artById).flatMap((x) => (x.techs || []).filter((m) => MOVES.some((y) => y.id === m) && !d.moves.includes(m)))[0]; if (mv) { d.moves.push(mv); E.mv = (E.mv || 0) + 1; log(s, `【過路高人】臨別前，高人提前點撥${d.name}一招「${MOVES.find((y) => y.id === mv).name}」！`); } } } } /* loop26 傳武學，無可傳則提前點撥一招 */
+export function masterOutcome(s, d, teach) {
+  const E = s.jhev, M = JHEV.master, id = autoFocus(d), a = artById(id), r = d.arts[id];
+  r.xp = Math.min(curCap(d, a), r.xp + M.xp); md(d, M.mood);
+  log(s, `【過路高人】一位雲遊高人借宿一晚，指點了${d.name}的「${a.name}」幾招。`);
+  if (!teach) return;
+  // This visitor has no persistent teacher actor. Watching one move cannot confer a whole art.
+  const candidate = ARTS.find((x) => !x.secret && !lockedArt24(d, x) && !d.arts[x.id] && !reqMissing(d, x).length && fits(d, x) && x.school === d.style)
+    || ARTS.find((x) => !x.secret && !lockedArt24(d, x) && !d.arts[x.id] && !reqMissing(d, x).length && fits(d, x));
+  const mv = candidate && watchMove(d, candidate);
+  if (mv) { E.mv = (E.mv || 0) + 1; log(s, `【過路高人】臨別前只示範「${mv.name}」；整門仍須拜師或讀譜。`); }
+}
 export function masterResolve(s, ch, i) { s.choices = s.choices.filter((c) => c !== ch); const d = s.ds.find((x) => x.id === ch.who[i] && !x.away) || s.ds.find((x) => x.id === ch.who[0] && !x.away); if (!d || !autoFocus(d)) { log(s, '【過路高人】要指點的人不在山上，高人留下一句「後會有期」就走了。'); return true; } masterOutcome(s, d, ch.teach); return true; }
 export function letterOutcome(s, champ, win, refuse) { const E = s.jhev, L = JHEV.letter; valorAdd(s, refuse ? VALOR.refuse : VALOR.accept); /* loop129 勇名 */
   if (refuse) { E.lr = (E.lr || 0) + 1; s.rep = Math.max(0, (s.rep || 0) - L.refuse.rep); log(s, refuse === 'player' ? `【挑戰帖】掌門決定婉拒，${champ.name}客氣地送走來客，名聲 -${L.refuse.rep}。` : `【挑戰帖】來者武功明顯高出一截，${champ.name}代師門婉拒，名聲 -${L.refuse.rep}。`); return; }
