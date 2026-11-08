@@ -1,6 +1,6 @@
 import { createState, prepareHistoricalMentor } from '../harness/historical-party.mjs';
 import test from 'node:test'; import assert from 'node:assert/strict';
-import { tick, startBuild, startHunt, setOrder, save, load, routeLength, relKey, personalityFrom, recruit } from '../../src/sim.mjs';
+import { tick, startBuild, startHunt, setOrder, save, load, routeLength, relKey, personalityFrom } from '../../src/sim.mjs';
 import { appetiteActMul31 } from '../../src/arts.mjs';
 import { ACTIVITIES, RECRUIT_POOL, DAY, SEASON_DAYS } from '../../src/data.mjs';
 import { compat, relAdd, aff, moodParts } from '../../src/social.mjs';

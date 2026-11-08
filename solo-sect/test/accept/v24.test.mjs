@@ -28,7 +28,7 @@ test('loop159 P7/P8 執事：有人學會 ≥2 門武學且木石夠 → 藏經�
 });
 test('loop159 isSwordArt：劍法門類、三門經典劍法；掌法不是；swordCdMul 經它作用在真實劍招，dpsOf 吃 cdMul', () => {
   for (const id of ['dugu', 'bixie', 'xuantie']) assert.ok(A.isSwordArt(id), id); assert.equal(A.isSwordArt('pushPalm'), false); assert.equal(A.isSwordArt('qimenZhen'), false);
-  const s = V(); tick(s, 0.1); const d = hero(s); A.learnArt(d, 'bixie', s.t); d.moves.push('bx1'); d.qi = 0;
+  const s = V(); tick(s, 0.1); const d = hero(s); A.learnArt(d, 'bixie', s.t); d.moves = ['bx1']; d.qi = 0; // 只比較同一真實劍招，避免其他招式取得 dpsOf 的最大值。
   assert.equal(A.swordCdMul(d, 'bx1'), 1); assert.equal(A.swordCdMul(d, 'push'), 1); /* loop201：v24 不再一律縮劍招冷卻 */
   const cd = A.cdMul(d, 'bx1', s.t);
   assert.ok(Math.abs(cd - A.MODE31.da.cd * (A.artTier(d, 'bixie') >= 1 ? 0.9 : 1) * (1 - 0.0015 * A.mastery(d, 'shenfa'))) < 1e-9);
