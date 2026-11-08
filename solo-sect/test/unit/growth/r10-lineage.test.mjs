@@ -57,3 +57,10 @@ test('A：白身開局沒有武學，找到殘卷讀完後就能立匾', () => {
 test('白身沒有寫死的「王八拳」武學', () => {
   assert.ok(!ARTS.some((a) => /王八/.test(a.name)));
 });
+
+test('A：白身沒有指令，也會自己去找殘卷、讀會第一門（擁有人 2026-11-08：沒有武學的人更想找師父、找譜）', () => {
+  const s = start('solo', 'none'), h = s.ds[0];
+  while (s.t < DAY * 15 && !Object.keys(h.arts).length) tick(s);
+  assert.ok(s.hermitage.books.length, '自己找到殘卷');
+  assert.ok(Object.keys(h.arts).length, '自己讀會整門');
+});

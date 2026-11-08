@@ -11,6 +11,7 @@ export const VALUES = [['xia', '俠義'], ['sect', '門派'], ['qing', '情義']
 // 行動標籤 → 價值觀（autopilot：價值 × 標籤 進入天賦組）
 export const ACT_TAGS = {
   train: ['wu'], spar: ['wu', 'fame'], meditate: ['wu'], learn: ['wu'],
+  searchFragment: ['wu'], // 找武學是武道（讀譜、自創按所代替的練功／靜坐算）
   chat: ['qing'], encourage: ['qing', 'xia'],
   leisure: ['free'], forage: ['free'],
   build: ['sect'], chop: ['sect'], quarry: ['sect'], farm: ['sect'], cook: ['sect', 'qing'],
@@ -381,7 +382,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '5.3'; /* R8 #526：承接已合併 R10 5.2，傳聞決定對外登門；異版存檔拒載 */
+export const RULES_VERSION = '5.4'; /* R8 #526：承接已合併 R11 5.3，外人見聞驅動登門；異版存檔拒載 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -907,6 +908,9 @@ Object.assign(ACTIVITIES, {
 // R3（#522）：沿既有 study／forage 的工時與耗力，不新增調勝率的常數。
 ACTIVITIES.readBook = { name: '茅廬研讀拳譜', dur: ACTIVITIES.study.dur, energy: ACTIVITIES.study.energy };
 ACTIVITIES.searchFragment = { name: '林中山洞尋殘卷', dur: ACTIVITIES.forage.dur, energy: ACTIVITIES.forage.energy };
+// R11 #531：自創沿用打坐的工時（閉關把會的幾門融在一起）；讀奇書沿用讀卷的工時。
+ACTIVITIES.invent = { name: '閉關自創武學', dur: ACTIVITIES.meditate.dur, energy: ACTIVITIES.meditate.energy, pose: 'sit' };
+ACTIVITIES.readRare = { name: '研讀奇書', dur: ACTIVITIES.readBook.dur, energy: ACTIVITIES.readBook.energy };
 // 7 座鎮派建築各自的活動（sect id → 活動資料，形狀同上）
 export const SIG_ACTS = {
   gaibang:   { name: '沿村乞討', dur: 10, energy: -6, perDay: 3, why: '打狗棒堂：沿村討口飯', eff: { res: { food: 2 } } },

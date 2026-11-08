@@ -39,3 +39,7 @@
 ## C 觀察
 
 `node tools/r10-baishen-report.mjs [solo-sect 目錄]`：白身獨自上山 × 12 種子 × 60 日。原始結果在 `artifacts/r10/baishen-head.json`。
+
+## R11 補充（擁有人 2026-11-08）
+
+沒有武學的人更想找師父、找譜：找殘卷、讀譜承接練功的分數與作息。不下指令時白身 12/12 學會第一門（中位第 4 日），見 [rare-arts.md](rare-arts.md)。
