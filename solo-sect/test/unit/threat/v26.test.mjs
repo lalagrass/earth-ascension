@@ -1,7 +1,8 @@
 /* v2.6（loop171–，擁有人 t191）：鎮派絕學位階鎖、同門成套、雜學曲線、各派成長鏈；全部只在 v22 新局（d.v24） */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick } from '../../../src/sim.mjs';
+import { createState } from '../../harness/historical-party.mjs';
+import { tick } from '../../../src/sim.mjs';
 import * as A from '../../../src/arts.mjs';
 import { ARTS, SECTS } from '../../../src/data.mjs';
 import { passPick } from '../../../src/bonds.mjs';

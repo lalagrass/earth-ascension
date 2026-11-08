@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, scoreActs } from '../../../src/sim.mjs';
+import { createState as historicalState } from '../../harness/historical-party.mjs';
 import { DAY } from '../../../src/data.mjs';
 import { MARRY, marriable, weddingWhy } from '../../../src/sect.mjs';
 import { PASS, passScore } from '../../../src/bonds.mjs';
@@ -11,7 +12,7 @@ import { relKey } from '../../../src/util.mjs';
 
 const pair = (s) => { const [a, b] = s.ds.filter((d) => d.id !== 'hero').slice(0, 2); a.adult = b.adult = true; a.spouse = b.spouse = null; return [a, b]; };
 test('成親：心上人必須互指、好感 ≥ 門檻', () => {
-  const s = createState(3); const [a, b] = pair(s); s.rel ??= {}; s.rel[relKey(a.id, b.id)] = MARRY.rel; a.sweet = b.id; b.sweet = a.id;
+  const s = historicalState(3); const [a, b] = pair(s); s.rel ??= {}; s.rel[relKey(a.id, b.id)] = MARRY.rel; a.sweet = b.id; b.sweet = a.id;
   const ok = marriable(s, a, b); a.sweet = 'someoneElse'; assert.equal(marriable(s, a, b), false, '反例：心上人不是對方就不能成親');
   a.sweet = b.id; s.rel[relKey(a.id, b.id)] = MARRY.rel - 1; assert.equal(marriable(s, a, b), false, '反例：好感差 1 不行');
   if (ok) assert.ok(ok); // compat 依性格，可能本來就不合

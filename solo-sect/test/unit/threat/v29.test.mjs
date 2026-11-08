@@ -1,7 +1,8 @@
 /* v2.9（loop186–，擁有人 t195）：四項決定、性格武學習性、相性與俠魅；只在 v22 新局（d.v24） */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick } from '../../../src/sim.mjs';
+import { createState } from '../../harness/historical-party.mjs';
+import { tick } from '../../../src/sim.mjs';
 import * as A from '../../../src/arts.mjs';
 const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, v22: true, ...o });
 const other = (s) => s.ds.find((d) => d.id !== 'hero' && d.role !== 'laborer');

@@ -1,14 +1,32 @@
 // Explicit cast for tests of older mechanics. Live N50 starts with ordinary people;
 // these tests need their original named actors to exercise the historical scenario.
 import { createState as currentState } from '../../src/sim.mjs';
-import { DISCIPLES } from '../../src/data.mjs';
-import { mkComp } from '../../src/hero.mjs';
+import { DISCIPLES, HEROES, HERO_SECT, OPENING_SCENARIOS } from '../../src/data.mjs';
+import { mkComp, mainSub } from '../../src/hero.mjs';
 import { seedArts } from '../../src/arts.mjs';
+import { sectInit } from '../../src/sect.mjs';
 import { TRAINING_HISTORY } from '../../src/practice.mjs';
 import { join as liveJoin, makeXiaCandidate } from '../../src/wuxia.mjs';
 
 export function createState(seed = 1, spec = null) {
-  const s = currentState(seed, spec);
+  // The retired opening no longer exists in production. Build the three actors
+  // explicitly for historical mechanics tests, then place them after founding.
+  const opening = { ...OPENING_SCENARIOS.solo, initialDisciples: 3 };
+  const s = currentState(seed, { ...spec, opening });
+  s.hermitage.active = false; s.hermitage.founded = true;
+  if (spec?.kind === 'template') {
+    const T = HEROES.find((h) => h.id === spec.id);
+    if (!T) throw new Error(`unknown historical test actor: ${spec.id}`);
+    const H = { kind: 'template', id: T.id, name: T.name, stats: { ...T.stats }, values: { ...T.values }, personality: [...T.personality], hidden: null, lore: T.lore, sealed: !!T.sealed, arc: T.arc };
+    [H.main, H.sub] = mainSub(H.values);
+    const h = s.ds[0], st = H.stats;
+    Object.assign(h, { name: H.name, classic: true, portrait: `assets/portraits/${T.id}.png`, style: T.style, wu: st.wu, root: H.sealed ? 1 : st.gen, ding: st.ding, values: H.values, wexin: 0, personality: H.personality, known: H.personality.slice(0, 2), traits: H.personality.includes('diligent') ? { diligent: 1.2 } : {} });
+    h.skills.strength = 4 + st.li * 3; h.skills.agility = 4 + st.shen * 3; seedArts(h);
+    s.hero = { ...H, fu: st.fu, askMajor: spec.askMajor ?? true, arcStep: 0, sect24: spec.sect24 || HERO_SECT[T.id] };
+    s.encExclude = [T.id]; s.choices = [];
+    if (T.coinMul) s.res.coin *= T.coinMul;
+    sectInit(s);
+  }
   for (let i = 1; i <= 2; i++) {
     const d = s.ds[i], old = DISCIPLES[i];
     Object.assign(d, {

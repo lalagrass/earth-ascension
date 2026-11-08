@@ -1,7 +1,8 @@
 /* v2.55（loop168–，擁有人 t190）：五大新門派專屬武學、寒玉床打坐、神木王鼎；全部只在 v22 新局（s.v24） */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick } from '../../../src/sim.mjs';
+import { createState } from '../../harness/historical-party.mjs';
+import { tick } from '../../../src/sim.mjs';
 import * as A from '../../../src/arts.mjs';
 import { ARTS, SECTS } from '../../../src/data.mjs';
 import { sectStep, HUIWU24 } from '../../../src/sect.mjs';

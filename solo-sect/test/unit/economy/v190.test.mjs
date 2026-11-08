@@ -1,7 +1,8 @@
 // v1.9：I-2 三四階要名聲＋稀有料、v1.6 建築佔地＋擴地花錢；I-6 財富襲擊＋山賊勒索（<8 人不來、只重傷不死）；A9 因才派巡
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick, startBuild, buildWhy, buyLot, lotCost, lotsUsed, lotsOf } from '../../../src/sim.mjs';
+import { createState } from '../../harness/historical-party.mjs';
+import { tick, startBuild, buildWhy, buyLot, lotCost, lotsUsed, lotsOf } from '../../../src/sim.mjs';
 import { DAY, FACILITIES, ROUTE, LOTS } from '../../../src/data.mjs';
 import { RAID, T, points, wealth, threatDaily, threatStep, raidResolve, raidAuto, headcount, threatHtml } from '../../../src/threat.mjs';
 import { suggestTeam } from '../../../src/world.mjs';

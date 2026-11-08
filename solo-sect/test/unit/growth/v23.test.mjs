@@ -1,7 +1,8 @@
 /* v2.3（loop151–）：專長門類、內功、村中幫工（#390 起所有局都適用） */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick } from '../../../src/sim.mjs';
+import { createState } from '../../harness/historical-party.mjs';
+import { tick } from '../../../src/sim.mjs';
 import { CATS, supOf, mastery, specGrow, SPEC, zhenK, bestSpec, learnArt } from '../../../src/arts.mjs';
 import { XIA } from '../../../src/wuxia.mjs';
 import { onJoin13 } from '../../../src/jianghu.mjs';
