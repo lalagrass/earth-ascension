@@ -573,7 +573,10 @@ function grow(s, d, sk, amt, src = 'train') {
   if (sk === d.style) { growEnsure(d); const o = gainArt(d, amt * (d.arts ? teachMul(s, d, focusOf(d)) : 1), focusMul(d), s.t, { raw, src }); /* #415 N12 師父傳授時段：這門名功練得快 */ if (o.feed) log(s, `${d.name}【${o.feed.label}】內功《${o.feed.name}》長進 ${o.feed.xp.toFixed(2)}`); if (o.next) log(s, `${d.name}功夫到了火候，可向師父求學「${o.next.name}」`); for (const m of o.moves) log(s, `${d.name}把已學套路的「${MOVES.find((x) => x.id === m).name}」練成了`); if (o.star) log(s, `${d.name}的基本功又添一顆星`); return o; }
 }
 
-const CLIFF_TRAIN_MUL = Object.freeze({ cliffTrain: 1.25, waterfallTrain: 1.4 }); // 出自 Phase 6 規格：試劍崖／飛瀑外功練體速度。
+export const scenicRecovery = (d, cliff, seconds) => {
+  if (!cliff?.scenery) return;
+  d.needs.fun = clamp((d.needs.fun ?? 60) + ACTIVITIES.leisure.fun * seconds / ACTIVITIES.leisure.dur, 0, 100);
+}; // 24e：景致用現有休閒同秒數的解悶速率，心情再由 moodStep 回復。
 function doTask(s,d,dt){
   if(d.downUntil>s.t){d.anim='down';if(d.task?.act==='trial')trialStep(s,d,dt);return;}
   if(pickupDrop(s,d))return;
@@ -613,21 +616,21 @@ function doTask(s,d,dt){
       if (t.act === 'cook') { const st = facStage(s, t.fac); resAdd(s, 'veg', -2); t.phase = 'done'; const wat = s.res.water >= 1 ? 1 : 0; if (wat) { s.res.water -= 1; book(s, 'out', 'water', 1); } const yld = st.cookYield + cookBonus(d) + wat; /* v1.6 有井水多煮一份 */ onCook(s, d); resAdd(s, 'food', yld, 'kitchen'); log(s, `${d.name}在${st.name}煮好 ${yld} 份飯`); const meal = cookMedicatedMeal(s, d); if (meal) log(s, `${d.name}採藥入鍋，把其中一份升作${meal}。`); grow(s, d, 'cooking', 6); finish(s, d); return; }
       if (t.act === 'farm') { const p = s.plots[t.plot]; t.resv = []; grow(s, d, 'farming', 6); stepWorkCondition(d, s, 'farm', 1, effDur); if (p.st === 'ripe') { p.st = 'empty'; p.g = 0; d.carry = { veg: HARVEST }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; } p.st = 'grow'; p.g = 0; finish(s, d); return; }
       if (A.use) {
-        if (t.act === 'eat' && bodyConditionOn(s) && s.res.medFood > 0) { const meal = applyMedicatedMeal(d, s); if (meal) { if (meal.cold) { addQi(d, restQi(d)); d.mood = clamp(d.mood + PAIR.mealSocial, 0, 100); } log(s, `${d.name}吃下${meal.name}，有肉有藥，做活長得比只吃白飯快${meal.cold ? '；寒潭靈泉也回了內息與心情' : ''}。`); } }
+        if (t.act === 'eat' && bodyConditionOn(s) && s.res.medFood > 0) { const meal = applyMedicatedMeal(d, s); if (meal) { if (meal.cold || meal.bee) { addQi(d, restQi(d)); d.mood = clamp(d.mood + PAIR.mealSocial, 0, 100); } log(s, `${d.name}吃下${meal.name}，有肉有藥，做活長得比只吃白飯快${meal.cold || meal.bee ? `；${meal.cold ? '寒潭靈泉' : '玉蜂漿'}也回了內息與心情` : ''}。`); } }
         else { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } resAdd(s, 'food', -1, 'meal'); if (t.act === 'eat') applyPlainMeal(d, s); }
       }
       if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) { d.needs.social = clamp(d.needs.social + b / 2, 0, 100); think(s, d, 'hallMeal'); } likeMeal(s, d, think); }
       let trainedArt = null;
       acquireWorkTool(d, t.act);
       finishTrainingWish(d,t.act);
-      if (['train', 'spar', 'cliffTrain', 'waterfallTrain'].includes(t.act)) { const moves = d.moves.map((id) => MOVES.find((m) => m.id === id)).filter((m) => m && moveAvailable(d,m)); rehearse(s,d,moves,effDur*guidanceLearning(d)*(CLIFF_TRAIN_MUL[t.act] || 1),{partner:t.act === 'spar' ? byId(s,t.partner) : null}); }
+      if (['train', 'spar', 'cliffTrain', 'waterfallTrain'].includes(t.act)) { const moves = d.moves.map((id) => MOVES.find((m) => m.id === id)).filter((m) => m && moveAvailable(d,m)); rehearse(s,d,moves,effDur*guidanceLearning(d),{partner:t.act === 'spar' ? byId(s,t.partner) : null}); }
       else if (['chop','quarry','water','farm','forage', 'cliffForage1', 'cliffWater'].includes(t.act)) practiceWork(s,d,CLIFF_ACT_NODE[t.act] ? t.act === 'cliffWater' ? 'water' : 'forage' : t.act,effDur);
       if (['chop', 'quarry', 'water', 'forage', 'train'].includes(t.act)) stepWorkCondition(d, s, t.act, 1, effDur);
       if (t.act === 'cliffForage1') stepWorkCondition(d, s, 'forage', 1, effDur);
       if (t.act === 'cliffWater') stepWorkCondition(d, s, 'water', 1, effDur);
       if (t.act === 'cliffTrain') stepWorkCondition(d, s, 'train', 1, effDur);
-      if (t.act === 'waterfallTrain') stepWorkCondition(d, s, 'train', CLIFF_TRAIN_MUL.waterfallTrain, effDur); // 出自 Phase 6 規格：瀑下練體的負荷是一般練功的 1.4 倍（R2 起乘在負重上）。
-      if (A.skill) for (const [k, v] of Object.entries(A.skill)) { if (t.act === 'cliffWater' && k === 'strength') continue; const o = grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? (facStage(s, 'yard').trainMul || 1)*guidanceLearning(d) : 1) * (CLIFF_TRAIN_MUL[t.act] || 1), isWorkAct(t.act) ? 'labor' : 'train'); if (['train', 'cliffTrain', 'waterfallTrain'].includes(t.act) && o?.trained) trainedArt = o.trained; }
+      if (t.act === 'waterfallTrain') stepWorkCondition(d, s, 'train', 1, effDur); // 24e：比例與衝擊力有量尺前，不另加瀑下負荷。
+      if (A.skill) for (const [k, v] of Object.entries(A.skill)) { if (t.act === 'cliffWater' && k === 'strength') continue; const o = grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? (facStage(s, 'yard').trainMul || 1)*guidanceLearning(d) : 1), isWorkAct(t.act) ? 'labor' : 'train'); if (['train', 'cliffTrain', 'waterfallTrain'].includes(t.act) && o?.trained) trainedArt = o.trained; }
       if (A.skill) cliqueTrain(s, d, t.act, A.skill, grow); // loop20 小派同修
       if (t.act === 'train') coTrain(s, d, A.skill?.style || 0, grow, relAdd, log); // loop8 同修
       if (trainedArt) noteTrain31(d, artById(trainedArt)); /* 一次練功只記一次，同修再長的熟練不另計 */
@@ -1071,6 +1074,7 @@ export function tick(s, dt = 0.25) {
     if(!['hunt','trial'].includes(d.task?.act)&&!(d.task?.act==='defend'&&d.task.phase==='do'&&s.band))postureRegen(s,d,dt);
     d.needs.hunger = clamp(d.needs.hunger - HUNGER_PER_SECOND * se.hunger * dt, 0, 100);
     d.needs.fun = clamp((d.needs.fun ?? 60) - 0.22 * dt * (cotrainNear(s, d) ? 0.5 : 1), 0, 100); /* loop62「有伴解悶」（s.cofun）：與 cotrain 同條件，樂趣下降速度減半 */
+    if (!d.path?.length) scenicRecovery(d, CLIFFS[d.at], dt);
     d.needs.social = clamp(d.needs.social - 0.4 * dt * (cotrainNear(s, d) ? 0.5 : 1), 0, 100);
     moodStep(s, d, dt); revealStep(s, d, dt); if (isLabor(d)) coworkStep(s, d, dt); else if (d.role === 'outer' && !d.rootKnown && Math.max(d.cowork || 0, d.together || 0) >= ROOT.revealAt) { d.rootKnown = true; log(s, `相處久了，看出外門${d.name}根骨「${ROOT.names[d.root]}」。`); }
     if (d.task?.act === 'teach' || (d.teachCool > 0 && !d.task && !d.order)) { if (teachStep(s, d, dt)) continue; } /* #417 N13 傳功＝師徒共同任務 */

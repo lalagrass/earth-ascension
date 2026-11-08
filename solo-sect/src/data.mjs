@@ -197,9 +197,9 @@ export const ACTIVITIES = {
   cook:   { name: '煮飯', dur: 0, pose: 'sit', energy: -3, skill: { cooking: 6 } }, // dur 由灶階段決定
   forage: { name: '採藥', dur: 8, pose: 'pick', energy: -6, skill: { herbal: 6 }, carry: { herb: 1 } },
   cliffForage1: { name: '低崖採靈草', dur: 8, pose: 'pick', energy: -6, skill: { herbal: 6 }, carry: { herb: 2, beeJelly: 1 } }, // 出自 Phase 6 規格：沿採藥工時，帶回藥材×2與玉蜂漿。
-  cliffTrain: { name: '試劍崖練功', dur: 10, pose: 'stand', energy: -10, skill: { style: 5 } }, // 出自 Phase 6 規格：沿練功工時，外功經驗×1.25。
+  cliffTrain: { name: '試劍崖練功', dur: 10, pose: 'stand', energy: -10, skill: { style: 5 } }, // 24e：與空地同一練功工時；景致經心情影響專注。
   cliffWater: { name: '寒潭挑靈泉', dur: 8, pose: 'carry', energy: -7, skill: { strength: 4 }, carry: { coldWater: 1 } }, // 出自 Phase 6 規格：沿挑水工時，帶回一份寒潭靈泉。
-  waterfallTrain: { name: '飛瀑練體', dur: 10, pose: 'stand', energy: -10, skill: { style: 5 } }, // 出自 Phase 6 規格：沿練功工時，體魄與外功經驗×1.4。
+  waterfallTrain: { name: '飛瀑練體', dur: 10, pose: 'stand', energy: -10, skill: { style: 5 } }, // 24e：與空地同一練功工時，負荷同 R2 一般練功。
   cliffComprehend: { name: '絕頂參悟石刻', dur: 12, pose: 'sit', energy: -8 }, // 出自 Phase 6 規格：沿打坐工時，絕頂才有參悟機會。
   quarry: { name: '採石', dur: 10, pose: 'chop', energy: -9, skill: { strength: 6 }, carry: { stone: 1 } },
   chop:   { name: '砍柴', dur: 8, pose: 'chop', energy: -8, skill: { strength: 5 }, carry: { wood: 1 } },
@@ -842,9 +842,9 @@ EDGES.push(['hall', 'library'], ['yard', 'quiet'], ['hall', 'shrine'], ['kitchen
 NODES.cliff3Detour = [1050, 310]; // R6 #523：繞開光壁的可見路肩，位置按 cliff2／cliff3 的地圖空地配置。
 EDGES.push(['herb', 'cliff1'], ['forest2', 'cliff1'], ['well', 'cliff2'], ['cliff1', 'cliff2'], ['cliff2', 'cliff3Detour'], ['cliff3Detour', 'cliff3']);
 export const CLIFFS = Object.freeze({
-  cliff1: { name: '斷木試劍崖', height: '三丈', heightZhang: 3, routeGrade: 1, hardest: '易攀岩面', acts: ['cliffForage1', 'cliffTrain'] },
-  cliff2: { name: '飛瀑寒潭崖', height: '七丈', heightZhang: 7, routeGrade: 2, hardest: '中段疏點', acts: ['cliffWater', 'waterfallTrain'] },
-  cliff3: { name: '終南絕頂・古墓石室崖', height: '十五丈', heightZhang: 15, routeGrade: 3, hardest: '頂端光壁', detour: 'cliff3Detour', acts: ['cliffComprehend'] },
+  cliff1: { name: '斷木試劍崖', scenery: '登高望遠', height: '三丈', heightZhang: 3, routeGrade: 1, hardest: '易攀岩面', acts: ['cliffForage1', 'cliffTrain'] },
+  cliff2: { name: '飛瀑寒潭崖', scenery: '瀑聲洗心', height: '七丈', heightZhang: 7, routeGrade: 2, hardest: '中段疏點', acts: ['cliffWater', 'waterfallTrain'] },
+  cliff3: { name: '終南絕頂・古墓石室崖', scenery: '雲海開闊', height: '十五丈', heightZhang: 15, routeGrade: 3, hardest: '頂端光壁', detour: 'cliff3Detour', acts: ['cliffComprehend'] },
 }); // R6 #523 規格高度 3／7／15 丈與易／中／難三路；最難一段只列性質，直上光壁不可攀，繞路可達。
 const B = (id, name, node, built, cost, work, offers, extra = {}, rep = 0) => ({ id, name, node, v16: true, stages: [{ name: '空地', sprite: null, offers: [] }, { name: built, sprite: null, offers, cost, work, rep: rep || undefined, ...extra }] });
 FACILITIES.push(
