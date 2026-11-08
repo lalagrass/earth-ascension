@@ -16,6 +16,7 @@ if(!Number.isSafeInteger(seed))throw Error('--seed 須為整數');
 const bareState=()=>{const s=createState(seed,{kind:'custom',opening:'solo',askMajor:false});makeBare(s.ds[0]);return s;};
 const novice=bareState().ds[0];
 const master=makeBare(growthSnapshots(seed,[60]).snapshots[0].hero);
+master.skills.agility=100; // 固定高手情境沿原技能滿值 100；隱居成長上限不應把 N34 的反應探針悄悄改成新手。
 // N51 的登門理由會改變自然日程能否巧遇武學。A/B 固定高手情境明確補同一武學火候，
 // 仍由 N33/N42 的真反應公式判定，不以偶遇江湖客作高手的隱性前置。
 learnArt(master,'basicFist');master.arts.basicFist.xp=TIERS[3][0];
