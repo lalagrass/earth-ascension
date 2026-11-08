@@ -14,10 +14,11 @@ export const RUMOR_KINDS = Object.freeze({
   school: { text: '門派弟子在村中教人，說明師門可收徒', tags: ['teaching'], target: 'village' },
   provisions: { text: '山門拿出菜蔬藥材與行商交易', tags: ['food', 'wealth'], target: 'teahouse' },
   tournament: { text: '門派在會武中勝出', tags: ['martial'], target: 'market' },
+  rareBook: { text: '有人親見一冊奇書', tags: ['book'], target: 'market' }, // 第二十二輪：具體書與所在只附於當次目擊。
 });
 export const rumorsOf = s => (s.rumors ??= []);
 export const sectNamed = s => !s.hermitage?.active;
-export function recordRumor(s, kind, witness, site = 'gate', detail = '') {
+export function recordRumor(s, kind, witness, site = 'gate', detail = '', evidence = null) {
   const type = RUMOR_KINDS[kind];
   if (!type || !witness || !RUMOR_SITES[site]) return null;
   const id = (s.rumorSerial = (s.rumorSerial || 0) + 1);
@@ -25,7 +26,8 @@ export function recordRumor(s, kind, witness, site = 'gate', detail = '') {
   const entry = { id, kind, witness, seen: s.day, seenAt: site, site, where: RUMOR_SITES[site], target: type.target,
     heard: site === type.target ? [{ site, day: s.day }] : [], arrived: site === type.target ? s.day : null, expires: s.day + MEMORY_DAYS,
     name: named ? s.sect?.plaque || s.sect?.name || '山門' : null,
-    text: `${named ? s.sect?.plaque || s.sect?.name || '山門' : '山上有個怪人'}：${detail || type.text}` };
+    text: `${named ? s.sect?.plaque || s.sect?.name || '山門' : '山上有個怪人'}：${detail || type.text}`,
+    ...(kind === 'rareBook' && evidence?.bookId ? { bookId: evidence.bookId, bookAt: evidence.at, bookHolder: evidence.holder } : {}) };
   rumorsOf(s).push(entry);
   return entry;
 }
@@ -52,6 +54,7 @@ export function spreadRumors(s) {
   }
 }
 export const publicRumors = s => rumorsOf(s).filter(r => r.arrived != null && r.expires > s.day && r.name && sectNamed(s));
+export const rumorForRareBook = (s, id) => publicRumors(s).filter(r => r.kind === 'rareBook' && r.bookId === id).at(-1) || null;
 export const rumorReach = s => [...new Set(publicRumors(s).flatMap(r => (r.heard || [{ site: r.site }]).map(x => x.site)))];
 // 只數可指認的傳話人；轉述聽眾沒有可查姓名，不假裝知道聚落總人數。
 export const fameOf = s => new Set(publicRumors(s).map(r => r.witness)).size;

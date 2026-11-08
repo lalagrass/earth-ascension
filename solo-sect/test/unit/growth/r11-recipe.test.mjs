@@ -36,7 +36,7 @@ test('A：奇書只能讀實物，持有人與會的人都不教；看人只得�
   x.arts.bixie = { xp: 100, last: 0 }; h.master = x.id; h.castrated = 0;
   assert.equal(canTeachArt(s, x, h, 'bixie'), false, '師父也不傳辟邪');
   delete h.castrated;
-  assert.match(rareBookStatus(s, h, b.id).why, /黑木崖/, '書不在手上');
+  assert.equal(rareBookStatus(s, h, b.id).why, '書不在手上', '第二十二輪：未聞目擊前不從資料列洩漏原處');
   const mv = watchMove(h, artById('bixie'));
   assert.ok(mv && !h.arts.bixie, '看人得一招，不得整門');
   handRareBook(s, b.id, h, '得到');

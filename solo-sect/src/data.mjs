@@ -382,7 +382,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '5.5'; /* R5／R6 #523：承接 R8 5.4，雙劍時機與山崖攀登改規；異版存檔拒載 */
+export const RULES_VERSION = '5.6'; /* 第二十二輪 #488：奇書見聞與遠行搜尋；異版存檔拒載 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
