@@ -1,4 +1,5 @@
 import { DAY, EXP, SEASONS, SEASON_DAYS, BREAK, FACILITIES, FOOD_SEC, ECON, HARVEST } from './data.mjs';
+import { growthDaysFromRealDays } from './time-scale.mjs';
 import { log, resAdd, pillNote } from './util.mjs';
 import { FENCE, lvOf } from './threat.mjs';
 import { recordRumor } from './rumors.mjs';
@@ -159,8 +160,8 @@ export const laborToday = (d, day) => (d?.lg && d.lgDay === day ? d.lgGot || 0 :
 // ③ 營養（Project Zomboid：蛋白質足 ×1.5、不足 ×0.7）：上一餐決定這一份活能長多少體能，不影響疲勞。
 // 個人上限由根骨推導：起始值 ×（1 + bestGain × 根骨／5）。根骨 5 可練到起始的三倍，根骨 2 約 1.8 倍（起始 10 時恰為舊的 18）。
 export const BODY_CONDITION = Object.freeze({
-  fitnessTau: 42, // 量測：Banister 體能衰減時間常數約 42 日（Banister & Calvert 1980；Busso 2003 綜述）
-  fatigueTau: 7, // 量測：同模型的疲勞衰減時間常數約 7 日
+  fitnessTau: growthDaysFromRealDays(42), // R1 量測／推導：Banister 約 42 現實日，沿 28 日成長年換算；非 42 個遊戲生理日。
+  fatigueTau: growthDaysFromRealDays(7), // R1 量測／推導：同模型約 7 現實日，沿 28 日成長年換算。
   workdayShare: 1 / 3, // 設計旋鈕：一天約八小時全力重活可長期維持（農家日出而作）；一份活的負荷 = 活的時長 ÷（一天 × 此比例），痠痛門檻與體能尺度都由此推導
   rootMax: 5, // 推導：根骨 1–5（data.mjs STATS）
   bestGain: 2, // 參考：未受訓者經一兩年力量訓練，主要舉重常可到起始的兩三倍（Rippetoe《Starting Strength》新手線性進步；ExRx 力量標準表 untrained→advanced）

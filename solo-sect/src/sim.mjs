@@ -8,6 +8,7 @@ import { HERMITAGE_VOLUMES, seedHermitageBooks, bookStatus, readHermitageBook, c
 import { spreadRumors, rumorForCandidate } from './rumors.mjs';
 import { donateRepairs } from './repair-donation.mjs';
 import { canLeapCliff, cliffSlopeFactor, CLIFF_ACT_NODE } from './cliff.mjs';
+import { waterfallTrainingLoad } from './time-scale.mjs';
 import {ringCapacity,attackTokenLimit,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} from './tactics.mjs';
 import {pickupDrop} from './techniques.mjs';
 import {forayChoice} from './foray-choice.mjs';
@@ -645,7 +646,7 @@ function doTask(s,d,dt){
       if (t.act === 'cliffForage1') stepWorkCondition(d, s, 'forage', 1, effDur);
       if (t.act === 'cliffWater') stepWorkCondition(d, s, 'water', 1, effDur);
       if (t.act === 'cliffTrain') stepWorkCondition(d, s, 'train', 1, effDur);
-      if (t.act === 'waterfallTrain') stepWorkCondition(d, s, 'train', 1, effDur); // 24e：比例與衝擊力有量尺前，不另加瀑下負荷。
+      if (t.act === 'waterfallTrain') stepWorkCondition(d, s, 'train', waterfallTrainingLoad(CLIFFS.cliff2.heightZhang, CLIFFS.cliff1.heightZhang), effDur); // R1 推導：同水量下自由落水速度 ∝ √落差；以低崖高度作一般練體的參照，不沿用舊 1.4。
       if (A.skill) for (const [k, v] of Object.entries(A.skill)) { if (t.act === 'cliffWater' && k === 'strength') continue; const o = grow(s, d, k, v * (['train', 'spar', 'cliffTrain', 'waterfallTrain'].includes(t.act) ? guidanceLearning(d) : 1), isWorkAct(t.act) ? 'labor' : 'train'); if (['train', 'cliffTrain', 'waterfallTrain'].includes(t.act) && o?.trained) trainedArt = o.trained; } // 24e：木樁場多站位與切磋，不給地點 XP 倍率；同人同心情崖／場每次成長相等。
       if (A.skill) cliqueTrain(s, d, t.act, A.skill, grow); // loop20 小派同修
       if (t.act === 'train') coTrain(s, d, A.skill?.style || 0, grow, relAdd, log); // loop8 同修

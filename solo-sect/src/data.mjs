@@ -199,7 +199,7 @@ export const ACTIVITIES = {
   cliffForage1: { name: '低崖採靈草', dur: 8, pose: 'pick', energy: -6, skill: { herbal: 6 }, carry: { herb: 2, beeJelly: 1 } }, // 出自 Phase 6 規格：沿採藥工時，帶回藥材×2與玉蜂漿。
   cliffTrain: { name: '試劍崖練功', dur: 10, pose: 'stand', energy: -10, skill: { style: 5 } }, // 24e：與空地同一練功工時；景致經心情影響專注。
   cliffWater: { name: '寒潭挑靈泉', dur: 8, pose: 'carry', energy: -7, skill: { strength: 4 }, carry: { coldWater: 1 } }, // 出自 Phase 6 規格：沿挑水工時，帶回一份寒潭靈泉。
-  waterfallTrain: { name: '飛瀑練體', dur: 10, pose: 'stand', energy: -10, skill: { style: 5 } }, // 24e：與空地同一練功工時，負荷同 R2 一般練功。
+  waterfallTrain: { name: '飛瀑練體', dur: 10, pose: 'stand', energy: -10, skill: { style: 5 } }, // 第 26 輪：XP 工時同空地；體能負荷在 sim 依落差比推導。
   cliffComprehend: { name: '絕頂參悟石刻', dur: 12, pose: 'sit', energy: -8 }, // 出自 Phase 6 規格：沿打坐工時，絕頂才有參悟機會。
   quarry: { name: '採石', dur: 10, pose: 'chop', energy: -9, skill: { strength: 6 }, carry: { stone: 1 } },
   chop:   { name: '砍柴', dur: 8, pose: 'chop', energy: -8, skill: { strength: 5 }, carry: { wood: 1 } },
@@ -383,7 +383,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '5.9'; /* 第 25 輪 #488：煮飯急迫、入門處境與真交易／山賊見聞改模擬；異版存檔拒載 */
+export const RULES_VERSION = '6.0'; /* 第 26 輪 #488：統一地圖公尺尺度、瀑下負荷及 28 日成長年體能時間常數；異版存檔拒載 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
