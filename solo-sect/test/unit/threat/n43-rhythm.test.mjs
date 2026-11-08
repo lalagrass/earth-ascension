@@ -15,7 +15,7 @@ test('N43／R8：未傳聞不來犯；每則傳聞只引一夥，餘黨與第二
   assert.equal(X.pending, null, '即使家底與人數足夠，沒有外人見聞也不上門');
   assert.ok(X.adapt > 0.6, '適應係數仍逐日恢復');
 
-  recordRumor(s, 'trade', '藥舖掌櫃', 'market');
+  recordRumor(s, 'trade', '藥舖掌櫃', 'market', '賣丹得錢', { trade: { coin: 1000 }, stock: { coin: 1000 } });
   assert.equal(raidPhase(s).id, 'respite', '消息傳開後仍須走完來犯路程');
   s.day = 12; threatDaily(s);
   assert.ok(X.pending, '已傳開的財物消息引來第一夥山賊');
@@ -34,7 +34,7 @@ test('N43／R8：未傳聞不來犯；每則傳聞只引一夥，餘黨與第二
   assert.equal(X.pending?.boss, true, '剿寨餘黨知道仇家，依既有復仇事件回來');
   X.pending = null; X.boss.state = 'done';
 
-  s.day = 17; recordRumor(s, 'provisions', '山產行商', 'teahouse');
+  s.day = 17; recordRumor(s, 'provisions', '山產行商', 'teahouse', '交了實貨', { trade: { coin: 1000 }, stock: { coin: 1000 } });
   s.day = 18; threatDaily(s);
   assert.equal(X.pending, null, '負傷後的最短喘息間隔仍有效');
   s.day = 19; threatDaily(s);

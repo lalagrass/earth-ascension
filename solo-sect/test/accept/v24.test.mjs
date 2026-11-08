@@ -5,6 +5,7 @@ import { createState } from '../harness/historical-party.mjs';
 import { tick } from '../../src/sim.mjs';
 import * as EC from '../../src/economy.mjs';
 import * as A from '../../src/arts.mjs';
+import { ECON, FOOD_SEC, HARVEST } from '../../src/data.mjs';
 import { dpsOf, LS_FIRST24 } from '../../src/world.mjs';
 export const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, v22: true, ...o });
 // #390：舊規則開局已不存在，原本的舊局對照組（OLD）與各測試裡的舊局斷言一併刪除
@@ -16,9 +17,17 @@ test('loop159 P5/P6 商隊（市集補貨）：第 12 日前不賣靈石，之�
   s.day = 6; assert.equal(EC.left(s, 'lingshi'), 0); assert.ok(EC.marketWhy(s, 'lingshi'));
   for (const day of [12, 16, 21, 26, 31]) { s.day = day; const n = EC.left(s, 'lingshi'); assert.ok(n >= 1 && n <= 2, `day ${day}: ${n}`); assert.equal(EC.priceOf(s, 'lingshi'), 28); }
 });
-test('loop159 P2 山產交割：每次補貨，有菜園／藥園／丹房才 +15；沒有就不給', () => {
+test('25d 山產交割：只有建築或沒有實貨不收錢；真賣菜才按數量付款並扣貨', () => {
   const s = V(); tick(s, 0.1); EC.market(s); const c0 = s.res.coin; s.day = 6; EC.market(s); assert.equal(s.res.coin, c0);
-  s.fac.veg.stage = Math.max(1, s.fac.veg.stage || 0); s.day = 11; EC.market(s); assert.equal(s.res.coin, c0 + 15); assert.ok(s.log.some((e) => /山產交割/.test(e.msg)));
+  s.fac.veg.stage = Math.max(1, s.fac.veg.stage || 0); s.res.veg = 0; s.res.herb = 0;
+  s.day = 11; EC.market(s); assert.equal(s.res.coin, c0); assert.equal(s.rumors.filter(r => r.kind === 'provisions').length, 0);
+  s.res.veg = 20; s.day = 16; EC.market(s);
+  const free = Math.max(0, Math.floor(20 - FOOD_SEC.perHead * s.ds.filter(d => !d.away).length));
+  const sold = Math.floor(Math.min(free, Math.floor(EC.MOUNTAIN_MARKET.buyBudget / ECON.wage) * HARVEST) / HARVEST) * HARVEST;
+  const paid = sold / HARVEST * ECON.wage;
+  assert.equal(s.res.coin, c0 + paid); assert.equal(s.res.veg, 20 - sold);
+  assert.deepEqual(s.rumors.find(r => r.kind === 'provisions')?.trade, { coin: paid, veg: sold, herb: 0 });
+  assert.ok(s.log.some((e) => /山產交割/.test(e.msg)));
 });
 test('loop159 P5/P6 深谷、斷崖守關首通保底靈石（只列兩段）', () => { assert.deepEqual(LS_FIRST24, ['gorge', 'cliff']); });
 test('loop159 P7/P8 執事：有人學會 ≥2 門武學且木石夠 → 藏經閣優先於其他藍圖', () => {

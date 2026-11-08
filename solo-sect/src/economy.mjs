@@ -1,4 +1,4 @@
-import { DAY, EXP, SEASONS, SEASON_DAYS, BREAK, FACILITIES } from './data.mjs';
+import { DAY, EXP, SEASONS, SEASON_DAYS, BREAK, FACILITIES, FOOD_SEC, ECON, HARVEST } from './data.mjs';
 import { log, resAdd, pillNote } from './util.mjs';
 import { FENCE, lvOf } from './threat.mjs';
 import { recordRumor } from './rumors.mjs';
@@ -41,20 +41,38 @@ function upkeepGrace(s, X, f) {
 const leaver = (s) => salaried(s).filter((d) => !d.xia && !d.classic && d.role !== 'head').sort((a, b) => ((a.spouse ? 1 : 0) - (b.spouse ? 1 : 0)) || (a.mood ?? 50) - (b.mood ?? 50))[0] || null; /* loop148 v22：欠俸離山先挑沒成家的 */
 
 // 山下市集：每 5 日補貨，限量，同一期每買一次價格 ×rise；療傷丹可賣，每賣一顆價 ×fall
-export const MARKET = { every: 5, stock: { herb: 12, weapon: 2 }, price: { herb: 5, weapon: 80 }, rise: 1.25, pill: { price: 14, fall: 0.85, max: 6 }, weaponMul: 1.08,
+export const MARKET = { every: 5, stock: { herb: 12, weapon: 2 }, price: { herb: 5, weapon: 80 }, herbBundle: 3, rise: 1.25, pill: { price: 14, fall: 0.85, max: 6 }, weaponMul: 1.08,
   rare: { tiemu: { price: 35, max: 2 }, lingshi: { price: 30, max: 2 } } }; /* loop148 v2.25（決定 138）：只在 v22 新局；稀有料定價不漲、每集限量，種田流也能升二三階 */
 export const rareOn = (s, k) => !!(!!s && MARKET.rare[k]);
 export const cycleOf = (s) => Math.floor(((s.day || 1) - 1) / MARKET.every);
-export function market(s) { const X = E(s), M = X.market, c = cycleOf(s); if (M.cycle !== c) { const first = M.cycle == null; M.cycle = c; M.sold = {}; if (!first) caravan24(s); } return M; }
-function caravan24(s) { if (!CARAVAN24.prodFac.some((id) => (s.fac?.[id]?.stage || 0) >= 1)) return; resAdd(s, 'coin', CARAVAN24.produce); (s.v24n ??= {}).produce = (s.v24n.produce || 0) + CARAVAN24.produce;
-  recordRumor(s, 'provisions', '山產行商', 'market');
-  log(s, `【山產交割】行商上山補貨，收走本門的菜蔬藥材，結了 ${CARAVAN24.produce} 香火錢。${lsStock24(s) ? `這回帶了 ${lsStock24(s)} 顆靈石（每顆 ${CARAVAN24.lsPrice}）。` : ''}`); }
-/* loop159 v2.4 Batch 0（擁有人 t189 P5/P6）：「商隊」＝每 5 日補貨的山下市集（程式沒有商隊系統，決定 169）。v24：靈石第 12 日起才上架、每集 1–2 顆（依種子與集數，不吃亂數流）、每顆 28；
-   有生產設施（菜園／藥園／丹房）時每集開市另結「山產交割」+15。v22/v23 舊存檔維持 loop157 的 30×2。 */
-export const CARAVAN24 = { lsDay: 12, lsPrice: 28, lsMin: 1, lsMax: 2, produce: 15, prodFac: ['veg', 'herb', 'alchemy'] };
-const lsStock24 = (s) => ((s.day || 1) < CARAVAN24.lsDay ? 0 : CARAVAN24.lsMin + (((s.seed || 0) * 31 + cycleOf(s) * 17) >>> 0) % (CARAVAN24.lsMax - CARAVAN24.lsMin + 1));
-export const priceOf = (s, k) => (!!s && k === 'lingshi' ? CARAVAN24.lsPrice : MARKET.rare[k] ? MARKET.rare[k].price : k === 'pill' ? Math.floor(MARKET.pill.price * MARKET.pill.fall ** (market(s).sold.pill || 0)) : Math.ceil(MARKET.price[k] * MARKET.rise ** (market(s).sold[k] || 0)));
-export const left = (s, k) => (MARKET.rare[k] ? (rareOn(s, k) ? (k === 'lingshi' ? lsStock24(s) : MARKET.rare[k].max) : 0) : k === 'pill' ? MARKET.pill.max : MARKET.stock[k]) - (market(s).sold[k] || 0);
+export function market(s) { const X = E(s), M = X.market, c = cycleOf(s); if (M.cycle !== c) { const first = M.cycle == null; M.cycle = c; M.sold = {}; if (!first) mountainProduceSale(s); } return M; }
+export function mountainProduceSale(s) {
+  if (!MOUNTAIN_MARKET.producerFacilities.some(id => (s.fac?.[id]?.stage || 0) >= 1)) return null;
+  // 25d：行商原有的十五錢是這趟的購貨盤纏，不再是見到建築就付的收入。
+  // 藥材沿市集三份五錢；菜無既有市價，以一畦 HARVEST 份菜抵既有一天雇工 ECON.wage 推導。
+  // 整畦成交，先留 FOOD_SEC 的當日菜額；這不是 N58 束脩錢與飯的交換率。
+  const budget = MOUNTAIN_MARKET.buyBudget;
+  const herb = Math.min(s.res.herb || 0, MARKET.stock.herb, Math.floor(budget * MARKET.herbBundle / MARKET.price.herb));
+  const herbCoin = Math.floor(herb * MARKET.price.herb / MARKET.herbBundle);
+  const freeVeg = Math.max(0, Math.floor((s.res.veg || 0) - FOOD_SEC.perHead * s.ds.filter(d => !d.away).length));
+  const veg = Math.floor(Math.min(freeVeg, Math.floor((budget - herbCoin) / ECON.wage) * HARVEST) / HARVEST) * HARVEST;
+  const coin = herbCoin + veg / HARVEST * ECON.wage;
+  if (!coin) return null;
+  if (herb) resAdd(s, 'herb', -herb, 'market');
+  if (veg) resAdd(s, 'veg', -veg, 'market');
+  resAdd(s, 'coin', coin, 'market');
+  E(s).produceEarned = (E(s).produceEarned || 0) + coin;
+  const detail = `收走菜 ${veg} 份、藥 ${herb} 份，付 ${coin} 香火錢`;
+  recordRumor(s, 'provisions', '山產行商', 'market', detail, { trade: { coin, veg, herb }, stock: { coin: s.res.coin, food: s.res.food, pill: s.res.pill, herb: s.res.herb } });
+  log(s, `【山產交割】${detail}。${marketSpiritStoneStock(s) ? `這回帶了 ${marketSpiritStoneStock(s)} 顆靈石（每顆 ${MOUNTAIN_MARKET.lsPrice}）。` : ''}`);
+  return { coin, veg, herb };
+}
+/* 山下市集每 5 日補貨；靈石第 12 日起上架、每集 1–2 顆（依種子與集數，不吃亂數流）、每顆 28。
+   有生產設施時行商最多帶 15 錢收真貨；v22/v23 舊存檔已不再載入。 */
+export const MOUNTAIN_MARKET = { lsDay: 12, lsPrice: 28, lsMin: 1, lsMax: 2, buyBudget: 15, producerFacilities: ['veg', 'herb', 'alchemy'] };
+const marketSpiritStoneStock = (s) => ((s.day || 1) < MOUNTAIN_MARKET.lsDay ? 0 : MOUNTAIN_MARKET.lsMin + (((s.seed || 0) * 31 + cycleOf(s) * 17) >>> 0) % (MOUNTAIN_MARKET.lsMax - MOUNTAIN_MARKET.lsMin + 1));
+export const priceOf = (s, k) => (!!s && k === 'lingshi' ? MOUNTAIN_MARKET.lsPrice : MARKET.rare[k] ? MARKET.rare[k].price : k === 'pill' ? Math.floor(MARKET.pill.price * MARKET.pill.fall ** (market(s).sold.pill || 0)) : Math.ceil(MARKET.price[k] * MARKET.rise ** (market(s).sold[k] || 0)));
+export const left = (s, k) => (MARKET.rare[k] ? (rareOn(s, k) ? (k === 'lingshi' ? marketSpiritStoneStock(s) : MARKET.rare[k].max) : 0) : k === 'pill' ? MARKET.pill.max : MARKET.stock[k]) - (market(s).sold[k] || 0);
 const armable = (s) => s.ds.filter((d) => d.role !== 'laborer' && d.adult !== false && !d.weapon).sort((a, b) => (b.best || 0) - (a.best || 0) || (a.id === 'hero' ? -1 : 1))[0];
 export function marketWhy(s, k) {
   if (s.hermitage?.active) return '立匾開山後才能經營山下市集'; // 出自 Phase 7 規格：開山後解鎖完整市集。
@@ -66,10 +84,10 @@ export function marketWhy(s, k) {
 }
 export function marketDo(s, k) {
   const why = marketWhy(s, k); if (why) return { ok: false, why }; const p = priceOf(s, k), M = market(s);
-  if (k === 'pill') { resAdd(s, 'pill', -1); pillNote(s, 'sold', 1); resAdd(s, 'coin', p); M.sold.pill = (M.sold.pill || 0) + 1; recordRumor(s, 'trade', '藥舖掌櫃', 'market'); log(s, `山下藥舖收了一顆療傷丹，得 ${p} 香火錢。`); return { ok: true, p }; }
+  if (k === 'pill') { resAdd(s, 'pill', -1); pillNote(s, 'sold', 1); resAdd(s, 'coin', p); M.sold.pill = (M.sold.pill || 0) + 1; recordRumor(s, 'trade', '藥舖掌櫃', 'market', `一顆療傷丹賣了 ${p} 香火錢`, { trade: { coin: p, pill: 1 }, stock: { coin: s.res.coin, food: s.res.food, pill: s.res.pill, herb: s.res.herb } }); log(s, `山下藥舖收了一顆療傷丹，得 ${p} 香火錢。`); return { ok: true, p }; }
   resAdd(s, 'coin', -p); M.sold[k] = (M.sold[k] || 0) + 1;
   if (MARKET.rare[k]) { resAdd(s, k, 1); log(s, `在山下市集買了 1 份${k === 'tiemu' ? '鐵木' : '靈石'}，花 ${p}。`); }
-  else if (k === 'herb') { resAdd(s, 'herb', 3); log(s, `在山下市集買了 3 份靈草，花 ${p}。`); }
+  else if (k === 'herb') { resAdd(s, 'herb', MARKET.herbBundle); log(s, `在山下市集買了 ${MARKET.herbBundle} 份靈草，花 ${p}。`); }
   else { const d = armable(s); d.weapon = true; d.powMul = (d.powMul || 1) * MARKET.weaponMul; log(s, `在山下市集替${d.name}買了一把兵器（招式威力 ×${MARKET.weaponMul}），花 ${p}。`); }
   return { ok: true, p };
 }

@@ -1,4 +1,4 @@
-// v1.9：I-2 三四階要名聲＋稀有料、v1.6 建築佔地＋擴地花錢；I-6 財富襲擊＋山賊勒索（<8 人不來、只重傷不死）；A9 因才派巡
+// v1.9：I-2 三四階要名聲＋稀有料、v1.6 建築佔地＋擴地花錢；I-6 財富襲擊＋山賊勒索（現行 <4 人不來、只重傷不死）；A9 因才派巡
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState } from '../../harness/historical-party.mjs';
@@ -28,15 +28,15 @@ test('地塊：開山 4 塊，滿了第 5 座 v1.6 建築要先擴地；擴地�
   s.fac.hall.stage = 0; assert.equal(buildWhy(s, 'hall'), null, '反例：核心設施不佔地');
   while (lotsOf(s).n < LOTS.max) buyLot(s); assert.equal(buyLot(s).ok, false);
 });
-test('山賊：全派 <8 人威脅為 0（不來）；≥8 人隨家底與天數漲、封頂', () => {
-  const s = createState(3); s.day = 20; s.res.coin = 500; assert.ok(headcount(s) < 8); assert.equal(points(s), 0);
+test('山賊：全派未滿現行人數門檻威脅為 0；8 人隨可搬家底與天數漲、封頂', () => {
+  const s = createState(3); s.day = 20; s.res.coin = 500; assert.ok(headcount(s) < RAID.minPopRules); assert.equal(points(s), 0);
   for (let i = 0; i < 30; i++) threatDaily(s), s.day++; assert.equal(T(s).n, 0, '反例：人少一次都沒來');
   const a = grow(createState(3), 8); a.day = 20; a.res.coin = 100; const p1 = points(a); a.res.coin = 600; const p2 = points(a); assert.ok(p1 > 0 && p2 > p1);
   a.day = 2; assert.ok(points(a) < p2, '天數係數'); a.day = 60; a.res.coin = 1e6; assert.equal(points(a), RAID.cap);
 });
 test('勒索：付錢扣錢；迎戰勝負都只重傷不死、孩子不上陣；半日沒決定自動處置', () => {
   const s = grow(createState(3), 9); s.day = 8; s.res.coin = 400; s.ds[1].adult = false;
-  recordRumor(s, 'trade', '藥舖掌櫃', 'market'); s.day = 10;
+  recordRumor(s, 'trade', '藥舖掌櫃', 'market', '確有售丹收入', { trade: { coin: 400 }, stock: { coin: 400 } }); s.day = 10;
   const P = threatDaily(s); assert.ok(P && P.demand > 0, '外人親見交易且山路行程完成後才可勒索');
   assert.match(threatHtml(s), /付錢了事/); const c0 = s.res.coin; assert.ok(raidResolve(s, 0, H).paid); assert.equal(s.res.coin, c0 - P.demand); assert.equal(T(s).paid, 1);
   for (const d of s.ds) d.needs.energy = 0; /* #431：只有無人能迎戰才即時結算 */
