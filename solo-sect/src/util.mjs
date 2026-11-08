@@ -1,3 +1,4 @@
+import { noteDeed, noteLog } from './achievement-record.mjs';
 // ==== （原 events.mjs）====
 // v1.45 三級事件分流（ADOPTION-PLAN A3）：low＝頭上氣泡、mid＝右側可點竹簡、top＝暫停＋推鏡
 export const TOP_RX = /名俠|辟邪|破招|化境|衣缽|★|瀕死覺醒|【營地】|入門|叛/;
@@ -18,7 +19,7 @@ export const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
 export const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 export const relKey = (a, b) => [a, b].sort().join('|');
 export const affKey = (a, b) => `${a}>${b}`;
-export function log(s, msg, tier) { const e = classify(s, { t: Math.floor(s.t), msg, ...(tier ? { tier } : {}) }); s.log.unshift(e); if (e.tier === 'top' && !s.alert) s.alert = { msg, who: e.who, t: e.t }; if (s.log.length > 60) s.log.pop(); }
+export function log(s, msg, tier) { const e = classify(s, { t: Math.floor(s.t), msg, ...(tier ? { tier } : {}) }); s.log.unshift(e); noteLog(s, e); if (e.tier === 'top' && !s.alert) s.alert = { msg, who: e.who, t: e.t }; if (s.log.length > 60) s.log.pop(); }
 // v1.8 每日帳本：所有 s.res 異動都要記（book），resAdd／resSet 是「改庫存＋記帳」的唯一捷徑
 export function book(s, dir, k, v, source = 'other') { if (!v || !s.ledger) return; const L = s.ledger; L[dir][k] = (L[dir][k] || 0) + v; if (k === 'food') { const by = (L.foodBySource ??= { in: {}, out: {} })[dir]; by[source] = (by[source] || 0) + v; } }
 export function resAdd(s, k, v, source) { const o = s.res[k] || 0; s.res[k] = o + v; const d = s.res[k] - o; if (d) book(s, d > 0 ? 'in' : 'out', k, Math.abs(d), source); }
@@ -55,6 +56,7 @@ export function recordDeed(s, d, kind, info = {}) {
   const e = { day: s.day ?? 1, kind, ...info };
   if (d) { (d.deeds ||= []).push(e); if (d.deeds.length > DEED_CAP) d.deeds.shift(); (d.deedN ||= {})[kind] = (d.deedN[kind] || 0) + 1; }
   if (info.chron) { const c = { day: e.day, kind, who: d?.name ?? null, text: info.chron }; (s.chron ||= []).push(c); if (s.chron.length > CHRON_CAP) s.chron.shift(); }
+  noteDeed(s, d, kind, e);
   return e;
 }
 /* #420 只進門派大事記、不佔個人事蹟欄（招式首用、破紀錄這類小事不擠掉衝關、守柵） */
