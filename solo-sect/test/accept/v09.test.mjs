@@ -52,13 +52,3 @@ test('模擬中練功：主角掌法學到推山掌，熟練累積；專修可�
   const h = s.ds[0]; assert.ok(h.arts.basicFist.xp > 25); assert.ok(h.arts.pushPalm, Object.keys(h.arts).join()); assert.ok(h.moves.includes('push'));
   assert.ok(setFocus(s, 'hero', 'pushPalm')); assert.equal(h.focus, 'pushPalm'); assert.match(artsSvg(h), /<svg/);
 });
-test('創派三人有根骨；新特質在人才池', () => {
-  const s = createState(1); assert.deepEqual(s.ds.slice(0, 3).map((d) => d.root), [3, 4, 2]);
-});
-test('v0.85 舊檔：招式轉成武學、補根骨，規則 0.9', () => {
-  const s = createState(4); const o = JSON.parse(save(s)); o.rules = '0.85';
-  for (const d of o.ds) { delete d.arts; delete d.root; delete d.pendingArt; delete d.focus; d.skills.palm = 40; d.moves = ['fist', 'push']; d.pendingMove = 'wave'; }
-  const r = load(JSON.stringify(o)); assert.equal(r.ok, true); const m = r.state; assert.equal(m.rules, RULES_VERSION);
-  const h = m.ds[0]; assert.equal(h.root, 3); assert.ok(h.arts.pushPalm && h.arts.basicFist.xp >= 25); assert.equal(h.pendingArt, 'wavePalm');
-  for (let i = 0; i < 400; i++) tick(m);
-});

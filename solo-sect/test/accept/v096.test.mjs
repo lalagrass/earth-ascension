@@ -27,12 +27,12 @@ test('六模板都有立繪、同門候選 2–3 位且有立繪', () => {
   for (const h of HEROES) { assert.ok(existsSync(`assets/portraits/${h.id}.png`)); assert.ok(h.companions.length >= 2 && h.companions.length <= 3);
     for (const c of h.companions) { assert.ok(COMPANIONS[c]); assert.ok(existsSync(`assets/portraits/${c}.png`), c); } }
 });
-test('選郭靖＋黃蓉：同門加入、移出名俠池、默契最多 +25%', () => {
+test('歷史角色同門同行：名俠池排除在場者、一般好感默契最多 +10%', () => {
   const s = createState(5, { kind: 'template', id: 'guojing', companion: 'huangrong' });
   const h = hero(s), r = s.ds.find((d) => d.id === 'huangrong');
   assert.equal(h.name, '郭靖'); assert.equal(h.wu, 1); assert.equal(h.root, 5); assert.ok(r); assert.deepEqual(r.personality, ['clever', 'nimble', 'picky']);
   assert.ok(r.wu > r.root); assert.ok(!encounterPool(s).includes('huangrong')); assert.ok(!encounterPool(s).includes('guojing')); assert.ok(encounterPool(s).includes('munianci'));
-  s.aff['hero>huangrong'] = 100; run(s, 1); assert.ok(Math.abs(h.pairMul - 0.25) < 1e-9);
+  s.aff['hero>huangrong'] = 100; run(s, 1); assert.ok(Math.abs(h.pairMul - 0.1) < 1e-9);
   const P = artMulParts(h, artById(Object.keys(h.arts)[0]), []); assert.ok(P.parts.ext.some(([n]) => n === '同門默契'));
   assert.deepEqual(companionsFor('guojing'), ['huangrong', 'munianci']);
 });

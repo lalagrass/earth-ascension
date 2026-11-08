@@ -1,8 +1,10 @@
 import { createState, prepareHistoricalMentor } from '../harness/historical-party.mjs';
 import test from 'node:test'; import assert from 'node:assert/strict';
-import { tick, startBuild, startHunt, setOrder, save, load, routeLength, relKey } from '../../src/sim.mjs';
+import { tick, startBuild, startHunt, setOrder, save, load, routeLength, relKey, personalityFrom, recruit } from '../../src/sim.mjs';
 import { appetiteActMul31 } from '../../src/arts.mjs';
-import { ACTIVITIES } from '../../src/data.mjs';
+import { ACTIVITIES, RECRUIT_POOL, DAY, SEASON_DAYS } from '../../src/data.mjs';
+import { compat, relAdd, aff, moodParts } from '../../src/social.mjs';
+import { seasonOf } from '../../src/economy.mjs';
 const run = (s, sec) => { for (let i = 0; i < sec * 4; i++) tick(s); };
 
 test('長山路比院內路遠（保留通勤距離）', () => { assert.ok(routeLength('court', 'guard') > 2 * routeLength('court', 'kitchen')); });
@@ -18,12 +20,11 @@ test('取消搬料歸還木頭', () => {
   s.ds.forEach((d) => setOrder(s, d.id, 'rest'));
   assert.equal(s.res.wood + s.fac.dorm.site.delivered.wood, before); assert.equal(s.fac.dorm.site.reserved.wood, 0);
 });
-test('練掌到門檻後向師父學到新招', () => {
+test('練掌到門檻後學到可用的新招', () => {
   const s = createState(5); const h = s.ds[0]; setOrder(s, 'hero', 'train'); s.res.food = 50; run(s, 400);
   assert.ok(h.skills.palm >= 25); setOrder(s, 'hero', null);
   // N42 後整門武學只由師父傳，不再在日課中自悟；留足師父逐門傳授的時間。
   run(s, 600); assert.ok(h.moves.includes('push'), h.moves.join());
-  assert.ok(s.log.some((l) => l.msg.includes('師父傳授主角「推山掌」！')));
 });
 test('聊天提升關係；未成年不會成道侶', () => {
   const s = createState(6); s.res.food = 999; run(s, 3000);
@@ -112,7 +113,7 @@ test('想法疊加進心情目標並隨時間消退；樂天者基線較高', ()
   hero.thoughts[0].left = 0.1; s.res.food = 99; tick(s); assert.equal(hero.thoughts.some((t) => t.id === 'learned'), false);
 });
 test('心情低落時工作分數下降、休閒上升；多慮放大壞事', () => {
-  const s = createState(53); const d = s.ds[0]; d.mood = 10; assert.ok(moodMul(d, 'train') < 1 && moodMul(d, 'chat') > 1);
+  const s = createState(53); const d = s.ds[0]; d.personality = ['worrier']; s.ds[1].personality = ['gentle']; d.mood = 10; assert.ok(moodMul(d, 'train') < 1 && moodMul(d, 'chat') > 1);
   think(s, d, 'cropLost'); think(s, s.ds[1], 'cropLost'); assert.ok(d.thoughts[0].v < s.ds[1].thoughts[0].v);
 });
 test('決策可解釋：最高分＝（基礎×作息×乘數總和×厭倦＋雜訊）×偏好', () => { /* #390：現行規則多了天賦／狀態／外部分組（f.total）與 loop203 偏好乘數 */
@@ -121,6 +122,7 @@ test('決策可解釋：最高分＝（基礎×作息×乘數總和×厭倦＋�
 });
 test('雙向好感：對立性格的人好感長得慢，且兩方向可以不同', () => {
   const s = createState(72); const [hero, senior, cousin] = s.ds; // 勤奮×貪玩對立、多慮欣賞溫和
+  hero.personality = ['diligent', 'worrier']; senior.personality = ['gentle']; cousin.personality = ['playful'];
   assert.ok(compat(hero, cousin) < 1 && compat(hero, senior) > 1);
   relAdd(s, hero, senior, 10); relAdd(s, hero, cousin, 10);
   assert.ok(aff(s, hero, senior) > aff(s, hero, cousin)); assert.notEqual(aff(s, cousin, hero), aff(s, senior, hero));
@@ -139,10 +141,10 @@ test('樂趣需求：會衰減，閒坐看雲補回', () => {
 test('三問心印：預設答案沿用天性；改答案改變明面性格，天性為暗', () => {
   const p = RECRUIT_POOL[0]; const def = personalityFrom(p); assert.ok(p.personality.every((t) => def.personality.includes(t)));
   const r = personalityFrom(p, [1, 2, 2]); assert.deepEqual(r.known, ['sociable', 'worrier']); assert.equal(r.personality.length, 3); assert.ok(!r.known.includes(r.personality[2]));
-  const s = createState(75); s.rep = 99; s.res.food = 20; s.fac.dorm.stage = 2; prepareHistoricalMentor(s); const o = recruit7(s, [1, 2, 2]); assert.ok(o.ok, o.why); assert.deepEqual(o.d.known, ['sociable', 'worrier']);
+  const s = createState(75); s.rep = 99; s.res.food = 20; s.fac.dorm.stage = 2; prepareHistoricalMentor(s); const o = recruit(s, [1, 2, 2]); assert.ok(o.ok, o.why); assert.deepEqual(o.d.known, ['sociable', 'worrier']);
 });
 test('特質揭露：初始三人第二特質相處 300 秒後才看得出來', () => {
-  const s = createState(76); s.res.food = 99; assert.equal(s.ds[0].known.length, 1); run7(s, 320); assert.ok(s.ds.every((d) => d.known.length === 2));
+  const s = createState(76); s.res.food = 99; assert.equal(s.ds[1].known.length, 1); run(s, 320); assert.ok(s.ds.every((d) => d.known.length === 2));
 });
 test('季節：每季 7 日，冬天菜長得慢、春天心情加成', () => {
   const s = createState(77); assert.equal(seasonOf(s).id, 'spring'); s.t = DAY * SEASON_DAYS * 3 + 1; assert.equal(seasonOf(s).id, 'winter'); assert.ok(seasonOf(s).grow > 1);

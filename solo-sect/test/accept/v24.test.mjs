@@ -1,7 +1,8 @@
 /* v2.4–v2.5（loop159–，擁有人 t189）。#390 起所有局都適用，舊存檔讀入即升級 */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick } from '../../src/sim.mjs';
+import { createState } from '../harness/historical-party.mjs';
+import { tick } from '../../src/sim.mjs';
 import * as EC from '../../src/economy.mjs';
 import * as A from '../../src/arts.mjs';
 import { dpsOf, LS_FIRST24 } from '../../src/world.mjs';

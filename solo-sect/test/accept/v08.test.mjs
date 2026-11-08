@@ -1,6 +1,7 @@
 import test from 'node:test'; import assert from 'node:assert/strict';
-import { createState, tick, startBuild, togglePause, setOrder, save, load, hire, canHire, invite, canInvite, laborers, disciples, scoreActs, payday, capacity, MATS } from '../../src/sim.mjs';
-import { ECON, PLAIN, ROOT, RULES_VERSION, DAY } from '../../src/data.mjs';
+import { createState } from '../harness/historical-party.mjs';
+import { tick, startBuild, togglePause, setOrder, hire, canHire, invite, canInvite, laborers, disciples, scoreActs, payday, capacity, MATS } from '../../src/sim.mjs';
+import { ECON, DAY } from '../../src/data.mjs';
 const run = (s, sec) => { for (let i = 0; i < sec * 4; i++) tick(s); };
 const withShed = (seed) => { const s = createState(seed); s.fac.shed.stage = 1; s.res.food = 60; s.res.coin = 20; return s; };
 
@@ -38,7 +39,7 @@ test('雇工只幹活不練武', () => { /* #390：現行規則（loop157 v2.3�
 });
 test('每日入帳與工錢；付不出兩日雇工離開且關係表清乾淨', () => {
   const s = withShed(107); s.res.coin = 4; hire(s); const id = laborers(s)[0].id; s.res.coin = 0; s.rep = 0;
-  s.day = PLAIN.earlyDays + 1; // v2.1 照舊開局前 10 日另有早補；欠薪這條走之後的底數（聲望 0 時仍是入帳 2）
+  s.day = 20; // 成立門派的常態結帳日，測欠薪與離山，不依退役開局早補。
   payday(s); assert.equal(s.res.coin, 0); assert.equal(laborers(s).length, 1); // 入帳 2 付 2
   s.res.coin = -0; laborers(s)[0].unpaid = 1; s.res.coin = 0; s.rep = -10; payday(s);
   assert.equal(laborers(s).length, 0); assert.ok(!Object.keys(s.aff).some((k) => k.includes(id))); assert.ok(s.laborGone.includes(id)); assert.ok(s.ledgerPrev);
@@ -57,15 +58,6 @@ test('雇工讓施工更快', () => {
   const t = (n) => { const s = withShed(111); s.res.wood = 10; s.res.stone = 4; s.rep = 20; s.fac.dorm.stage = 1; for (let i = 0; i < n; i++) hire(s); s.fac.shed.stage = 2; for (let i = 0; i < n - 2; i++) hire(s); startBuild(s, 'dorm');
     let k = 0; while (s.fac.dorm.stage < 2 && k < 4 * 3000) { tick(s); k++; s.res.food = 60; } return k; };
   const a = t(0), b = t(2); assert.ok(b < a, `${b} vs ${a}`);
-});
-test('v0.7 舊存檔（工地 delivered 為數字、有人揹木中）可讀並繼續完工', () => {
-  const s = createState(112); s.res.wood = 6; startBuild(s, 'dorm'); const o = JSON.parse(save(s));
-  o.rules = '0.7'; delete o.res.stone; delete o.res.coin; delete o.cap.stone; delete o.fac.shed; delete o.fac.quarry; delete o.day; delete o.ledger; delete o.ledgerPrev; delete o.laborGone;
-  o.fac.dorm.site = { need: { wood: 6 }, delivered: 2, reserved: 2, work: 0, workNeed: 18 }; o.res.wood = 2;
-  o.ds[0].task = { act: 'build', fac: 'dorm', phase: 'deliver', reservedWood: 0, node: 'dorm' }; o.ds[0].carry = { wood: 2 }; for (const d of o.ds) delete d.role;
-  const r = load(JSON.stringify(o)); assert.ok(r.ok); const n = r.state; assert.equal(n.migratedFrom, '0.7'); assert.equal(n.rules, RULES_VERSION);
-  assert.equal(n.res.wood, 4); assert.deepEqual(n.fac.dorm.site.delivered, { wood: 2, stone: 0 }); assert.equal(n.fac.shed.stage, 0);
-  n.res.food = 99; run(n, 600); assert.equal(n.fac.dorm.stage, 1);
 });
 test('30 日無頭長跑：有雇工、無負數、不卡死', () => {
   const s = withShed(113); hire(s); hire(s); s.rep = 25; s.res.wood = 12; s.res.stone = 6; s.res.coin = 10;

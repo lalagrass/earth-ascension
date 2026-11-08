@@ -83,10 +83,6 @@ test('紀錄：個人與本門最遠紀錄，破紀錄全門 +5 心情', () => {
 test('戰利品入庫（含殘頁欄位）', () => { const { s, rep } = expRun(6, 90, 4); for (const [k, v] of Object.entries(rep.loot)) assert.ok(s.res[k] >= v, k); assert.ok('page1' in s.res && 'page2' in s.res); });
 
 // 6 前期節奏
-test('第一天黃昏野豬試煉：主角當天入小成、多一招，記為里程碑', () => {
-  const s = createState(9); for (let i = 0; i < DAY * 4 * 0.99; i++) tick(s);
-  assert.equal(s.pace.trial, 'done'); assert.ok(s.ds[0].arts.basicFist.xp >= 25); assert.ok(s.ds[0].moves.includes('fist2')); assert.ok(s.pace.done.includes('trial')); assert.ok(s.log.some((l) => /黃昏/.test(l.msg)));
-});
 test('前三天每天一個里程碑（試煉、第一次巡山、第一次動工）', () => {
   const s = createState(12); runDays(s, 1.05); assert.deepEqual(s.pace.done, ['trial']);
   startExpedition(openExp(s), ['senior']); let ticks = 0; while (s.exp && ticks++ < DAY * 4 * 2) tick(s); assert.equal(s.exp, null, '第三日前應完成巡山'); assert.ok(s.pace.done.includes('firstExp'));

@@ -46,9 +46,9 @@ test('沒有吃到菜不傳功', () => {
   const s = st(); join(s, 'guojing'); join(s, 'huangrong'); s.xia.teacher = { id: 'hongqigong', name: '洪七公', stage: 0, meals: 0, since: s.t, lastStageT: -1e9 };
   s.t += DAY; xiaStep(s); assert.equal(s.xia.teacher.stage, 0);
 });
-test('郭靖＋黃蓉同門默契上限 25%', () => {
+test('郭靖＋黃蓉同門好感默契按現行通用上限 10%', () => {
   const s = st(); const g = join(s, 'guojing'), h = join(s, 'huangrong'); s.hero ??= { id: 'x' };
-  s.aff[`${g.id}>${h.id}`] = 100; s.aff[`${h.id}>${g.id}`] = 100; const b = pairBonus(s, g, aff); assert.ok(b > 0.2 && b <= PAIR_CAP);
+  s.aff[`${g.id}>${h.id}`] = 100; s.aff[`${h.id}>${g.id}`] = 100; const b = pairBonus(s, g, aff); assert.equal(b, 0.1);
 });
 test('名俠心情長期低落就下山（不死）', () => {
   const s = st(); const g = join(s, 'guojing'); for (let i = 0; i < DAY / 0.25 + 2; i++) { g.mood = 0; xiaStep(s); } assert.ok(!s.ds.includes(g)); assert.ok(s.xia.left.guojing);

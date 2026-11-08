@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick } from '../../src/sim.mjs';
+import { createState } from '../harness/historical-party.mjs';
+import { tick } from '../../src/sim.mjs';
 import { RULES_VERSION, DAY } from '../../src/data.mjs';
 import { artMulParts, learnArt, artById } from '../../src/arts.mjs';
 import { GEN, genStep, adopt, marriable, canSucceed, succeed, heirs, removeDisciple, genResolve } from '../../src/sect.mjs';
