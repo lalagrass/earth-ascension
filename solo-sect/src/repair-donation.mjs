@@ -1,7 +1,7 @@
 // 24g：具名村民依自己聽過的守護／善行傳聞，一次捐給正在修的設施。
 import { FACILITIES, RECRUIT_POOL } from './data.mjs';
 import { publicRumors, RUMOR_KINDS } from './rumors.mjs';
-import { book, log, resAdd } from './util.mjs';
+import { log, resAdd } from './util.mjs';
 
 export function donateRepairs(s) {
   if (s.hermitage?.active) return null;
@@ -22,7 +22,13 @@ export function donateRepairs(s) {
     const [kind, offered] = gift;
     const amount = kind === 'coin' ? offered : Math.min(offered, state.site.need[kind] - state.site.delivered[kind] - state.site.reserved[kind]);
     if (kind === 'coin') resAdd(s, kind, amount, 'donation');
-    else { state.site.delivered[kind] += amount; book(s, 'in', kind, amount, 'donation'); }
+    else {
+      // A gift enters the stock ledger, then moves straight onto this worksite.
+      // Booking only the receipt would falsely increase warehouse stock on the daily ledger.
+      resAdd(s, kind, amount, 'donation');
+      resAdd(s, kind, -amount, 'worksite');
+      state.site.delivered[kind] += amount;
+    }
     (s.repairDonations ??= { usedRumors: [], gifts: [] }).usedRumors.push(rumor.id);
     const record = { rumor: rumor.id, donor: donor.id, facility, kind, amount };
     s.repairDonations.gifts.push(record);

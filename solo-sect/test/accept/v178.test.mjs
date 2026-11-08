@@ -17,6 +17,12 @@ WHITE.add('food - wuxia:xiaResolve');
 // N58: a candidate's food or coin tuition enters stock through resAdd and the same ledger.
 WHITE.add('food + sim:recruit');
 WHITE.add('coin + sim:recruit');
+// 24g: a villager's building materials enter stock and immediately move to the worksite.
+for (const kind of ['stone', 'wood']) {
+  WHITE.add(`${kind} + repair-donation:donateRepairs`);
+  WHITE.add(`${kind} - repair-donation:donateRepairs`);
+}
+WHITE.add('coin + repair-donation:donateRepairs');
 function who() { const fr = new Error().stack.split('\n').slice(3); for (const l of fr) { const m = l.match(/at (?:async )?([\w$.]+) \(.*\/src\/(\w+)\.mjs/); if (m && m[2] !== 'util' && !/^(Object|Proxy|Array)\./.test(m[1])) return `${m[2]}:${m[1]}`; } return '?'; }
 function audited(seed, op, days) {
   const s = createState(seed, op ? { kind: 'template', id: op, askMajor: false } : null); const raw = s.res, init = { ...raw }, sum = {}, chans = new Set(), neg = [], booked = {}; let L = s.ledger; const L0 = JSON.parse(JSON.stringify(s.ledger)); const addL = (X) => { for (const [k, v] of Object.entries(X.in)) booked[k] = (booked[k] || 0) + v; for (const [k, v] of Object.entries(X.out)) booked[k] = (booked[k] || 0) - v; };
