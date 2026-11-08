@@ -1,0 +1,180 @@
+隱居常數：97/97 列仍在程式；設計旋鈕 74 列／179 個數值；未標 0。
+src/arts.mjs 15｜phase6_gate｜Phase 6 #511 山崖與入內前置規格
+src/arts.mjs 25｜phase6_gate｜Phase 6 #511 山崖與入內前置規格
+src/arts.mjs 16｜phase6_gate｜Phase 6 #511 山崖與入內前置規格
+src/arts.mjs 1.35｜phase5_body｜Phase 5 #510 規格／BODY_CONDITION
+src/arts.mjs 2｜phase4_people｜Phase 4 #509／詳細起手契約
+src/arts.mjs 60｜phase4_people｜Phase 4 #509／詳細起手契約
+src/arts.mjs 2｜phase4_people｜Phase 4 #509／詳細起手契約
+src/arts.mjs 60｜phase4_people｜Phase 4 #509／詳細起手契約
+src/arts.mjs 25｜phase6_gate｜Phase 6 #511 山崖與入內前置規格
+src/arts.mjs 15｜phase6_gate｜Phase 6 #511 山崖與入內前置規格
+src/arts.mjs 25｜phase6_gate｜Phase 6 #511 山崖與入內前置規格
+src/arts.mjs 16｜phase6_gate｜Phase 6 #511 山崖與入內前置規格
+src/arts.mjs 4｜phase4_arts｜Phase 4 #509 與既有 TIERS／武學品級
+src/arts.mjs 2｜phase4_arts｜Phase 4 #509 與既有 TIERS／武學品級
+src/arts.mjs 4｜phase4_arts｜Phase 4 #509 與既有 TIERS／武學品級
+src/data.mjs 335｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/data.mjs 595｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/data.mjs 800｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/data.mjs 455｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/data.mjs 900｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/data.mjs 145｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/data.mjs 8｜phase6_activity｜Phase 6 #511 活動表與既有採藥／練功工時
+src/data.mjs 6｜phase6_activity｜Phase 6 #511 活動表與既有採藥／練功工時
+src/data.mjs 6｜phase6_activity｜Phase 6 #511 活動表與既有採藥／練功工時
+src/data.mjs 2｜phase6_activity｜Phase 6 #511 活動表與既有採藥／練功工時
+src/data.mjs 10｜phase6_activity｜Phase 6 #511 活動表與既有採藥／練功工時
+src/data.mjs 10｜phase6_activity｜Phase 6 #511 活動表與既有採藥／練功工時
+src/data.mjs 5｜phase6_activity｜Phase 6 #511 活動表與既有採藥／練功工時
+src/data.mjs 8｜phase6_activity｜Phase 6 #511 活動表與既有採藥／練功工時
+src/data.mjs 7｜phase6_activity｜Phase 6 #511 活動表與既有採藥／練功工時
+src/data.mjs 4｜phase6_activity｜Phase 6 #511 活動表與既有採藥／練功工時
+src/data.mjs 10｜phase6_activity｜Phase 6 #511 活動表與既有採藥／練功工時
+src/data.mjs 10｜phase6_activity｜Phase 6 #511 活動表與既有採藥／練功工時
+src/data.mjs 5｜phase6_activity｜Phase 6 #511 活動表與既有採藥／練功工時
+src/data.mjs 12｜phase6_activity｜Phase 6 #511 活動表與既有採藥／練功工時
+src/data.mjs 8｜phase6_activity｜Phase 6 #511 活動表與既有採藥／練功工時
+src/data.mjs 16｜phase6_gate｜Phase 6 #511 山崖與入內前置規格
+src/data.mjs 24｜phase6_gate｜Phase 6 #511 山崖與入內前置規格
+src/data.mjs 32｜phase6_gate｜Phase 6 #511 山崖與入內前置規格
+src/data.mjs 2｜phase6_gate｜Phase 6 #511 山崖與入內前置規格
+src/data.mjs 0.15｜phase4_arts｜Phase 4 #509 與既有 TIERS／武學品級
+src/data.mjs 2｜phase4_arts｜Phase 4 #509 與既有 TIERS／武學品級
+src/data.mjs 2｜phase4_arts｜Phase 4 #509 與既有 TIERS／武學品級
+src/data.mjs 0.4｜phase4_arts｜Phase 4 #509 與既有 TIERS／武學品級
+src/data.mjs 2｜phase4_arts｜Phase 4 #509 與既有 TIERS／武學品級
+src/data.mjs 0.4｜phase4_arts｜Phase 4 #509 與既有 TIERS／武學品級
+src/data.mjs 3｜phase4_arts｜Phase 4 #509 與既有 TIERS／武學品級
+src/data.mjs 0.4｜phase4_arts｜Phase 4 #509 與既有 TIERS／武學品級
+src/data.mjs 3｜phase4_arts｜Phase 4 #509 與既有 TIERS／武學品級
+src/data.mjs 2｜phase4_arts｜Phase 4 #509 與既有 TIERS／武學品級
+src/data.mjs 2｜phase6_arts｜Phase 6 #511 與既有武學品級／內功 schema
+src/data.mjs 2｜phase6_arts｜Phase 6 #511 與既有武學品級／內功 schema
+src/data.mjs 0.4｜phase6_arts｜Phase 6 #511 與既有武學品級／內功 schema
+src/data.mjs 3｜phase6_arts｜Phase 6 #511 與既有武學品級／內功 schema
+src/economy.mjs 18｜phase5_body｜Phase 5 #510 規格／BODY_CONDITION
+src/economy.mjs 36｜phase5_body｜Phase 5 #510 規格／BODY_CONDITION
+src/economy.mjs 100｜phase5_body｜Phase 5 #510 規格／BODY_CONDITION
+src/economy.mjs 1.2｜phase5_body｜Phase 5 #510 規格／BODY_CONDITION
+src/economy.mjs 0.3｜phase5_body｜Phase 5 #510 規格／BODY_CONDITION
+src/economy.mjs 30｜phase5_body｜Phase 5 #510 規格／BODY_CONDITION
+src/economy.mjs 30｜phase5_body｜Phase 5 #510 規格／BODY_CONDITION
+src/economy.mjs 35｜phase5_body｜Phase 5 #510 規格／BODY_CONDITION
+src/economy.mjs 25｜phase5_body｜Phase 5 #510 規格／BODY_CONDITION
+src/economy.mjs 25｜phase5_body｜Phase 5 #510 規格／BODY_CONDITION
+src/economy.mjs 35｜phase5_body｜Phase 5 #510 規格／BODY_CONDITION
+src/economy.mjs 65｜phase5_body｜Phase 5 #510 規格／BODY_CONDITION
+src/economy.mjs 3｜phase5_body｜Phase 5 #510 規格／BODY_CONDITION
+src/economy.mjs 4｜phase5_body｜Phase 5 #510 規格／BODY_CONDITION
+src/growth-playback.mjs 12｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/growth-playback.mjs 16｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/growth-playback.mjs 18｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/growth-playback.mjs 2｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/growth-playback.mjs 3｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/growth-playback.mjs 3｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/growth-playback.mjs 3｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/growth-playback.mjs 3｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/growth-playback.mjs 2｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/growth-playback.mjs 2｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/growth-playback.mjs 2｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/growth-playback.mjs 24｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/growth-playback.mjs 3｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/growth-playback.mjs 2｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/growth-playback.mjs 3｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/growth-playback.mjs 3｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/growth-playback.mjs 3｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/growth-playback.mjs 2｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/growth-playback.mjs 0.25｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/growth-playback.mjs 3.5｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/growth-playback.mjs 3.5｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/growth-playback.mjs 18｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/growth-playback.mjs 0.7｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/growth-playback.mjs 2｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/growth-playback.mjs 0.7｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/main.mjs 18｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/main.mjs 14｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/main.mjs 36｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/main.mjs 12｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/main.mjs 22｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/paper-doll.mjs 8｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/paper-doll.mjs 35｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/paper-doll.mjs 24｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/paper-doll.mjs 43｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/paper-doll.mjs 10｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/paper-doll.mjs 25｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/pose-render.mjs 190｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 175｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 42｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 76｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 42｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 56｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 32｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 38｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 32｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 284｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 58｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 76｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 58｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 306｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 64｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 14｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 64｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 94｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 79｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 84｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 12｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 168｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 53｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 116｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 10｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 232｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 109｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 67｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 6｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 0.8｜phase4_visual｜Phase 4 #509 合參畫面契約
+src/pose-render.mjs 0.8｜phase4_visual｜Phase 4 #509 合參畫面契約
+src/pose-render.mjs 180｜phase4_visual｜Phase 4 #509 合參畫面契約
+src/pose-render.mjs 34｜phase4_visual｜Phase 4 #509 合參畫面契約
+src/pose-render.mjs 64｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 7｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 8｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 8｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 0.25｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/pose-render.mjs 70｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/pose-render.mjs 45｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/pose-render.mjs 80｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/pose-render.mjs 2｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/pose-render.mjs 2｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 28｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 9｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 35｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 32｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 11｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 22｜phase6_visual｜Phase 6 #511 微距與地圖畫面契約
+src/pose-render.mjs 100｜phase5_visual｜Phase 5 #510 微距畫面契約
+src/sim.mjs 1.35｜phase6_effect｜Phase 6 #511 由外而內效果契約
+src/sim.mjs 1.25｜phase6_effect｜Phase 6 #511 由外而內效果契約
+src/sim.mjs 1.4｜phase6_effect｜Phase 6 #511 由外而內效果契約
+src/sim.mjs 0.75｜phase6_effect｜Phase 6 #511 由外而內效果契約
+src/sim.mjs 100｜phase6_effect｜Phase 6 #511 由外而內效果契約
+src/sim.mjs 55｜phase6_gate｜Phase 6 #511 山崖與入內前置規格
+src/twin-swords.mjs 1.35｜phase7_twin｜Phase 7 #512 雙劍規格
+src/data.mjs 14｜r4_reused｜R4 #520 將 Phase 4／7 已批准的起手、共修與開山數值改放資料列
+src/data.mjs 16｜r4_reused｜R4 #520 將 Phase 4／7 已批准的起手、共修與開山數值改放資料列
+src/data.mjs 10｜r4_reused｜R4 #520 將 Phase 4／7 已批准的起手、共修與開山數值改放資料列
+src/data.mjs 15｜r4_reused｜R4 #520 將 Phase 4／7 已批准的起手、共修與開山數值改放資料列
+src/data.mjs 55｜r4_reused｜R4 #520 將 Phase 4／7 已批准的起手、共修與開山數值改放資料列
+src/data.mjs 2｜r4_reused｜R4 #520 將 Phase 4／7 已批准的起手、共修與開山數值改放資料列
+src/data.mjs 5｜r4_reused｜R4 #520 將 Phase 4／7 已批准的起手、共修與開山數值改放資料列
+src/data.mjs 12｜r4_reused｜R4 #520 將 Phase 4／7 已批准的起手、共修與開山數值改放資料列
+src/data.mjs 16｜r4_reused｜R4 #520 將 Phase 4／7 已批准的起手、共修與開山數值改放資料列
+src/data.mjs 10｜r4_reused｜R4 #520 將 Phase 4／7 已批准的起手、共修與開山數值改放資料列
+src/data.mjs 10｜r4_reused｜R4 #520 將 Phase 4／7 已批准的起手、共修與開山數值改放資料列
+src/data.mjs 55｜r4_reused｜R4 #520 將 Phase 4／7 已批准的起手、共修與開山數值改放資料列
+src/economy.mjs 16｜r4_reused｜R4 #520 將 Phase 4／7 已批准的起手、共修與開山數值改放資料列
+src/sect.mjs 10｜r4_reused｜R4 #520 將 Phase 4／7 已批准的起手、共修與開山數值改放資料列
+src/arts.mjs 4｜r4_reused｜R4 #520 將 Phase 4／7 已批准的起手、共修與開山數值改放資料列
+src/pose-render.mjs 110｜r4_visual｜Phase 4 合參 Canvas 既有位置與 R4 #520 人物泛化
+src/pose-render.mjs 250｜r4_visual｜Phase 4 合參 Canvas 既有位置與 R4 #520 人物泛化
+src/sect.mjs 2｜r4_reused｜R4 #520 將 Phase 4／7 已批准的起手、共修與開山數值改放資料列

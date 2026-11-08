@@ -1,5 +1,5 @@
 import { tierOf, affKey } from './util.mjs';
-import { RULES_VERSION, DISCIPLES, RECRUIT_POOL, MOOD, ECON, FACILITIES, CHORE_ACTS, DAY, ARTS, GUIZHEN, ROUTINE_DEFAULT } from './data.mjs';
+import { RULES_VERSION, DISCIPLES, RECRUIT_POOL, MOOD, ECON, FACILITIES, CHORE_ACTS, DAY, ARTS, GUIZHEN, ROUTINE_DEFAULT, OPENING_SCENARIOS } from './data.mjs';
 import {discipleCount,recruitmentInit} from './recruitment.mjs';
 import { seedArts, growInit } from './arts.mjs';
 import { ensurePractice } from './practice.mjs';
@@ -124,6 +124,34 @@ export const MIGRATIONS = [
     if (!o.hermitage?.active) return;
     if (o.xia?.pending) { o.xia.pending = null; o.xia.lastT = -1e9; }
     o.choices = (o.choices || []).filter((c) => !c.xia);
+  } },
+  { to: '4.8', note: 'R4（#520）：舊隱居檔的同住人物轉為一般人物及情境開局；保留原 id、好感、武學與領悟段數；舊門派局不變', up(o) {
+    if (!o.hermitage) return;
+    const oldOpening = o.hermitage.partnerId;
+    o.hermitage.opening ??= OPENING_SCENARIOS[oldOpening] ? oldOpening : 'solo';
+    delete o.hermitage.partnerId;
+    const hero = o.ds.find((d) => d.id === 'hero');
+    for (const d of o.ds) {
+      const row = OPENING_SCENARIOS[d.xia]?.people.find((p) => p.id === d.xia);
+      if (row) {
+        d.awakeningPath ??= row.awakeningPath; d.awakeningStage ??= d.partnerStage || 0;
+        d.originSect ??= row.originSect; d.mealName ??= row.mealName;
+      }
+      delete d.partnerStage; delete d.hermitagePartner; delete d.companion;
+    }
+    if (hero) { delete o.hero?.companion; delete o.hero?.companions; }
+    if (o.hermitage.contemplateUntil > o.t && !o.hermitage.contemplateActors) {
+      const actor = o.ds.find((d) => d.awakeningPath === 'gumu');
+      if (hero && actor) o.hermitage.contemplateActors = [hero.id, actor.id];
+    }
+    if (o.sect?.partnerDiscipleId) {
+      const secondary = o.ds.find((d) => d.id === o.sect.partnerDiscipleId);
+      o.sect.lineageGuides ??= [
+        { id: o.sect.lineages?.yang, teacher: hero?.id, tree: o.sect.dualTree?.yang || [] },
+        ...(secondary ? [{ id: o.sect.lineages?.yin, teacher: secondary.id, tree: o.sect.dualTree?.yin || [] }] : []),
+      ];
+      delete o.sect.partnerDiscipleId;
+    }
   } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored

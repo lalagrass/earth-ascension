@@ -73,6 +73,24 @@
       "category": "設計旋鈕",
       "source": "Phase 6 #511 與既有武學品級／內功 schema",
       "reason": "羅漢路新武學的品級與效果值是 Phase 6 已批准的設計值；既有武學 schema 決定欄位形式，沒有唯一決定數值。"
+    },
+    "r4_reused": {
+      "category": "設計旋鈕",
+      "source": "R4 #520 將 Phase 4／7 已批准的起手、共修與開山數值改放資料列",
+      "reason": "搬移原值，不增加新門檻或調整 A／B；之後若要調手感值須另取擁有人同意。",
+      "scope": "r4"
+    },
+    "r4_relationship": {
+      "category": "推導",
+      "source": "R4 #520 與原 initPair／pairBest 好感模型",
+      "reason": "0.1 與 60 是原同門默契比例及好感刻度；正式師徒另沿既有 APPR.aff，無新好感常數。",
+      "scope": "r4"
+    },
+    "r4_visual": {
+      "category": "設計旋鈕",
+      "source": "Phase 4 合參 Canvas 既有位置與 R4 #520 人物泛化",
+      "reason": "畫布座標及共修分段從原畫面搬來，不改模擬。",
+      "scope": "r4"
     }
   },
   "entries": [
@@ -145,14 +163,6 @@
       "sha256": "229bf29f7a97799e6052504065f5e4bc95e0dbdc96669457035f8755510e5b27",
       "values": [
         "60"
-      ],
-      "group": "phase4_people"
-    },
-    {
-      "file": "src/arts.mjs",
-      "sha256": "11804397de8abc93a22342bc792e49705d00767a06dd8c6658dca592bb4f06c0",
-      "values": [
-        "4"
       ],
       "group": "phase4_people"
     },
@@ -393,7 +403,7 @@
     },
     {
       "file": "src/economy.mjs",
-      "sha256": "b920800da8c6b82b258e6bcdda5d06b2bbb6fb283d8f42032d7c83a51f502c12",
+      "sha256": "dbb57b1cafe1634909eb1ff1bdb779c93247926821633d2d691a8da0aef44617",
       "values": [
         "65",
         "3",
@@ -517,14 +527,6 @@
       "group": "phase6_visual"
     },
     {
-      "file": "src/main.mjs",
-      "sha256": "9b3968c408e4efce2b799b5b863f5188597b9ab33fe72ba006c11a97322fe210",
-      "values": [
-        "4"
-      ],
-      "group": "phase4_visual"
-    },
-    {
       "file": "src/paper-doll.mjs",
       "sha256": "7c5b8f6c3dbdd46b6ddd706d41dc7982024d315100744240051eae6f451827d1",
       "values": [
@@ -624,15 +626,6 @@
     },
     {
       "file": "src/pose-render.mjs",
-      "sha256": "aebb293e22bb4ee52c8653ecae895cca31665ae237b119594e6599e919b785a2",
-      "values": [
-        "110",
-        "250"
-      ],
-      "group": "phase4_visual"
-    },
-    {
-      "file": "src/pose-render.mjs",
       "sha256": "b40f48fbe9b5a51fc86baf35179a9060aa87941fd9c9b361b9606eca0c7d1fa5",
       "values": [
         "0.8",
@@ -729,75 +722,6 @@
         "1e9"
       ],
       "group": "h0"
-    },
-    {
-      "file": "src/sect.mjs",
-      "sha256": "b7508ed62893937d21b9f7d1105d2ca24f481cc3814118060fc233f74a4259e3",
-      "values": [
-        "2"
-      ],
-      "group": "phase7_founding"
-    },
-    {
-      "file": "src/sect.mjs",
-      "sha256": "18d28a19e7774b143e6461bf6018234d090512ceacbb5ae16128c021afc08a6d",
-      "values": [
-        "10"
-      ],
-      "group": "phase7_founding"
-    },
-    {
-      "file": "src/sim.mjs",
-      "sha256": "a047167c09b7dee14ec8b4393010d50f2114004ff751669369ad41d35ac58907",
-      "values": [
-        "14",
-        "16"
-      ],
-      "group": "phase4_people"
-    },
-    {
-      "file": "src/sim.mjs",
-      "sha256": "fe7770f52fc66c1d9729db19259d114347a9cb89842c20eab1a702aa81df0525",
-      "values": [
-        "14",
-        "16"
-      ],
-      "group": "phase4_people"
-    },
-    {
-      "file": "src/sim.mjs",
-      "sha256": "5dda9d4c419e8e3b4cd16f422384023d92b8cc61193f63e3be20595fb86cc2cd",
-      "values": [
-        "10",
-        "15"
-      ],
-      "group": "phase4_people"
-    },
-    {
-      "file": "src/sim.mjs",
-      "sha256": "e580ef7c43ff86af30c5f52c73da8784caa06afedca09c2ed17a42a0efdb10cd",
-      "values": [
-        "16",
-        "12"
-      ],
-      "group": "phase4_people"
-    },
-    {
-      "file": "src/sim.mjs",
-      "sha256": "f9689c5564223b590d3705e7ca2f6e57a8b1dbe7834cbca63cda1870e6cb2942",
-      "values": [
-        "10",
-        "10"
-      ],
-      "group": "phase4_people"
-    },
-    {
-      "file": "src/sim.mjs",
-      "sha256": "48f58d7dc817ab0c637d6f517aada7b789a0be3c3a884e1b8d3f8463a3c8a370",
-      "values": [
-        "55"
-      ],
-      "group": "phase4_people"
     },
     {
       "file": "src/sim.mjs",
@@ -967,7 +891,7 @@
     },
     {
       "file": "src/start-ui.mjs",
-      "sha256": "a3ec993683eb73c5b17ef0d3811e413e65aeb20aa680c4e191c3e1ae7c4116b2",
+      "sha256": "90988abfe98a2b54e1af4beb5a1083dd96bc4e96b9dc7e49cebba5609d17eaec",
       "values": [
         "9"
       ],
@@ -1004,6 +928,86 @@
         "25"
       ],
       "group": "inherited"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "70aa3266e93bb650ffb54d56db5f2505e19c065857b784f2fb9f3c1d7b943dc8",
+      "values": [
+        "14",
+        "16",
+        "10",
+        "15",
+        "55"
+      ],
+      "group": "r4_reused"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "c7c10c573dd7b352f3cea81a8f0fa400bd0699445a6f82ea8c1177610604b472",
+      "values": [
+        "2",
+        "5",
+        "12",
+        "16",
+        "10",
+        "10",
+        "55"
+      ],
+      "group": "r4_reused"
+    },
+    {
+      "file": "src/economy.mjs",
+      "sha256": "92bf27b520d765c6758c00eed62cb960146c69078728b072f0475e6feb1d1467",
+      "values": [
+        "16"
+      ],
+      "group": "r4_reused"
+    },
+    {
+      "file": "src/hero.mjs",
+      "sha256": "b0cbd5249d47a99f3c4c7740ee2f74930a1ea24e2b49037db0f063f35b1dc84b",
+      "values": [
+        "0.1",
+        "60"
+      ],
+      "group": "r4_relationship"
+    },
+    {
+      "file": "src/sect.mjs",
+      "sha256": "d205d23982cbc6444e1f329eabdb5114efe7eddb5488f04e79f2014d7cafac66",
+      "values": [
+        "10"
+      ],
+      "group": "r4_reused"
+    },
+    {
+      "file": "src/arts.mjs",
+      "sha256": "043682f02a494f86a9a64b6c30bb0d6379968c658af0e93c89dc22f76a378deb",
+      "values": [
+        "4"
+      ],
+      "group": "r4_reused"
+    },
+    {
+      "file": "src/pose-render.mjs",
+      "sha256": "17f49be7092c0bf98ee588d147313530cf602a13251d475aa32f5840c310d4b6",
+      "values": [
+        "110",
+        "250"
+      ],
+      "group": "r4_visual"
+    },
+    {
+      "file": "src/sect.mjs",
+      "sha256": "9e73322d88e247415b41004712bd1150aa32677417381df0a5232ae81050331a",
+      "values": [
+        "2"
+      ],
+      "group": "r4_reused"
     }
+  ],
+  "scanFiles": [
+    "src/hero.mjs",
+    "src/start-ui.mjs"
   ]
 }

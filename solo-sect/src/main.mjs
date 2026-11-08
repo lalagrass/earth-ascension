@@ -290,14 +290,14 @@ document.addEventListener('click', (e) => { const tab = e.target.closest('[data-
 const hermitBadge = (S) => (isEliteHermit(S) ? `<b class="hermit-badge" title="清修：弟子少、幫工多，練功／打坐／讀書快 20%">【清修山莊・弟子 ${S.ds.filter((d) => d.role !== 'laborer').length}／幫工 ${S.ds.filter((d) => d.role === 'laborer').length}】</b>　` : '');
 const hermitChainProgress = (S) => {
   if (!S.hermitage) return '';
-  if (S.hermitage.founded) return `<div class="k">【${S.sect.plaque}】${S.sect.doctrine === 'dualHall' ? '純陽外堂・素心內堂' : S.sect.doctrine === 'orthodox' ? '正宗與內堂秘傳' : '萬流歸宗'}・開山第 ${S.hermitage.foundedDay} 日</div>`;
+  if (S.hermitage.founded) return `<div class="k">【${S.sect.plaque}】${S.sect.doctrine === 'dualHall' ? '純陽外堂・素心內堂' : S.sect.doctrine === 'orthodox' ? '正宗與內堂秘傳' : S.sect.doctrine === 'single' ? '單脈傳承' : '萬流歸宗'}・開山第 ${S.hermitage.foundedDay} 日</div>`;
   const d = S.ds.find(x => x.id === 'hero'), outer = d?.hermitageStarter === 'luohanHands' ? 'luohanHands' : 'chunyangFist';
   const heart = outer === 'luohanHands' ? 'shaolinXinfa' : 'quanzhenXinfa', step = outer === 'luohanHands' ? 'shaolinStep' : 'jinyanStep';
   // 出自 Phase 6 規格：直接顯示同一份 XP／體魄門檻，讓玩家知道為何尚未悟心法或身法。
   return `<div class="k">外入內：${artById(outer).name} ${(d.arts?.[outer]?.xp || 0).toFixed(1)}/25・臂力 ${d.skills.strength.toFixed(1)}/15 → ${artById(heart).name}${d.arts?.[heart] ? ' ✓' : ''}；心法 ${(d.arts?.[heart]?.xp || 0).toFixed(1)}/25・身法 ${d.skills.agility.toFixed(1)}/16 → ${artById(step).name}${d.arts?.[step] ? ' ✓' : ''}</div>`;
 };
 function panel() {
-  const ph = phaseOf(S); const se = seasonOf(S); $('clock').textContent = `${S.hermitage?.active ? `【荒山隱居・終南茅廬】伴侶領悟 ${S.hermitage.stage}/4 ・` : ''}第 ${se.year} 年 ${se.name}・第 ${ph.day} 日・${ph.name}（${Math.floor(S.t % 600)}/600）・${speed}×${rumorDays(S) ? `・⚠ 山賊傳聞：約 ${rumorDays(S)} 日` : ''}`; /* loop120 角落倒數 */ $('clock').title = seasonHint(S); /* loop73 季節說明（滑鼠移到時鐘） */
+  const ph = phaseOf(S); const se = seasonOf(S); $('clock').textContent = `${S.hermitage?.active ? `【荒山隱居・終南茅廬】${S.ds.some((d) => d.awakeningPath) ? `共修領悟 ${S.hermitage.stage}/4 ・` : ''}` : ''}第 ${se.year} 年 ${se.name}・第 ${ph.day} 日・${ph.name}（${Math.floor(S.t % 600)}/600）・${speed}×${rumorDays(S) ? `・⚠ 山賊傳聞：約 ${rumorDays(S)} 日` : ''}`; /* loop120 角落倒數 */ $('clock').title = seasonHint(S); /* loop73 季節說明（滑鼠移到時鐘） */
   for (const d of S.ds) recordAxisHistory(AXIS_HISTORY, d, S.day);
   const levels = new Map(S.ds.map((d) => [d.id, growthView(d)]));
   const selected = S.ds.find((d) => d.id === window.__artsOf) || S.ds.find((d) => d.id === 'hero') || S.ds[0];
@@ -436,7 +436,7 @@ function drawMicroStage() {
   const ergo = renderMicroStage(ctx, S, focal);
   const cap = $('micro-caption');
   if (cap && ergo) {
-    if (S.hermitage?.contemplateUntil > S.t && ['hero', 'partner-xln'].includes(focal.id)) {
+    if (S.hermitage?.contemplateUntil > S.t && (S.hermitage.contemplateActors || []).includes(focal.id)) {
       cap.textContent = '【陰陽合參】兩人對坐，領悟《玉女心經》';
       return;
     }

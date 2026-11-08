@@ -133,7 +133,7 @@ export const laborToday = (d, day) => (d?.lg && d.lgDay === day ? d.lgGot || 0 :
 // 出自 Phase 5 規格：18/36 是做活的凡軀／藥膳體魄上限；疲勞每次 25–35、單日最多 1.2 點。
 export const BODY_CONDITION = Object.freeze({ mundaneCap: 18, martialCap: 36, fatigueMax: 100, dailyGain: 1.2, workGain: 0.3,
   fatigue: Object.freeze({ water: 30, chop: 30, quarry: 35, farm: 25, forage: 25, train: 35 }),
-  mealRelief: 65, mealCycles: 3, rongCycles: 4, defaultCycles: 1 });
+  mealRelief: 65, mealCycles: 3, skilledCookCycles: 4, defaultCycles: 1 });
 const bodyWork = { water: ['strength', 'agility'], chop: ['strength'], quarry: ['strength'], farm: ['agility'], forage: ['agility'], train: ['strength'] };
 export const bodyConditionOn = (s) => !!(s?.hermitage?.active || s?.herbalDiet);
 export function ensureBodyCondition(d, day) {
@@ -166,8 +166,9 @@ export function cookMedicatedMeal(s, chef) {
   if (!bodyConditionOn(s) || (s.res.herb || 0) < 1 || (s.res.food || 0) < 1) return null;
   resAdd(s, 'food', -1, 'kitchen'); resAdd(s, 'herb', -1, 'kitchen'); resAdd(s, 'medFood', 1, 'kitchen'); // 出自 Phase 5 規格：一份煮好的飯入藥升級，不憑空添一份餐食。
   const cold = (s.res.coldWater || 0) > 0; if (cold) resAdd(s, 'coldWater', -1, 'kitchen'); // 出自 Phase 6 規格：寒潭泉水只進藥膳，食用時回內息與心情。
-  const name = s.hermitage?.partnerId === 'xiaolongnv' ? '百花玉蜂藥膳' : s.hermitage?.partnerId === 'huangrong' ? '桃花歸元藥膳' : '山草強身湯飯';
-  (s.medFoodBatches ??= []).push({ name, chef: chef?.id || null, rong: chef?.xia === 'huangrong', ...(cold ? { cold: true } : {}) });
+  const skilled = (chef?.skills?.cooking || 0) >= 16; // R4 規格：原黃蓉額外一輪來自通用廚藝 16，不依人物身分。
+  const name = chef?.mealName || (skilled ? '歸元藥膳' : '山草強身湯飯');
+  (s.medFoodBatches ??= []).push({ name, chef: chef?.id || null, skilled, ...(cold ? { cold: true } : {}) });
   return name;
 }
 export function applyMedicatedMeal(d, s) {
@@ -176,7 +177,7 @@ export function applyMedicatedMeal(d, s) {
   const batch = (s.medFoodBatches || []).shift() || { name: '山草強身湯飯', rong: false };
   resAdd(s, 'medFood', -1, 'meal'); if (d.soreness) d.recoveryCyclesToday++;
   d.muscleFatigue = Math.max(0, d.muscleFatigue - BODY_CONDITION.mealRelief); d.soreness = false;
-  d.maxCyclesToday = batch.rong ? BODY_CONDITION.rongCycles : BODY_CONDITION.mealCycles;
+  d.maxCyclesToday = batch.skilled || batch.rong ? BODY_CONDITION.skilledCookCycles : BODY_CONDITION.mealCycles;
   d.herbalDietUntil = s.t + DAY; d.herbalBuffName = batch.name;
   return { name: batch.name, cycles: d.maxCyclesToday, fatigue: d.muscleFatigue, cold: !!batch.cold };
 }

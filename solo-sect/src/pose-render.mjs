@@ -267,11 +267,12 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
   }
 
   // Phase 4：玉女心經初悟時兩人對坐合參；這段只讀存檔時間，不改戰鬥或日程。
-  const contemplating = s.hermitage?.contemplateUntil > s.t && ['hero', 'partner-xln'].includes(focalActor.id);
+  const contemplators = s.hermitage?.contemplateActors || [];
+  const contemplating = s.hermitage?.contemplateUntil > s.t && contemplators.includes(focalActor.id);
   if (contemplating && g.save && g.restore) {
-    const hero = s.ds.find((d) => d.id === 'hero'), partner = s.ds.find((d) => d.id === 'partner-xln');
-    if (hero && partner) {
-      for (const [actor, x, face] of [[hero, 110, 1], [partner, 250, -1]]) {
+    const [first, second] = contemplators.map((id) => s.ds.find((d) => d.id === id));
+    if (first && second) {
+      for (const [actor, x, face] of [[first, 110, 1], [second, 250, -1]]) {
         g.save();
         if (g.translate) g.translate(x, groundY);
         if (g.scale) g.scale(face * 0.8, 0.8);
