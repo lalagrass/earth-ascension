@@ -13,7 +13,7 @@ test('R3：隱居卷有前置與真研讀時鐘，山洞得第二路，傳授者
   hero.arts.chunyangFist.xp = 25;
   const strengthGate = volumeBodyThreshold(hero, 'strength');
   hero.skills.strength = strengthGate - 0.01;
-  assert.equal(bookStatus(s, hero, 'quanzhen-heart').ok, false, '少於個人成長空間一半不可讀');
+  assert.equal(bookStatus(s, hero, 'quanzhen-heart').ok, true, '入門卷低於平均仍能慢讀');
   hero.skills.strength = strengthGate;
   assert.equal(hero.arts.quanzhenXinfa, undefined, '武道前置滿足也不會自悟整門');
   assert.equal(chooseHermitageBook(s, hero.id, 'quanzhen-heart'), true);
