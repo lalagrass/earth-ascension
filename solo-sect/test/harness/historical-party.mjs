@@ -1,14 +1,31 @@
 // Explicit cast for tests of older mechanics. Live N50 starts with ordinary people;
 // these tests need their original named actors to exercise the historical scenario.
 import { createState as currentState } from '../../src/sim.mjs';
-import { DISCIPLES } from '../../src/data.mjs';
-import { mkComp } from '../../src/hero.mjs';
+import { DISCIPLES, HEROES, HERO_SECT, OPENING_SCENARIOS, SECTS } from '../../src/data.mjs';
+import { mkComp, mainSub } from '../../src/hero.mjs';
 import { seedArts } from '../../src/arts.mjs';
+import { sectInit } from '../../src/sect.mjs';
 import { TRAINING_HISTORY } from '../../src/practice.mjs';
 import { join as liveJoin, makeXiaCandidate } from '../../src/wuxia.mjs';
 
 export function createState(seed = 1, spec = null) {
-  const s = currentState(seed, spec);
+  // The retired opening no longer exists in production. Build the three actors
+  // explicitly for historical mechanics tests, then place them after founding.
+  const opening = { ...OPENING_SCENARIOS.solo, initialDisciples: 3 };
+  const s = currentState(seed, { ...spec, opening });
+  s.hermitage.active = false; s.hermitage.founded = true;
+  if (spec?.kind === 'template') {
+    const T = HEROES.find((h) => h.id === spec.id);
+    if (!T) throw new Error(`unknown historical test actor: ${spec.id}`);
+    const H = { kind: 'template', id: T.id, name: T.name, stats: { ...T.stats }, values: { ...T.values }, personality: [...T.personality], hidden: null, lore: T.lore, sealed: !!T.sealed, arc: T.arc };
+    [H.main, H.sub] = mainSub(H.values);
+    const h = s.ds[0], st = H.stats;
+    Object.assign(h, { name: H.name, classic: true, portrait: `assets/portraits/${T.id}.png`, style: T.style, wu: st.wu, root: H.sealed ? 1 : st.gen, ding: st.ding, values: H.values, wexin: 0, personality: H.personality, known: H.personality.slice(0, 2), traits: H.personality.includes('diligent') ? { diligent: 1.2 } : {} });
+    h.skills.strength = 4 + st.li * 3; h.skills.agility = 4 + st.shen * 3; seedArts(h);
+    s.hero = { ...H, fu: st.fu, askMajor: spec.askMajor ?? true, arcStep: 0, sect24: spec.sect24 || HERO_SECT[T.id] };
+    s.encExclude = [T.id]; s.choices = [];
+    if (T.coinMul) s.res.coin *= T.coinMul;
+  }
   for (let i = 1; i <= 2; i++) {
     const d = s.ds[i], old = DISCIPLES[i];
     Object.assign(d, {
@@ -33,6 +50,26 @@ export function createState(seed = 1, spec = null) {
     s.encExclude.push(d.id);
     s.aff[`hero>${d.id}`] = 45;
     s.aff[`${d.id}>hero`] = 45;
+  }
+  // The historical sect mechanics are exercised after a chosen founding.
+  // New playable hermitage starts deliberately grant only the Quanzhen seed.
+  if (s.hero) {
+    s.hero.sect24 = spec?.sect24 || (spec?.kind === 'template' ? HERO_SECT[spec.id] : undefined);
+    sectInit(s);
+    // The retired Axing template carried Zhu Long's faction; it is no longer a
+    // selectable live start, so the historical fixture supplies its actual sect.
+    const historicalSect = spec?.kind === 'template' && HERO_SECT[spec.id];
+    if (historicalSect && s.sect.id !== historicalSect) {
+      const row = SECTS[historicalSect];
+      Object.assign(s.sect, { id: historicalSect, name: row.name, plaque: row.plaque,
+        bias: { ...row.bias }, tree: [...row.tree], ban: [...row.ban],
+        rules: [...row.rules], rivals: [...row.rivals] });
+    }
+    // Explicit post-founding state for tests of surviving sect mechanics.
+    s.sect.doctrine = 'single'; s.sect.bannerHall = 'yang';
+    s.sect.dualTree = { yang: [...s.sect.tree], yin: [] };
+    s.sect.lineages = { yang: s.sect.id, yin: null };
+    for (const d of s.ds) { d.sectId = s.sect.id; d.stree = [...s.sect.tree]; d.sbias = s.sect.bias; }
   }
   return s;
 }

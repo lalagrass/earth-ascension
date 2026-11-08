@@ -1,0 +1,42 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createState, chooseHermitageBook, setOrder, tick, canFoundHermitageSect, queueHermitageFounding } from '../../../src/sim.mjs';
+import { bookStatus, readHermitageBook, volumeBodyThreshold } from '../../../src/hermitage-books.mjs';
+import { passPick, passDo } from '../../../src/bonds.mjs';
+
+test('R3：隱居卷有前置與真研讀時鐘，山洞得第二路，傳授者必須會，首日可自行立匾', () => {
+  const s = createState(42, { kind: 'custom', hermitage: true, opening: 'solo', starterArt: 'chunyangFist' });
+  const hero = s.ds[0];
+  assert.equal(s.day, 1); assert.equal(canFoundHermitageSect(s).ok, true);
+  assert.equal(s.choices.some(c => c.sect === 'hermitageFounding'), false);
+  assert.equal(bookStatus(s, hero, 'quanzhen-heart').ok, false);
+  hero.arts.chunyangFist.xp = 25;
+  const strengthGate = volumeBodyThreshold(hero, 'strength');
+  hero.skills.strength = strengthGate - 0.01;
+  assert.equal(bookStatus(s, hero, 'quanzhen-heart').ok, false, '少於個人成長空間一半不可讀');
+  hero.skills.strength = strengthGate;
+  assert.equal(hero.arts.quanzhenXinfa, undefined, '武道前置滿足也不會自悟整門');
+  assert.equal(chooseHermitageBook(s, hero.id, 'quanzhen-heart'), true);
+  for (let i = 0; i < 1000 && !hero.arts.quanzhenXinfa; i++) tick(s);
+  assert.ok(hero.arts.quanzhenXinfa, '茅廬真研讀任務完成才學會');
+  assert.equal(hero.arts.quanzhenXinfa.source, 'book');
+  assert.equal(bookStatus(s, hero, 'quanzhen-step').ok, false);
+  assert.equal(setOrder(s, hero.id, 'searchFragment'), true);
+  for (let i = 0; i < 4000 && !s.hermitage.books.includes('other-luohan'); i++) tick(s);
+  assert.ok(s.hermitage.books.includes('other-luohan'), '獨行者到林中山洞找到另一脈實物殘卷');
+  assert.equal(hero.arts.luohanHands, undefined);
+  for (let i = 0; i < 30 && !hero.arts.luohanHands; i++) readHermitageBook(s, hero, 'other-luohan');
+  assert.ok(hero.arts.luohanHands, '逐式讀完殘卷才會第二路');
+  assert.equal(queueHermitageFounding(s).ok, true);
+  assert.deepEqual(s.choices.find(c => c.sect === 'hermitageFounding').doctrines, ['dualHall', 'orthodox', 'wuming']);
+
+  const duo = createState(43, { kind: 'custom', hermitage: true, opening: 'xiaolongnv' });
+  const [pupil, teacher] = duo.ds;
+  pupil.arts.tianluoPalm = { xp: 25 }; pupil.arts.yunvJian = { xp: 25 }; pupil.arts.yunvSword = { xp: 25 };
+  assert.equal(passPick(duo, teacher)?.art, undefined, '師者不會，四階不能平白送出');
+  teacher.arts.yunv = { xp: 25 };
+  assert.equal(passPick(duo, teacher)?.art, 'yunv');
+  assert.equal(passDo(duo, teacher, pupil, 'yunv'), true);
+  assert.equal(duo.hermitage.stage, 4);
+  assert.ok(duo.hermitage.contemplateUntil > duo.t);
+});

@@ -1,6 +1,6 @@
 import { createState } from '../harness/historical-party.mjs';
 import test from 'node:test'; import assert from 'node:assert/strict';
-import { tick, scoreActs, outers, skipsChores, emergency, payday, setDuty, setPrio, canPromote, startTrial, migrate, save, load, quotaOf } from '../../src/sim.mjs';
+import { tick, scoreActs, outers, skipsChores, emergency, payday, setDuty, setPrio, canPromote, startTrial, save, load, quotaOf } from '../../src/sim.mjs';
 import { CHORE_ACTS, QUOTA, PROMOTE, ROOT, DAY, RULES_VERSION } from '../../src/data.mjs';
 const mkOuter = (s, id, root = 4) => { const base = s.ds.find((d) => d.id === 'cousin'); const d = JSON.parse(JSON.stringify(base)); Object.assign(d, { id, name: id, role: 'outer', root, rootKnown: true, adult: true, duties: [...CHORE_ACTS], prio: 'normal', chore: 0, choreDebt: 0, contrib: 0, task: null, path: [] }); s.ds.push(d); return d; };
 const knownByMaster = (s, d) => { d.known = [...d.personality]; s.aff[`${s.ds[0].id}>${d.id}`] = ROOT.inviteAff; };
@@ -56,13 +56,6 @@ test('考核失敗：當日冷卻', () => {
   const s = createState(3); const o = mkOuter(s, 'o1', 3); o.contrib = PROMOTE.contrib; o.skills.leg = 0; o.skills.palm = 0; o.skills.strength = 0; knownByMaster(s, o);
   startTrial(s, 'o1'); for (let i = 0; i < 4 * 120 && !o.trialScore; i++) tick(s);
   if (o.role === 'outer') { assert.match(canPromote(s, 'o1').why, /明日/); assert.ok(o.thoughts.some((t) => t.id === 'trialFail')); }
-});
-test('v0.8 舊檔可讀：disciple→inner、補日課欄位', () => {
-  const s = createState(4); const o = JSON.parse(save(s)); o.rules = '0.8';
-  for (const d of o.ds) { d.role = 'disciple'; delete d.duties; delete d.prio; delete d.chore; delete d.choreDebt; delete d.contrib; } delete o.choreRate;
-  const r = load(JSON.stringify(o)); assert.equal(r.ok, true); const m = r.state;
-  assert.ok(m.ds.every((d) => d.role === 'inner' && d.duties.length === CHORE_ACTS.length && d.contrib === 0)); assert.equal(m.rules, RULES_VERSION); assert.equal(m.migratedFrom, '0.8');
-  for (let i = 0; i < 400; i++) tick(m);
 });
 test('20 日長跑：有外門時不斷糧卡死、數值無負', () => {
   const s = createState(9); mkOuter(s, 'a'); mkOuter(s, 'b'); s.res.food = 20;

@@ -1,0 +1,49 @@
+# quick：4 格，3 秒
+ok   idle-1001-emei
+ok   bot-1001-emei
+ok   farm-1001-emei
+ok   exp-1001-emei
+# full：32 格，113 秒
+ok   idle-1001-emei
+ok   bot-1001-emei
+ok   farm-1001-emei
+ok   exp-1001-emei
+ok   idle-1002-wudang
+ok   bot-1002-wudang
+ok   farm-1002-wudang
+ok   exp-1002-wudang
+ok   idle-1003-taohua
+ok   bot-1003-taohua
+ok   farm-1003-taohua
+ok   exp-1003-taohua
+ok   idle-1004-gumu
+ok   bot-1004-gumu
+ok   farm-1004-gumu
+ok   exp-1004-gumu
+ok   idle-1005-xingxiu
+ok   bot-1005-xingxiu
+ok   farm-1005-xingxiu
+ok   exp-1005-xingxiu
+ok   idle-1006-wuming
+ok   bot-1006-wuming
+ok   farm-1006-wuming
+ok   exp-1006-wuming
+ok   idle-1007-emei
+ok   bot-1007-emei
+ok   farm-1007-emei
+ok   exp-1007-emei
+ok   idle-1008-wudang
+ok   bot-1008-wudang
+ok   farm-1008-wudang
+ok   exp-1008-wudang
+ok   save v1.0.json
+ok   save v1.5.json
+ok   save v1.95.json
+ok   save v2.2.json
+ok   save v2.3.json
+ok   save v2.4.json
+# hermitage：2 格，1 秒
+ok   xln-chunyang-42
+ok   hr-luohan-42
+
+✓ 全部相符

@@ -1,7 +1,8 @@
 /* v3.1（loop196–）：內功催動外功與輕功、神木毒功。只在 v24 新局。 */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick, speedOf } from '../../../src/sim.mjs';
+import { createState } from '../../harness/historical-party.mjs';
+import { tick, speedOf } from '../../../src/sim.mjs';
 import { artsGrowHtml } from '../../../src/panel-ui.mjs';
 import * as A from '../../../src/arts.mjs';
 import { evadeScore } from '../../../src/world.mjs';

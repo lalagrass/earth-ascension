@@ -1,6 +1,6 @@
 # 身體由負荷長出來（R2 #521，取代 Phase 5 #510 的體魄週期）
 
-只有隱居局，或明確開啟 `herbalDiet` 的局，會走這條通路。舊門派局照舊使用 `workStrCap` 與原有成長，也不消耗新的亂數。
+R9 起唯一新局是終南隱居，所有新局都走這條體魄通路；立匾後的人仍保留已長出的身體狀態。負重與疲勞更新不另抽亂數。
 
 能長多少由三個原因決定，沒有另外寫死的上限：
 
@@ -41,4 +41,4 @@ D2（擁有人 2026-11-08）：日常飲食與藥膳只決定長得多快，不�
 
 C 觀察：`node tools/r2-body-report.mjs <solo-sect 目錄>`，三種隱居開局 × 12 種子 × 60 日，原始結果在 `artifacts/r2/`。
 
-規則版本 4.9 為隱居存檔補上 `bodyBase`、`fitness`、`bodyFatigue`、`nutrition`，並刪掉成長週期欄位。舊開局的 quick、full、saves golden 不變。
+R2 規則 4.9 曾用遷移補 `bodyBase`、`fitness`、`bodyFatigue`、`nutrition`；R9 規則 5.0 依 #529 淘汰跨版存檔遷移，異版只提示「存檔版本不符」。原舊開局 golden 已從現行測試矩陣退場，歷史仍可在 Git 找回。

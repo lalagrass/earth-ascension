@@ -1,22 +1,18 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick } from '../../src/sim.mjs';
+import { createState } from '../harness/historical-party.mjs';
+import { tick } from '../../src/sim.mjs';
 import { RULES_VERSION, DAY } from '../../src/data.mjs';
 import { artMulParts, learnArt, artById } from '../../src/arts.mjs';
 import { GEN, genStep, adopt, marriable, canSucceed, succeed, heirs, removeDisciple, genResolve } from '../../src/sect.mjs';
 import { sectStep } from '../../src/sect.mjs';
 import { budgetOf, validStats, resolveChoice } from '../../src/hero.mjs';
-import { migrate } from '../../src/save.mjs';
 import { relKey } from '../../src/util.mjs';
 const mk = () => { const s = createState(5, { kind: 'template', id: 'guojing', companion: 'huangrong', askMajor: true }); tick(s); s.jh.morningOn = false; s.jh.comedyOn = false; return s; };
 const H = (s) => s.ds.find((d) => d.id === 'hero');
 const other = (s, n = 0) => s.ds.filter((d) => d.id !== 'hero' && d.adult)[n];
 const day = (s) => { s.day++; genStep(s); };
 const wed = (s, a, b) => { s.rel[relKey(a.id, b.id)] = 95; s.families.push(relKey(a.id, b.id)); a.personality = ['gentle']; b.personality = ['gentle']; a.sweet = b.id; b.sweet = a.id; s.gen.lastWed = -1e9; s.res.coin = Math.max(s.res.coin || 0, 500); }; // v1.8：心上人互指、喜事冷卻已過、付得起喜事錢
-test('v1.4 版本＋舊檔遷移補 gen 與年齡', () => {
-  assert.ok(parseFloat(RULES_VERSION) >= 1.4); const s = mk(); const o = JSON.parse(JSON.stringify(s)); delete o.gen; for (const d of o.ds) delete d.age; o.rules = '1.35'; migrate(o);
-  assert.equal(o.gen.n, 1); assert.ok(o.ds.every((d) => d.age > 0)); assert.equal(o.rules, RULES_VERSION);
-});
 test('成親要道侶＋雙向相容 ≥1；成親後跳收養卡', () => {
   const s = mk(); const a = other(s, 0), b = other(s, 1); wed(s, a, b); assert.ok(marriable(s, a, b)); s.gen.lastAdopt = -1e9; s.choices = []; day(s);
   assert.equal(s.gen.couples.length, 1); assert.equal(a.spouse, b.id); const ch = s.choices.find((c) => c.gen === 'adopt'); assert.ok(ch);

@@ -8,17 +8,21 @@ import {learningWeight} from '../src/practice.mjs';
 import {COVERS} from '../src/tactics.mjs';
 import {BAND_CLASH} from '../src/threat.mjs';
 import {growthSnapshots} from './growth-scenario.mjs';
+import {makeBare} from '../src/starter-combat.mjs';
 
 const seed=Number(process.argv.find(x=>x.startsWith('--seed='))?.slice(7)??17);
 if(!Number.isSafeInteger(seed))throw Error('--seed 須為整數');
-const novice=createState(seed,{kind:'bare',askMajor:false}).ds[0];
-const master=growthSnapshots(seed,[60]).snapshots[0].hero;
+// R9：白身是固定交手探針，不再是可選開局；使用同一人物後明確清空起手武學。
+const bareState=()=>{const s=createState(seed,{kind:'custom',opening:'solo',askMajor:false});makeBare(s.ds[0]);return s;};
+const novice=bareState().ds[0];
+const master=makeBare(growthSnapshots(seed,[60]).snapshots[0].hero);
+master.skills.agility=100; // 固定高手情境沿原技能滿值 100；隱居成長上限不應把 N34 的反應探針悄悄改成新手。
 // N51 的登門理由會改變自然日程能否巧遇武學。A/B 固定高手情境明確補同一武學火候，
 // 仍由 N33/N42 的真反應公式判定，不以偶遇江湖客作高手的隱性前置。
 learnArt(master,'basicFist');master.arts.basicFist.xp=TIERS[3][0];
 const fastWind=.4; // 固定情境：和起手表的狗咬同量級，並非遊戲新增常數。
 function humanScene(base,wind=fastWind){
-  const s=createState(seed,{kind:'bare',askMajor:false}),atk=clone(novice),def=clone(base);
+  const s=bareState(),atk=clone(novice),def=clone(base);
   atk.id='attacker';atk.uid='attacker';atk.pos=[100,100];atk.posture=100;atk.busyUntil=0;atk.swing=null;atk.bswing=null;
   def.id='defender';def.uid='defender';def.pos=[120,100];def.posture=100;def.busyUntil=0;def.downUntil=0;def.swing=null;def.bswing=null;def.fret=0;def.raging=false;def.rageUntil=0;
   s.ds=[atk,def];s.mons=[];s.band=null;
@@ -32,7 +36,7 @@ assert.notEqual(nr.kind,'dodge','N34 A：新手不能完成同一最小側身');
 
 // B：抽樣真正的 resolveSwing；每次重置人物與判讀史，只讓種子亂數前進。
 const reference=humanScene(master),expected=clashOdds(reference.s,reference.atk,reference.def,reference.ctx).read;
-const sampleState=createState(seed,{kind:'bare',askMajor:false}),samples=5000;
+const sampleState=bareState(),samples=5000;
 let reads=0;
 for(let i=0;i<samples;i++){
   const q=humanScene(master),u=rand(sampleState);
@@ -42,7 +46,7 @@ const observed=reads/samples,z=3.290526731,halfWidth=z*Math.sqrt(expected*(1-exp
 assert.ok(Math.abs(observed-expected)<=halfWidth,`N34 B：截擊 ${observed} 不在公式 ${expected} ± ${halfWidth}`);
 
 // N35 A/B：只有失手累積，當拍的 p 帶入 w＝4p(1−p)，到門檻才悟。
-const g=createState(seed,{kind:'bare',askMajor:false}),hero=g.ds[0],facts={hands:2,afterDodge:true,opponentCharge:true,force:24,opponentForce:40};
+const g=bareState(),hero=g.ds[0],facts={hands:2,afterDodge:true,opponentCharge:true,force:24,opponentForce:40};
 hero.wu=3;
 g.mons=[{k:'boar',uid:'fixed-boar',hp:48,max:48,pos:[hero.pos[0]+20,hero.pos[1]],swing:{mv:'boarCharge',wind:1,at:g.t+1,tgt:hero.id}}];
 learnFromLoss(g,hero,['leg'],facts,.35,{lost:false});assert.equal(hero.glimmer,undefined);
@@ -51,7 +55,7 @@ assert.ok(Math.abs(hero.glimmer.progress.flankStrike-learningWeight(.35))<1e-12,
 assert.ok(!hero.glimmer.known.includes('flankStrike'));
 for(let i=0;i<24;i++)learnFromLoss(g,hero,['leg'],facts,.5,{lost:true});
 assert.ok(hero.glimmer.known.includes('flankStrike'),'N35 A：累計達難度/悟性才悟招');
-const real=createState(seed,{kind:'bare',askMajor:false}),guard=real.ds[0];guard.wu=3;guard.pos=[100,100];real.ds=[guard];
+const real=bareState(),guard=real.ds[0];guard.wu=3;guard.pos=[100,100];real.ds=[guard];
 const blade={k:'bandit',uid:'bandit',hp:40,max:40,pos:[120,100],weapon:'blade',agi:20,swing:{mv:'looterBlade',at:.6,wind:.6,tgt:guard.id}};real.mons=[blade];
 const predictedHit=clashOdds(real,blade,guard,{move:'looterBlade',wind:.6}).hit;
 const hit=resolveSwing(real,blade,guard,()=>.999,{move:'looterBlade',wind:.6});
@@ -61,7 +65,7 @@ assert.ok(Math.abs(guard.glimmer.progress.disarm-learningWeight(1-hit.learning.p
 // N36 A/B：一、二人守真山門兩席可反擊；四人空地超載，固定中位反應不能反擊。
 const loads=[];
 for(const count of [1,2,4]){
-  const s=createState(seed,{kind:'bare',askMajor:false}),def=clone(master);def.id='hero';def.uid='hero';def.pos=count<3?[...COVERS.find(c=>c.id==='gate').stand]:[800,400];def.hp=100;def.posture=100;def.busyUntil=0;def.downUntil=0;def.swing=null;def.bswing=null;def.fret=0;def.raging=false;def.rageUntil=0;s.ds=[def];s.band=null;
+  const s=bareState(),def=clone(master);def.id='hero';def.uid='hero';def.pos=count<3?[...COVERS.find(c=>c.id==='gate').stand]:[800,400];def.hp=100;def.posture=100;def.busyUntil=0;def.downUntil=0;def.swing=null;def.bswing=null;def.fret=0;def.raging=false;def.rageUntil=0;s.ds=[def];s.band=null;
   s.mons=Array.from({length:count},(_,i)=>({k:'bandit',uid:`foe${i}`,hp:40,max:40,pos:[def.pos[0]+20+i*2,def.pos[1]],agi:20,weapon:'fist',energy:100,intentTarget:'hero',swing:{mv:'looterFist',wind:BAND_CLASH.cd,tgt:'hero',at:s.t+BAND_CLASH.cd}}));
   // 三個單敵應接時間是二人/四人門檻的中點；此處只安排可驗規則的來招窗口。
   const oneNeed=assessLoad(s,def,s.mons[0],{move:'looterFist',wind:BAND_CLASH.cd}).rows[0].need,groupWind=3*oneNeed;

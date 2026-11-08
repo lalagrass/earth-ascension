@@ -1,13 +1,13 @@
 # 山門紀（Solo Sect）
 
-> **破道館開局的武俠門派生活模擬與無縫塔防**
+> **終南荒山隱居起步的武俠門派生活模擬與無縫塔防**
 > 純原生 ES Module + Canvas 2D + 單一權威確定性狀態機｜零外部套件相依｜500+ 項 Node 測試
 
 ---
 
 ## 遊戲願景與特色
 
-山門紀（Solo Sect）以「破道館開局，逐步重現天下第一宗」為核心體驗，融合三大經典類型玩法：
+山門紀（Solo Sect）從終南茅廬的隱居生活起步；角色可獨自上山，或與一位熟人同住，日後自行立匾開山。開局可設定姓名、12 點屬性、九問問心與選用的 MBTI。遊戲融合三大類型玩法：
 
 1. **《天下霸圖》的門派經營與武學領悟**：
    * 弟子在同圖奔走生活、修練基礎套路、向師父或同門求學。
@@ -16,12 +16,12 @@
 2. **《模擬市民》的弟子作息與自主生活**：
    * 效用 AI（Utility AI）驅動：在精力、飢餓、社交、工作與門派危機間自主權衡。
    * 雙向好感、性格相性（灑脫、拘謹、豪爽、清冷）、心情與想法沉澱；同門互相激勵與相處羈絆。
-   * 破道館從地鋪開始，逐步搬運木石、擴建膳房、小寢舍、演武場與藥圃。
+   * 茅廬從做活、煮飯與練功開始，立匾後逐步搬運木石、擴建膳房、小寢舍、演武場與藥圃。
 3. **同地圖後山狩獵與無縫塔防**：
    * 拒絕切入橫向或回合戰鬥畫面；野獸下山襲擊與門派防禦全在同張水彩地圖無縫發生。
    * 守點佈防、迎擊外敵、修補護欄，戰後即時結算戰報與護體真氣損耗。
-4. **經典武俠人物與雙人同門開局**：
-   * 郭靖、岳不群、令狐沖、黃蓉、楊過、韋小寶等傳奇主角模板，搭配專屬初始同門與自創門派系統。
+4. **隱居與開山**：
+   * 自訂主角可選小龍女、黃蓉同住，或獨自上山。拳譜、傳藝和立匾都在同一條隱居路線上發生。
 
 ---
 
@@ -53,14 +53,14 @@ cd solo-sect
 bash test/run.sh smoke
 ```
 
-它做三件事：`test/golden/saves/` 每個存檔讀入後跑 3 日；種子 1001、1002 的新局各跑 10 日，不得有 NaN 或例外；`test/unit/save/schema-invariants.test.mjs`。步長用 6 秒（與測試框架預設相同，遊戲內一日仍是 600 秒），才能卡在時限裡。該步新寫的測試另跑，不取代這道。
+它檢查同版隱居局存讀、種子 1001／1002 各跑 10 日不得有 NaN 或例外，以及核心結構不變量。步長用 6 秒（遊戲內一日仍是 600 秒）；完整測試在 CI。
 
 ### 行為鎖定（golden，#388）
-重構前後遊戲行為必須一字不差。快速層已含在上面的 `node --test`；完整矩陣（新局 idle／bot／farm／exp × 8 種子 × 30 日，加 6 份 v1.0–v2.4 舊存檔回放）：
+隱居局的固定種子與檢查點在 `test/golden/hermitage.json`，舊開局及其舊存檔回放已退場：
 ```bash
 node tools/golden.mjs --check   # 或 bash test/run.sh golden；4 核約 5 分鐘
 ```
-規則版本 2.5 起所有局（新局、照舊、舊存檔）都是同一套現行規則，沒有規則開關（#390）。只有明列「改規則」的 PR 才可 `--write` 重產，PR 須寫明哪些鍵改了、為什麼。雜湊在 `test/golden/*.json`。
+規則版 5.0 只建立終南隱居局。舊版存檔載入時顯示「存檔版本不符」並開新局；目前不保證跨版存檔相容。只有明列規則變更的 PR 才可 `--write` 重產 golden，並說明受影響的檢查點。
 
 ---
 
@@ -70,7 +70,7 @@ node tools/golden.mjs --check   # 或 bash test/run.sh golden；4 核約 5 分�
 
 | 層級 | 核心模組 | 職責與架構承諾 |
 |---|---|---|
-| **資料層** | `src/data.mjs` | 路網節點、設施階段、活動、88 門武學、主角模板與門派、平衡常數。 |
+| **資料層** | `src/data.mjs` | 路網節點、設施階段、活動、武學、隱居起局情境與門派、平衡常數。 |
 | **模擬層** | `src/sim.mjs`（`tick` 編排）＋規則模組 `arts`、`economy`、`threat`、`world`、`social`、`bonds`、`sect`、`hero`、`jianghu`、`wuxia`、`core`、`util`；存檔 `save.mjs` | 單一權威 `tick(state, dt)` 推進；狀態是可序列化 JSON，固定種子可重放。不碰 DOM，可在 Node 測。 |
 | **繪製與介面層** | `src/main.mjs`（Canvas、鏡頭、面板接線）、`src/panel-ui.mjs`、`src/start-ui.mjs`、`src/audio.mjs`；`index.html`、`style.css` | 讀 state 畫圖與產生面板 HTML。 |
 | **測試層** | `test/unit/<系統>/`、`test/archive/`、`test/accept/`、`test/parked/`、`test/harness/`、`tools/diag/` | Node 原生測試執行器，零依賴；parked 原斷言追蹤於 #496。 |
@@ -86,7 +86,7 @@ node tools/golden.mjs --check   # 或 bash test/run.sh golden；4 核約 5 分�
 ### 1. 核心規格與常青設計 (Living Architecture)
 * [架構總覽與歷版設計紀錄 (DESIGN.md)](docs/architecture/DESIGN.md)
 * [模組地圖與舊檔名對照 (MODULES.md)](docs/architecture/MODULES.md)
-* [創角、經典主角與同門搭檔 (PROTAGONIST.md)](docs/architecture/PROTAGONIST.md)
+* [主角與開局設計沿革 (PROTAGONIST.md)](docs/architecture/PROTAGONIST.md)
 * [巡山路線、波次與無縫防禦 (PATROL-MAP.md)](docs/architecture/PATROL-MAP.md)
 * [水彩精靈圖規格與立繪清單 (ASSETS.md)](docs/architecture/ASSETS.md)
 

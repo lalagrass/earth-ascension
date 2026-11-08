@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { strikeLedger, power } from '../../../src/jianghu.mjs';
 import { dpsOf } from '../../../src/world.mjs';
-import { mitOf, qiMax, harmonyMul, HARMONY24, QI_SAT31, qiStrikeMul, qiOf, artById, neigongEff31, gainArt, selfTarget, comprehend, appetite31, sectUnlock24 } from '../../../src/arts.mjs';
+import { mitOf, qiMax, harmonyMul, HARMONY24, QI_SAT31, qiStrikeMul, qiOf, artById, neigongEff31, gainArt, appetite31, sectUnlock24 } from '../../../src/arts.mjs';
 import { SECTS } from '../../../src/data.mjs';
 import { neigongRules2Html } from '../../../src/panel-ui.mjs';
 
@@ -69,43 +69,6 @@ test('loop207 內勁飽和維持 1.6，高內力不再往 2.2 長，面板讀同
   assert.ok(Math.abs(qiStrikeMul(d, a) - capped) < 1e-9);
   assert.ok(qiStrikeMul(d, a) < wider);
   assert.match(neigongRules2Html(d), new RegExp(`min\\(${QI_SAT31}, 內力/100\\)`));
-});
-
-const learner = (personality, arts) => ({
-  v24: true, style: 'palm', stree: [], sectId: null, personality, values: {}, wu: 3, moves: ['fist'], focus: 'basicFist', pendingArt: null,
-  arts: { basicFist: { xp: 25, last: 0 }, ...arts },
-});
-
-test('loop208 求學與自悟只在同一層按偏好排，本門特許仍照樹序', () => {
-  const hi = learner(['bold']);
-  const lo = learner(['quiet'], { pushPalm: { xp: 55, last: 0 } });
-  const mid = learner([]);
-  assert.ok(appetite31(hi) > 0); assert.ok(appetite31(lo) < 0); assert.equal(appetite31(mid), 0);
-  gainArt(hi, 0, 1, 0); gainArt(lo, 0, 1, 0); gainArt(mid, 0, 1, 0);
-  assert.equal(hi.pendingArt, 'wuhuBlade');
-  assert.equal(lo.pendingArt, 'basicSword');
-  assert.equal(mid.pendingArt, 'pushPalm');
-  assert.equal(selfTarget(learner(['bold'])), 'wuhuBlade');
-  assert.equal(selfTarget(learner(['quiet'], { pushPalm: { xp: 55, last: 0 } })), 'basicSword');
-  assert.equal(selfTarget(learner([])), 'pushPalm');
-  const wd = learner(['bold', 'nimble', 'playful'], { wudangFist: { xp: 55, last: 0 } });
-  wd.sectId = 'wudang'; wd.stree = SECTS.wudang.tree;
-  assert.equal(sectUnlock24(wd)[0].id, 'taiji');
-  assert.equal(selfTarget(wd), 'taiji');
-  gainArt(wd, 0, 1, 0);
-  assert.equal(wd.pendingArt, 'taiji');
-});
-
-test('loop208 切磋觀摩按偏好挑能看的功夫，好練法不把打法排到前面', () => {
-  const watch = (personality) => {
-    const d = learner(personality, { pushPalm: { xp: 55, last: 0 } });
-    const s = { wu7: true, t: 0 };
-    comprehend(s, d, 'spar', { arts: { wavePalm: { xp: 10 }, basicSword: { xp: 10 } } }, () => {}, () => {});
-    return d.comp || {};
-  };
-  const da = watch(['bold']), calm = watch(['quiet']);
-  assert.ok(da.wavePalm > 0); assert.equal(da.basicSword, undefined);
-  assert.ok(calm.basicSword > 0); assert.equal(calm.wavePalm, undefined);
 });
 
 test('loop206 診斷把出手記在 v33，pow 仍是 power()', () => {

@@ -1,5 +1,63 @@
 # 可重跑驗收
 
+## 第十五輪 R9：唯一隱居開局（#529，規則 5.0）
+
+實作 grass／Codex Cloud，疊第十四輪 #528。舊道館的起局分支、遷移器、舊存檔回放及三層舊 golden 退場；資料只在版控中刪除，未碰使用者的實際存檔。開局保留隱居三情境，並在同一畫面設定姓名、12 點屬性、九問與 MBTI。跨版存檔明確拒載並開新局。現行規則見 [隱居系統](docs/systems/hermitage.md)。
+
+| 類 | 指令／門檻 | 預期與觀察 |
+|---|---|---|
+| A 真畫面 | `python3 solo-sect/tools/r15-visual.py`；零 pageerror，只有隱居，姓名與 MBTI 寫入，4.9 檔拒載後新局畫面仍開 | [開局](artifacts/r15/only-hermitage-opening.png)、[拒載](artifacts/r15/version-mismatch-new-game.png)、[原始結果](artifacts/r15/visual-result.json)：均通過。 |
+| A 存檔 | Node 22 `bash solo-sect/test/run.sh smoke` 與 CI quick；同版原樣、異版／無隱居狀態回「存檔版本不符」 | 本地 smoke 60／60；CI 結果以 PR 最新 head 為準。 |
+| A golden | Node 22 `node solo-sect/tools/golden.mjs --check --tier hermitage`；合入 R2／R3 的小龍女／黃蓉第 1、3、5 日 hash 逐位相同 | 三情境全通過；新增獨行一格，原兩格雜湊分別為 `19c8242b2b815851/a976e4d8832bec4a/4927c814412eebf5`、`8e51bbefb4dd7a94/0361d561adf61ca5/9c332c225c97380d`，與 #528 head 完全相同。僅規則版欄位正規化為 4.95，不遮蔽其他狀態。 |
+| B 機率 | `bash solo-sect/test/run.sh smoke`；保留原 N62 6,000 次公式期望 | R9 無新機率公式；N62 固定抽樣仍在 smoke。 |
+| C 受控 30 日 | Node 22 `node solo-sect/tools/r13-hermitage-report.mjs <checkout>/solo-sect`；三情境各 12 種子、6 秒 tick、每拍清警示 | 合入 R2／R3 後重新量測：[R14 4.95 base](artifacts/r15/hermitage-r14-r2-integrated.json)／[R9 5.0 head](artifacts/r15/hermitage-head-r2-integrated.json)。三情境摘要逐欄相同，無方向反轉；舊 R13／R14／R9 原始輸出另留同目錄供歷史比對。此受控日程不代表自然 0.25 秒可達性。 |
+
+舊名 → 新名：`origins.mjs` 出身同行生成 → `OPENING_SCENARIOS` 隱居情境列；`freshV095` → `initStateFields`；`quick/full/saves` golden → `hermitage` 唯一 tier；`comp→learnArt` 舊開局整門自悟 → `HERMITAGE_VOLUMES` 實物研讀／傳藝。舊測試更新：純舊開局與遷移案例移除；仍可從隱居開山接觸的經濟、收徒、守山行為改用明確成立的門派 fixture，原行為斷言保留。最沒把握三處：① `createState` 對未指定規格的工具仍產生預設隱居局，避免無頭工具崩潰；② 5.0 直接拒載舊檔，保留本機資料供使用者自行處理，符合存檔延後決定；③ R13 到 R14 的 30 日情緒已因 R3 演進，故同時附 R14 對照以隔離 R9 效果。
+
+| R9 CI 舊測試 | 失敗原因與處理；斷言仍嚴格 |
+|---|---|
+| `v255` 傳功 | 舊開局的本門專屬候選已退役；改驗真師者與實物卷的正反例，不復活舊候選。 |
+| `phase3-crowd-synergy` 雙劍 | 雙脈合宗仍可達；補全第二位角色性別資料，原合璧模式、倍率與畫面斷言照舊。 |
+| `wuwu` 一師一徒 | 唯一開局不保證三人；案例明建第二位徒弟，原「每師每功只傳一人」斷言照舊。 |
+| `v135` 招人 | 歷史門派測試明建立匾後的單脈與堂口資料，沿用原招人性格、屬性斷言。 |
+| `v135` 名俠 | 退役阿星開局的豬籠門派不再可選；歷史 fixture 明列其門派資料，保留本派名俠在前的斷言。 |
+| `v26` 位階 | 舊門派掌門鎖仍按角色位階回報；R3 已改由真師者教卷，改驗新途徑的具體武學與舊位階函式各自的結果。 |
+
+| R9 accept 舊案例 | 規則依據與處理 |
+|---|---|
+| `sim` 練掌 | 起局師父自動教「推山掌」已退場；保留練後確實取得推掌招式的檢查。 |
+| `sim` 心情／好感 | 唯一隱居開局的性格由九問決定；明設多慮、勤奮、貪玩與溫和角色，原方向斷言照舊。 |
+| `sim` 三問／揭露／季節 | 修正舊測試未匯入的現行函式，招人用 `recruit`；只把退役開局首名角色改為明確的初始弟子。 |
+| `v08` 經濟建造 | 以立匾後三人門派檢查工料、雇工與欠薪；移除只測 0.7 遷移的案例。 |
+| `v09` 開局與舊檔 | 三人根骨的固定舊開局組成和 0.85 遷移已由 #529 淘汰，移除其專測；其餘武學前置保留。 |
+| `v095` 首日試煉 | 固定黃昏贈拳與第二招是退役開局腳本，移除其專測；巡山與建造測試保留。 |
+| `v096`／`v110` 默契 | 舊「郭靖＋黃蓉」專屬 25% 加成已改為所有同門依好感最多 10%，明驗現行 10% 公式。 |
+| `v097`／`v098` 舊檔 | 0.96／0.97 的跨版遷移由 #529 明確刪除；同版讀寫及其他戰鬥、畫面斷言保留。 |
+| `v140`／`v160`／`v222` | 成親、逐出、設施與守柵在立匾後仍可達，以明確建立門派的歷史角色 fixture 維持原驗收。 |
+| `v165` 傳功 | R3 只容真會者教卷；以有無真本領、實際學會、好感和記憶替換退役的一般武學候選與固定 +15。 |
+| `v165` 存檔 | 同版傳功紀錄現按原狀保存，明驗 `passed` 對等，跨版 `teachHistory31` 換算不再執行。 |
+| `v210` | plain 早補與第 15 日贈風雷是退役開局；保留隱居立匾後仍有效的威脅、重傷與丹藥測試。 |
+| `v24` | 五派、寒玉床與劍法均屬立匾後可驗機制，使用明確門派 fixture；劍傷只比同一招，避免 `dpsOf` 揀到別招。 |
+
+## 第十四輪 R3：實物分卷、真傳藝、首日玩家立匾（#522，規則 4.95）
+
+實作 grass／Codex Cloud；從已合併第十三輪 `8751f09` 建立。只改隱居路線：外功達標後需讀到實物分卷才學新功，絕頂給卷不直接給整門；四段古墓／桃花功要有卷或會的人按原傳功時鐘教；獨行可到林中山洞尋另一脈殘卷。開山選道統由玩家第 1 日起自行按鈕決定，不自動排卡。舊開局的自練／觀摩、武學候選與 RNG 不動。完整規則、前置數值來源與遷移見 [隱居系統](docs/systems/hermitage.md)。
+
+| 類 | 重現指令／證據 | 門檻及結果 |
+|---|---|---|
+| A 固定情境 | Node 22 `bash solo-sect/test/run.sh smoke` | 62／62；R3 小測試驗前置不自悟、實體任務完成才學、尋另一脈殘卷、真會者傳藝、首日立匾；原 Phase 4／6／7 測試依 R3 新規保留具體行為驗證。[原始日誌](artifacts/r14/smoke.log)。 |
+| A golden／遷移 | Node 22 `node solo-sect/tools/golden.mjs --write --tier hermitage`，再 `--check --tier all`；CI 同項另核 | 只重產 `test/golden/hermitage.json`；[完整檢查原始日誌](artifacts/r14/golden-check.log) quick 4、full 32、舊檔 6、隱居 2 全相符。4.9 僅為舊隱居檔補未讀的起手卷，保留既會武學／人物／好感；舊局 quick／full／saves golden 檔不改。 |
+| A 真畫面盲測 | `python3 solo-sect/tools/r14-visual.py --seed=17`，種子可換 | 同一正常雙人開局 UI 的兩張 1600×900 圖：[A](artifacts/r14/blind-A.png)、[B](artifacts/r14/blind-B.png)，先辨可讀卷與已下研讀令，再讀獨立[答案](artifacts/r14/blind-answers.json)；`pageerror=[]`。 |
+| B 機率 | `bash solo-sect/test/run.sh smoke` | R3 不加新隨機公式；原 N62 6,000 次出獵期望測試保留。 |
+| C 隱居日數 | Node 22 `node solo-sect/tools/phase6-check.mjs solo-sect --days=10`，base/head 同命令 | [base](artifacts/r14/heart-days-base.json)／[head](artifacts/r14/heart-days-head.json) 為 12 種子自然 0.25 秒日程、每拍自動按過警示；不替玩家點書卷或立匾，不以 C 數字調參。base 12／12 在 6–7 日得心法，head 6／12 在 6–7 日，其餘十日內無研讀；兩側身法均 0／12。 |
+| C 舊局 bot12 | Node 22 `node solo-sect/tools/bot12.mjs <base 或 head>/solo-sect --json` | [base](artifacts/r14/bot12-base.json)／[head](artifacts/r14/bot12-head.json) `cmp` exit 0，SHA-256 均 `d8e5b46fb4b07edb3cb89d40519ee44d5acc457abb000b317b77ab88cc9bf68b`；自然山賊 53／62、柵欄探針 84／96、守住 48／96，`winP` 中位 .985，惱羞 1052。 |
+
+舊名 → 新名：`SHARED_AWAKENING`／`checkSharedAwakening` → `HERMITAGE_VOLUMES`／`teachableHermitageBook`；`checkExteriorToInteriorAwakening` → `bookStatus`／`readHermitageBook`；`dailyPipeline` 的自然排卡路徑 → `queueHermitageFounding` 玩家按鈕。舊保存欄位 `awakeningStage` 僅繼承實際已學段數。
+
+舊測試更新理由：Phase 4 四階與 Phase 6 心法／身法測試，原「條件滿即自悟」改驗有卷且讀完／真人傳功；Phase 7 原自然排立匾卡改驗第 1 日親按才出卡；`v145-review`、`v145`、`v150` 的精確遷移序列補 4.9，原順序與舊檔有效性斷言全留。這些都是 #522 的規則變更，不降低前置或時鐘要求。
+
+最沒把握三處：① 獨行第二路固定在林中山洞找到，是 #522 指定的可達路徑，沒有另抽掉落率；② 四段卷允許先取得後等前卷 XP，這使卷物理上可早於可讀狀態；③ 10 日自然 C 尚有 6 人未自發選到研讀任務，已保留原始記錄，沒有為此增閱讀偏好係數。
+
 ## 第十三輪 R4 情境列與單脈（#520，規則 4.8）
 
 實作 grass／Codex Cloud；從已合併 Phase 7 的 `50b4b89` 接 H0、R1、R4。舊局情境列仍建立同一位初始弟子與兩位出身同行；隱居有小龍女、黃蓉、獨行三列，無新局伴侶／同行者身分欄位。開山查人物真武學；單脈只有兩選，師承查已會武學和好感，熟廚額外週期看 `cooking ≥16`。4.8 遷移保留舊隱居人物 id、段數、好感；舊局只多空遷移步，golden 正規化時去掉。

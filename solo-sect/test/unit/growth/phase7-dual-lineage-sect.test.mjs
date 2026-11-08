@@ -26,12 +26,13 @@ const mapSwordDamage = (gap, partnerFights = true) => {
   return before - B.foes[0].hp;
 };
 
-test('Phase 7：固定武道里程碑出三選一卡，雙堂開山保留雙脈正宗與十日俸期', () => {
+test('R3 承接 Phase 7：第 1 日玩家可主動立匾，雙堂仍保留雙脈與十日俸期', () => {
   const s = hermit(), h = s.ds.find(d => d.id === 'hero'), p = s.ds.find(d => d.id === 'xiaolongnv');
   assert.equal(canRecruit(s).ok, false);
-  assert.equal(canFoundHermitageSect(s).ok, false);
+  assert.equal(canFoundHermitageSect(s).ok, true);
+  assert.equal(s.choices.some(c => c.sect === 'hermitageFounding'), false, '未點擊前不自動跳出立匾卡');
   h.arts.quanzhenXinfa = { xp: 25 }; h.arts.jinyanStep = { xp: 25 }; p.awakeningStage = 2; p.arts.tianluoPalm = { xp: 25 };
-  assert.equal(canFoundHermitageSect(s).martial, true);
+  assert.equal(canFoundHermitageSect(s).ok, true);
   assert.equal(queueHermitageFounding(s).ok, true);
   assert.deepEqual(s.choices.find(c => c.sect === 'hermitageFounding').opts.length, 3);
   assert.equal(s.choices.find(c => c.sect === 'hermitageFounding').forcePrompt, true);

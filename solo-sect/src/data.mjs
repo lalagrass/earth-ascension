@@ -251,12 +251,11 @@ export const WAVES = [
 // R4（#520）：開局是人物與物資資料，不替人物建立「伴侶」身分。
 // 出自 R4 規格：既有雙人起手原值保留；獨行沒有第二人或額外物資。
 export const OPENING_SCENARIOS = Object.freeze({
-  legacy: { initialDisciples: 1, origins: true, log: '一行人來到山腳一間破道館。', people: [], supplies: {} },
   xiaolongnv: { initialDisciples: 1, origins: false, people: [{ id: 'xiaolongnv', name: '小龍女', originSect: 'gumu', style: 'palm', adult: true, fem: true, sprite: 'senior', personality: ['gentle', 'diligent'], skills: { herbal: 14, agility: 16 }, traits: { bees: true }, arts: { stepFeather: 10, basicSword: 15 }, portrait: 'assets/portraits/xiaolongnv.png', mealName: '百花玉蜂藥膳', affinity: 55, awakeningPath: 'gumu' }], supplies: {} },
   huangrong: { initialDisciples: 1, origins: false, people: [{ id: 'huangrong', template: COMPANIONS.huangrong, name: '黃蓉', originSect: 'taohua', style: 'palm', adult: true, fem: true, sprite: 'senior', personality: ['clever', 'nimble', 'picky'], root: 2, wu: 5, skills: { herbal: 12, cooking: 16 }, arts: { basicFist: 10, xiaoyaoStep: 10 }, portrait: 'assets/portraits/huangrong.png', mealName: '桃花歸元藥膳', affinity: 55, awakeningPath: 'taohua' }], supplies: {} },
   solo: { initialDisciples: 1, origins: false, people: [], supplies: {} },
 });
-export const openingScenario = (spec) => spec?.hermitage && typeof spec.opening === 'object' ? spec.opening : OPENING_SCENARIOS[spec?.hermitage ? (spec.opening || spec.partner || 'xiaolongnv') : 'legacy'] || OPENING_SCENARIOS.xiaolongnv;
+export const openingScenario = (spec) => spec?.hermitage && typeof spec.opening === 'object' ? spec.opening : OPENING_SCENARIOS[spec?.opening || spec?.partner || 'xiaolongnv'] || OPENING_SCENARIOS.xiaolongnv;
 
 export const DISCIPLES = [
   { id: 'hero', name: '主角', root: 3, adult: true, sprite: 'hero', style: 'palm', skills: { leg: 2, palm: 10, strength: 10, farming: 5, herbal: 5, agility: 10, cooking: 3 }, traits: { diligent: 1.2 }, personality: ['diligent', 'worrier'] },
@@ -382,7 +381,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '4.9'; /* R2 #521：隱居局身體由負重比、體能疲勞、營養推導 */
+export const RULES_VERSION = '5.0'; /* R9 #529：唯一終南隱居開局；舊道館存檔拒載 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -410,8 +409,6 @@ export const QUESTIONS = [
 // ---- v0.8 資源→建設、雇工 ----
 // 香火錢：每日晨起入帳 base + floor(名聲/perRep)；雇工每日工錢 wage，付不出累計 unpaid，達 leaveAfter 日離開
 export const ECON = { coinStart: 4, coinBase: 2, coinPerRep: 5, wage: 2, hireCoin: 4, hireFood: 2, leaveAfter: 2, carry: 2, laborCarry: 3 };
-// v2.1：照舊開局（沒有 hero 模板）前 earlyDays 日的香火多 earlyBonus；之後只把「聲望帶來的那一段」乘 repMul。經典開局不走這條，維護費也不動。
-export const PLAIN = { earlyDays: 10, earlyBonus: 4, repMul: 0.6 };
 export const RES_NAMES = { wood: '木', stone: '石', coin: '香火錢', veg: '菜', food: '飯', herb: '藥', hide: '獸皮', gall: '熊膽', page1: '凡階殘頁', page2: '精階殘頁', tiemu: '鐵木', lingshi: '靈石' };
 // 雇工能做的事（不練武、不聽講、不下廚種菜）；幹活時分數加成
 export const LABOR_ACTS = ['rest', 'eat', 'chat', 'leisure', 'chop', 'quarry', 'build'];
@@ -907,6 +904,9 @@ Object.assign(ACTIVITIES, {
   watch:   { name: '護山哨瞭望', dur: 10, energy: -5, skill: { agility: 3 }, gen: { base: 40, why: '上哨崗守獸道', cond: 'always', perDay: 4 }, eff: { watch: 1 } },
   sig:     { name: '鎮派功課', dur: 8, gen: { base: 48, why: '鎮派建築的功課', cond: 'always' } }, // 實際名稱／時長／效果見 SIG_ACTS
 });
+// R3（#522）：沿既有 study／forage 的工時與耗力，不新增調勝率的常數。
+ACTIVITIES.readBook = { name: '茅廬研讀拳譜', dur: ACTIVITIES.study.dur, energy: ACTIVITIES.study.energy };
+ACTIVITIES.searchFragment = { name: '林中山洞尋殘卷', dur: ACTIVITIES.forage.dur, energy: ACTIVITIES.forage.energy };
 // 7 座鎮派建築各自的活動（sect id → 活動資料，形狀同上）
 export const SIG_ACTS = {
   gaibang:   { name: '沿村乞討', dur: 10, energy: -6, perDay: 3, why: '打狗棒堂：沿村討口飯', eff: { res: { food: 2 } } },

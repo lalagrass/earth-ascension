@@ -1,14 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, migrate, scoreActs, setForayPolicy, setOrder, startExpedition, tick } from '../../../src/sim.mjs';
+import { createState, scoreActs, setForayPolicy, setOrder, startExpedition, tick } from '../../../src/sim.mjs';
 import { openExp } from '../../../src/world.mjs';
 import { ROUTE } from '../../../src/data.mjs';
 import { forayChoices } from '../../../src/foray-choice.mjs';
 
 function shortage(seed = 17) {
-  const s = openExp(createState(seed));
+  const s = openExp(createState(seed, { kind: 'custom', hermitage: true, opening: 'solo' }));
+  s.hermitage.active = false; s.hermitage.founded = true;
   s.res.food = 0; s.res.veg = 0;
   s.ds[0].needs = { energy: 100, hunger: 90, social: 100, fun: 65 };
+  s.ds[0].values = Object.fromEntries(Object.keys(s.ds[0].values).map(k => [k, 0]));
   return s;
 }
 
@@ -42,12 +44,6 @@ test('N62 缺糧獸跡出獵、門規指定及效用雜訊期望', t => {
   const edible = forayChoices(choice, choice.ds[0], 'food');
   assert.ok(edible.every(row => row.effort >= edible[0].effort), '缺糧先追較易取糧的獵物');
 
-  const old = shortage(); old.rules = '4.0'; delete old.forayPolicy; delete old.forayStats;
-  old.exp = { n: 7, team: ['hero'], phase: 'out' };
-  migrate(old);
-  assert.equal(old.forayPolicy, 'allow');
-  assert.deepEqual(old.forayStats, { starts: 0, patrols: 0, hurt: 0, discoveries: 0, targets: [] });
-  assert.deepEqual(old.exp, { n: 7, team: ['hero'], phase: 'out' }, '舊局已在外隊伍原樣保留');
   // B：有雜訊時仍用原評分公式推期望，不增出獵骰。
   const s = openExp(createState(17)), d = s.ds[0];
   s.res.food = 10; s.res.wood = s.cap.wood; s.res.stone = s.cap.stone;

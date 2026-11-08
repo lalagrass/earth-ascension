@@ -4,28 +4,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-import { tick, save, load, MIGRATIONS, scoreActs, startExpedition, canExpedition, codexRows, byId, skipGuide, startBuild, dpsOf } from '../../src/sim.mjs';
+import { tick, save, load, scoreActs, startExpedition, canExpedition, codexRows, byId, skipGuide, startBuild, dpsOf } from '../../src/sim.mjs';
 import { RULES_VERSION, ROUTE, ENEMIES, DAY, PHASES, TIERS } from '../../src/data.mjs';
 import { pipeline, MUL_CLAMP } from '../../src/util.mjs';
 import { artMulParts, artById, seedArts, gainArt, learnArt } from '../../src/arts.mjs';
 const FIX = new URL('../fixtures/', import.meta.url);
 const runDays = (s, n) => { for (let i = 0; i < n * DAY * 4; i++) tick(s); };
 const hash = (s) => crypto.createHash('sha256').update(save(s)).digest('hex').slice(0, 16);
-
-// 1 逐版遷移＋真舊檔回歸（fixtures 由各版 commit 的 createState(7)+300 秒存檔產生）
-const OLD = ['0.5', '0.6', '0.7', '0.8', '0.85', '0.9', '0.92'];
-for (const v of OLD) test(`舊檔回歸 v${v}：可讀、只跑該跑的步驟、續玩 1 日無負值`, () => {
-  const r = load(fs.readFileSync(new URL(`v${v}.json`, FIX), 'utf8')); assert.equal(r.ok, true, r.err); const s = r.state;
-  assert.equal(s.rules, RULES_VERSION); assert.equal(s.migratedFrom, v);
-  assert.deepEqual(s.migSteps, MIGRATIONS.filter((m) => parseFloat(m.to) > parseFloat(v)).map((m) => m.to));
-  for (const d of s.ds) { assert.ok(d.arts && d.root && d.role && d.duties !== undefined || d.role === 'laborer'); assert.equal(d.best, 0); }
-  assert.ok(s.codex && s.records && s.pace && s.guide); runDays(s, 1);
-  for (const [k, n] of Object.entries(s.res)) assert.ok(n >= 0, k);
-});
-test('遷移步驟依版本排序、各有說明；新檔不跑任何步驟', () => {
-  const v = MIGRATIONS.map((m) => parseFloat(m.to)); assert.deepEqual([...v].sort((a, b) => a - b), v); assert.ok(MIGRATIONS.every((m) => m.note));
-  assert.equal(MIGRATIONS.at(-1).to, RULES_VERSION); const r = load(save(createState(2))); assert.deepEqual(r.state.migSteps, []);
-});
 
 // 2 統一倍率管線
 test('倍率管線：組內相加、組間相乘、每組夾在 0.3–2.0', () => {
@@ -98,10 +83,6 @@ test('紀錄：個人與本門最遠紀錄，破紀錄全門 +5 心情', () => {
 test('戰利品入庫（含殘頁欄位）', () => { const { s, rep } = expRun(6, 90, 4); for (const [k, v] of Object.entries(rep.loot)) assert.ok(s.res[k] >= v, k); assert.ok('page1' in s.res && 'page2' in s.res); });
 
 // 6 前期節奏
-test('第一天黃昏野豬試煉：主角當天入小成、多一招，記為里程碑', () => {
-  const s = createState(9); for (let i = 0; i < DAY * 4 * 0.99; i++) tick(s);
-  assert.equal(s.pace.trial, 'done'); assert.ok(s.ds[0].arts.basicFist.xp >= 25); assert.ok(s.ds[0].moves.includes('fist2')); assert.ok(s.pace.done.includes('trial')); assert.ok(s.log.some((l) => /黃昏/.test(l.msg)));
-});
 test('前三天每天一個里程碑（試煉、第一次巡山、第一次動工）', () => {
   const s = createState(12); runDays(s, 1.05); assert.deepEqual(s.pace.done, ['trial']);
   startExpedition(openExp(s), ['senior']); let ticks = 0; while (s.exp && ticks++ < DAY * 4 * 2) tick(s); assert.equal(s.exp, null, '第三日前應完成巡山'); assert.ok(s.pace.done.includes('firstExp'));

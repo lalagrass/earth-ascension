@@ -1,7 +1,8 @@
 /* v2.7（loop176–，擁有人 t192）：無名派／武當補強、合參分流、正邪波次大戰、傾巢討伐；全部只在 v22 新局（s.v24） */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick } from '../../../src/sim.mjs';
+import { createState } from '../../harness/historical-party.mjs';
+import { tick } from '../../../src/sim.mjs';
 import * as A from '../../../src/arts.mjs';
 import { SECTS, ARTS } from '../../../src/data.mjs';
 const pump = (d) => { for (const x of ARTS) if ((A.ART_CAT[x.id]?.quanzhang || 0) >= 1 && x.id !== 'jindingPalm') { give(d, x.id, 5000); d.arts[x.id].gm = { e: 99 }; if (A.mastery(d, 'quanzhang') >= 60) break; } };

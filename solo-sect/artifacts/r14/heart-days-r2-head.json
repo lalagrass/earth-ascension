@@ -1,0 +1,212 @@
+{
+  "days": 10,
+  "dt": 0.25,
+  "alertPolicy": "automatically acknowledge before next tick",
+  "scope": "headless fixed schedule; player decisions are not supplied",
+  "rows": [
+    {
+      "seed": 1001,
+      "starterArt": "chunyangFist",
+      "outerXp": 100,
+      "heart": false,
+      "step": false,
+      "firstHeartDay": null,
+      "firstStepDay": null,
+      "strength": 12.100252637435647,
+      "agility": 10.114925536934917,
+      "heroCliffs": [],
+      "exploredCliffs": [],
+      "herb": 0,
+      "beeJelly": 0,
+      "coldWater": 0
+    },
+    {
+      "seed": 1002,
+      "starterArt": "luohanHands",
+      "outerXp": 100,
+      "heart": false,
+      "step": false,
+      "firstHeartDay": null,
+      "firstStepDay": null,
+      "strength": 12.073997532402982,
+      "agility": 10.069756308342699,
+      "heroCliffs": [],
+      "exploredCliffs": [
+        "cliff1"
+      ],
+      "herb": 0,
+      "beeJelly": 0,
+      "coldWater": 0
+    },
+    {
+      "seed": 1003,
+      "starterArt": "chunyangFist",
+      "outerXp": 100,
+      "heart": false,
+      "step": false,
+      "firstHeartDay": null,
+      "firstStepDay": null,
+      "strength": 12.07909381948627,
+      "agility": 10.146727814417549,
+      "heroCliffs": [],
+      "exploredCliffs": [],
+      "herb": 0,
+      "beeJelly": 0,
+      "coldWater": 0
+    },
+    {
+      "seed": 1004,
+      "starterArt": "luohanHands",
+      "outerXp": 100,
+      "heart": false,
+      "step": false,
+      "firstHeartDay": null,
+      "firstStepDay": null,
+      "strength": 12.019133231403579,
+      "agility": 10.084060733898614,
+      "heroCliffs": [],
+      "exploredCliffs": [
+        "cliff1"
+      ],
+      "herb": 0,
+      "beeJelly": 0,
+      "coldWater": 0
+    },
+    {
+      "seed": 1005,
+      "starterArt": "chunyangFist",
+      "outerXp": 100,
+      "heart": false,
+      "step": false,
+      "firstHeartDay": null,
+      "firstStepDay": null,
+      "strength": 12.15360670756797,
+      "agility": 10.075321292219286,
+      "heroCliffs": [],
+      "exploredCliffs": [],
+      "herb": 0,
+      "beeJelly": 0,
+      "coldWater": 0
+    },
+    {
+      "seed": 1006,
+      "starterArt": "luohanHands",
+      "outerXp": 100,
+      "heart": false,
+      "step": false,
+      "firstHeartDay": null,
+      "firstStepDay": null,
+      "strength": 12.017582530530547,
+      "agility": 10.063069064287042,
+      "heroCliffs": [],
+      "exploredCliffs": [
+        "cliff1"
+      ],
+      "herb": 0,
+      "beeJelly": 0,
+      "coldWater": 0
+    },
+    {
+      "seed": 1007,
+      "starterArt": "chunyangFist",
+      "outerXp": 100,
+      "heart": false,
+      "step": false,
+      "firstHeartDay": null,
+      "firstStepDay": null,
+      "strength": 12.145555155183867,
+      "agility": 10.149904368233454,
+      "heroCliffs": [],
+      "exploredCliffs": [],
+      "herb": 0,
+      "beeJelly": 0,
+      "coldWater": 0
+    },
+    {
+      "seed": 1008,
+      "starterArt": "luohanHands",
+      "outerXp": 100,
+      "heart": false,
+      "step": false,
+      "firstHeartDay": null,
+      "firstStepDay": null,
+      "strength": 12.006254862530245,
+      "agility": 10.060428283523429,
+      "heroCliffs": [],
+      "exploredCliffs": [
+        "cliff1"
+      ],
+      "herb": 0,
+      "beeJelly": 0,
+      "coldWater": 0
+    },
+    {
+      "seed": 1009,
+      "starterArt": "chunyangFist",
+      "outerXp": 100,
+      "heart": false,
+      "step": false,
+      "firstHeartDay": null,
+      "firstStepDay": null,
+      "strength": 12.114284337669105,
+      "agility": 10.114231268333715,
+      "heroCliffs": [],
+      "exploredCliffs": [],
+      "herb": 0,
+      "beeJelly": 0,
+      "coldWater": 0
+    },
+    {
+      "seed": 1010,
+      "starterArt": "luohanHands",
+      "outerXp": 100,
+      "heart": false,
+      "step": false,
+      "firstHeartDay": null,
+      "firstStepDay": null,
+      "strength": 11.912190947989753,
+      "agility": 10.10131724410325,
+      "heroCliffs": [],
+      "exploredCliffs": [
+        "cliff1"
+      ],
+      "herb": 0,
+      "beeJelly": 0,
+      "coldWater": 0
+    },
+    {
+      "seed": 1011,
+      "starterArt": "chunyangFist",
+      "outerXp": 100,
+      "heart": false,
+      "step": false,
+      "firstHeartDay": null,
+      "firstStepDay": null,
+      "strength": 12.047975777297005,
+      "agility": 10.130565680515558,
+      "heroCliffs": [],
+      "exploredCliffs": [],
+      "herb": 0,
+      "beeJelly": 0,
+      "coldWater": 0
+    },
+    {
+      "seed": 1012,
+      "starterArt": "luohanHands",
+      "outerXp": 100,
+      "heart": false,
+      "step": false,
+      "firstHeartDay": null,
+      "firstStepDay": null,
+      "strength": 12.099334518285145,
+      "agility": 10.04384199545532,
+      "heroCliffs": [],
+      "exploredCliffs": [
+        "cliff1"
+      ],
+      "herb": 0,
+      "beeJelly": 0,
+      "coldWater": 0
+    }
+  ]
+}

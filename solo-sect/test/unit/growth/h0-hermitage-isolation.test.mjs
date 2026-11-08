@@ -6,7 +6,7 @@ import { DAY } from '../../../src/data.mjs';
 
 const opening = (seed) => createState(seed, { kind: 'custom', answers: Array(9).fill(0), askMajor: true, hermitage: true, partner: 'xiaolongnv', starterArt: 'chunyangFist' });
 
-test('H0：未立匾三十日只有開局人物；立匾後恢復登門，舊候選卡遷移清除', () => {
+test('H0：未立匾三十日只有開局人物；立匾後恢復登門', () => {
   for (const seed of [1001, 1002]) {
     const s = opening(seed), people = s.ds.map((d) => d.id);
     assert.equal(s.log.some((entry) => entry.msg.includes('一行人來到山腳一間破道館')), false);
@@ -23,10 +23,5 @@ test('H0：未立匾三十日只有開局人物；立匾後恢復登門，舊候
   assert.equal(founded.choices.some((choice) => choice.xia), true, '立匾後恢復原名俠登門排程');
   assert.doesNotMatch(canRecruit(founded).why, /荒山隱居/);
 
-  const stale = JSON.parse(save(opening(17)));
-  stale.rules = '4.6'; stale.xia.pending = 'guojing'; stale.xia.lastT = 100;
-  stale.choices.push({ id: 'xia-guojing', xia: 'guojing' });
-  const upgraded = load(JSON.stringify(stale));
-  assert.equal(upgraded.ok, true); assert.equal(upgraded.state.xia.pending, null);
-  assert.equal(upgraded.state.choices.some((choice) => choice.xia), false);
+
 });

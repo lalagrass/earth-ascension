@@ -4,11 +4,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { ARTS, MOVES, RULES_VERSION, DUGU, BREAK } from '../../../src/data.mjs';
+import { ARTS, MOVES, DUGU, BREAK } from '../../../src/data.mjs';
 import { artById, artTier, moveMul, gainArt, learnArt, openSpecials, unlockTechs, applyArtOn, artNoParry, qiOf, qiMax, ART_ON_EVENTS, restQi, jiuyangEase, innerOnHit, innerOnGetHit, preferInner29, blowWhy, boutWhy, expCause, expectOf, EXPECT_SWINGS, reqMissing, zhuangOpen, ponderLuoying, practiceLuoying, YUNV_PAIR, rechooseBranch, autoBranch } from '../../../src/arts.mjs';
 import { powerHtml, teachingBadge } from '../../../src/panel-ui.mjs';
 import { curveMulOf, BRANCHES } from '../../../src/artcard.mjs';
-import { createState, load, tick } from '../../../src/sim.mjs';
+import { createState, tick } from '../../../src/sim.mjs';
 import { canTeachArt, startTeachArt, stopTeachArt, teachCandidates, teachStage, teachDaily, isFamousArt, teachMul, TEACH_ART } from '../../../src/bonds.mjs';
 import { affKey } from '../../../src/util.mjs';
 import { points, T, raidResolve, threatDaily, threatBreakdown } from '../../../src/threat.mjs';
@@ -613,15 +613,6 @@ test('豬籠城寨四門絕活各自生效：如來神掌震退、譚腿踢亂�
   assert.equal(bg.knock, 16);
 });
 
-test('舊存檔讀入後是 2.8', () => {
-  const raw = readFileSync(new URL('../../golden/saves/v2.4.json', import.meta.url), 'utf8');
-  const r = load(raw);
-  assert.equal(r.ok, true, r.err);
-  assert.equal(r.state.rules, RULES_VERSION);
-  assert.equal(r.state.rules, RULES_VERSION);
-  assert.ok(r.state.migSteps.includes('2.8'));
-  assert.equal(r.state.threat?.adapt, 1);
-});
 
 test('N9：戰力加倍，威脅上升，但不到兩倍', () => {
   const s = createState(7);
@@ -835,7 +826,8 @@ test('N12：每位師父每門名功只傳一人；受者上限傳者 − 1', ()
   const { s, m, d } = teachPair();
   assert.ok(startTeachArt(s, m, d, 'xianglong'));
   assert.equal(m.taught28.xianglong, d.id);
-  const e = s.ds[2];
+  // R9 的實際隱居開局只帶兩人；明確建立第二位徒弟來測一師只傳一人。
+  const e = structuredClone(d); e.id = 'second-pupil'; e.name = '第二徒弟'; s.ds.push(e);
   e.master = m.id; e.wu = 4; setAff(s, m, e, 70); delete e.arts.xianglong;
   stopTeachArt(s, m);
   assert.equal(canTeachArt(s, m, e, 'xianglong'), false, '風清揚只傳令狐沖');

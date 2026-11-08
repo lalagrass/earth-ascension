@@ -42,16 +42,5 @@ test('R4：獨行只立單脈；情境新增任意人物由已會武學與好感
   for (let elapsed = 0; elapsed < 30 * DAY; elapsed += 6) { tick(unbannered, 6); if (unbannered.alert) unbannered.alert = null; }
   assert.deepEqual(unbannered.ds.map((d) => d.id), ['hero', 'xiaolongnv'], '受控較粗步長也不應在開山前多出收養門人');
 
-  const prior = JSON.parse(save(createState(17, { ...spec, opening: 'xiaolongnv' })));
-  prior.rules = '4.7'; delete prior.hermitage.opening; prior.hermitage.partnerId = 'xiaolongnv';
-  const priorResident = prior.ds[1]; priorResident.id = 'partner-xln'; priorResident.partnerStage = 2; priorResident.hermitagePartner = true;
-  delete priorResident.awakeningPath; delete priorResident.awakeningStage;
-  prior.hero.companion = priorResident.id; prior.aff[affKey('hero', priorResident.id)] = 55;
-  const restored = load(JSON.stringify(prior)).state;
-  assert.equal(restored.ds[1].id, 'partner-xln', '舊檔人物 id 不改');
-  assert.equal(restored.ds[1].awakeningStage, 2);
-  assert.equal(restored.ds[1].awakeningPath, 'gumu');
-  assert.equal(restored.aff[affKey('hero', 'partner-xln')], 55);
-  assert.equal(restored.hermitage.partnerId, undefined);
-  assert.equal(restored.hero.companion, undefined);
+
 });

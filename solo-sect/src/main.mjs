@@ -6,7 +6,7 @@ import {RECRUIT_POLICIES,recruitmentOf} from './recruitment.mjs';
 import {impactVisual} from './contact-view.mjs';
 import {COVERS} from './tactics.mjs';
 import { BRANCHES } from './artcard.mjs';
-import { chiefLocked24, styleBadges24, lockedArt24, harmonyOf, harmonyMul, affixOf, readwuNote, artsSvg, artHintsHtml, setFocus, focusOf, artById, artMul, artState, topTier, chooseVariant, rechooseBranch, variantOf, stuckAt, breakChance, rustOf, starCost, guizhenOk, compProgress, blowWhy } from './arts.mjs';
+import { chiefLocked24, styleBadges24, lockedArt24, harmonyOf, harmonyMul, affixOf, readwuNote, artsSvg, artHintsHtml, setFocus, focusOf, artById, artMul, artState, topTier, chooseVariant, rechooseBranch, variantOf, stuckAt, breakChance, rustOf, starCost, guizhenOk, blowWhy } from './arts.mjs';
 import { lifeLabel } from './life-study.mjs';
 import { HOME, HOME_VIEW, CHUNK, CHUNK_CAP, lruGet, chunkKey, chunksInView, paintChunk, clampCam, camBounds, partyPos, partyDist, trailAt, SPOTS, styledPos, fogged, inVision, leftovers, FOG_W, FOG_H, WORLD, cellColor, STYLE_PATH, cloudAt, cloudPos, cloudSpots, partyCloud, CLOUD_MAP, ZOOMS, lodOf, TRAIL_END, raidDescent, RINGS, TRAIL, POP, capOf, denDown, raidMul, milestones, styleOf, teamStyle, UNLOCKS, ALL_SECS, secOpen, CHAPTER1, AUTO, autoDue, autosave, autoList, autoGet, suhuiOf, syncLegacy, routeSeg, segIndex, campsOpen, scoutOf, peaceOf, suggestTeam } from './world.mjs';
 import { laborNote, statusHtml, jhuiHtml, archLine, pickModal, pending, isFolded, foldKey, setAll, dsum, growthHtml, teachingBadge, battleRadarSvg } from './panel-ui.mjs';
@@ -16,8 +16,9 @@ import { ARC13 } from './jianghu.mjs';
 import { GEN, canSucceed, succeed, heirs, heirArt, canBuildFac, buildFac, artKind, KIND_NAME, sectFac, rivalGate } from './sect.mjs';
 import { SECTS, SECT_K, RULE_LIB, JH, DAY as DAY13, HS, DUGU, ARTS, TIERS, VARIANTS, AURA, BREAK, ACTIVITIES as ACTS2, ROUTE, EXP, ENEMIES, CHORE_ACTS, CHORE_NAMES, QUOTA, PRIO, PROMOTE, RANK_NAMES, ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES, NODES, EDGES, CLIFFS, FACILITIES, ACTIVITIES, MOVES, MONSTERS, EXP_STYLES, CAMPS, ENDLESS, ROUTINE_MODES, ROUTINE_PERIODS, bindPortraitSet } from './data.mjs';
 import { canLeapCliff } from './cliff.mjs';
+import { bookStatus, volumeName } from './hermitage-books.mjs';
 import { zxGate, XIA, xiaPool, pickStudent } from './wuxia.mjs';
-import { crusade27, isEliteHermit, startExpedition, recallExpedition, canExpedition, codexRows, reportText, segAt, ROUTE_END, skipGuide, outers, skipsChores, emergency, quotaOf, setDuty, setPrio, canPromote, startTrial, isLabor, disciples, laborers, laborCap, canHire, hire, canInvite, invite, avgAff, togglePause, MATS, moodLabel, moodParts, seasonOf, aff, compat, defaultAnswers, personalityFrom, capacity, canRecruit, recruit, recruitNeed, attraction, policyCap, setRecruitPolicy, setForayPolicy, mapStage, setPost, phaseOf, setStyle, createState, tick, startBuild, startHunt, setOrder, save, load, facDef, facStage, relKey, relStage, speedOf, incenseOf, startSchoolTrip, buildWhy, lotsUsed, lotsOf, lotCost, lotWhy, buyLot, resolveRaid, canFoundHermitageSect, queueHermitageFounding } from './sim.mjs';
+import { crusade27, isEliteHermit, startExpedition, recallExpedition, canExpedition, codexRows, reportText, segAt, ROUTE_END, skipGuide, outers, skipsChores, emergency, quotaOf, setDuty, setPrio, canPromote, startTrial, isLabor, disciples, laborers, laborCap, canHire, hire, canInvite, invite, avgAff, togglePause, MATS, moodLabel, moodParts, seasonOf, aff, compat, defaultAnswers, personalityFrom, capacity, canRecruit, recruit, recruitNeed, attraction, policyCap, setRecruitPolicy, setForayPolicy, mapStage, setPost, phaseOf, setStyle, createState, tick, startBuild, startHunt, setOrder, chooseHermitageBook, save, load, facDef, facStage, relKey, relStage, speedOf, incenseOf, startSchoolTrip, buildWhy, lotsUsed, lotsOf, lotCost, lotWhy, buyLot, resolveRaid, canFoundHermitageSect, queueHermitageFounding } from './sim.mjs';
 import { nearestType, typeLabel, archLabel, think as think10 } from './social.mjs';
 import { seasonHint, econHtml, marketDo } from './economy.mjs';
 import { openStart, choiceUI, heroCard } from './start-ui.mjs';
@@ -74,6 +75,7 @@ await Promise.all(names.map((n) => new Promise((r) => { const i = new Image(); i
   c.fillStyle = '#2b2524'; c.beginPath(); c.arc(39, 6, 5, 0, Math.PI * 2); c.fill(); IMG.sister = canvas; }
 let S = createState(Date.now() % 100000 | 0), speed = 1, starting = true;
 const newGame = () => { starting = true; openStart((spec) => { S = createState(Date.now() % 100000 | 0, spec); freshGame(); starting = false; panel(); /* loop65：新局重設每局介面狀態（自動存檔計時等） */ }); };
+const incompatibleSave = (err) => { toast(err, true); document.getElementById('start')?.remove(); S = createState(Date.now() % 100000 | 0); freshGame(); newGame(); };
 window.__sect = { get S() { return S; }, set speed(v) { speed = v; }, freeze: false, hitstop: true, panel: () => panel(), get starting() { return starting; } };
 const ACT_ICON = { quarry: '⛏', spar: '🤺', cook: '🍲', deliver: '📦', rest: '💤', eat: '🍚', farm: '🌱', forage: '🌿', chop: '🪓', train: '掌', learn: '📜', build: '🔨', chat: '💬', hunt: '⚔', strike: '⚔', trial: '⚔' };
 let hoveredActor = null;
@@ -289,15 +291,14 @@ document.addEventListener('click', (e) => { const tab = e.target.closest('[data-
 // loop156 v2.3 清修山莊徽記（弟子 ≤3、幫工 ≥2；練功／打坐／讀書快 20%）
 const hermitBadge = (S) => (isEliteHermit(S) ? `<b class="hermit-badge" title="清修：弟子少、幫工多，練功／打坐／讀書快 20%">【清修山莊・弟子 ${S.ds.filter((d) => d.role !== 'laborer').length}／幫工 ${S.ds.filter((d) => d.role === 'laborer').length}】</b>　` : '');
 const hermitChainProgress = (S) => {
-  if (!S.hermitage) return '';
   if (S.hermitage.founded) return `<div class="k">【${S.sect.plaque}】${S.sect.doctrine === 'dualHall' ? '純陽外堂・素心內堂' : S.sect.doctrine === 'orthodox' ? '正宗與內堂秘傳' : S.sect.doctrine === 'single' ? '單脈傳承' : '萬流歸宗'}・開山第 ${S.hermitage.foundedDay} 日</div>`;
   const d = S.ds.find(x => x.id === 'hero'), outer = d?.hermitageStarter === 'luohanHands' ? 'luohanHands' : 'chunyangFist';
   const heart = outer === 'luohanHands' ? 'shaolinXinfa' : 'quanzhenXinfa', step = outer === 'luohanHands' ? 'shaolinStep' : 'jinyanStep';
-  // 出自 Phase 6 規格：直接顯示同一份 XP／體魄門檻，讓玩家知道為何尚未悟心法或身法。
-  return `<div class="k">外入內：${artById(outer).name} ${(d.arts?.[outer]?.xp || 0).toFixed(1)}/25・臂力 ${d.skills.strength.toFixed(1)}/15 → ${artById(heart).name}${d.arts?.[heart] ? ' ✓' : ''}；心法 ${(d.arts?.[heart]?.xp || 0).toFixed(1)}/25・身法 ${d.skills.agility.toFixed(1)}/16 → ${artById(step).name}${d.arts?.[step] ? ' ✓' : ''}</div>`;
+  // R3 #522：保留 Phase 6 的 XP／體魄前置，明示達標仍須讀卷或向會的人學。
+  return `<div class="k">書卷前置（達標後仍須研讀或受傳）：${artById(outer).name} ${(d.arts?.[outer]?.xp || 0).toFixed(1)}/25・臂力 ${d.skills.strength.toFixed(1)}/15 → ${artById(heart).name}${d.arts?.[heart] ? ' ✓' : ''}；心法 ${(d.arts?.[heart]?.xp || 0).toFixed(1)}/25・身法 ${d.skills.agility.toFixed(1)}/16 → ${artById(step).name}${d.arts?.[step] ? ' ✓' : ''}</div>`;
 };
 function panel() {
-  const ph = phaseOf(S); const se = seasonOf(S); $('clock').textContent = `${S.hermitage?.active ? `【荒山隱居・終南茅廬】${S.ds.some((d) => d.awakeningPath) ? `共修領悟 ${S.hermitage.stage}/4 ・` : ''}` : ''}第 ${se.year} 年 ${se.name}・第 ${ph.day} 日・${ph.name}（${Math.floor(S.t % 600)}/600）・${speed}×${rumorDays(S) ? `・⚠ 山賊傳聞：約 ${rumorDays(S)} 日` : ''}`; /* loop120 角落倒數 */ $('clock').title = seasonHint(S); /* loop73 季節說明（滑鼠移到時鐘） */
+  const ph = phaseOf(S); const se = seasonOf(S); $('clock').textContent = `${S.hermitage?.active ? `【荒山隱居・終南茅廬】${S.ds.some((d) => d.awakeningPath) ? `同修傳藝 ${S.hermitage.stage}/4 ・` : ''}` : ''}第 ${se.year} 年 ${se.name}・第 ${ph.day} 日・${ph.name}（${Math.floor(S.t % 600)}/600）・${speed}×${rumorDays(S) ? `・⚠ 山賊傳聞：約 ${rumorDays(S)} 日` : ''}`; /* loop120 角落倒數 */ $('clock').title = seasonHint(S); /* loop73 季節說明（滑鼠移到時鐘） */
   for (const d of S.ds) recordAxisHistory(AXIS_HISTORY, d, S.day);
   const levels = new Map(S.ds.map((d) => [d.id, growthView(d)]));
   const selected = S.ds.find((d) => d.id === window.__artsOf) || S.ds.find((d) => d.id === 'hero') || S.ds[0];
@@ -311,7 +312,8 @@ function panel() {
   }
   $('routine').innerHTML = `<h2>門規作息</h2><p class="k">設定一次，之後每日照做；心情低於現有低落門檻時先靜坐。</p>${Object.entries(ROUTINE_PERIODS).map(([part, name]) => `<div class="routine-row"><b>${name}</b><div class="choice-row">${Object.entries(ROUTINE_MODES).map(([mode, label]) => `<button data-routine="${part}|${mode}" class="${(S.routine?.[part] || 'free') === mode ? 'on' : ''}">${label}</button>`).join('')}</div></div>`).join('')}<div class="routine-row"><b>後山出獵</b><div class="choice-row">${[['allow','可以打獵'],['forbid','不准私自下山']].map(([key,label])=>`<button data-foray-policy="${key}" class="${S.forayPolicy===key?'on':''}">${label}</button>`).join('')}</div><span class="k">門規限制自主出獵；想親自指定誰去，可在弟子卡選「後山出獵」。</span></div><div class="routine-row"><b>收徒方針</b><div class="choice-row">${Object.entries(RECRUIT_POLICIES).map(([mode,label])=>`<button data-recruit-policy="${mode}" class="${recruitmentOf(S).policy===mode?'on':''}">${label}</button>`).join('')}</div><label class="k">人口上限 <input id="recruit-cap" type="number" min="${recruitmentOf(S).basePeople}" max="${capacity(S)}" value="${recruitmentOf(S).cap??''}" placeholder="依方針" style="width:4em"></label><span class="k">目前可收至 ${policyCap(S)} 人；上門看名聲、自產與守山成績。</span></div>`;
   $('res').innerHTML = `${hermitBadge(S)}${resItem('wood-pile', '木', `${S.res.wood}/${S.cap.wood}`)}${resItem('falling-rocks', '石', `${S.res.stone}/${S.cap.stone}`)}${resItem('coins', '香火錢', S.res.coin)}${resItem('herbs-bundle', '菜', S.res.veg)}${resItem('meal', '飯', S.res.food)}${(S.hermitage?.active || S.herbalDiet) ? resItem('meal', '藥膳', S.res.medFood || 0) : ''}${resItem('herbs-bundle', '藥', S.res.herb)}${S.hermitage?.active ? `${resItem('herbs-bundle', '玉蜂漿', S.res.beeJelly || 0)}${resItem('full-wood-bucket', '寒潭水', S.res.coldWater || 0)}` : ''}${resItem('medicines', '療傷丹', S.res.pill)}${resItem('full-wood-bucket', '水', `${S.res.water}/${S.cap.water}`)}${resItem('wood-beam', '鐵木', S.res.tiemu || 0)}${resItem('crystal-shrine', '靈石', S.res.lingshi || 0)}<div>名聲 ${S.rep}・弟子 ${disciples(S).length}/${capacity(S)} 床・雇工 ${laborers(S).length}/${laborCap(S)}・地圖 ${mapStage(S)}</div><div class="k">菜畦：${S.plots.map((p) => ({ empty: '空', grow: '長', ripe: '熟' })[p.st]).join(' ')}</div>`;
-  if (S.hermitage) $('res').insertAdjacentHTML('beforeend', hermitChainProgress(S));
+  $('res').insertAdjacentHTML('beforeend', hermitChainProgress(S));
+  $('hermit-books').innerHTML = hermitageBooksHtml();
   const blueprints = FACILITIES.filter((f) => f.stages.length > 1 && !f.sig && f.stages[S.fac[f.id].stage + 1]);
   const availableBlueprints = blueprints.filter((f) => S.fac[f.id].site || !buildWhy(S, f.id));
   $('build').innerHTML = availableBlueprints.map((f) => { const st = S.fac[f.id], nx0 = f.stages[st.stage + 1], nx = nx0; /* loop155 村舍大院只在 v23 */
@@ -385,12 +387,12 @@ function panel() {
    <details class="why" data-keep="why-${d.id}"><summary>為什麼${d.task ? (ACTIVITIES[d.task.act]?.name || ({ trial: '試煉', feed: '送飯', shelter: '避難' }[d.task.act] || '狩獵')) : '待命'}？</summary>${(d.why || []).map((w, i) => `<div class="k">${i + 1}. ${ACTIVITIES[w.act]?.name || w.act} <b>${w.score}</b> = 基礎${w.f.base.toFixed(0)}×作息${w.f.sched}×${w.f.text ? `［${w.f.text}］` : `性格${w.f.trait.toFixed(2)}×心情${w.f.mood}`}＋雜訊${w.f.noise.toFixed(0)}｜${w.why}</div>`).join('') || '<div class="k">玩家指派或尚未決策</div>'}</details>
    <div class="k">精力 ${d.needs.energy | 0}</div>${bar(d.needs.energy, '#d9a441')}<div class="k">飽足 ${d.needs.hunger | 0}</div>${bar(d.needs.hunger, '#7aa35a')}<div class="k">交流 ${d.needs.social | 0}</div>${bar(d.needs.social, '#c77')}<div class="k">樂趣 ${(d.needs.fun ?? 0) | 0}</div>${bar(d.needs.fun ?? 0, '#a07ac7')}
    ${d.growMul ? `<div class="k">練功倍率（${artById(d.growMul.art)?.name}）×${d.growMul.total.toFixed(2)} = 天賦${d.growMul.talent.toFixed(2)}×狀態${d.growMul.state.toFixed(2)}×外部${d.growMul.ext.toFixed(2)}${d.growMul.gate < 1 ? `×悟性門檻${d.growMul.gate}` : ''}</div>` : ''}<div class="k">主修 ${STYLES[d.style]}・掌 ${d.skills.palm.toFixed(1)}・腿 ${d.skills.leg.toFixed(1)}・腳力 ${d.skills.agility.toFixed(1)}（${speedOf(d).toFixed(0)}px/s）・力氣 ${d.skills.strength.toFixed(1)}${laborNote(S, d)}・農 ${d.skills.farming.toFixed(1)}・廚 ${d.skills.cooking.toFixed(1)}</div>
-   <div>${d.moves.map((m) => `<span class="mv">${MOVES.find((x) => x.id === m).name}</span>`).join('')}${compProgress(d).map((c) => `<span class="mv" title="領悟進度">悟：${c.name} ${Math.floor(c.v / c.need * 100)}%</span>`).join('')}${d.pendingArt ? `<span class="mv new">可學：${artById(d.pendingArt).name}</span>` : ''}</div></details>
+   <div>${d.moves.map((m) => `<span class="mv">${MOVES.find((x) => x.id === m).name}</span>`).join('')}${d.pendingArt ? `<span class="mv new">可學：${artById(d.pendingArt).name}</span>` : ''}</div></details>
    <select data-style="${d.id}">${Object.entries(STYLES).map(([k, n]) => `<option value="${k}" ${d.style === k ? 'selected' : ''}>主修${n}</option>`).join('')}</select>
-   <select data-ord="${d.id}">${[...ORD, ...(S.hermitage ? Object.entries(CLIFFS).flatMap(([id, cliff]) => canLeapCliff(d, id) ? cliff.acts.map(act => [act, ACTIVITIES[act].name]) : []) : [])].map(([k, n]) => `<option value="${k}" ${(d.order || '') === k ? 'selected' : ''}>${n}</option>`).join('')}</select></div>`).join('');
+   <select data-ord="${d.id}">${[...ORD, ['readBook', ACTIVITIES.readBook.name], ...(S.hermitage.active && S.ds.length === 1 && d.id === 'hero' ? [['searchFragment', ACTIVITIES.searchFragment.name]] : []), ...Object.entries(CLIFFS).flatMap(([id, cliff]) => canLeapCliff(d, id) ? cliff.acts.map(act => [act, ACTIVITIES[act].name]) : [])].map(([k, n]) => `<option value="${k}" ${(d.order || '') === k ? 'selected' : ''}>${n}</option>`).join('')}</select></div>`).join('');
   $('rel').innerHTML = Object.entries(S.rel).map(([k, v]) => { const [a, b] = k.split('|').map((id) => S.ds.find((d) => d.id === id).name); const [A, B] = k.split('|').map((id) => S.ds.find((d) => d.id === id)); return `<div>${a}—${b}：${relStage(v)} ${v.toFixed(0)}${S.families.includes(k) ? ' 🏠' : ''} <span class="k">（${a}→${aff(S, A, B).toFixed(0)}／${b}→${aff(S, B, A).toFixed(0)}・合拍 ${compat(A, B).toFixed(1)}/${compat(B, A).toFixed(1)}）</span>${memsOf(S, A, B).slice(-2).map((m) => `<div class="k mem">📜 第${m.day}日・${m.where}：${m.text}</div>`).join('')}</div>`; }).join('') + bondsHtml(S);
   $('hero').innerHTML = heroCard(S);
-  $('founding-action').innerHTML = S.hermitage?.active && canFoundHermitageSect(S, true).ok ? '<button data-found-hermitage>立匾開山・選道統</button>' : ''; // 出自 Phase 7 規格：手動立匾位於可點擊的固定頁首。
+  $('founding-action').innerHTML = S.hermitage?.active && canFoundHermitageSect(S).ok ? '<button data-found-hermitage>立匾開山・選道統</button>' : ''; // R3 #522：開局第 1 日即由玩家自行決定。
   if ($('chron')) { $('chron').innerHTML = chronHtml(S); $('chron-wrap').hidden = false; }
   if ($('jhui')) { $('jhui').innerHTML = jhuiHtml(S, keepState()); $('jhui-wrap').hidden = false; }
   restoreKeep(); applyFold();
@@ -416,9 +418,8 @@ document.addEventListener('change', (e) => { if (e.target.dataset.branch) { cons
 function toast(msg, bad = false) { let t = document.getElementById('toast'); if (!t) { t = document.createElement('div'); t.id = 'toast'; t.style.cssText = 'position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:99;padding:6px 14px;border-radius:6px;font-size:14px;pointer-events:none'; document.body.appendChild(t); } t.textContent = msg; t.style.background = bad ? '#7a2a1e' : '#3a5a2a'; t.style.color = '#fff'; t.style.display = 'block'; clearTimeout(t._h); t._h = setTimeout(() => { t.style.display = 'none'; }, 2000); }
 const saveWithUiHistory = () => save({ ...S, uiGrowthHistory: AXIS_HISTORY });
 $('save').onclick = () => { try { localStorage.setItem('solo-sect-save', saveWithUiHistory()); toast(`已存檔（第 ${Math.floor(S.t / 600) + 1} 日）`); } catch (e) { toast('存檔失敗：' + e.message, true); } };
-$('load').onclick = () => { const r = load(localStorage.getItem('solo-sect-save') || ''); if (r.ok) { S = r.state; freshGame(); try { syncLegacy(localStorage, S); } catch {} toast('已讀檔'); } else toast(r.err, true); panel(); };
+$('load').onclick = () => { const r = load(localStorage.getItem('solo-sect-save') || ''); if (r.ok) { S = r.state; freshGame(); try { syncLegacy(localStorage, S); } catch {} toast('已讀檔'); } else incompatibleSave(r.err); panel(); };
 $('reset').onclick = () => newGame();
-$('load').addEventListener('click', () => { if (document.getElementById('start')) { document.getElementById('start').remove(); starting = false; } });
 let last = performance.now(), acc = 0;
 let modalWant = null;
 function loop(now) { acc += Math.min(0.5, (now - last) / 1000) * speed; last = now;
@@ -437,7 +438,7 @@ function drawMicroStage() {
   const cap = $('micro-caption');
   if (cap && ergo) {
     if (S.hermitage?.contemplateUntil > S.t && (S.hermitage.contemplateActors || []).includes(focal.id)) {
-      cap.textContent = '【陰陽合參】兩人對坐，領悟《玉女心經》';
+      cap.textContent = '【武學傳授】兩人對坐，研讀《玉女心經》';
       return;
     }
     const duel = ergo.combatDetail || ergo.duel;
@@ -566,7 +567,11 @@ function manualHtml() {
   const ms = S.manuals || [], ps = Object.keys(MANUALS);
   return `<div class="k">秘笈殘章：${ps.map((k) => `${k === 'page1' ? '凡階' : '精階'} ${S.res[k] || 0}/${MANUALS[k].need} <button data-asm="${k}" ${canAssemble(S, k) ? '' : 'disabled'}>湊成${MANUALS[k].name}</button>`).join('　')}${ms.map((m, i) => `<div>📜《${ARTS.find((a) => a.id === m.art).name}》<select data-lm="${i}"><option value="">指定研讀…</option>${disciples(S).filter((d) => !d.arts?.[m.art]).map((d) => `<option value="${d.id}">${d.name}</option>`).join('')}</select></div>`).join('')}</div>`;
 }
+function hermitageBooksHtml() {
+  return `<div class="k"><b>山居拳譜分卷</b>${(S.hermitage.books || []).map(id => `<div>📜《${volumeName(id)}》${S.ds.filter(d => !d.away).map(d => { const status = bookStatus(S, d, id); return `<button data-hermitage-book="${d.id}|${id}" ${status.ok ? '' : 'disabled'} title="${status.why}">${d.name}研讀</button>`; }).join('')}</div>`).join('')}${S.hermitage.active && S.ds.length === 1 ? '<div>另一脈殘卷可到林中山洞尋找（指派「林中山洞尋殘卷」）。</div>' : ''}</div>`;
+}
 document.addEventListener('click', (e) => { const b = e.target.closest('[data-asm]'); if (b) { assemble(S, b.dataset.asm); panel(); } });
+document.addEventListener('click', (e) => { const b = e.target.closest('[data-hermitage-book]'); if (!b) return; const [person, volume] = b.dataset.hermitageBook.split('|'); if (chooseHermitageBook(S, person, volume)) panel(); });
 document.addEventListener('change', (e) => { const s = e.target.closest('[data-lm]'); if (s && s.value) { const r = learnManual(S, +s.dataset.lm, s.value, think10); if (!r.ok) alert(r.why); panel(); } });
 // v1.0 鏡頭：大事件短暫拉近
 const cam = { x: HOME_VIEW.x, y: HOME_VIEW.y, z: 1, ux: HOME_VIEW.x, uy: HOME_VIEW.y, uz: 1, tx: 0, ty: 0, until: 0, follow: false, prev: null };
@@ -724,9 +729,9 @@ function freshGame() { lastAuto = S.t; for (const k of Object.keys(cue)) delete 
 function audioStep() { for (const c of cuesFrom(cue, S)) { SFX[c]?.(); const p = c === 'breakthrough' ? (S.fx.find((f) => f.kind === 'break')?.pos || NODES.yard) : c === 'record' ? NODES.gate : c === 'chapter' ? NODES.hall : null; if (p) camFocus(p[0], p[1]); }
   const rd = S.mons.find((m) => m.raid === 'go'); if (rd && cue.raid !== rd.uid) { cue.raid = rd.uid; camFocus(rd.pos[0], rd.pos[1], 2); } }
 setInterval(() => { if (!S || starting || !autoDue(S.t, lastAuto)) return; /* loop65：用 autoDue，時間倒退也算到期；開局畫面不存 */ lastAuto = S.t; autosave(localStorage, saveWithUiHistory(), { day: Math.floor(S.t / 600) + 1, name: S.hero?.name, suhui: suhuiOf(S), at: Date.now() }); }, 1000);
-$('autos').onchange = (e) => { if (e.target.value === '') return; const r = load(autoGet(localStorage, +e.target.value) || ''); if (r.ok) { S = r.state; freshGame(); try { syncLegacy(localStorage, S); } catch {} document.getElementById('start')?.remove(); starting = false; } else alert(r.err); panel(); };
+$('autos').onchange = (e) => { if (e.target.value === '') return; const r = load(autoGet(localStorage, +e.target.value) || ''); if (r.ok) { S = r.state; freshGame(); try { syncLegacy(localStorage, S); } catch {} document.getElementById('start')?.remove(); starting = false; } else incompatibleSave(r.err); panel(); };
 $('export').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([saveWithUiHistory()], { type: 'application/json' })); a.download = `solo-sect-day${Math.floor(S.t / 600) + 1}.json`; a.click(); URL.revokeObjectURL(a.href); };
-$('import').onchange = async (e) => { const f = e.target.files[0]; if (!f) return; const r = load(await f.text()); if (r.ok) { S = r.state; freshGame(); try { syncLegacy(localStorage, S); } catch {} document.getElementById('start')?.remove(); starting = false; } else alert('匯入失敗：' + r.err); e.target.value = ''; panel(); };
+$('import').onchange = async (e) => { const f = e.target.files[0]; if (!f) return; const r = load(await f.text()); if (r.ok) { S = r.state; freshGame(); try { syncLegacy(localStorage, S); } catch {} document.getElementById('start')?.remove(); starting = false; } else incompatibleSave(r.err); e.target.value = ''; panel(); };
 $('mute').onclick = () => { setMute(!isMuted()); ambient(!isMuted()); panel(); };
 document.addEventListener('click', (e) => { if (e.target.closest('button')) { SFX.click(); if (!isMuted()) ambient(true); } }, true);
 panel(); newGame(); requestAnimationFrame(loop);
@@ -752,7 +757,7 @@ try {
 
 // v1.85 市集／義學按鈕
 document.addEventListener('click', (e) => { const m = e.target.closest('[data-mkt]'); if (m && S) { const r = marketDo(S, m.dataset.mkt); toast(r.ok ? `成交 ${r.p}` : r.why, !r.ok); return; } if (e.target.closest('[data-school]') && S) { const r = startSchoolTrip(S); toast(r.ok ? `${r.d.name}下山義學去了` : r.why, !r.ok); } });
-document.addEventListener('click', (e) => { if (!S || !e.target.closest('[data-found-hermitage]')) return; const r = queueHermitageFounding(S, true); if (!r.ok) toast(r.why, true); else { choiceUI(S); panel(); } }); // 出自 Phase 7 規格：玩家親自選牌匾與道統。
+document.addEventListener('click', (e) => { if (!S || !e.target.closest('[data-found-hermitage]')) return; const r = queueHermitageFounding(S); if (!r.ok) toast(r.why, true); else { choiceUI(S); panel(); } }); // R3 #522：玩家親自選牌匾與道統。
 
 // v1.9 I-2 擴地、I-6 山賊勒索、A9 因才派巡
 document.addEventListener('click', (e) => {

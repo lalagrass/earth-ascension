@@ -1,9 +1,10 @@
-import { chiefLocked24, growEnsure, settleGrowth, artById, artTier, learnArt, curCap, reqMissing, topTier, gated, autoBranch } from './arts.mjs';
+import { growEnsure, settleGrowth, artById, artTier, learnArt, curCap, reqMissing, topTier, gated, autoBranch } from './arts.mjs';
 import { fanRank, CEILING, SPECIALS, BRANCHES } from './artcard.mjs';
-import { ARTS, TRAITS, DAY } from './data.mjs';
+import { ARTS, TRAITS, DAY, ACTIVITIES } from './data.mjs';
 import { aff, relAdd } from './social.mjs';
 import { log, resAdd } from './util.mjs';
 import { recordSocialEvent } from './social-thoughts.mjs';
+import { HERMITAGE_VOLUMES, teachableHermitageBook } from './hermitage-books.mjs';
 // ==== （原 bonds.mjs）====
 // v1.65 人物與門派運作：共同記憶帳本、名俠池畫風濾鏡、傳功、收徒（資料表＋小解讀器）
 
@@ -43,15 +44,20 @@ const pairRecent = (s, a, b) => Object.entries(s.passed || {}).some(([k, day]) =
 const able = (d) => d && d.role !== 'laborer' && !d.away && d.adult !== false;
 export function passPick(s, d) {
   if (!able(d) || (d.passDay === s.day) || passToday(s) >= PASS.perDay) return null; /* v1.8：門派每日傳功上限 */ const P = s.passed || {};
-  const arts = ARTS.filter((a) => !a.deprecated && (!a.secret || (a.derived && s.sect?.tree.includes(a.id))) && (!a.classic || (a.own24 && s.sect?.tree.includes(a.id))) && artTier(d, a.id) >= PASS.minTier); /* loop168 本門專屬武學可傳功 */ /* loop165 合參絕學可作本門絕學傳功 */ /* 名俠絕學走各自劇情，不走一般傳功 */ if (d.stree) arts.sort((x, y) => d.stree.includes(y.id) - d.stree.includes(x.id)); /* loop164 本門優先傳 */ if (!arts.length) return null;
-  const cands = s.ds.filter((p) => p !== d && able(p) && !p.task?.partner && p.task?.act !== 'meditate').sort((x, y) => (y.master === d.id) - (x.master === d.id) || aff(s, d, y) - aff(s, d, x));
-  for (const p of cands) if (!pairRecent(s, d.id, p.id)) for (const a of arts) if (artTier(p, a.id) < PASS.minTier && !P[`${d.id}>${p.id}:${a.id}`] && !chiefLocked24(p, a)) return { p, art: a.id }; /* loop171 鎮派絕學只傳掌門／首徒／魁首 */
+  for (const pupil of s.ds.filter(p => p !== d && able(p) && !p.task?.partner && p.task?.act !== 'meditate')) {
+    const volume = teachableHermitageBook(s, d, pupil);
+    if (volume && !pairRecent(s, d.id, pupil.id) && !P[`${d.id}>${pupil.id}:${volume.art}`]) return { p: pupil, art: volume.art }; // R3：有真本領者沿既有雙人傳功時鐘教授卷中武學。
+  }
   return null;
 }
 export const passReserve = (s) => { s.passN = { day: s.day, n: passToday(s) + 1 }; }; // 開始傳功即佔當日名額（多人同時起手不會超量）
 export function passDo(s, d, p, art) {
   const key = `${d.id}>${p.id}:${art}`; (s.passed ??= {}); if (s.passed[key]) return false; s.passed[key] = s.day; d.passDay = s.day;
-  const a = learnArt(p, art, s.t); relAdd(s, d, p, PASS.aff); addMem(s, d, p, 'pass', a.name); recordSocialEvent(s, 'taught', d, p, a.name); log(s, `【傳授】${d.name}帶${p.name}練「${a.name}」`); return true;
+  const a = learnArt(p, art, s.t); relAdd(s, d, p, PASS.aff); addMem(s, d, p, 'pass', a.name); recordSocialEvent(s, 'taught', d, p, a.name); log(s, `【傳授】${d.name}帶${p.name}練「${a.name}」`);
+  const volume = HERMITAGE_VOLUMES.find(v => v.art === art && v.stage);
+  if (volume) { p.awakeningStage = Math.max(p.awakeningStage || 0, volume.stage); s.hermitage.stage = Math.max(s.hermitage.stage || 0, volume.stage);
+    if (volume.stage === 4 && volume.route === 'gumu') { s.hermitage.contemplateUntil = s.t + ACTIVITIES.meditate.dur; s.hermitage.contemplateActors = [d.id, p.id]; } }
+  return true;
 }
 
 // ---- 收徒：內門／首徒對好感夠的外門收一名徒弟；徒弟在師父在場時練功 ×1.15 ----

@@ -2,6 +2,7 @@ import {BODY_MECHANICS} from './contact.mjs';
 import {makeBare} from './starter-combat.mjs';
 import { DAY, NODES, SECTS, SECT_K, RULE_LIB, HERO_SECT, CUSTOM_BY_VALUE, CUSTOM_RIVALS, WUMING_KIT24, ARTS, SECT_PICK24 } from './data.mjs';
 import { seedArts, learnArt, artTier, artById, artOk, reqMissing, curCap, focusOf, specK, bestSpec, chiefLocked24, mastery, primaryCat, CATS, qiInjuryFight28, temperOf, TEMPER29, yunvOpen24, ponderLuoying, practiceLuoying } from './arts.mjs';
+import { HERMITAGE_VOLUMES, volumeLineage } from './hermitage-books.mjs';
 import { dpsOf } from './world.mjs';
 import { compat, think } from './social.mjs';
 import { APPR } from './bonds.mjs';
@@ -91,7 +92,7 @@ export function succeed(s, heirId, artId) {
   n.values = { ...baseVals, ...(n.values || s.hero?.values || {}) }; n.wexin ??= 0; n.personality ??= []; n.known ??= n.personality.slice(0, 1); n.adult = true;
   if (n.task) cancelTask(s, n, '接掌門派');
   G.n++; G.suhui = Math.min(GEN.suhuiMax, G.suhui + 1);
-  s.hero = { ...(s.hero || {}), kind: 'heir', id: 'heir', name: n.name, gen: G.n, arc: null, arcStep: 0, values: n.values, stats: s.hero?.stats || { wu: n.wu ?? n.root ?? 2, gen: n.root ?? 2, li: 2, shen: 2, ding: 2, fu: 2 }, ...(s.hermitage ? {} : { companion: s.hero?.companion }) };
+  s.hero = { ...(s.hero || {}), kind: 'heir', id: 'heir', name: n.name, gen: G.n, arc: null, arcStep: 0, values: n.values, stats: s.hero?.stats || { wu: n.wu ?? n.root ?? 2, gen: n.root ?? 2, li: 2, shen: 2, ding: 2, fu: 2 },  };
   log(s, `【衣缽】${oldName}把${artById(art).name}（五成火候＋一顆星）傳給${n.name}，飄然退隱。${s.sect?.name || '門派'}第 ${G.n} 代掌門接位。宿慧 +1（${G.suhui}/${GEN.suhuiMax}）。`);
   return { ok: true, heir: n, keepPos };
 }
@@ -116,7 +117,7 @@ export function genResolve(s, ch, i) {
 // ==== （原 sect.mjs）====
 // v1.35 門派身分（ROADMAP §18）：門規、鎮派設施、招人風格、宿敵守關、名俠加權、外門武學、叛派
 export function sectOf(hero) {
-  const id = SECTS[hero?.sect24] && (!SECTS[hero.sect24].phase7Only || hero.phase7Founded) && (SECTS[hero.sect24].v24 || SECT_PICK24.includes(hero.sect24)) ? hero.sect24 : /* loop169 自創主角也可選華山二宗、丐幫、明教 */ hero?.kind === 'template' ? HERO_SECT[hero.id] || 'wuming' : 'wuming', B = SECTS[id]; /* 出自 Phase 7 規格：新合宗門派只由隱居開山選擇，舊開局不可偷選。 */
+  const id = SECTS[hero?.sect24] && (!SECTS[hero.sect24].phase7Only || hero.phase7Founded) && (SECTS[hero.sect24].v24 || SECT_PICK24.includes(hero.sect24)) ? hero.sect24 : /* loop169 自創主角也可選華山二宗、丐幫、明教 */ 'wuming', B = SECTS[id]; /* 出自 Phase 7 規格：新合宗門派只由隱居開山選擇，舊開局不可偷選。 */
   const o = { id, name: B.name, plaque: B.plaque, color: B.color, flag: B.flag, bias: { ...B.bias }, tree: [...B.tree], ban: [...B.ban], rules: [...B.rules], rivals: [...B.rivals], rep: 0, fac: false, viol: {}, violN: 0, lastViolT: -1e9, keptDay: 0, day: -1, questioned: {}, defect: {}, expelled: [], beaten: {}, rivalI: 0 };
   if (id === 'wuming' && hero?.kind === 'custom') { const [tag, rule] = CUSTOM_BY_VALUE[hero.main] || ['拙', 'rescue']; o.bias = { [tag]: SECT_K.biasCap }; o.rules = [rule]; o.rivals = [CUSTOM_RIVALS[(hero.name || '').length % CUSTOM_RIVALS.length]]; o.plaque = `${hero.name || '無名'}派`; o.name = o.plaque; }
   return o;
@@ -132,8 +133,10 @@ const knownLineage = (d) => {
 const hermitageLineages = (s) => {
   const routes = [];
   for (const person of s.ds) {
-    const id = knownLineage(person);
-    if (id && !routes.some((r) => r.id === id)) routes.push({ id, teacher: person.id, tree: [...SECTS[id].tree] });
+    const primary = knownLineage(person);
+    const fromVolumes = HERMITAGE_VOLUMES.filter(v => s.hermitage?.books?.includes(v.id) && person.arts?.[v.art]).map(volumeLineage).filter(Boolean);
+    const candidates = person.originSect && fromVolumes.includes(person.originSect) ? fromVolumes : [primary, ...fromVolumes];
+    for (const id of candidates) if (id && !routes.some((r) => r.id === id)) routes.push({ id, teacher: person.id, tree: [...SECTS[id].tree] }); // R3：獨行者讀到第二脈真卷，可由同一人立兩脈。
   }
   return routes;
 };
@@ -147,18 +150,14 @@ export function applySectLineage(s, d) {
   d.foundedLineage = !!s.hermitage?.founded && (s.sect.doctrine !== 'orthodox' || d.stree.length > s.sect.tree.length);
   return d;
 }
-export function canFoundHermitageSect(s, manual = false) {
+export function canFoundHermitageSect(s) {
   if (!s.hermitage?.active || s.hermitage.founded) return { ok: false, why: '已非荒山隱居時期' };
   const h = heroD(s); if (!h || h.away || h.hp <= 0) return { ok: false, why: '主角尚未在山中' };
-  const routes = hermitageLineages(s), heart = h.hermitageStarter === 'luohanHands' ? 'shaolinXinfa' : 'quanzhenXinfa';
-  const step = h.hermitageStarter === 'luohanHands' ? 'shaolinStep' : 'jinyanStep';
-  const others = s.ds.filter((d) => d !== h && !d.away && d.hp > 0);
-  const martial = !!(h.arts?.[heart] && h.arts?.[step] && (!others.length || others.some((d) => (d.awakeningStage || 0) >= 2)));
-  const trial = !!(s.hermitage.exploredCliffs?.length || s.threat?.won > 0);
-  return { ok: !!routes.length && (manual || martial || trial), martial, trial, routes, why: routes.length ? '尚須武道小成、上崖或守山勝場' : '尚未帶有可立脈的武學' };
+  const routes = hermitageLineages(s);
+  return { ok: !!routes.length, routes, why: routes.length ? '' : '尚未帶有可立脈的武學' }; // R3 #522：玩家第 1 日即可決定立匾；不再看武道、山崖或守山。
 }
-export function queueHermitageFounding(s, manual = false) {
-  const ready = canFoundHermitageSect(s, manual); if (!ready.ok) return ready;
+export function queueHermitageFounding(s) {
+  const ready = canFoundHermitageSect(s); if (!ready.ok) return ready;
   if (s.choices?.some((c) => c.sect === 'hermitageFounding')) return { ok: true };
   const dual = ready.routes.length >= 2;
   const doctrines = dual ? ['dualHall', 'orthodox', 'wuming'] : ['single', 'wuming'];
@@ -180,7 +179,7 @@ export function assignDiscipleHall(s, d) {
   return d.hall;
 }
 export function foundHermitageSect(s, doctrine = null, customPlaque = '') {
-  const ready = canFoundHermitageSect(s, true); if (!ready.ok) return ready;
+  const ready = canFoundHermitageSect(s); if (!ready.ok) return ready;
   const routes = ready.routes, dual = routes.length >= 2;
   doctrine ??= dual ? 'dualHall' : 'single';
   if (!(dual ? ['dualHall', 'orthodox', 'wuming'] : ['single', 'wuming']).includes(doctrine)) return { ok: false, why: '目前武學脈絡不支援此道統' };
@@ -281,7 +280,7 @@ export function buildFac(s, force) {
 }
 /* #409 桃花：碧波心法到小成後，在島上自己看出落英，次日才上手。不經師父。 */
 function luoyingDaily(s) {
-  if (s.sect?.id !== 'taohua') return;
+  if (s.hermitage || s.sect?.id !== 'taohua') return; // R3：隱居路線不沿用舊桃花自悟整門。
   for (const d of s.ds) {
     if (d.role === 'laborer' || d.away) continue;
     if (!d.luoyingClue) { if (ponderLuoying(d)) log(s, `${d.name}在島上對著落花比劃，掌路自己浮出來。`); }
@@ -303,7 +302,7 @@ export function sectRecruit(s, d) {
   if (s.hermitage?.founded) {
     S.firstDiscipleId ??= d.id; applySectLineage(s, d); assignDiscipleHall(s, d);
   }
-  d.recruitNote = R.text || (s.hermitage?.founded ? '新弟子拜入山門。' : undefined); log(s, `【${S.name}收徒】${d.recruitNote}`); // 出自 Phase 7 規格：新合宗無舊派收徒列；舊局逐欄、逐字不變。
+  d.recruitNote = R.text || '新弟子拜入山門。'; log(s, `【${S.name}收徒】${d.recruitNote}`); // 出自 Phase 7 規格：新合宗無舊派收徒列；舊局逐欄、逐字不變。
 }
 // ---- 宿敵守關：第 2、4、6… 道關卡由宿敵門派把守；打贏得門派聲望 ----
 export function rivalGate(s, G, i) {

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick, save, load } from '../../../src/sim.mjs';
-import { DAY, BREAK, RULES_VERSION } from '../../../src/data.mjs';
+import { createState, tick } from '../../../src/sim.mjs';
+import { DAY, BREAK } from '../../../src/data.mjs';
 import { seedArts, gainArt, artById, stuckAt, resolveBreak, curCap, guizhenOk, chooseVariant, variantOf, moveMul, cdMul, rustOf, artTier } from '../../../src/arts.mjs';
 const mk = (root = 3, personality = []) => seedArts({ root, personality, style: 'palm', skills: { palm: 0, leg: 0 }, moves: ['fist'], mood: 70, needs: { energy: 80 } });
 const fist = () => artById('basicFist');
@@ -48,10 +48,4 @@ test('荒疏：久不練只減慢進度、不降階', () => {
   const a = mk(), b = mk(); a.arts.basicFist.xp = b.arts.basicFist.xp = 30; a.arts.basicFist.last = b.arts.basicFist.last = 0;
   gainArt(a, 5, 1, 10); gainArt(b, 5, 1, 6 * DAY); assert.ok(b.arts.basicFist.xp > 30 && b.arts.basicFist.xp - 30 < a.arts.basicFist.xp - 30); assert.equal(artTier(b, 'basicFist'), 1);
   assert.ok(rustOf({ last: 0 }, 6 * DAY) > 0);
-});
-test('v0.9 舊檔：補瓶頸旗標與三招，可續玩', () => {
-  const s = createState(6); const o = JSON.parse(save(s)); o.rules = '0.9';
-  for (const d of o.ds) { d.arts = { basicFist: { xp: 70 } }; d.moves = ['fist']; }
-  const r = load(JSON.stringify(o)); assert.equal(r.ok, true); const h = r.state.ds[0]; assert.equal(r.state.rules, RULES_VERSION);
-  assert.ok(h.arts.basicFist.bt1); assert.ok(h.moves.includes('fist3')); for (let i = 0; i < 400; i++) tick(r.state);
 });

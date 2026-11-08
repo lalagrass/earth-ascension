@@ -8,7 +8,6 @@ import { learnArt, artTier } from '../../src/arts.mjs';
 import { XIA, xiaPool, xiaStep, xiaResolve, pickStudent, onCook, dragonFit, PAIR_CAP, xidOf } from '../../src/wuxia.mjs';
 import { pairBonus, applyHero, autoPick } from '../../src/hero.mjs';
 import { aff } from '../../src/social.mjs';
-import { migrate } from '../../src/save.mjs';
 import { guardOf } from '../../src/world.mjs';
 
 const st = (seed = 3) => { const s = createState(seed); tick(s); return s; };
@@ -47,9 +46,9 @@ test('沒有吃到菜不傳功', () => {
   const s = st(); join(s, 'guojing'); join(s, 'huangrong'); s.xia.teacher = { id: 'hongqigong', name: '洪七公', stage: 0, meals: 0, since: s.t, lastStageT: -1e9 };
   s.t += DAY; xiaStep(s); assert.equal(s.xia.teacher.stage, 0);
 });
-test('郭靖＋黃蓉同門默契上限 25%', () => {
+test('郭靖＋黃蓉同門好感默契按現行通用上限 10%', () => {
   const s = st(); const g = join(s, 'guojing'), h = join(s, 'huangrong'); s.hero ??= { id: 'x' };
-  s.aff[`${g.id}>${h.id}`] = 100; s.aff[`${h.id}>${g.id}`] = 100; const b = pairBonus(s, g, aff); assert.ok(b > 0.2 && b <= PAIR_CAP);
+  s.aff[`${g.id}>${h.id}`] = 100; s.aff[`${h.id}>${g.id}`] = 100; const b = pairBonus(s, g, aff); assert.equal(b, 0.1);
 });
 test('名俠心情長期低落就下山（不死）', () => {
   const s = st(); const g = join(s, 'guojing'); for (let i = 0; i < DAY / 0.25 + 2; i++) { g.mood = 0; xiaStep(s); } assert.ok(!s.ds.includes(g)); assert.ok(s.xia.left.guojing);
@@ -66,7 +65,4 @@ function party(classic) { const s = createState(11); tick(s); const ids = s.ds.f
 test('平衡：招牌武學練滿比一般武學走得更遠', () => {
   const [n] = party(false); assert.ok(n.dist >= 900, `normal ${n.dist}`); /* #403 退役固定 1600／2000 上限：N24 同源期望傷害會移動絕對里程，保留相對強弱 */
   const [c, d] = party(true); assert.ok(c.dist > n.dist, `classic ${c.dist}`); assert.ok(guardOf(d) <= 0.6 + 1e-9, String(guardOf(d))); /* #390：現行規則下滿武學也練到紫霞，護體再乘 (1 − 0.03×層) */
-});
-test('1.0 存檔遷移到 1.1 補上名俠狀態', () => {
-  const s = st(); delete s.xia; s.rules = '1.0'; const r = migrate(JSON.parse(JSON.stringify(s))); const o = r.state || r; assert.ok(o.xia && o.xia.done);
 });

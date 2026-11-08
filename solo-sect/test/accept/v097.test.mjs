@@ -51,7 +51,3 @@ test('前期主角心情不再偏低', () => {
   const s = H('guojing', 'huangrong'); for (let i = 0; i < 4 * 900; i++) tick(s);
   assert.ok(moodParts(hero(s), s).some(([n]) => /心氣/.test(n))); assert.ok(hero(s).mood >= 45, String(hero(s).mood));
 });
-test('v0.96 存檔逐步遷移到 0.97', () => {
-  const o = JSON.parse(save(H('guojing'))); o.rules = '0.96'; delete o.records.clear; delete o.records.qing;
-  const m = load(JSON.stringify(o)).state; assert.equal(m.rules, RULES_VERSION); assert.deepEqual(m.migSteps.slice(0, 3), ['0.97', '0.98', '1.0']); assert.deepEqual(m.records.clear, {});
-});

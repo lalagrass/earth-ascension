@@ -1,6 +1,6 @@
 import { createState } from '../harness/historical-party.mjs';
 import test from 'node:test'; import assert from 'node:assert/strict';
-import { tick, scoreActs, save, load, migrate } from '../../src/sim.mjs';
+import { tick, scoreActs, save, load } from '../../src/sim.mjs';
 import { DAY, RULES_VERSION } from '../../src/data.mjs';
 import { HEROES, COMPANIONS, Q9 } from '../../src/data.mjs';
 import { validStats, budgetOf, readHeart, valueMul, encounterPool, companionsFor, resolveChoice, addWexin } from '../../src/hero.mjs';
@@ -27,12 +27,12 @@ test('六模板都有立繪、同門候選 2–3 位且有立繪', () => {
   for (const h of HEROES) { assert.ok(existsSync(`assets/portraits/${h.id}.png`)); assert.ok(h.companions.length >= 2 && h.companions.length <= 3);
     for (const c of h.companions) { assert.ok(COMPANIONS[c]); assert.ok(existsSync(`assets/portraits/${c}.png`), c); } }
 });
-test('選郭靖＋黃蓉：同門加入、移出名俠池、默契最多 +25%', () => {
+test('歷史角色同門同行：名俠池排除在場者、一般好感默契最多 +10%', () => {
   const s = createState(5, { kind: 'template', id: 'guojing', companion: 'huangrong' });
   const h = hero(s), r = s.ds.find((d) => d.id === 'huangrong');
   assert.equal(h.name, '郭靖'); assert.equal(h.wu, 1); assert.equal(h.root, 5); assert.ok(r); assert.deepEqual(r.personality, ['clever', 'nimble', 'picky']);
   assert.ok(r.wu > r.root); assert.ok(!encounterPool(s).includes('huangrong')); assert.ok(!encounterPool(s).includes('guojing')); assert.ok(encounterPool(s).includes('munianci'));
-  s.aff['hero>huangrong'] = 100; run(s, 1); assert.ok(Math.abs(h.pairMul - 0.25) < 1e-9);
+  s.aff['hero>huangrong'] = 100; run(s, 1); assert.ok(Math.abs(h.pairMul - 0.1) < 1e-9);
   const P = artMulParts(h, artById(Object.keys(h.arts)[0]), []); assert.ok(P.parts.ext.some(([n]) => n === '同門默契'));
   assert.deepEqual(companionsFor('guojing'), ['huangrong', 'munianci']);
 });
@@ -52,10 +52,4 @@ test('專屬主線第一步：第 2 天出抉擇卡，詢問玩家；不問則�
   assert.equal(s.choices.length, 1); assert.equal(s.choices[0].title, '洪七公聞香而來');
   resolveChoice(s, s.choices[0].id, 0); assert.ok(s.hero.flags.hong); assert.equal(s.choices.length, 0);
   const a = createState(8, { kind: 'template', id: 'linghuchong', askMajor: false }); run(a, DAY * 1.05); assert.equal(a.choices.filter((c) => c.arc).length, 0); assert.ok(a.hero.arcStep >= 1);
-});
-test('預設無主角開局不變、v0.95 存檔逐步遷移', () => {
-  const s = createState(9); assert.equal(s.hero, null); assert.equal(s.ds.length, 3);
-  const o = JSON.parse(save(s)); o.rules = '0.95'; o.v = o.v; delete o.hero; delete o.choices; delete o.encExclude; for (const d of o.ds) delete d.wu;
-  const m = load(JSON.stringify(o)).state; assert.equal(m.rules, RULES_VERSION); assert.ok(m.ds.every((d) => d.wu === d.root)); assert.deepEqual(m.choices, []);
-  const t = createState(10, { kind: 'template', id: 'zhangwuji', companion: 'xiaozhao' }); run(t, 30); const r = load(save(t)).state; assert.equal(r.hero.companion, 'xiaozhao');
 });

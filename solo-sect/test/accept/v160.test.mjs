@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick, scoreActs, applyEff, actDef, GEN_COND, startBuild } from '../../src/sim.mjs';
+import { createState } from '../harness/historical-party.mjs';
+import { tick, scoreActs, applyEff, actDef, GEN_COND, startBuild } from '../../src/sim.mjs';
 import { registry, freeSlot, reserve, durOf } from '../../src/core.mjs';
 import { invariants } from '../../src/core.mjs';
 import { buildFac } from '../../src/sect.mjs';
@@ -64,10 +65,6 @@ test('長跑：九座新建築＋鎮派建築全開 10 日，每 20 tick 不變�
   for (const a of ['study', 'worship', 'water', 'sig']) assert.ok(seen.has(a), a); assert.ok(Object.values(s.res).every((v) => v >= 0));
 });
 test('同種子全開建築 → 決定性', () => { const h = () => { const s = built(9); run(s, 900); return save(s); }; assert.equal(h(), h()); });
-test('舊存檔（無水／丹／新設施）讀得回且自動補欄位；鎮派已建→鎮派地 stage 1', () => {
-  const s = createState(6); tick(s); s.sect.fac = true; const o = JSON.parse(save(s)); delete o.res.water; delete o.res.pill; delete o.cap.water; for (const id of [...NEW, 'sig']) delete o.fac[id];
-  const r = load(JSON.stringify(o)); assert.ok(r.ok); assert.equal(r.state.res.water, 0); assert.equal(r.state.cap.water, 12); assert.equal(r.state.fac.sig.stage, 1); assert.equal(r.state.fac.well.stage, 0);
-});
 test('藏經閣讓聽講快 25%；靜室打坐優先於外功場', () => {
   const s = createState(5); tick(s); const t0 = durOf(s, { act: 'learn', fac: 'hall' }); s.fac.library.stage = 1; assert.equal(durOf(s, { act: 'learn', fac: 'hall' }), t0 * 0.75);
   assert.equal(FACILITIES.find((f) => f.id === 'quiet').stages[1].medEase, 2);

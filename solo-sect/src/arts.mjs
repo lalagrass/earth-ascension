@@ -533,49 +533,8 @@ export const cdMul = (d, mvId, now = 0) => { const raw = artOfMove(mvId), a = ra
 export const visTier = (d, mvId) => { const a = artOfMove(mvId); return a && d.arts?.[a.id] ? artTier(d, a.id) : 0; };
 export const topTier = (d) => ARTS.reduce((m, a) => (artTier(d, a.id) > m.t ? { t: artTier(d, a.id), a } : m), { t: -1, a: null });
 export function learnArt(d, id, now = 0) { d.arts[id] ??= { xp: 0, last: now }; const a = artById(id); if (d.arts[id].source === 'book') d.arts[id].source = 'teacher'; if (id === 'zixia' && !d.zixia) d.zixia = 1; /* loop172 氣宗本門領悟紫霞＝第一層 */ unlockTechs(d, a); if (d.pendingArt === id) d.pendingArt = null; return a; }
-// 出自 Phase 4 規格：伴侶各四階頓悟。只在隱居雙人開局啟動；階段是存檔狀態，不抽亂數。
-const SHARED_AWAKENING = {
-  gumu: [
-    { arts: ['tianluoPalm'], ready: (d, h, s, shared) => s.hermitage.livedDays >= 2 || shared('spar') }, // 同住滿兩日或切磋一次，出自 Phase 4 規格。
-    { arts: ['yunvJian', 'meinvFist'], ready: (d) => artTier(d, 'tianluoPalm') >= 1 },
-    { arts: ['yunvSword'], ready: (d, h, s, shared) => artTier(d, 'yunvJian') >= 1 && ((s.aff?.[affKey(d.id, h.id)] ?? 0) >= 60 || shared('patrol', 'surrounded')) }, // 好感 60 出自 Phase 4 規格。
-    { arts: ['yunv'], ready: (d, h) => artTier(h, 'quanzhenXinfa') >= 1 && artTier(d, 'yunvSword') >= 1 },
-  ],
-  taohua: [
-    { arts: ['luoyingPalm'], ready: (d, h, s, shared) => s.hermitage.livedDays >= 2 || shared('spar') },
-    { arts: ['lanhuaHand'], ready: (d) => artTier(d, 'luoyingPalm') >= 1 },
-    { arts: ['yuxiaoSword'], ready: (d, h, s, shared) => artTier(d, 'lanhuaHand') >= 1 && ((s.aff?.[affKey(d.id, h.id)] ?? 0) >= 60 || shared('patrol', 'surrounded')) },
-    { arts: ['biboXinfa'], ready: (d) => artTier(d, 'yuxiaoSword') >= 1 },
-  ],
-};
-export function checkSharedAwakening(d, hero, s) {
-  if (!s?.hermitage || !d || !hero || d === hero || !d.awakeningPath) return null; // R4：暫存四階資料；R3 再改為會的人傳授。
-  const stage = d.awakeningStage || 0, row = SHARED_AWAKENING[d.awakeningPath]?.[stage];
-  if (!row) return null;
-  const shared = (...kinds) => (s.mem || []).some((m) => m.p === [d.id, hero.id].sort().join('|') && kinds.includes(m.k)) || (kinds.includes('surrounded') && (s.socialThoughts || []).some((e) => e.kind === 'surrounded' && [d.id, hero.id].includes(e.actor) && [d.id, hero.id].includes(e.target)));
-  if (!row.ready(d, hero, s, shared)) return null;
-  for (const id of row.arts) if (!d.arts?.[id]) learnArt(d, id, s.t);
-  d.awakeningStage = stage + 1; s.hermitage.stage = d.awakeningStage;
-  if (d.awakeningPath === 'gumu' && d.awakeningStage === 4) { s.hermitage.contemplateUntil = s.t + ACTIVITIES.meditate.dur; s.hermitage.contemplateActors = [hero.id, d.id]; } // 只改畫面，沿用打坐時長。
-  log(s, `【雙人領悟・${d.awakeningStage}/4】${d.name}與${hero.name}共修，領悟${row.arts.map((id) => `《${artById(id).name}》`).join('與')}。`);
-  return row.arts;
-}
-// 出自 Phase 6 規格：入門外功 XP25＋臂力15 悟心法，心法 XP25＋身法16 悟輕功；無抽籤。
+// R3（#522）：隱居心法與身法仍帶來 Phase 6 的原有效果，取得途徑改為讀卷／傳授。
 const HERMITAGE_CHAIN = Object.freeze({ chunyangFist: ['quanzhenXinfa', 'jinyanStep'], luohanHands: ['shaolinXinfa', 'shaolinStep'] });
-export function checkExteriorToInteriorAwakening(d, s) {
-  if (!s?.hermitage || d?.id !== 'hero') return null; // 出自 Phase 7 規格：開山不抹掉未完的外入內成長。
-  const outer = d.hermitageStarter || (d.arts?.chunyangFist ? 'chunyangFist' : d.arts?.luohanHands ? 'luohanHands' : null);
-  const chain = HERMITAGE_CHAIN[outer]; if (!chain) return null;
-  d.hermitageStarter ??= outer;
-  let gained = null;
-  if (!d.arts?.[chain[0]] && (d.arts?.[outer]?.xp || 0) >= 25 && (d.skills?.strength || 0) >= 15) {
-    learnArt(d, chain[0], s.t); gained = chain[0]; log(s, `【由外而內・氣感自生】${d.name}外家拳勁內斂，悟出《${artById(gained).name}》。`);
-  }
-  if (!d.arts?.[chain[1]] && (d.arts?.[chain[0]]?.xp || 0) >= 25 && (d.skills?.agility || 0) >= 16) {
-    learnArt(d, chain[1], s.t); gained = chain[1]; log(s, `【足下生風・領悟身法】${d.name}內氣貫足，悟出《${artById(gained).name}》。`);
-  }
-  return gained;
-}
 export const hermitageInnerActive = d => !!(d?.hermitageStarter && d.arts?.[HERMITAGE_CHAIN[d.hermitageStarter]?.[0]]);
 export const hermitageStepActive = d => !!(d?.hermitageStarter && d.arts?.[HERMITAGE_CHAIN[d.hermitageStarter]?.[1]]);
 export const moveMul = (d, mvId, now = 0) => strMul(d) * moveMul0(d, mvId, now) * harmonyMul(d) * affixMul(d, mvId, 'dmg') * (d.raging ? CLASH.fret.force : 1) * (hermitageInnerActive(d) ? 1.28 : 1); /* 出自 Phase 6 規格：氣感自生後招式威力×1.28，僅隱居路線；其餘沿原路。 */
@@ -636,55 +595,6 @@ export const BT25 = { k: 1.1 };
 export function btBoost(s, out) {
    const m = out.find((o) => o.act === 'meditate' && o.f?.btOk); if (!m) return;
   const tr = Math.max(0, ...out.filter((o) => o.act === 'train').map((o) => o.score)); if (m.score < tr * BT25.k) m.score = tr * BT25.k;
-}
-
-// ==== （原 comprehend.mjs）====
-// loop7 M7 領悟（天下霸圖味）：自練有機會自悟下一門功夫；切磋時觀摩對手會的功夫、跨門派也能偷師。
-// 只在 s.wu7 開啟時生效（golden 不變）。不用亂數，悟性決定速度。
-export const COMP = {
-  gain: { train: 4, meditate: 6, spar: 3 }, // 每完成一次活動的領悟值
-  watch: 10,                                   // 切磋時觀摩對手一門功夫
-  wuMul: [0, 0.4, 0.7, 1, 1.4, 1.8],          // 悟性 1–5
-  need: (a) => 60 + 40 * (a.grade || 0),      // 門檻：品階越高越難悟
-  vneed: 80,                                  // loop16 變式領悟門檻（大成後、未選變式的功夫）
-};
-const wm = (d) => COMP.wuMul[Math.max(1, Math.min(5, d.wu ?? d.root ?? 3))];
-const open = (d, a) => a && !a.deprecated && artOk(d, a) && (!a.secret || yunvOpen24(d, a)) && !d.arts?.[a.id] && !reqMissing(d, a).length;
-export function compProgress(d) { return Object.entries(d.comp || {}).map(([id, v]) => ({ id, name: artById(id)?.name, v, need: COMP.need(artById(id)) })); }
-function add(s, d, id, amt, how, think, log) {
-  const a = artById(id); if (!open(d, a)) return null;
-  (d.comp ??= {}); d.comp[id] = (d.comp[id] || 0) + amt * wm(d);
-  if (d.comp[id] < COMP.need(a)) return null;
-  delete d.comp[id]; learnArt(d, id, s.t); (s.compN ??= { self: 0, watch: 0 })[how === 'watch' ? 'watch' : 'self']++; think(s, d, 'epiphany', `（${a.name}）`);
-  log(s, how === 'watch' ? `${d.name}看多了別人使「${a.name}」，竟自己悟了出來！` : `${d.name}苦練之間豁然開朗，自悟「${a.name}」！`);
-  return a;
-}
-// 自悟目標：等師父教的那門優先；否則本門派可學的下一門，再不然任一門可學的
-export function selfTarget(d) { if(d.bare)return d.pendingArt||null; if(!Object.keys(d.arts||{}).length&&!d.pendingArt)return null; if (d.pendingArt) return d.pendingArt; const u = sectUnlock24(d); if (u.length) return u[0].id; const c = ARTS.filter((a) => open(d, a) && !lockedArt24(d, a));  c.sort((a, b) => ownFirst24(d)(a, b) || appetiteOrder31(d, a, b)); /* loop208：本門特許與本門、路數都先於偏好 */ if (c[0] && ownArt24(d, c[0])) return c[0].id; const styled = c.filter((a) => a.school === d.style); return (styled[0] || c[0])?.id || null; }
-// 活動完成時呼叫
-export function comprehend(s, d, act, partner, think, log) {
-  if (!COMP.gain[act]) return null;
-  const tgt = selfTarget(d); let got = tgt ? add(s, d, tgt, COMP.gain[act], 'self', think, log) : null;
-  if (act === 'spar' && partner) { const seen = ARTS.filter((a) => partner.arts?.[a.id] && open(d, a) && !lockedArt24(d, a)); seen.sort((a, b) => appetiteOrder31(d, a, b)); /* loop208：觀摩只在能看的功夫裡排偏好。傳功與會武偷師不走這裡 */ if (seen[0]) got = add(s, d, seen[0].id, COMP.watch, 'watch', think, log) || got; }
-  return got;
-}
-
-// loop16 變式領悟：大成（tier≥2）且玩家尚未選變式的功夫，練著練著自己悟出變式；切磋時對手已有變式則觀摩學他那路。
-// 不覆蓋玩家選擇；無亂數：自悟走「根骨≥悟性→剛（gang）否則→靈（ling）」。
-const vOpen = (d, id) => d.arts?.[id] && !d.arts[id].variant && artTier(d, id) >= 2;
-export const vLean = (d) => ((d.root ?? 3) >= (d.wu ?? 3) ? 'gang' : 'ling');
-function vAdd(s, d, id, v, amt, how, think, log) {
-  const r = d.arts[id]; (r.vc ??= {}); r.vc[v] = (r.vc[v] || 0) + amt * wm(d); if (r.vc[v] < COMP.vneed) return null;
-  delete r.vc; if (!chooseVariant(d, id, v, s.t)) return null; const a = artById(id), vn = VARIANTS[a.school].find((x) => x.id === v).name;
-  (s.compN ??= { self: 0, watch: 0 }); s.compN.variant = (s.compN.variant || 0) + 1; if (how === 'watch') s.compN.vwatch = (s.compN.vwatch || 0) + 1;
-  think(s, d, 'epiphany', `（${a.name}・${vn}）`); log(s, how === 'watch' ? `${d.name}看${'對手'}使「${a.name}」的${vn}路數，心有所得，也練成了這一路！` : `${d.name}把「${a.name}」練到極熟，自己悟出了${vn}的變化！`);
-  return { id, v };
-}
-export function comprehendVariant(s, d, act, partner, think, log) {
-  if (!COMP.gain[act]) return null; let got = null;
-  if (act === 'spar' && partner) { const id = Object.keys(d.arts || {}).find((k) => vOpen(d, k) && partner.arts?.[k]?.variant && !(partner.arts[k].until > s.t)); if (id) got = vAdd(s, d, id, partner.arts[id].variant, COMP.watch, 'watch', think, log); }
-  if (!got) { const id = Object.keys(d.arts || {}).filter((k) => vOpen(d, k)).sort((a, b) => d.arts[b].xp - d.arts[a].xp)[0]; if (id) got = vAdd(s, d, id, vLean(d), COMP.gain[act], 'self', think, log); }
-  return got;
 }
 
 // ==== （原 readwu.mjs）====

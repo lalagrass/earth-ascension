@@ -38,10 +38,11 @@ test('名俠池畫風濾鏡：純金庸排包租公婆、純周星馳只剩周�
   const h = createState(5); applyHero(h, { kind: 'template', id: 'guojing', companion: 'huangrong', xiaStyle: 'jin' }, initPair); assert.equal(h.xiaStyle, 'jin');
   const h2 = createState(5); applyHero(h2, { kind: 'template', id: 'guojing', xiaStyle: 'bogus' }, initPair); assert.equal(h2.xiaStyle, 'all');
 });
-test('傳功：圓滿以上才傳；對方 +15；每門每對一次；好感上升；寫記憶', () => {
-  const s = st(), [a, b] = s.ds.filter((d) => d.role !== 'laborer'); assert.equal(passPick(s, a), null, '未圓滿不傳');
-  master(s, a); waitFree(s, a); const pp = passPick(s, a); assert.ok(pp && pp.art === 'basicFist'); const x0 = b.arts.basicFist?.xp || 0, f0 = aff(s, a, b);
-  assert.ok(passDo(s, a, pp.p, pp.art)); assert.ok(pp.p.arts.basicFist.xp >= Math.min(x0 + PASS.gain, 40) - 1e-9); assert.ok(aff(s, a, pp.p) > f0 || pp.p !== b);
+test('隱居真師者傳卷：會者可教；每門每對一次、好感與記憶入帳', () => {
+  const s = st(), [a, b] = s.ds.filter((d) => d.role !== 'laborer'); a.arts = {}; b.arts = {};
+  assert.equal(passPick(s, a), null, '師者不會便不能教');
+  a.arts.chunyangFist = { xp: 90 }; waitFree(s, a); const pp = passPick(s, a); assert.equal(pp?.art, 'chunyangFist'); const f0 = aff(s, a, b);
+  assert.ok(passDo(s, a, pp.p, pp.art)); assert.ok(pp.p.arts.chunyangFist, '弟子讀到真卷中的一門'); assert.ok(aff(s, a, pp.p) > f0 || pp.p !== b);
   assert.equal(passDo(s, a, pp.p, pp.art), false, '同門同對只能一次'); assert.ok(memsOf(s, a, pp.p).some((m) => m.k === 'pass'));
   assert.equal(passPick(s, a), null, '同一天只傳一次');
 });
@@ -57,11 +58,11 @@ test('收徒：內門收好感 ≥30 的外門，一人一徒；徒弟有傳功�
   master(s, m); const x0 = o.arts.basicFist?.xp || 0; passDo(s, m, o, 'basicFist'); assert.ok(o.arts.basicFist.xp - x0 >= PASS.gain + PASS.apprBonus - 1e-9 || o.arts.basicFist.xp >= 40 - 1e-9);
   assert.ok(memsOf(s, m, o).some((x) => x.k === 'apprentice'));
 });
-test('存檔來回：記憶、師徒、傳功紀錄、畫風保留；同種子決定性', () => {
+test('同版存檔來回：記憶、師徒、傳功紀錄、畫風保留；同種子決定性', () => {
   const s = st(9); const [a, b] = s.ds; addMem(s, a, b, 'spar'); b.master = a.id; s.passed = { [`${a.id}>${b.id}:basicFist`]: 1 }; s.xiaStyle = 'zhou';
-  const r = load(save(s)); assert.ok(r.ok); assert.equal(r.state.mem.length, 1); assert.equal(r.state.ds[1].master, a.id); assert.equal(r.state.xiaStyle, 'zhou'); assert.equal(r.state.passed, undefined); assert.ok(r.state.teachHistory31.some((x) => x.master === a.id && x.pupil === b.id && x.art === 'basicFist'));
+  const r = load(save(s)); assert.ok(r.ok); assert.equal(r.state.mem.length, 1); assert.equal(r.state.ds[1].master, a.id); assert.equal(r.state.xiaStyle, 'zhou'); assert.deepEqual(r.state.passed, s.passed);
   const h = () => { const x = createState(42); runDays(x, 8); return save(x); }; assert.equal(h(), h());
 });
 test('名俠絕學（secret／classic）不走一般傳功', () => {
-  const s = st(), a = s.ds.find((d) => d.role !== 'laborer'); master(s, a, 'xianglong'); assert.equal(passPick(s, a), null);
+  const s = st(), a = s.ds.find((d) => d.role !== 'laborer'); a.arts = {}; master(s, a, 'xianglong'); assert.equal(passPick(s, a), null);
 });

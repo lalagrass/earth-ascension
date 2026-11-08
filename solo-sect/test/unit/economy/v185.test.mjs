@@ -8,7 +8,6 @@ import { UPKEEP, wageBill, wageN, facBill, billDue, settle, E, MARKET, priceOf, 
 import { HEROES } from '../../../src/data.mjs';
 import { GUOJING_EARLY } from '../../../src/hero.mjs';
 import { moveMul } from '../../../src/arts.mjs';
-import { migrate } from '../../../src/save.mjs';
 
 const H = { rand: () => 0.5, cancelTask: () => {}, think: () => {}, removeDisciple: (s, d) => { s.ds = s.ds.filter((x) => x !== d); return true; }, gate: [0, 0] };
 const withN = (s, n) => { const base = s.ds.find((d) => d.id !== 'hero'); s.ds = s.ds.filter((d) => d.id === 'hero'); for (let i = 0; i < n; i++) s.ds.push({ ...structuredClone(base), id: `x${i}`, role: 'inner', adult: true, mood: 50 + i }); return s; };
@@ -55,8 +54,4 @@ test('郭靖：標為困難；前 20 日有降龍衝關標記，出手不吃這�
   const s = createState(3, { kind: 'template', id: 'guojing', askMajor: false }); const h = s.ds.find((d) => d.id === 'hero'); h.arts.xianglong = { xp: 10, last: 0 };
   tick(s); assert.equal(h.early?.art, 'xianglong'); const e = h.early; s.t = GUOJING_EARLY.days * DAY + 1; tick(s); assert.equal(h.early, null); const b = moveMul(h, 'jianlong'); h.early = e; const a = moveMul(h, 'jianlong'); h.early = null; assert.equal(a, b); /* #403 退役：初學加成不再乘出手。衝關標記仍在前 20 日 */
   const p = createState(3); tick(p); assert.ok(!p.ds.find((d) => d.id === 'hero')?.early, '反例：非郭靖開局沒有加成');
-});
-test('存檔遷移 1.85：補 econ、讀檔後給 5 日寬限', () => {
-  const s = createState(3); const o = JSON.parse(JSON.stringify(s)); o.rules = '1.8'; delete o.econ; o.day = 22; const m = migrate(o); assert.ok(m.econ); assert.equal(m.econ.graceUntil, 27);
-  assert.ok(salaried(s).every((d) => d.id !== 'hero'));
 });
