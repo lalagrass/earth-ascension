@@ -5,7 +5,6 @@ import { createState, tick, startExpedition } from '../../src/sim.mjs';
 import { DAY, ROUTE } from '../../src/data.mjs';
 import * as W from '../../src/world.mjs';
 import { reportText } from '../../src/world.mjs';
-import { migrate } from '../../src/save.mjs';
 import { openExp } from '../../src/world.mjs';
 
 const run = (s, k, sec) => { for (let t = 0; t < sec; t += 1) W.popStep(s, 1); };
@@ -37,8 +36,4 @@ test('戰報互斥：遭遇＝擊倒＋驅離＋繞避＋其他；搗巢寫進�
   const r = s.lastExp; assert.ok(r?.out, '有戰報'); const O = r.out; assert.equal(O.enc, O.knock + O.driven + O.evaded + O.other); assert.ok(O.enc > 0);
   assert.match(reportText(r), /戰果（互斥）/); if (r.razed.length) assert.match(reportText(r), /搗巢/);
   const sumK = Object.values(r.kills).reduce((a, b) => a + b, 0); assert.equal(O.knock, sumK);
-});
-test('舊檔 1.9→1.95：回補進度歸零、補 kp／den', () => {
-  const s = createState(3); tick(s); const o = JSON.parse(JSON.stringify(s)); o.rules = '1.9'; for (const e of Object.values(o.pop)) { e.t = 99; delete e.kp; delete e.den; }
-  migrate(o); assert.ok(o.migSteps.includes('1.95')); for (const e of Object.values(o.pop)) { assert.equal(e.t, 0); assert.equal(e.kp, 0); assert.equal(e.den, 0); }
 });

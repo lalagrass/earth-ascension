@@ -7,7 +7,6 @@ import { MARRY, marriable, weddingWhy } from '../../../src/sect.mjs';
 import { PASS, passScore } from '../../../src/bonds.mjs';
 import { artHints, artHintsHtml } from '../../../src/arts.mjs';
 import { SCORE_POST } from '../../../src/data.mjs';
-import { migrate } from '../../../src/save.mjs';
 import { relKey } from '../../../src/util.mjs';
 
 const pair = (s) => { const [a, b] = s.ds.filter((d) => d.id !== 'hero').slice(0, 2); a.adult = b.adult = true; a.spouse = b.spouse = null; return [a, b]; };
@@ -23,10 +22,6 @@ test('成親：上限、冷卻、花費', () => {
   s.gen.lastWed = 0; s.res.coin = MARRY.cost - 1; assert.match(weddingWhy(s), /香火錢/, '反例：錢不夠');
   s.res.coin = 1000; s.gen.couples = Array.from({ length: MARRY.cap }, (_, i) => [`x${i}`, `y${i}`]); assert.match(weddingWhy(s), /已有 5 對/, '反例：滿額');
   const s2 = createState(3); s2.t = DAY; s2.res.coin = 1000; assert.ok(weddingWhy(s2), '新局第 1 日不會馬上辦喜事');
-});
-test('存檔遷移 1.8：既有夫妻互為心上人、lastWed 補上', () => {
-  const s = createState(3); const [a, b] = pair(s); const o = JSON.parse(JSON.stringify(s)); o.rules = '1.5'; o.gen.couples = [[a.id, b.id]]; delete o.gen.lastWed; for (const d of o.ds) delete d.sweet;
-  const m = migrate(o); const A = m.ds.find((d) => d.id === a.id), B = m.ds.find((d) => d.id === b.id); assert.equal(A.sweet, b.id); assert.equal(B.sweet, a.id); assert.equal(m.gen.lastWed, o.t);
 });
 test('傳功飽和：當日每傳一次，下一次分數 ×sat', () => {
   const s = createState(3); s.day = 4; assert.equal(passScore(s), PASS.base); s.passN = { day: 4, n: PASS.perDay }; assert.equal(passScore(s), 0, '反例：當日已達上限就不再傳');

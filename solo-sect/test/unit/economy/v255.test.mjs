@@ -35,7 +35,7 @@ test('loop168 傳承鎖：他派（含無名派）鎖住、本門可學；九陰
 });
 test('loop168 武當：武當長拳大成可領悟太極拳；太極拳大成可免柔雲劍法學太極劍（以拳通劍）', () => {
   const s = V({ sect24: 'wudang' }); tick(s, 0.1); const h = hero(s); delete h.arts.taiji; h.pendingArt = null;
-  assert.ok(!A.sectUnlock24(h).length); h.arts.wudangFist.xp = 100; assert.equal(A.sectUnlock24(h)[0]?.id, 'taiji'); assert.equal(A.selfTarget(h), 'taiji');
+  assert.ok(!A.sectUnlock24(h).length); h.arts.wudangFist.xp = 100; assert.equal(A.sectUnlock24(h)[0]?.id, 'taiji');
   const ts = A.artById('taijiSword'); assert.ok(A.reqMissing(h, ts).length); A.learnArt(h, 'taiji', 0); h.arts.taiji.xp = 100; assert.equal(A.reqMissing(h, ts).length, 0);
 });
 test('loop168 本門專屬可傳功', () => {

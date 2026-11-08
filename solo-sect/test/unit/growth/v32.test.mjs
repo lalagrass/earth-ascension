@@ -235,7 +235,6 @@ test('loop201 神木毒功退出學習池，已學會的舊檔仍讀得到', () 
   const s = V({ sect24: 'xingxiu' }); tick(s, 0.1); const d = other(s);
   assert.ok(!A.artHints(d).some((r) => r.id === 'shenmuGong'));
   assert.ok(!A.artsSvg(d).includes('data-art="shenmuGong"'));
-  assert.notEqual(A.selfTarget(d), 'shenmuGong');
   d.arts.shenmuGong = { xp: 30, last: 0 };
   assert.equal(A.artById('shenmuGong').name, '神木毒功');
   assert.match(artsGrowHtml(d, 0, false), /神木毒功/);

@@ -1,10 +1,9 @@
 #!/usr/bin/env node
-// R0（#388）行為鎖定：固定種子矩陣雜湊與舊版存檔回放。
+// R9（#529）行為鎖定：唯一隱居局的固定種子與檢查點。
 // 用法（在 solo-sect/ 下）：
-//   node tools/golden.mjs --check [--tier quick|full|saves|all]   比對 test/golden/*.json，有差異 exit 1
+//   node tools/golden.mjs --check [--tier hermitage|all]           比對 test/golden/hermitage.json，有差異 exit 1
 //   node tools/golden.mjs --write [--tier ...]                    重產；只有明列行為變更的 PR 才可用，PR 須寫明改了哪些鍵與原因
-//   node tools/golden.mjs --only bot-1001-emei                    只跑一格（除錯用）
-// full 層 32 局 × 30 日（dt 0.5），以子行程平行跑，4 核約 5 分鐘。
+//   node tools/golden.mjs --only solo-chunyang-42                  只跑一格（除錯用）
 import fs from 'node:fs';
 import os from 'node:os';
 import { fork } from 'node:child_process';
@@ -20,9 +19,9 @@ if (flag('--worker')) { // 子行程：收一格、回雜湊
   process.on('message', (c) => { process.send({ key: c.key, got: S.runCase(c) }); });
 } else {
   const mode = flag('--write') ? 'write' : 'check', tier = opt('--tier', 'all'), only = opt('--only', null);
-  const tiers = tier === 'all' ? ['quick', 'full', 'saves', 'hermitage'] : [tier];
+  const tiers = tier === 'all' ? ['hermitage'] : [tier];
   let bad = 0;
-  for (const t of tiers) bad += t === 'saves' ? doSaves(mode) : await doTier(t, mode, only);
+  for (const t of tiers) bad += await doTier(t, mode, only);
   console.log(bad ? `\n✗ ${bad} 格不符` : '\n✓ 全部相符');
   process.exit(bad ? 1 : 0);
 }
@@ -43,13 +42,6 @@ async function doTier(tier, mode, only) {
   console.log(`# ${tier}：${cases.length} 格，${((Date.now() - t0) / 1000).toFixed(0)} 秒`);
   if (mode === 'write') { const prev = readJson(file)?.runs || {}; writeJson(file, { tier, ...S.TIERS[tier], runs: { ...prev, ...got } }); console.log(`寫入 test/golden/${file}`); return 0; }
   let bad = 0; for (const c of cases) bad += compare(c.key, want[c.key], got[c.key]); return bad;
-}
-
-function doSaves(mode) {
-  const files = fs.readdirSync(new URL('saves/', DIR)).filter((f) => f.endsWith('.json')).sort(), got = {};
-  for (const f of files) got[f] = S.replaySave(fs.readFileSync(new URL(`saves/${f}`, DIR), 'utf8'));
-  if (mode === 'write') { writeJson('saves.json', got); console.log('寫入 test/golden/saves.json'); return 0; }
-  const want = readJson('saves.json') || {}; let bad = 0; for (const f of files) bad += compare(`save ${f}`, want[f], got[f]); return bad;
 }
 
 function pool(cases) {

@@ -21,7 +21,7 @@ test('loop171 位階鎖：一般弟子鎖、掌門／首徒／魁首可；顯示
   assert.equal(A.artState(d, a).why, A.CHIEF24_WHY); assert.ok(A.artHints(d).find((r) => r.id === 'lanhuaHand').need.includes(A.CHIEF24_WHY));
   d.role = 'head'; assert.ok(!A.chiefLocked24(d, a)); d.role = 'inner'; d.chief24 = true; assert.ok(!A.chiefLocked24(d, a)); d.chief24 = false;
   give(d, 'lanhuaHand', 30); assert.ok(!A.chiefLocked24(d, a)); delete d.arts.lanhuaHand;
-  give(d, 'luoyingPalm', 60); assert.ok(A.selfTarget(d) !== 'lanhuaHand');
+  give(d, 'luoyingPalm', 60);
   give(h, 'lanhuaHand', 60); for (const x of s.ds) x.passDay = -1; s.passN = null; const p = passPick(s, h); assert.ok(!p || p.art !== 'lanhuaHand' || A.rankOk24(p.p));
 });
 test('loop171 大比魁首得 chief24', () => {

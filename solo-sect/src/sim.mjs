@@ -1,4 +1,3 @@
-import {originPeople,ORIGIN_RELATIONS} from './origins.mjs';
 import {HUNGER_PER_SECOND,admissionStatus,unfoundedHermitage,mentorFor,guidanceSeconds,clockActor,noteGuidance,guidanceLearning,guidanceDaily} from './admission.mjs';
 import {attraction,applicantAway,bookAdmissionWork,discipleCount,policyCap,recruitmentInit,recruitmentOf,returnFromWork,sendApplicantToWork,setRecruitPolicy} from './recruitment.mjs';
 export {attraction,policyCap,setRecruitPolicy} from './recruitment.mjs';
@@ -12,10 +11,10 @@ import {finishTrainingWish,TRAINING_CAUSES} from './decision.mjs';
 import { ensurePractice, rehearse, practiceWork, practiceWindow } from './practice.mjs';
 import { BODY_TIMING, BODY_MOVES, BODY_BASE, makeBare, acquireWorkTool, moveAvailable, foeAction, FOE_ACTIONS } from './starter-combat.mjs';
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
-import { combatTacticStep, chooseCombatMove, fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive, mastery, mainOuterArt, studyChart24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
+import { combatTacticStep, chooseCombatMove, fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive, mastery, mainOuterArt, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar, BODY_CONDITION, bodyConditionOn, ensureBodyCondition, stepWorkCondition, restBodyCondition, cookMedicatedMeal, applyMedicatedMeal } from './economy.mjs';
 import { SOURCES } from './data.mjs';
-import { RECRUIT_TRAIT_VARIATION, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, ROUTINE_DEFAULT, ROUTINE_MODES, PLOT_GROW, HARVEST, NODES, EDGES, CLIFFS, FACILITIES, FENCE_FAC, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, openingScenario, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST, ROUTE, ENEMIES } from './data.mjs';
+import { RECRUIT_TRAIT_VARIATION, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, ROUTINE_DEFAULT, ROUTINE_MODES, PLOT_GROW, HARVEST, NODES, EDGES, CLIFFS, FACILITIES, FENCE_FAC, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, openingScenario, REL_STAGES, BASE_SPEED, ECON, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST, ROUTE, ENEMIES } from './data.mjs';
 import { chronOf, clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
 import { MENTOR, think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits, relStage, relAdd, compat, aff, initPair, coTrain, askStrong, pairBoost, drawBoost, pickChatMate, admire, archRecruit } from './social.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf, raidMul, popStep, POP, fogStep, unlockStep, chapterStep } from './world.mjs';
@@ -27,7 +26,7 @@ import { xiaStep, onCook, xiaInit, hsStep, hsInit } from './wuxia.mjs';
 import { jhStep, jhInit, jhevDaily } from './jianghu.mjs';
 import { sectStep, sectInit, sectRecruit, genStep, genInit, removeDisciple, canBuildFac, buildFac, queueHermitageFounding, foundHermitageSect, canFoundHermitageSect, twinSwordsDamageFactor } from './sect.mjs';
 import { applyHero, valueMul, easeWexin, onAssign, heroStep, heroAuto, pairBonus, awaken, econCoin, cookBonus } from './hero.mjs';
-import { SAVE_VERSION, freshV095 } from './save.mjs';
+import { SAVE_VERSION, initStateFields } from './save.mjs';
 import { cancelTask, removeActor, whAvail, freeSlot, freeSpot, reserve, sweepResv, actorBusy, needStep, boredMul, markDone, durOf, holder, CORE, STOCK_RESV, stockKey, stockReserved } from './core.mjs';
 /* loop140 */
 export { canExpedition, codexRows, reportText, segAt, ROUTE_END, dpsOf };
@@ -64,8 +63,8 @@ export const facStage = (s, id) => { const S = facDef(id).stages; return S[Math.
 
 // loop143（v2.2 baseline）：已驗證的規則轉正（表在 data.mjs）。#390 起所有新局都套用，不再有舊規則開局。
 export function createState(seed = 1, heroSpec = null) {
-  // #390：每個新局都用現行規則（含「照舊」開局 spec＝null，擁有人 2026-11-02 決定）。spec 只決定主角與玩家選項。
-  const withHero = !!heroSpec;
+  // R9 #529：唯一新局是隱居；未提供規格時使用同一條預設路徑。
+  heroSpec = { ...heroSpec, kind: 'custom', hermitage: true, opening: heroSpec?.opening || heroSpec?.partner || 'xiaolongnv' };
   const s = {
     v: SAVE_VERSION, rules: RULES_VERSION, seed, t: 0, xia: xiaInit(), hs: hsInit(), jh: jhInit(), routine: { ...ROUTINE_DEFAULT }, socialThoughts: [], forayPolicy: 'allow', forayStats: { starts: 0, patrols: 0, hurt: 0, discoveries: 0, targets: [] }, res: { wood: 0, stone: 0, coin: ECON.coinStart, food: 6, herb: 0, veg: 0, water: 0, pill: 0, tiemu: 0, lingshi: 0 }, lots: { n: LOTS.start, bought: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })),  cap: { wood: 12, stone: 12, water: 12, pill: 10 }, day: 1, ledger: { day: 1, in: {}, out: {} }, ledgerPrev: null, laborGone: [],
     fac: Object.fromEntries(FACILITIES.map((f) => [f.id, { stage: 0, site: null }])),
@@ -73,12 +72,12 @@ export function createState(seed = 1, heroSpec = null) {
     rel: {}, aff: {}, families: [], eco: Object.fromEntries(Object.entries(ECO).map(([k, e]) => [k, { n: e.start, timer: 0 }])), wild: [], post: 'guard', raidT: 0, rep: 0, log: [], hunt: null, mons: [], fx: [], rngN: 0,
   };
   for (let i = 0; i < s.ds.length; i++) for (let j = i + 1; j < s.ds.length; j++) initPair(s, s.ds[i], s.ds[j], 10);
-  freshV095(s);
-  const opening = openingScenario(heroSpec), hermitage = !!heroSpec?.hermitage;
+  initStateFields(s);
+  const opening = openingScenario(heroSpec);
   if (opening.log) log(s, opening.log);
   s.hero = null; s.choices = []; s.encExclude = []; s.unlock = []; s.chapter = { done: false }; for (const d of s.ds) d.wu ??= d.root;
-  if (withHero) applyHero(s, heroSpec, initPair);
-  if (hermitage) {
+  applyHero(s, heroSpec, initPair);
+  {
     s.hermitage = { active: true, stage: 0, founded: false, livedDays: 0, opening: typeof heroSpec?.opening === 'string' ? heroSpec.opening : heroSpec?.partner || 'custom' }; // R4：情境來源，不記人物關係身分。
     s.res.medFood = 0; s.medFoodBatches = [];
     s.res.beeJelly = 0; s.res.coldWater = 0; s.hermitage.exploredCliffs = [];
@@ -101,9 +100,6 @@ export function createState(seed = 1, heroSpec = null) {
     seedHermitageBooks(s, opening, starter);
     log(s, `【荒山隱居】${[hero, ...s.ds.filter((d) => d !== hero)].map((d) => d.name).join('與')}在終南茅廬安頓，先做活練功。`);
   }
-  const originRows = opening.origins ? originPeople(heroSpec?.kind === 'template' ? heroSpec.id : null, heroSpec?.answers?.[0] || 0) : [];
-  for(const row of originRows){const d=makeBare(mkDisciple(row,s.ds.length));Object.assign(d,{wu:row.wu,originRelation:row.originRelation,originRelationKind:row.relation,originInvented:row.invented,portrait:null,companion:true,best:0,insight:{},away:false});s.ds.push(d);for(const o of s.ds)if(o!==d)initPair(s,d,o,o.id==='hero'?ORIGIN_RELATIONS[row.relation].aff:10);}
-  if(s.hero && !hermitage){s.hero.companion=originRows[0].id;s.hero.companions=originRows.map(r=>r.id);}
   // #390 part 2（擁有人 2026-11-02）：30 個規則開關已刪，所有局都是現行規則；spec 只剩主角與玩家選項（執事三項）。
   if (heroSpec?.steward) s.steward = true; /* loop30 執事自主 */ if (heroSpec?.stewyard) s.stewyard = true; /* loop95 執事立樁 */ if (heroSpec?.stewkit) s.stewkit = true; /* loop60 執事顧灶 */
   s.valor = 0; /* loop129 勇名 */
@@ -112,8 +108,6 @@ export function createState(seed = 1, heroSpec = null) {
   for (const d of s.ds) d.pf = 1; /* loop91 */
   for (const d of s.ds) { d.ng = 1; d.qi = 0; d.ng2 = 1; } /* loop103 */
   for (const d of s.ds) d.lg = 1; /* loop127 */
-  if (heroSpec?.kind === 'bare') makeBare(byId(s, 'hero'));
-  for(const d of s.ds)if(d.originRelation)makeBare(d);
   for (const d of s.ds) { d.moves=[...new Set([...d.moves,...BODY_BASE])];ensurePractice(d,s.codex); }
   if (bodyConditionOn(s)) for (const d of s.ds) ensureBodyCondition(d, s.day); // 出自 Phase 5 規格：僅選新局起手建立疲勞週期。
   s.recruitment = recruitmentInit(discipleCount(s));
@@ -135,7 +129,7 @@ export const isLabor = (d) => d.role === 'laborer';
 export const disciples = (s) => s.ds.filter((d) => !isLabor(d));
 export const laborers = (s) => s.ds.filter(isLabor);
 export const outers = (s) => s.ds.filter((d) => d.role === 'outer');
-const readyMealCount = (s) => s.res.food + (bodyConditionOn(s) ? (s.res.medFood || 0) : 0); // 出自 Phase 5 規格：藥膳存糧是一份可直接食用的飯；舊局只計普通飯。
+const readyMealCount = (s) => s.res.food + (s.res.medFood || 0); // R9：唯一開局可獨立食用藥膳。
 export const emergency = (s) => readyMealCount(s) <= 0 || s.mons.some((m) => m.raid && !m.gone);
 // loop39：8 人時內門多、外門少（常 4 外門撐 8 人），日課過半做不完；「人多分攤」開時全派人數 ≥ 外門×QUOTA.shareAt，每位外門日課 −1。
 export const shareOn = (s) => !!s && s.ds.length >= QUOTA.shareAt * Math.max(1, outers(s).length);
@@ -263,7 +257,7 @@ export function setForayPolicy(s, policy) { if (!['allow', 'forbid'].includes(po
 export function setOrder(s, id, order) {
   const d = byId(s, id); if (!d) return false;
   if (order && order !== 'hunt' && !ACTIVITIES[order]) return false;
-  if (CLIFF_ACT_NODE[order] && (!s.hermitage || !canLeapCliff(d, CLIFF_ACT_NODE[order]))) return false; // 出自 Phase 7 規格：立派後仍可上崖，門檻不變。
+  if (CLIFF_ACT_NODE[order] && !canLeapCliff(d, CLIFF_ACT_NODE[order])) return false; // 出自 Phase 7 規格：立派後仍可上崖，門檻不變。
   d.order = order || null; cancelTask(s, d, '玩家改派');
   return true;
 }
@@ -357,11 +351,11 @@ export function scoreActs(s, d) {
   for (const R of SCORE) { if (R.gen) { for (const [act, A] of GEN_ACTS) { if (!offered(s, act).length) continue; const g = genOf(s, act, A); if (!g || !GEN_COND[g.cond]?.(s, d) || !dayOk(s, act, g.perDay)) continue; if (g.base > 0) out.push({ act, score: g.base, why: g.why, ...(g.layer ? { layer: g.layer } : {}) }); } continue; }
     if (R.when && !R.when.every((k) => PRED[k](c))) continue; const T = R.tiers ? R.tiers.find((x) => !x.if || PRED[x.if](c)) : R; if (!T) continue;
     const score = valOf(T.v, c); if (score > 0) out.push({ act: R.act, score, why: fillWhy(T.why, c), ...(T.layer || R.layer ? { layer: T.layer || R.layer } : {}) }); }
-  if (s.hermitage) for (const [act, base] of Object.entries({ cliffForage1: 'forage', cliffTrain: 'train', cliffWater: 'water', waterfallTrain: 'train', cliffComprehend: 'meditate' })) {
+  for (const [act, base] of Object.entries({ cliffForage1: 'forage', cliffTrain: 'train', cliffWater: 'water', waterfallTrain: 'train', cliffComprehend: 'meditate' })) {
     const cliffId = CLIFF_ACT_NODE[act], source = out.find(o => o.act === base);
     if (source && canLeapCliff(d, cliffId)) out.push({ act, score: source.score, why: `輕功可到${CLIFFS[cliffId].name}，${ACTIVITIES[act].name}` });
   } // 出自 Phase 6 規格：解鎖後 AI 借原活動分數選崖上同類工作，不另立任意偏好常數。
-  if (s.hermitage) {
+  {
     const next = HERMITAGE_VOLUMES.find(v => bookStatus(s, d, v.id).ok);
     const study = out.find(o => o.act === 'study' || o.act === 'train');
     if (next && study) out.push({ act: 'readBook', score: study.score, why: `讀《${artById(next.art).name}》的實物卷` });
@@ -407,7 +401,7 @@ function assign(s, d, act, why) {
     d.task = { act, node: 'forest2', phase: 'go' }; goto(d, 'forest2'); d.reason = why || '林中山洞尋殘卷'; return true;
   }
   if (CLIFF_ACT_NODE[act]) {
-    const cliffId = CLIFF_ACT_NODE[act]; if (!s.hermitage || !canLeapCliff(d, cliffId)) return false;
+    const cliffId = CLIFF_ACT_NODE[act]; if (!canLeapCliff(d, cliffId)) return false;
     d.task = { act, node: cliffId, phase: 'go' }; goto(d, cliffId); d.reason = why || `上${CLIFFS[cliffId].name}${ACTIVITIES[act].name}`; return true;
   }
   if (act === 'foray' || act === 'patrol') {
@@ -570,7 +564,7 @@ function doTask(s,d,dt){
   }
   if (t.phase === 'go' && !d.path.length) {
   if (t.partner) { const p = byId(s, t.partner); if (!p || p.task?.partner !== d.id) { d.task = null; return; } if (p.path.length) return; }
-    if (CLIFFS[t.node] && s.hermitage && !s.hermitage.exploredCliffs?.includes(t.node)) { (s.hermitage.exploredCliffs ??= []).push(t.node); log(s, `${d.name}踏上${CLIFFS[t.node].name}，望見山路又開了一層。`); }
+    if (CLIFFS[t.node] && !s.hermitage.exploredCliffs?.includes(t.node)) { (s.hermitage.exploredCliffs ??= []).push(t.node); log(s, `${d.name}踏上${CLIFFS[t.node].name}，望見山路又開了一層。`); }
     t.phase = 'do'; t.timer = 0; d.anim = t.act;
   }
   if (t.phase === 'do') {
@@ -629,13 +623,12 @@ function doTask(s,d,dt){
       if (t.act === 'pass' && t.lead && t.partner) { const p = byId(s, t.partner); if (p) passDo(s, d, p, t.art); }
       if (t.act === 'study') { const w = readStudy(s, d); if (w) log(s, `${d.name}在藏經閣讀了許久，忽然開竅——悟性長進了${d.rootKnown ? `（${w}）` : ''}。`); } // loop140 讀書長悟性
       if (t.act === 'study' && t.fac === 'library') { const page = readLuohanBook(d, effDur, s.t); if (page.learned) { log(s, `【拳譜】${d.name}對照身體起手，把《少林羅漢十八手》的二十二段讀完，開始依譜練掌。`); think(s, d, 'learned'); } else if (page.form) log(s, `${d.name}讀《羅漢十八手》到「${page.form}」，照著圖譜試擺。`, 'low'); }
-      if (t.act === 'readBook' && s.hermitage) { const result = readHermitageBook(s, d, t.volume, effDur); if (result.learned) { d.manualChoice = null; think(s, d, 'learned'); } }
-      if (t.act === 'searchFragment' && s.hermitage) forestFragment(s, d);
-      if (t.act === 'cliffComprehend' && s.hermitage) {
+      if (t.act === 'readBook') { const result = readHermitageBook(s, d, t.volume, effDur); if (result.learned) { d.manualChoice = null; think(s, d, 'learned'); } }
+      if (t.act === 'searchFragment') forestFragment(s, d);
+      if (t.act === 'cliffComprehend') {
         cliffBook(s, d); // R3：拓錄成實物卷，回山讀完才學會。
       }
       // 合參創派不由讀書或打坐的次數自動送出整門功夫。
-      if (t.act === 'study' && !s.hermitage) { const g = studyChart24(s, d, () => rand(s)); if (g) log(s, `【藏經閣】${d.name}在書堆裡翻出一卷《${g.art.name}》，從此略通${CATS[g.cat].name}。`); } // R3：隱居按實物分卷讀完才學；舊門派的藏經閣發現流程保持原樣。
       /* loop181 v2.8 經脈內傷：練功／切磋逆催累積，打坐／醫館化解 */
         finishTrainingWish(d,t.act);
       if (t.act === 'train' || t.act === 'spar') { const w = qiInjuryAdd28(s, d); if (w) log(s, `【經脈暗傷】${d.name}強以異種內息催動他派武學《${w.name}》，真氣逆行，經脈隱隱作痛！`); }
@@ -654,7 +647,6 @@ function doTask(s,d,dt){
   }
   if (t.phase === 'return' && !d.path.length) {
     for (const [k, v] of Object.entries(d.carry)) { const nv = Math.min(s.cap[k] ?? 99, s.res[k] + v); book(s, 'in', k, nv - s.res[k], 'work'); s.res[k] = nv; }
-    const walk = d.walked - (t.walkStart || 0); if (!bodyConditionOn(s)) d.skills.agility = Math.min(100, d.skills.agility + walk / 400); // 舊局負重長路→腳力；出自 Phase 5 規格：隱居局體魄由疲勞結算防止繞過上限。
     d.carry = null; finish(s, d);
   }
 }
@@ -978,13 +970,10 @@ function dismissLabor(s, d, why) {
   removeActor(s, d, why, { quiet: true }); BYID.delete(s); s.laborGone.push(d.id);
   log(s, `${d.name}${why}，下山去了。`);
 }
-// 香火＝底數＋聲望段＋同伴加成。照舊開局才套 PLAIN：前 10 日底數略高，之後聲望段乘 repMul。
+// R9：唯一隱居開局的香火由底數、現有門派事件與聲望段構成。
 export function incenseOf(s) {
   const rep = Math.floor((s.rep || 0) / ECON.coinPerRep);
-  const base = ECON.coinBase + econCoin(s);
-  if (s.hero) return base + rep;
-  if ((s.day || 1) <= PLAIN.earlyDays) return base + PLAIN.earlyBonus + rep;
-  return base + Math.floor(rep * PLAIN.repMul);
+  return ECON.coinBase + econCoin(s) + rep;
 }
 export function payday(s) {
   guidanceDaily(s);
@@ -1015,7 +1004,7 @@ export function temperDaily29(s) { const W = (s.v29n ??= {}), B = (W.baseByTrait
 function injuryDaily(s) { for (const d of [...s.ds,...s.mons,...(s.band?.members||[])]) if (d.part||d.wounds?.length) partHeal(s,d,'day'); /* 新層1–4遊戲日；舊部位傷仍可遷移 */ for (const d of s.ds) { if (!d.qiInjury) continue; if (d.qiInjury >= DRIVE28.injHeavy) { d.hp = clamp(d.hp - DRIVE28.hp, 1, 100); d.mood = clamp((d.mood ?? 50) - DRIVE28.mood, 0, 100); } const a = mainOuterArt(d); if (!a || innerDrive28(d, a).tier !== 4) qiInjuryCure28(s, d, DRIVE28.rest); } }
 export function dailyPipeline(s) {
   if (bodyConditionOn(s)) for (const d of s.ds) ensureBodyCondition(d, s.day); // 出自 Phase 5 規格：睡眠換日恢復並歸零每日週期。
-  if (s.hermitage) {
+  {
     const hero = s.ds.find((d) => d.id === 'hero');
     if (hero && !hero.away && s.ds.some((d) => d !== hero && !d.away)) s.hermitage.livedDays = (s.hermitage.livedDays || 0) + 1;
     // R3：不再由天數、身體數值或上崖事件自動送出整門武學或立匾卡。
@@ -1128,7 +1117,7 @@ function trialStep(s,d,dt){
   d.swing={mv:mv.id,tgt:m.uid,at:s.t+wind,wind,opening:start.opening,targetApproachingAtWindup:!!m.path?.length&&!m.swing&&!m.bswing,dodgeAtWindup:d.lastDodge?.target===m.uid&&d.lastDodge.until>=s.t?{...d.lastDodge}:null};d.anim='wind';warnFx(s,d,m,mv.range,wind);
 }
 // ---- 存檔（v0.95 移到 save.mjs，逐版遷移）----
-export { save, load, migrate, MIGRATIONS } from './save.mjs';
+export { save, load } from './save.mjs';
 export { clone };
 
 export { cancelTask, removeActor };

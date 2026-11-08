@@ -34,14 +34,14 @@ export function seedHermitageBooks(s, opening, starter) {
   s.hermitage.books ??= HERMITAGE_VOLUMES.filter(v => v.source === 'opening' && routes.has(v.route)).map(v => v.id);
 }
 export function grantHermitageBook(s, id, source) {
-  if (!s.hermitage || !volumeById(id)) return false;
+  if (!volumeById(id)) return false;
   const books = s.hermitage.books ??= [];
   if (books.includes(id)) return false;
   books.push(id); log(s, `【拳譜】從${source}取得《${volumeName(id)}》。`); return true;
 }
 export function bookStatus(s, d, id, teacher = null) {
   const v = volumeById(id);
-  if (!s.hermitage || !v || !d || d.arts?.[v.art]) return { ok: false, why: '已會或無此卷' };
+  if (!v || !d || d.arts?.[v.art]) return { ok: false, why: '已會或無此卷' };
   if (!teacher && !s.hermitage.books?.includes(id)) return { ok: false, why: '尚未取得此卷' };
   if (teacher && (teacher === d || !teacher.arts?.[v.art] || teacher.away || teacher.hp <= 0)) return { ok: false, why: '師者尚不會此藝' };
   if (v.from && (d.arts?.[v.from]?.xp || 0) < v.xp) return { ok: false, why: `須先把《${artById(v.from).name}》練到 ${v.xp} 熟練` };
@@ -60,16 +60,15 @@ export function readHermitageBook(s, d, id, seconds = ACTIVITIES.study.dur) {
   return { ok: true, learned: true, art: v.art };
 }
 export function teachableHermitageBook(s, teacher, pupil) {
-  if (!s.hermitage || !teacher || !pupil || teacher === pupil) return null;
+  if (!teacher || !pupil || teacher === pupil) return null;
   return HERMITAGE_VOLUMES.find(v => teacher.arts?.[v.art] && !pupil.arts?.[v.art] && bookStatus(s, pupil, v.id, teacher).ok) || null;
 }
 export function cliffBook(s, d) {
-  if (!s.hermitage) return null;
   const v = HERMITAGE_VOLUMES.find(v => v.source === 'cliff' && v.route === d.hermitageStarter && !s.hermitage.books?.includes(v.id));
   return v && grantHermitageBook(s, v.id, '絕頂石刻') ? v : null;
 }
 export function forestFragment(s, d) {
-  if (!s.hermitage || s.ds.some(p => p !== d && !p.away)) return null;
+  if (s.ds.some(p => p !== d && !p.away)) return null;
   const v = HERMITAGE_VOLUMES.find(v => v.source === 'fragment' && v.route === d.hermitageStarter);
   return v && grantHermitageBook(s, v.id, '林中山洞') ? v : null;
 }

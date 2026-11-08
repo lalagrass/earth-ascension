@@ -7,7 +7,6 @@ import { SECTS, SECT_K, sectBiasMul } from '../../../src/data.mjs';
 import { sectStep, artKind, buildFac, canBuildFac, rivalGate, rivalWon, sectRecruit, favSort, sectResolve } from '../../../src/sect.mjs';
 import { routeSeg } from '../../../src/world.mjs';
 import { xiaPool, join } from '../../../src/wuxia.mjs';
-import { migrate } from '../../../src/save.mjs';
 import { resolveChoice } from '../../../src/hero.mjs';
 const mk = (id, comp) => { const s = createState(7, { kind: 'template', id, companion: comp, askMajor: true }); tick(s); s.jh.morningOn = false; s.jh.comedyOn = false; return s; };
 const day = (s) => { s.day++; sectStep(s); };
@@ -58,7 +57,4 @@ test('宿敵守第 2、4… 道關，打贏得門派聲望', () => {
 test('名俠加權：本派名俠排前面', () => {
   const s = mk('axing'); const p = xiaPool(s); const fav = SECTS.zhulong.fav.filter((k) => p.includes(k)); assert.deepEqual(p.slice(0, fav.length).sort(), fav.sort());
   assert.deepEqual(favSort(s, ['x', 'baozupo']), ['baozupo', 'x']);
-});
-test('舊存檔遷移 1.3 → 1.35 補上門派', () => {
-  const s = mk('linghuchong'); const o = JSON.parse(JSON.stringify(s)); delete o.sect; o.rules = '1.3'; migrate(o); assert.equal(o.sect.id, 'jianzong'); assert.equal(o.rules, RULES_VERSION);
 });

@@ -8,7 +8,6 @@ import { learnArt, artTier } from '../../src/arts.mjs';
 import { XIA, xiaPool, xiaStep, xiaResolve, pickStudent, onCook, dragonFit, PAIR_CAP, xidOf } from '../../src/wuxia.mjs';
 import { pairBonus, applyHero, autoPick } from '../../src/hero.mjs';
 import { aff } from '../../src/social.mjs';
-import { migrate } from '../../src/save.mjs';
 import { guardOf } from '../../src/world.mjs';
 
 const st = (seed = 3) => { const s = createState(seed); tick(s); return s; };
@@ -66,7 +65,4 @@ function party(classic) { const s = createState(11); tick(s); const ids = s.ds.f
 test('平衡：招牌武學練滿比一般武學走得更遠', () => {
   const [n] = party(false); assert.ok(n.dist >= 900, `normal ${n.dist}`); /* #403 退役固定 1600／2000 上限：N24 同源期望傷害會移動絕對里程，保留相對強弱 */
   const [c, d] = party(true); assert.ok(c.dist > n.dist, `classic ${c.dist}`); assert.ok(guardOf(d) <= 0.6 + 1e-9, String(guardOf(d))); /* #390：現行規則下滿武學也練到紫霞，護體再乘 (1 − 0.03×層) */
-});
-test('1.0 存檔遷移到 1.1 補上名俠狀態', () => {
-  const s = st(); delete s.xia; s.rules = '1.0'; const r = migrate(JSON.parse(JSON.stringify(s))); const o = r.state || r; assert.ok(o.xia && o.xia.done);
 });

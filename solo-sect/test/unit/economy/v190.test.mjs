@@ -5,7 +5,6 @@ import { createState, tick, startBuild, buildWhy, buyLot, lotCost, lotsUsed, lot
 import { DAY, FACILITIES, ROUTE, LOTS } from '../../../src/data.mjs';
 import { RAID, T, points, wealth, threatDaily, threatStep, raidResolve, raidAuto, headcount, threatHtml } from '../../../src/threat.mjs';
 import { suggestTeam } from '../../../src/world.mjs';
-import { migrate } from '../../../src/save.mjs';
 
 const H = { think: () => {} };
 const grow = (s, n) => { const b = s.ds.find((d) => d.id !== 'hero'); while (s.ds.length < n) s.ds.push({ ...structuredClone(b), id: `p${s.ds.length}`, adult: true, role: 'inner' }); return s; };
@@ -47,9 +46,4 @@ test('A9 因才派巡：排除傷員／雜工；專長優先、附理由；老�
   const hurt = s.ds.find((d) => d.id === g.ids[0]); hurt.hp = 40; assert.ok(!suggestTeam(s, 2).ids.includes(hurt.id), '反例：傷員不派'); hurt.hp = 100;
   s.lastExp = { ids: g.ids, style: 'clear' }; const g2 = suggestTeam(s, 2); assert.ok(g2.why[1].includes('老搭檔'));
   assert.ok(s.ds.filter((d) => d.role === 'laborer').every((d) => !g2.ids.includes(d.id)));
-});
-test('存檔遷移 1.9：補稀有料、地塊至少已蓋數、山賊從讀檔後第 8 日起', () => {
-  const s = createState(3); const o = JSON.parse(JSON.stringify(s)); o.rules = '1.85'; delete o.lots; delete o.res.tiemu; delete o.threat; o.day = 30;
-  for (const k of ['library', 'quiet', 'shrine', 'alchemy', 'clinic']) o.fac[k].stage = 1; const m = migrate(o);
-  assert.equal(m.res.tiemu, 0); assert.equal(m.lots.n, 5); assert.equal(m.threat.next, 38);
 });

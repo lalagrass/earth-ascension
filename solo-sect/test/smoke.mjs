@@ -1,15 +1,9 @@
-// #402 玩法 PR 最小驗證：舊存檔 3 日、兩種子新局 10 日。步長 6 秒，與 test/harness 預設相同，讓這段在 30 秒內跑完。
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+// #402 玩法 PR 最小驗證：隱居存檔 3 日、兩種子新局 10 日。步長 6 秒，與 test/harness 預設相同，讓這段在 30 秒內跑完。
 import { createState, tick } from '../src/sim.mjs';
-import { load } from '../src/save.mjs';
+import { load, save } from '../src/save.mjs';
 import { DAY } from '../src/data.mjs';
 
 const DT = 6;
-const root = path.dirname(fileURLToPath(import.meta.url));
-const saveDir = path.join(root, 'golden', 'saves');
-
 function nans(v, p, out, seen) {
   if (v && typeof v === 'object') {
     if (seen.has(v)) return;
@@ -27,16 +21,12 @@ function runDays(s, days) {
 }
 
 let bad = 0;
-const files = fs.readdirSync(saveDir).filter((f) => f.endsWith('.json')).sort();
-if (!files.length) { console.error('test/golden/saves/ 沒有存檔'); process.exit(1); }
-for (const f of files) {
-  const r = load(fs.readFileSync(path.join(saveDir, f), 'utf8'));
-  if (!r.ok) { console.error(`讀入失敗 ${f}：${r.err}`); bad++; continue; }
-  try { runDays(r.state, 3); }
-  catch (e) { console.error(`例外 ${f}：${e?.stack || e}`); bad++; continue; }
-  const hit = []; nans(r.state, f, hit, new Set());
-  if (hit.length) { console.error(`NaN ${f}：${hit.slice(0, 6).join(' ')}`); bad++; }
-  else console.log(`save ${f} 3 日 ok`);
+const saved = createState(42, { kind: 'custom', hermitage: true, opening: 'solo' });
+const loaded = load(save(saved));
+if (!loaded.ok) { console.error(`隱居存檔讀入失敗：${loaded.err}`); bad++; }
+else {
+  try { runDays(loaded.state, 3); console.log('隱居存檔讀回 3 日 ok'); }
+  catch (e) { console.error(`隱居存檔例外：${e?.stack || e}`); bad++; }
 }
 for (const seed of [1001, 1002]) {
   const s = createState(seed);

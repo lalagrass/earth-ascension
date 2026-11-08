@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick } from '../../src/sim.mjs';
-import { save, load, MIGRATIONS } from '../../src/save.mjs';
+import { save, load } from '../../src/save.mjs';
 import { RULES_VERSION, ROUTE } from '../../src/data.mjs';
 import { secOpen, UNLOCKS, CHAPTER1, autosave, autoList, autoGet, AUTO } from '../../src/world.mjs';
 import { cuesFrom } from '../../src/audio.mjs';
@@ -40,7 +40,7 @@ test('匯出 JSON 再匯入 = 同一局', () => {
 test('0.97 存檔遷移到 0.98：舊局全面板開放', () => {
   const s = createState(1); const o = JSON.parse(save(s)); o.rules = '0.97'; delete o.unlock; delete o.chapter;
   const r = load(JSON.stringify(o)); assert.ok(r.ok); assert.equal(r.state.unlock.length, UNLOCKS.length); assert.equal(r.state.chapter.done, false);
-  assert.equal(MIGRATIONS.at(-1).to, RULES_VERSION); assert.ok(parseFloat(RULES_VERSION) >= 0.98);
+  assert.equal(load(save(createState(2))).state.rules, RULES_VERSION);
 });
 test('音效提示由紀事推出', () => {
   const p = {}, s = { fx: [], log: [{ msg: 'x' }] }; cuesFrom(p, s);

@@ -46,13 +46,9 @@ export function mkComp(id, i) {
 // spec: { kind:'template', id, companion } | { kind:'custom', name, stats, answers, companion }
 export function applyHero(s, spec, initPair) {
   const d = s.ds.find((x) => x.id === 'hero'); if (!d || !spec) return s;
+  // R9：主角只由隱居局的自訂屬性與問心建立。
   let H;
-  if (spec.kind === 'template') {
-    const T = heroById(spec.id); if (!T) throw new Error('未知模板 ' + spec.id);
-    H = { kind: 'template', id: T.id, name: T.name, stats: { ...T.stats }, values: { ...T.values }, personality: [...T.personality], hidden: null, lore: T.lore, sealed: !!T.sealed, arc: T.arc };
-    d.classic = true; d.portrait = `assets/portraits/${T.id}.png`; d.style = T.style;
-    if (T.coinMul) resSet(s, 'coin', s.res.coin * T.coinMul);
-  } else {
+  {
     if (spec.arch != null && !isArch(spec.arch)) throw new Error('未知原型 ' + spec.arch);
     const st = spec.stats || (spec.arch ? { ...ARCH[spec.arch].stats } : defaultStats()); if (!validStats(st, spec.bonus || 0)) throw new Error('點數不合法');
     const r = readHeart(spec.answers || []); let pers = [...r.visible]; if (st.wu === 1 && !pers.includes('honest')) pers.unshift('honest');
@@ -68,20 +64,14 @@ export function applyHero(s, spec, initPair) {
   s.xiaStyle = ['all','jin','zhou'].includes(spec.xiaStyle)?spec.xiaStyle:'all';
   s.hero = {...H,fu:st.fu,askMajor:spec.askMajor??true,arcStep:0,...(spec.sect24?{sect24:spec.sect24}:{})};
   s.encExclude = [H.id].filter(x=>x&&x!=='custom');s.choices=[];
-  log(s, spec.hermitage ? `${H.name}獨自走向終南茅廬。` : `${H.name}帶著出身相連的普通同行者來到破道館。`);
+  log(s, `${H.name}獨自走向終南茅廬。`);
   return s;
 }
 // 名俠池：所有模板＋同門候選，扣掉已在門中者
 export function encounterPool(s) { const ex = new Set(s.encExclude || []); return [...HEROES.map((h) => h.id), ...Object.keys(COMPANIONS)].filter((id, i, a) => a.indexOf(id) === i && !ex.has(id)); }
 // 同門默契：郭靖＋黃蓉 練功最多 +25%（隨好感線性），其他組合 +10%
 export function pairBonus(s, d, aff) {
-  if (s.hermitage) return Math.max(0, ...s.ds.filter((o) => o !== d && !o.away && o.role !== 'laborer').map((o) => 0.1 * Math.min(1, Math.max(0, aff(s, d, o)) / 60))); // R4：隱居同修只看人際好感，N46 記憶已寫入好感。
-  if (!s.hero) return 0; return pairBest(s, d, aff, (a, b) => { const c = s.hero.companion; return (a.id === 'hero' && b.id === c) || (b.id === 'hero' && a.id === c) ? COMPANIONS[c]?.pair?.[s.hero.id] ?? 0.1 : 0; });
-}
-export function pairBonusOld(s, d, aff) {
-  if (!s.hero) return 0; const h = s.ds.find((x) => x.id === 'hero'), c = s.ds.find((x) => x.id === s.hero.companion);
-  if (!h || !c || h.away !== c.away || (d !== h && d !== c)) return 0;
-  const cap = COMPANIONS[c.id]?.pair?.[s.hero.id] ?? 0.1; return cap * Math.min(1, Math.max(0, aff(s, h, c)) / 60);
+  return Math.max(0, ...s.ds.filter((o) => o !== d && !o.away && o.role !== 'laborer').map((o) => 0.1 * Math.min(1, Math.max(0, aff(s, d, o)) / 60)));
 }
 // 專屬主線第一步：到日子就出抉擇卡；askMajor → 等玩家；否則依價值觀自動選
 // v1.85（ROADMAP I-5）：郭靖標為困難開局；前 days 日降龍掌練到小成瓶頸時，洪七公帶他破第一關一次（憨厚肯練的小補償）

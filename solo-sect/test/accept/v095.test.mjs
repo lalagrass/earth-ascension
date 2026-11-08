@@ -4,28 +4,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-import { tick, save, load, MIGRATIONS, scoreActs, startExpedition, canExpedition, codexRows, byId, skipGuide, startBuild, dpsOf } from '../../src/sim.mjs';
+import { tick, save, load, scoreActs, startExpedition, canExpedition, codexRows, byId, skipGuide, startBuild, dpsOf } from '../../src/sim.mjs';
 import { RULES_VERSION, ROUTE, ENEMIES, DAY, PHASES, TIERS } from '../../src/data.mjs';
 import { pipeline, MUL_CLAMP } from '../../src/util.mjs';
 import { artMulParts, artById, seedArts, gainArt, learnArt } from '../../src/arts.mjs';
 const FIX = new URL('../fixtures/', import.meta.url);
 const runDays = (s, n) => { for (let i = 0; i < n * DAY * 4; i++) tick(s); };
 const hash = (s) => crypto.createHash('sha256').update(save(s)).digest('hex').slice(0, 16);
-
-// 1 逐版遷移＋真舊檔回歸（fixtures 由各版 commit 的 createState(7)+300 秒存檔產生）
-const OLD = ['0.5', '0.6', '0.7', '0.8', '0.85', '0.9', '0.92'];
-for (const v of OLD) test(`舊檔回歸 v${v}：可讀、只跑該跑的步驟、續玩 1 日無負值`, () => {
-  const r = load(fs.readFileSync(new URL(`v${v}.json`, FIX), 'utf8')); assert.equal(r.ok, true, r.err); const s = r.state;
-  assert.equal(s.rules, RULES_VERSION); assert.equal(s.migratedFrom, v);
-  assert.deepEqual(s.migSteps, MIGRATIONS.filter((m) => parseFloat(m.to) > parseFloat(v)).map((m) => m.to));
-  for (const d of s.ds) { assert.ok(d.arts && d.root && d.role && d.duties !== undefined || d.role === 'laborer'); assert.equal(d.best, 0); }
-  assert.ok(s.codex && s.records && s.pace && s.guide); runDays(s, 1);
-  for (const [k, n] of Object.entries(s.res)) assert.ok(n >= 0, k);
-});
-test('遷移步驟依版本排序、各有說明；新檔不跑任何步驟', () => {
-  const v = MIGRATIONS.map((m) => parseFloat(m.to)); assert.deepEqual([...v].sort((a, b) => a - b), v); assert.ok(MIGRATIONS.every((m) => m.note));
-  assert.equal(MIGRATIONS.at(-1).to, RULES_VERSION); const r = load(save(createState(2))); assert.deepEqual(r.state.migSteps, []);
-});
 
 // 2 統一倍率管線
 test('倍率管線：組內相加、組間相乘、每組夾在 0.3–2.0', () => {

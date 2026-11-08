@@ -7,9 +7,6 @@ import { renderMicroStage } from '../../../src/pose-render.mjs';
 import { gainArt } from '../../../src/arts.mjs';
 
 test('Phase 5：未採藥的一日做活至疲勞滿，體魄受 18 與 1.2 上限，歇息後須等次日', () => {
-  const old = createState(42), oldHero = old.ds[0];
-  assert.equal(stepWorkCondition(oldHero, old, 'chop').active, false);
-  assert.equal('muscleFatigue' in oldHero, false);
   const s = createState(42, { hermitage: true }), d = s.ds[0];
   d.skills.strength = 10;
   for (let i = 0; i < 4; i++) stepWorkCondition(d, s, 'chop');
@@ -60,10 +57,6 @@ test('Phase 5：黃蓉煮飯和用飯走真任務，藥膳消疲勞、四週期�
     assert.equal(mealState.res.food, plainFood); assert.equal(mealState.res.medFood, 0);
     assert.equal(mealState.ledger.out.medFood, 1); assert.equal(mealState.ledger.out.food || 0, 0, '一餐只扣藥膳，不雙扣普通飯');
   }
-  const oldMeal = createState(19); oldMeal.res.food = 0; oldMeal.res.medFood = 1;
-  assert.equal(scoreActs(oldMeal, oldMeal.ds[0]).some(x => x.act === 'eat'), false, '舊局不啟用藥膳庫存');
-  oldMeal.res.veg = 0; oldMeal.res.medFood = 8;
-  assert.equal(emergency(oldMeal), true); assert.equal(foodLow(oldMeal), true, '舊局只計原本可用的存糧');
   const stores = createState(17, { hermitage: true }); stores.res.food = 0; stores.res.veg = 0; stores.res.medFood = 8; stores.mons = [];
   stores.ds.forEach((member) => { member.role = 'outer'; member.needs.hunger = 95; }); stores.emergency = false;
   assert.equal(emergency(stores), false); assert.equal(foodLow(stores), false);

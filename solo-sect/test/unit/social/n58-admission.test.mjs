@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick, canRecruit, recruit, canPromote, quotaOf, setRecruitPolicy, attraction } from '../../../src/sim.mjs';
+import { createState, tick, canRecruit, recruit, canPromote, quotaOf, setRecruitPolicy, attraction, foundHermitageSect } from '../../../src/sim.mjs';
 import { RECRUIT_POOL, DAY, ROOT, PROMOTE } from '../../../src/data.mjs';
 import { E } from '../../../src/economy.mjs';
 import { book } from '../../../src/util.mjs';
@@ -10,8 +10,8 @@ import { T } from '../../../src/threat.mjs';
 
 test('N58 收徒方針、束脩／做工、少年名俠共用入門與師父熟識', () => {
   const mk = () => {
-    const s = createState(17, { kind: 'bare' });
-    s.fac.dorm.stage = 1; s.res.food = 10; s.rep = 100;
+    const s = createState(17, { kind: 'custom', hermitage: true, opening: 'solo' });
+    assert.equal(foundHermitageSect(s, 'single').ok, true); s.fac.dorm.stage = 1; s.res.food = 10; s.rep = 100;
     const master = s.ds[0];
     master.practice.hands = Object.fromEntries(BODY_BASE.map((id) => [id, 500]));
     master.skills.palm = 100; master.timePrev = { day: 0, elapsed: DAY, free: 400, guided: 0 };

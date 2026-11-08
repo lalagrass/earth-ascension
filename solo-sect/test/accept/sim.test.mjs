@@ -115,14 +115,6 @@ test('心情低落時工作分數下降、休閒上升；多慮放大壞事', ()
   const s = createState(53); const d = s.ds[0]; d.mood = 10; assert.ok(moodMul(d, 'train') < 1 && moodMul(d, 'chat') > 1);
   think(s, d, 'cropLost'); think(s, s.ds[1], 'cropLost'); assert.ok(d.thoughts[0].v < s.ds[1].thoughts[0].v);
 });
-test('舊（v0.5）存檔缺心情欄位也能讀入並補預設', () => {
-  const s = createState(54); for (const d of s.ds) { delete d.mood; delete d.thoughts; } const r = load(save(s)); assert.ok(r.ok); assert.equal(r.state.ds[0].mood, 50);
-});
-
-// v0.7 心智與社交
-import { relAdd, compat, aff, seasonOf, defaultAnswers, personalityFrom, recruit as recruit7, canRecruit as canRec7, migrate, moodParts } from '../../src/sim.mjs';
-import { RULES_VERSION, RECRUIT_POOL, DAY, SEASON_DAYS } from '../../src/data.mjs';
-const run7 = (s, sec) => { for (let i = 0; i < sec * 4; i++) tick(s); };
 test('決策可解釋：最高分＝（基礎×作息×乘數總和×厭倦＋雜訊）×偏好', () => { /* #390：現行規則多了天賦／狀態／外部分組（f.total）與 loop203 偏好乘數 */
   const s = createState(71); tick(s); const d = s.ds[0], w = d.why[0]; assert.ok(w && w.f);
   assert.ok(Math.abs((w.f.base * w.f.sched * w.f.total * w.f.bored + w.f.noise) * appetiteActMul31(d, w.act) - w.score) < 1);
@@ -159,11 +151,4 @@ test('季節：每季 7 日，冬天菜長得慢、春天心情加成', () => {
 test('心情能回升：10 日平均心情 ≥ 40，低落時間 < 15%', () => {
   const s = createState(78); let sum = 0, n = 0, low = 0; for (let i = 0; i < 4 * 6000; i++) { tick(s); if (i % 40 === 0) for (const d of s.ds) { sum += d.mood; n++; if (d.mood < 30) low++; } }
   assert.ok(sum / n >= 40, `avg ${sum / n}`); assert.ok(low / n < 0.15, `low ${low / n}`);
-});
-test('存檔帶規則版本；v0.5 與 v0.6 形狀的舊檔都能讀入並遷移', () => {
-  const s = createState(79); run7(s, 30); assert.equal(JSON.parse(save(s)).rules, RULES_VERSION);
-  const v06 = JSON.parse(save(s)); delete v06.rules; delete v06.aff; for (const d of v06.ds) { delete d.known; delete d.together; delete d.needs.fun; delete d.why; }
-  const r6 = load(JSON.stringify(v06)); assert.ok(r6.ok); assert.equal(r6.state.migratedFrom, '0.6'); assert.equal(r6.state.rules, RULES_VERSION); assert.ok(Object.keys(r6.state.aff).length === 6);
-  const v05 = JSON.parse(JSON.stringify(v06)); for (const d of v05.ds) { delete d.mood; delete d.thoughts; delete d.personality; }
-  const r5 = load(JSON.stringify(v05)); assert.ok(r5.ok); assert.equal(r5.state.migratedFrom, '0.5'); assert.deepEqual(r5.state.ds[0].personality, ['diligent', 'worrier']); tick(r5.state);
 });

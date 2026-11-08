@@ -3,8 +3,8 @@
 #   quick（預設）：test/unit/<系統>/ 的短測試與資產檢查
 #   all：unit ＋ archive（歷史回歸）＋ accept（長跑驗收）
 #   accept：只跑 test/accept/
-#   golden：R0（#388）完整行為鎖定矩陣＋舊檔回放（tools/golden.mjs --check；重構 PR 必跑，4 核約 5 分鐘）
-#   smoke（#402）：玩法 PR 最小驗證，約 30 秒。舊存檔各跑 3 日、兩種子新局各跑 10 日、結構不變量。
+#   golden：唯一隱居 golden（tools/golden.mjs --check）
+#   smoke（#402）：玩法 PR 最小驗證，同版隱居存讀、兩種子各 10 日與結構不變量。
 cd "$(dirname "$0")/.." || exit 1
 case "${1:-quick}" in
   quick)

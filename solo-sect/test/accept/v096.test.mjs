@@ -1,6 +1,6 @@
 import { createState } from '../harness/historical-party.mjs';
 import test from 'node:test'; import assert from 'node:assert/strict';
-import { tick, scoreActs, save, load, migrate } from '../../src/sim.mjs';
+import { tick, scoreActs, save, load } from '../../src/sim.mjs';
 import { DAY, RULES_VERSION } from '../../src/data.mjs';
 import { HEROES, COMPANIONS, Q9 } from '../../src/data.mjs';
 import { validStats, budgetOf, readHeart, valueMul, encounterPool, companionsFor, resolveChoice, addWexin } from '../../src/hero.mjs';
@@ -52,10 +52,4 @@ test('專屬主線第一步：第 2 天出抉擇卡，詢問玩家；不問則�
   assert.equal(s.choices.length, 1); assert.equal(s.choices[0].title, '洪七公聞香而來');
   resolveChoice(s, s.choices[0].id, 0); assert.ok(s.hero.flags.hong); assert.equal(s.choices.length, 0);
   const a = createState(8, { kind: 'template', id: 'linghuchong', askMajor: false }); run(a, DAY * 1.05); assert.equal(a.choices.filter((c) => c.arc).length, 0); assert.ok(a.hero.arcStep >= 1);
-});
-test('預設無主角開局不變、v0.95 存檔逐步遷移', () => {
-  const s = createState(9); assert.equal(s.hero, null); assert.equal(s.ds.length, 3);
-  const o = JSON.parse(save(s)); o.rules = '0.95'; o.v = o.v; delete o.hero; delete o.choices; delete o.encExclude; for (const d of o.ds) delete d.wu;
-  const m = load(JSON.stringify(o)).state; assert.equal(m.rules, RULES_VERSION); assert.ok(m.ds.every((d) => d.wu === d.root)); assert.deepEqual(m.choices, []);
-  const t = createState(10, { kind: 'template', id: 'zhangwuji', companion: 'xiaozhao' }); run(t, 30); const r = load(save(t)).state; assert.equal(r.hero.companion, 'xiaozhao');
 });
