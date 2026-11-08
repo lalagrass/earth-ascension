@@ -23,7 +23,7 @@ for (const kind of ['stone', 'wood']) {
   WHITE.add(`${kind} - repair-donation:donateRepairs`);
 }
 WHITE.add('coin + repair-donation:donateRepairs');
-function who() { const fr = new Error().stack.split('\n').slice(3); for (const l of fr) { const m = l.match(/at (?:async )?([\w$.]+) \(.*\/src\/(\w+)\.mjs/); if (m && m[2] !== 'util' && !/^(Object|Proxy|Array)\./.test(m[1])) return `${m[2]}:${m[1]}`; } return '?'; }
+function who() { const fr = new Error().stack.split('\n').slice(3); for (const l of fr) { const m = l.match(/at (?:async )?([\w$.]+) \(.*\/src\/([\w-]+)\.mjs/); if (m && m[2] !== 'util' && !/^(Object|Proxy|Array)\./.test(m[1])) return `${m[2]}:${m[1]}`; } return '?'; }
 function audited(seed, op, days) {
   const s = createState(seed, op ? { kind: 'template', id: op, askMajor: false } : null); const raw = s.res, init = { ...raw }, sum = {}, chans = new Set(), neg = [], booked = {}; let L = s.ledger; const L0 = JSON.parse(JSON.stringify(s.ledger)); const addL = (X) => { for (const [k, v] of Object.entries(X.in)) booked[k] = (booked[k] || 0) + v; for (const [k, v] of Object.entries(X.out)) booked[k] = (booked[k] || 0) - v; };
   s.res = new Proxy(raw, { set(t, k, v) { const d = v - (t[k] || 0); if (d) { chans.add(`${k} ${d > 0 ? '+' : '-'} ${who()}`); sum[k] = (sum[k] || 0) + d; } if (!(v >= 0)) neg.push(`${k}=${v}`); t[k] = v; return true; } });
