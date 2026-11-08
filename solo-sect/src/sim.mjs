@@ -5,7 +5,7 @@ import {transferredDamage,moveStats,hermitageInnerActive,hermitageStepActive,art
 import { inventable, inventArt, readableRareBook, readRareBook } from './rare-arts.mjs';
 import { HERMITAGE_VOLUMES, seedHermitageBooks, bookStatus, readHermitageBook, cliffBook, forestFragment, volumeById } from './hermitage-books.mjs';
 import { spreadRumors, rumorForCandidate } from './rumors.mjs';
-import { canLeapCliff, CLIFF_ACT_NODE } from './cliff.mjs';
+import { canLeapCliff, cliffSlopeFactor, CLIFF_ACT_NODE } from './cliff.mjs';
 import {ringCapacity,attackTokenLimit,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} from './tactics.mjs';
 import {pickupDrop} from './techniques.mjs';
 import {forayChoice} from './foray-choice.mjs';
@@ -26,7 +26,7 @@ import { recordSocialEvent, fadeSocialThoughts } from './social-thoughts.mjs';
 import { readLuohanBook } from './luohan-book.mjs';
 import { xiaStep, onCook, xiaInit, hsStep, hsInit } from './wuxia.mjs';
 import { jhStep, jhInit, jhevDaily } from './jianghu.mjs';
-import { sectStep, sectInit, sectRecruit, genStep, genInit, removeDisciple, canBuildFac, buildFac, queueHermitageFounding, foundHermitageSect, canFoundHermitageSect, twinSwordsDamageFactor } from './sect.mjs';
+import { sectStep, sectInit, sectRecruit, genStep, genInit, removeDisciple, canBuildFac, buildFac, queueHermitageFounding, foundHermitageSect, canFoundHermitageSect, pairedSwordArrival } from './sect.mjs';
 import { applyHero, valueMul, easeWexin, onAssign, heroStep, heroAuto, pairBonus, awaken, econCoin, cookBonus } from './hero.mjs';
 import { SAVE_VERSION, initStateFields } from './save.mjs';
 import { bodyMassMul, expecting, isBaby } from './family.mjs';
@@ -50,7 +50,7 @@ const ADJ = {};
 for (const [a, b] of EDGES) { const w = dist(NODES[a], NODES[b]); (ADJ[a] ||= []).push([b, w]); (ADJ[b] ||= []).push([a, w]); }
 export function route(from, to, d = null) {
   // 出自 Phase 6 規格：平地尋路沿舊圖；只有進出山崖時才納入已達門檻的崖點，避免舊局多一條捷徑。
-  const cliffTrip = !!(CLIFFS[from] || CLIFFS[to]);
+  const cliffTrip = !!(CLIFFS[from] || CLIFFS[to] || from === CLIFFS.cliff3.detour || to === CLIFFS.cliff3.detour);
   const D = { [from]: 0 }, P = {}, Q = new Set(Object.keys(NODES).filter(id => id === from || !CLIFFS[id] || (cliffTrip && canLeapCliff(d, id))));
   while (Q.size) {
     let u = null; for (const q of Q) if (D[q] !== undefined && (u === null || D[q] < D[u])) u = q;
@@ -548,13 +548,13 @@ function decide(s, d) {
 
 export function speedOf(d, s = null) { return BASE_SPEED / (s ? bodyMassMul(s, d) : 1) * (1 + d.skills.agility / 100) * (d.carry ? 0.7 : 1) * (d.needs.energy < 30 ? 0.8 : 1) * (1 + NG23.speedPerTier * Math.max(0, effectTier(d, 'speed') + 1) * stepDrive(d)) * (1 + 0.002 * mastery(d, 'shenfa')) * (d.path?.length ? yuqiMul(d) : 1) * (hermitageStepActive(d) ? 1.35 : 1); } /* 出自 Phase 6 規格：隱居主角悟輕功後腳程 +35%；舊角色沿原公式。 */
 
-function moveStep(d, dt, s = null) {
+export function moveStep(d, dt, s = null) {
   if (d.path.length && yuqiOn(d)) d.qi = Math.max(qiMax(d) * NG23.yuqi.keep, qiOf(d) - NG23.yuqi.drain * dt); /* loop153 御氣耗氣，留三成底、不會力竭 */
   let left = speedOf(d, s) * dt;
   while (left > 0 && d.path.length) {
-    const tgt = d.path[0].xy, L = dist(d.pos, tgt);
-    if (L <= left) { d.pos = [...tgt]; d.at = d.path[0].n; d.path.shift(); left -= L; d.walked += L; }
-    else { d.face = tgt[0] >= d.pos[0] ? 1 : -1; d.pos[0] += (tgt[0] - d.pos[0]) * left / L; d.pos[1] += (tgt[1] - d.pos[1]) * left / L; d.walked += left; left = 0; }
+    const tgt = d.path[0].xy, L = dist(d.pos, tgt), slope = cliffSlopeFactor(d.at, d.path[0].n);
+    if (L <= left * slope) { d.pos = [...tgt]; d.at = d.path[0].n; d.path.shift(); left -= L / slope; d.walked += L; }
+    else { const step = left * slope; d.face = tgt[0] >= d.pos[0] ? 1 : -1; d.pos[0] += (tgt[0] - d.pos[0]) * step / L; d.pos[1] += (tgt[1] - d.pos[1]) * step / L; d.walked += step; left = 0; }
   }
   d.skills.agility = Math.min(100, d.skills.agility + 0); // 腳力成長於交付時結算
 }
@@ -794,8 +794,7 @@ function dStrike(s, h, d, live, w) {
   const mv = MOVES.find((x) => x.id === w.mv), tgt = live.find((m) => m.uid === w.tgt);
   if (!mv || !tgt || dist(tgt.pos, d.pos) > w.reach * 1.25) { d.anim = null; return null; } /* 目標走遠或已倒：招落空 */
   const lv = d.skills[mv.skill];
-  const fighters = s.ds.filter((p) => h.team.includes(p.id) && p.task?.act === 'hunt' && p.at === h.post && !p.path?.length && p.hp > 25);
-  let power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id, s.t) * twinSwordsDamageFactor(s, d, mv.id, fighters); /* 出自 Phase 7 規格：只有同一波真參戰、肩距內的異脈雙劍合璧 ×1.35。 */
+  let power = mv.dmg * (1 + lv / 50) * moveMul(d, mv.id, s.t); // R5 #523：同伴只改出手時機，不改傷害。
   const ar = mv.aoe ? mv.aoe + qiAoeAdd(d, mv) : 0, hitList = mv.aoe ? live.filter(m=>dist(m.pos,mv.aoeCenter==='actor'?d.pos:tgt.pos)<=ar) : [tgt];
   const r = resolveSwing(s, d, tgt, () => rand(s), { depth: depthOf(d, mv.id), wind: w.wind, move: mv.id, force: w.force, map: true, targetApproachingAtWindup:w.targetApproachingAtWindup, dodgeAtWindup:w.dodgeAtWindup });
   if(r.counter){d.hp=Math.max(0,d.hp-r.counterDamage);clashFx(s,tgt,'read');}
@@ -885,7 +884,9 @@ function huntStep(s, dt) {
       const lv = d.skills[mv.skill]; const reach = mv.range * (1 + lv / 200), canDash = mv.range >= FLAIR.dash.minRange && visTier(d, mv.id) >= FLAIR.dash.tier;
       const tgt = live.filter((m) => dist(m.pos, d.pos) <= reach + (canDash ? FLAIR.dash.add : 0)).sort((a, b) => a.hp - b.hp)[0]; if (!tgt) continue;
       if (canDash && !dashTo(s, d, tgt, reach, h.post)) continue; /* #420 大成：滑步上前 */
-      const cd = mv.cd * cdMul(d, mv.id, s.t), kh = artOfMove(mv.id)?.id === 'kuihua' && zjHas(d, 'kuihua'), wind = (kh ? 0 : windOf(d,mv.id,cd,s.t))+(pick?.seconds||0); /* #426 葵花：沒有前搖 */
+      const cd = mv.cd * cdMul(d, mv.id, s.t), kh = artOfMove(mv.id)?.id === 'kuihua' && zjHas(d, 'kuihua'); /* #426 葵花：沒有前搖 */
+      let wind = (kh ? 0 : windOf(d,mv.id,cd,s.t))+(pick?.seconds||0);
+      if (!kh) wind = pairedSwordArrival(s, d, mv.id, tgt, team, s.t + wind) - s.t;
       if (kh) zjMark(s, d, 'kuihua');
       if (mv.consumable) delete d.tools?.[mv.tool];
       d.swing = { mv: mv.id, tgt: tgt.uid, at: s.t + wind, wind, reach, targetApproachingAtWindup:!!tgt.path?.length&&!tgt.swing&&!tgt.bswing, dodgeAtWindup:d.lastDodge?.target===tgt.uid&&d.lastDodge.until>=s.t?{...d.lastDodge}:null }; d.cool = cd+(pick?.seconds||0); d.face = tgt.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'wind';

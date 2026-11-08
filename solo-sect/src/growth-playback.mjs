@@ -4,6 +4,7 @@ import { bodyMove, FOE_ACTIONS } from './starter-combat.mjs';
 import { opponents, allies, backToBackPartner, coverFor } from './tactics.mjs';
 import { composure, assessLoad, postureMax, qiPow, topTier, hermitageStepActive } from './arts.mjs';
 import { CLIFFS } from './data.mjs';
+import { pairedSwordPartner } from './twin-swords.mjs';
 
 export const PLAYBACK = Object.freeze({ pause: .5, uprightHip: 17, deepHipRatio: .5, tilt: 30, sway: 4, bodyScale: 10, legacyStart: .5 });
 // 出自 Phase 5 規格：12／16／18 對應生疏、漸熟、熟練、上段四種雜務表現（R2 起 18 以上只有根骨好、練得久的人到得了）。
@@ -373,7 +374,7 @@ export function crowdSynergyFrame(d, s = {}, view = {}) {
     ? Math.max(1, multiFoeCount || 3)
     : 0;
 
-  // 2. 伴侶雙劍合璧、陣法合擊與地形掩體（Partner, Formation & Cover Synergy）
+  // 2. 同伴雙劍時機、陣法合擊與地形掩體（Partner, Formation & Cover Synergy）
   let allyList = [];
   if (view.allies) {
     allyList = view.allies;
@@ -432,10 +433,8 @@ export function crowdSynergyFrame(d, s = {}, view = {}) {
   }
 
   let synergyMode;
-  const isCoupleSynergy = Boolean(
-    s?.hermitage?.founded && s.sect?.doctrine === 'dualHall' && partner && !!d?.fem !== !!partner.fem &&
-    ((d?.arts?.quanzhenSword && partner.arts?.yunvSword) || (d?.arts?.yunvSword && partner.arts?.quanzhenSword))
-  ); // R9：只保留隱居開山後的雙脈合宗畫面。
+  const isPairedSwords = Boolean(partner && view.opponent && pairedSwordPartner(
+    s, d, d?.swing?.mv || d?.bswing?.mv || d?.lastCombatMove, view.opponent, [d, partner])); // R5：任何兩人，真同場、同目標且有夾角才畫合擊。
 
   let isBackToBack = false;
   if (partner && (view.backToBack || view.synergyMode === 'backToBack')) {
@@ -450,8 +449,8 @@ export function crowdSynergyFrame(d, s = {}, view = {}) {
 
   if (view.synergyMode) {
     synergyMode = view.synergyMode;
-  } else if (partner && isCoupleSynergy) {
-    synergyMode = 'twinSwordsCouple';
+  } else if (isPairedSwords) {
+    synergyMode = 'pairedSwords';
   } else if (allyList.length >= 2 || Boolean(view.formation)) {
     synergyMode = 'zhenwuArray';
   } else if (isBackToBack) {
@@ -463,8 +462,8 @@ export function crowdSynergyFrame(d, s = {}, view = {}) {
   }
 
   let combinedArtName = null;
-  if (synergyMode === 'twinSwordsCouple') {
-    combinedArtName = '雙劍合璧・玉女素心';
+  if (synergyMode === 'pairedSwords') {
+    combinedArtName = '雙劍夾角・接招跟進';
   } else if (synergyMode === 'zhenwuArray') {
     combinedArtName = '真武七截陣・天罡合擊';
   } else if (synergyMode === 'backToBack') {
@@ -474,9 +473,7 @@ export function crowdSynergyFrame(d, s = {}, view = {}) {
   }
 
   let synergyBonus = 1.0;
-  if (synergyMode === 'twinSwordsCouple') {
-    synergyBonus = 1.35;
-  } else if (synergyMode === 'zhenwuArray') {
+  if (synergyMode === 'zhenwuArray') {
     synergyBonus = 1.5;
   } else if (synergyMode === 'backToBack') {
     synergyBonus = 1.2;
@@ -492,8 +489,6 @@ export function crowdSynergyFrame(d, s = {}, view = {}) {
     effectiveLoadL = baseLoad * 0.6;
   } else if (synergyMode === 'terrainCover') {
     effectiveLoadL = Math.min(baseLoad, 0.35);
-  } else if (synergyMode === 'twinSwordsCouple') {
-    effectiveLoadL = baseLoad * 0.65;
   }
 
   // 3. 16 型人格（MBTI）自主戰鬥演繹（MBTI Combat Persona）

@@ -382,7 +382,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '5.4'; /* R8 #526：承接已合併 R11 5.3，外人見聞驅動登門；異版存檔拒載 */
+export const RULES_VERSION = '5.5'; /* R5／R6 #523：承接 R8 5.4，雙劍時機與山崖攀登改規；異版存檔拒載 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -838,13 +838,14 @@ for (const [k, e] of Object.entries(ENEMIES)) if (e.home) MONSTERS[k] = { name: 
 // eff 鍵：res{k:+n} 入庫（受 cap 限）、use{k:n} 消耗（不夠就不做）、hp、mood、rep、wexin（−層數）、allMood（全派心情）、alt（use 不夠時改用的效果）
 Object.assign(NODES, { library: [1235, 300], quiet: [1265, 395], shrine: [1110, 255], alchemy: [705, 335], clinic: [870, 470], guest: [860, 290], well: [1035, 655], bell: [1040, 325], sig: [1290, 480] });
 EDGES.push(['hall', 'library'], ['yard', 'quiet'], ['hall', 'shrine'], ['kitchen', 'alchemy'], ['mid', 'clinic'], ['dormP', 'guest'], ['s1', 'well'], ['court', 'bell'], ['yard', 'sig']);
-// 出自 Phase 6 規格：低崖連藥圃與林場，中崖連井與低崖，高崖只連中崖；尋路另驗輕功門檻。
-EDGES.push(['herb', 'cliff1'], ['forest2', 'cliff1'], ['well', 'cliff2'], ['cliff1', 'cliff2'], ['cliff2', 'cliff3']);
+// 出自 Phase 6 規格：低崖連藥圃與林場，中崖連井與低崖，高崖只連中崖；R6 改由路線難度與體能驗攀登。
+NODES.cliff3Detour = [1050, 310]; // R6 #523：繞開光壁的可見路肩，位置按 cliff2／cliff3 的地圖空地配置。
+EDGES.push(['herb', 'cliff1'], ['forest2', 'cliff1'], ['well', 'cliff2'], ['cliff1', 'cliff2'], ['cliff2', 'cliff3Detour'], ['cliff3Detour', 'cliff3']);
 export const CLIFFS = Object.freeze({
-  cliff1: { name: '斷木試劍崖', height: '三丈', agility: 16, tier: 0, acts: ['cliffForage1', 'cliffTrain'] },
-  cliff2: { name: '飛瀑寒潭崖', height: '七丈', agility: 24, tier: 1, acts: ['cliffWater', 'waterfallTrain'] },
-  cliff3: { name: '終南絕頂・古墓石室崖', height: '十五丈', agility: 32, tier: 2, acts: ['cliffComprehend'] },
-}); // 出自 Phase 6 規格：身法 16／24／32 及火候初學／小成／大成依序解鎖。
+  cliff1: { name: '斷木試劍崖', height: '三丈', heightZhang: 3, routeGrade: 1, hardest: '易攀岩面', acts: ['cliffForage1', 'cliffTrain'] },
+  cliff2: { name: '飛瀑寒潭崖', height: '七丈', heightZhang: 7, routeGrade: 2, hardest: '中段疏點', acts: ['cliffWater', 'waterfallTrain'] },
+  cliff3: { name: '終南絕頂・古墓石室崖', height: '十五丈', heightZhang: 15, routeGrade: 3, hardest: '頂端光壁', detour: 'cliff3Detour', acts: ['cliffComprehend'] },
+}); // R6 #523 規格高度 3／7／15 丈與易／中／難三路；最難一段只列性質，直上光壁不可攀，繞路可達。
 const B = (id, name, node, built, cost, work, offers, extra = {}, rep = 0) => ({ id, name, node, v16: true, stages: [{ name: '空地', sprite: null, offers: [] }, { name: built, sprite: null, offers, cost, work, rep: rep || undefined, ...extra }] });
 FACILITIES.push(
   B('library', '藏經閣', 'library', '藏經閣', { wood: 10, stone: 6, coin: 6 }, 26, ['study'], { slots: { study: 2 } }, 15),

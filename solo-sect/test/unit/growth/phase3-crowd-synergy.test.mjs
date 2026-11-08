@@ -112,6 +112,7 @@ test('2. 場景 B（雙劍合璧、真武七截陣、背靠背與借樹卡位 Pa
   const dHero = {
     id: 'yangguo',
     name: '楊過',
+    hp: 100, pos: [100, 100], swing: { mv: 'qz1', target: 'jinlun' },
     skills: { strength: 35, agility: 35 },
     arts: { quanzhenSword: { xp: 80 } }
   };
@@ -119,25 +120,26 @@ test('2. 場景 B（雙劍合璧、真武七截陣、背靠背與借樹卡位 Pa
     id: 'xiaolongnv',
     name: '小龍女',
     fem: true,
+    pos: [124, 100], swing: { mv: 'ys1', target: 'jinlun', at: 10.4 },
     hp: 100,
     max: 100,
     skills: { strength: 30, agility: 40 },
     arts: { yunvSword: { xp: 90 } },
     xia: 'xiaolongnv'
   };
-  const opp = { id: 'jinlun', name: '金輪國師', skills: { strength: 40, agility: 32 } };
+  const opp = { id: 'jinlun', name: '金輪國師', pos: [120, 100], skills: { strength: 40, agility: 32 } };
 
   // R9：退役舊局的伴侶捷徑；實際雙脈立匾後，兩人各會一脈劍法才顯合璧。
-  const dualHall = { hermitage: { founded: true }, sect: { doctrine: 'dualHall' } };
+  const dualHall = { t: 10, hermitage: { founded: true }, sect: { doctrine: 'dualHall' } };
   const fCouple = crowdSynergyFrame(dHero, dualHall, {
     opponent: opp,
     partner: dPartner,
     loadL: 1.0
   });
-  assert.equal(fCouple.synergyMode, 'twinSwordsCouple', 'Couple partner triggers twinSwordsCouple');
-  assert.equal(fCouple.combinedArtName, '雙劍合璧・玉女素心');
-  assert.equal(fCouple.synergyBonus, 1.35, 'Couple synergy bonus should be 1.35');
-  assert.equal(fCouple.effectiveLoadL, 0.65, 'Load reduced by twin swords synergy to 0.65');
+  assert.equal(fCouple.synergyMode, 'pairedSwords', '同目標兩側的真起手才畫雙劍');
+  assert.equal(fCouple.combinedArtName, '雙劍夾角・接招跟進');
+  assert.equal(fCouple.synergyBonus, 1, '畫面不再顯示固定傷害倍率');
+  assert.equal(fCouple.effectiveLoadL, 1, '負荷仍由真交手時鐘計算');
 
   const ctxCouple = createMockCtx();
   renderMicroStage(ctxCouple, dualHall, dHero, {
@@ -145,8 +147,8 @@ test('2. 場景 B（雙劍合璧、真武七截陣、背靠背與借樹卡位 Pa
     partner: dPartner,
     loadL: 1.0
   });
-  const hasCoupleText = ctxCouple.log.some((c) => c.name === 'fillText' && c.args[0]?.includes('雙劍合璧・玉女素心'));
-  assert.ok(hasCoupleText, 'Canvas should display twinSwordsCouple text');
+  const hasCoupleText = ctxCouple.log.some((c) => c.name === 'fillText' && c.args[0]?.includes('雙劍夾角・接招跟進'));
+  assert.ok(hasCoupleText, 'Canvas should display paired sword timing text');
   assert.ok(ctxCouple.calls.quadraticCurveTo >= 2, 'Canvas should draw intertwined dual sword arcs');
 
   // 2.2 真武七截陣（zhenwuArray）

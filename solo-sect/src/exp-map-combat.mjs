@@ -5,7 +5,7 @@ import { BODY_TIMING, FOE_ACTIONS, foeAction } from './starter-combat.mjs';
 import { movementSpeed, moveToward, distance, restoreSurvivor, rememberEscape, ringCapacity, attackTokenLimit } from './tactics.mjs';
 import { practiceWindow } from './practice.mjs';
 import { RING } from './combat-space.mjs';
-import { twinSwordsDamageFactor } from './twin-swords.mjs';
+import { pairedSwordArrival } from './twin-swords.mjs';
 
 export const EXP_BOUT = { maxSeconds: 90, halfWidth: 150, halfHeight: 100, fleeAt: .35 };
 const alive = (a) => a && a.hp > 0 && !a.gone;
@@ -37,7 +37,7 @@ function applyStrike(s, B, atk, def, swing, H, fighters) {
   B.exchanges++; B.strikes.push({ at: +B.elapsed.toFixed(2), who: idOf(atk), target: idOf(def), move: swing.move, reaction: result.kind });
   if (result.counter) atk.hp = Math.max(0, atk.hp - result.counterDamage);
   if (result.kind !== 'hit') return;
-  const force = swing.damage * (atk.k ? 1 : twinSwordsDamageFactor(s, atk, swing.move, fighters)) * (result.heavy ? CLASH.heavy : 1) * (result.contact?.damageFactor ?? 1) * (H.guardOf?.(def) ?? 1) * (def.takeMul ?? 1);
+  const force = swing.damage * (result.heavy ? CLASH.heavy : 1) * (result.contact?.damageFactor ?? 1) * (H.guardOf?.(def) ?? 1) * (def.takeMul ?? 1);
   def.hp = Math.max(0, def.hp - shieldHit(def, force, s.t));
   if (atk.k) atk.opened = true;
 }
@@ -76,7 +76,8 @@ export function stepMapBout(s, owner, dt, H) {
     const dist = distance(a.pos, target.pos), pick = chooseCombatMove(s, a, target, () => H.rand(s), { distance: dist, contactAware: true });
     const move = pick?.move || (a.k ? foeAction(a, dist) : combatMoves(a).find(m => m.range >= dist));
     if (!move || dist > move.range) { moveToward(a, target.pos, a.k ? FOE_ACTIONS[a.k]?.speed || movementSpeed(a) : movementSpeed(a), dt); continue; }
-    const wind = a.k ? practiceWindow(a, move.id, move.wind).wind + (pick?.seconds || 0) : windOf(a, move.id, move.cd, s.t) + (pick?.seconds || 0);
+    let wind = a.k ? practiceWindow(a, move.id, move.wind).wind + (pick?.seconds || 0) : windOf(a, move.id, move.cd, s.t) + (pick?.seconds || 0);
+    if (!a.k) wind = pairedSwordArrival(s, a, move.id, target, team, s.t + wind) - s.t;
     const opening = interceptOpening(s, a, target, () => H.rand(s), { move: move.id, wind });
     const damage = a.k ? ENEMIES[B.key].dmg * B.scale : move.dmg * (1 + (a.skills?.[move.skill] || 0) / 50) * moveMul(a, move.id, s.t);
     if (opening.read) {
@@ -84,7 +85,7 @@ export function stepMapBout(s, owner, dt, H) {
       if (opening.read.counter) a.hp = Math.max(0, a.hp - opening.read.counterDamage);
     } else a.swing = { mv: move.id, move: move.id, target: idOf(target), at: s.t + wind, wind, range: move.range, travel: !!move.travel, damage, opening: opening.opening };
     if (a.k) a.opened = true; // 一次性假衝／投石在起手就用掉，不能靠落空重刷。
-    a.cool = s.t + (move.cd || move.wind + BODY_TIMING.recovery) * (a.k ? 1 : cdMul(a, move.id, s.t)) + (pick?.seconds || 0);
+    a.cool = Math.max(s.t + (move.cd || move.wind + BODY_TIMING.recovery) * (a.k ? 1 : cdMul(a, move.id, s.t)) + (pick?.seconds || 0), s.t + wind + BODY_TIMING.recovery);
   }
   const lost = !team.some(alive), cleared = !foes.some(alive), won = cleared && !B.fled, timedOut = B.elapsed >= EXP_BOUT.maxSeconds;
   if (!lost && !cleared && !timedOut) return null;

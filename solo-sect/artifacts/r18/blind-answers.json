@@ -1,0 +1,8 @@
+{
+  "seed": 17,
+  "answers": {
+    "A": "ground",
+    "B": "cliff"
+  },
+  "method": "normal hermitage UI start; fixed pre/post milestone render states"
+}

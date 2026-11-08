@@ -1,0 +1,509 @@
+{
+  "days": 30,
+  "dt": 0.25,
+  "alertPolicy": "acknowledged before next tick",
+  "scope": "no player orders for cliff days; fixed opposing-side map bout for duo C",
+  "wins": {
+    "solo": 11,
+    "duo": 12
+  },
+  "firstCliffReached": {
+    "cliff1": 0,
+    "cliff2": 1,
+    "cliff3": 0
+  },
+  "rows": [
+    {
+      "seed": 1001,
+      "firstCliffDay": {
+        "cliff1": null,
+        "cliff2": null,
+        "cliff3": null
+      },
+      "solo": {
+        "won": true,
+        "result": {
+          "t": 25,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 28
+        },
+        "hp": [
+          100
+        ]
+      },
+      "duo": {
+        "won": true,
+        "result": {
+          "t": 14.5,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 30
+        },
+        "hp": [
+          100,
+          100
+        ]
+      }
+    },
+    {
+      "seed": 1002,
+      "firstCliffDay": {
+        "cliff1": null,
+        "cliff2": null,
+        "cliff3": null
+      },
+      "solo": {
+        "won": true,
+        "result": {
+          "t": 32.75,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 30
+        },
+        "hp": [
+          1.33
+        ]
+      },
+      "duo": {
+        "won": true,
+        "result": {
+          "t": 11.25,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 22
+        },
+        "hp": [
+          91.78,
+          100
+        ]
+      }
+    },
+    {
+      "seed": 1003,
+      "firstCliffDay": {
+        "cliff1": null,
+        "cliff2": null,
+        "cliff3": null
+      },
+      "solo": {
+        "won": true,
+        "result": {
+          "t": 22.25,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 28
+        },
+        "hp": [
+          100
+        ]
+      },
+      "duo": {
+        "won": true,
+        "result": {
+          "t": 13.75,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 28
+        },
+        "hp": [
+          100,
+          100
+        ]
+      }
+    },
+    {
+      "seed": 1004,
+      "firstCliffDay": {
+        "cliff1": null,
+        "cliff2": null,
+        "cliff3": null
+      },
+      "solo": {
+        "won": false,
+        "result": {
+          "t": 28,
+          "won": false,
+          "fled": false,
+          "lost": true,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 28
+        },
+        "hp": [
+          0
+        ]
+      },
+      "duo": {
+        "won": true,
+        "result": {
+          "t": 10.25,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 21
+        },
+        "hp": [
+          100,
+          100
+        ]
+      }
+    },
+    {
+      "seed": 1005,
+      "firstCliffDay": {
+        "cliff1": null,
+        "cliff2": null,
+        "cliff3": null
+      },
+      "solo": {
+        "won": true,
+        "result": {
+          "t": 24,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 29
+        },
+        "hp": [
+          100
+        ]
+      },
+      "duo": {
+        "won": true,
+        "result": {
+          "t": 14,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 28
+        },
+        "hp": [
+          100,
+          100
+        ]
+      }
+    },
+    {
+      "seed": 1006,
+      "firstCliffDay": {
+        "cliff1": null,
+        "cliff2": null,
+        "cliff3": null
+      },
+      "solo": {
+        "won": true,
+        "result": {
+          "t": 29,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 30
+        },
+        "hp": [
+          26
+        ]
+      },
+      "duo": {
+        "won": true,
+        "result": {
+          "t": 9.25,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 19
+        },
+        "hp": [
+          100,
+          100
+        ]
+      }
+    },
+    {
+      "seed": 1007,
+      "firstCliffDay": {
+        "cliff1": null,
+        "cliff2": null,
+        "cliff3": null
+      },
+      "solo": {
+        "won": true,
+        "result": {
+          "t": 44.25,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 44
+        },
+        "hp": [
+          1.33
+        ]
+      },
+      "duo": {
+        "won": true,
+        "result": {
+          "t": 14.5,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 30
+        },
+        "hp": [
+          100,
+          100
+        ]
+      }
+    },
+    {
+      "seed": 1008,
+      "firstCliffDay": {
+        "cliff1": null,
+        "cliff2": null,
+        "cliff3": null
+      },
+      "solo": {
+        "won": true,
+        "result": {
+          "t": 17.75,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 21
+        },
+        "hp": [
+          100
+        ]
+      },
+      "duo": {
+        "won": true,
+        "result": {
+          "t": 10,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 20
+        },
+        "hp": [
+          100,
+          100
+        ]
+      }
+    },
+    {
+      "seed": 1009,
+      "firstCliffDay": {
+        "cliff1": null,
+        "cliff2": null,
+        "cliff3": null
+      },
+      "solo": {
+        "won": true,
+        "result": {
+          "t": 24,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 32
+        },
+        "hp": [
+          100
+        ]
+      },
+      "duo": {
+        "won": true,
+        "result": {
+          "t": 13.75,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 28
+        },
+        "hp": [
+          100,
+          100
+        ]
+      }
+    },
+    {
+      "seed": 1010,
+      "firstCliffDay": {
+        "cliff1": null,
+        "cliff2": 30,
+        "cliff3": null
+      },
+      "solo": {
+        "won": true,
+        "result": {
+          "t": 25.25,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 25
+        },
+        "hp": [
+          58.89
+        ]
+      },
+      "duo": {
+        "won": true,
+        "result": {
+          "t": 10.25,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 22
+        },
+        "hp": [
+          100,
+          100
+        ]
+      }
+    },
+    {
+      "seed": 1011,
+      "firstCliffDay": {
+        "cliff1": null,
+        "cliff2": null,
+        "cliff3": null
+      },
+      "solo": {
+        "won": true,
+        "result": {
+          "t": 22.75,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 25
+        },
+        "hp": [
+          100
+        ]
+      },
+      "duo": {
+        "won": true,
+        "result": {
+          "t": 13.5,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 27
+        },
+        "hp": [
+          100,
+          100
+        ]
+      }
+    },
+    {
+      "seed": 1012,
+      "firstCliffDay": {
+        "cliff1": null,
+        "cliff2": null,
+        "cliff3": null
+      },
+      "solo": {
+        "won": true,
+        "result": {
+          "t": 17.25,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 20
+        },
+        "hp": [
+          100
+        ]
+      },
+      "duo": {
+        "won": true,
+        "result": {
+          "t": 10.25,
+          "won": true,
+          "fled": false,
+          "lost": false,
+          "timedOut": false,
+          "key": "bandit",
+          "seg": "foot",
+          "exchanges": 21
+        },
+        "hp": [
+          100,
+          100
+        ]
+      }
+    }
+  ]
+}

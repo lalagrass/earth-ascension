@@ -827,3 +827,19 @@ CI 第三輪 quick 與 golden 全過，accept 296/301。五項逐項處置：
 bot12 同尺命令：分別在 Phase 5 與本輪 checkout 根目錄執行 `docker run --rm -v "$PWD:/app" -w /app node:22-bookworm-slim node solo-sect/tools/bot12.mjs solo-sect --json > solo-sect/artifacts/phase6/bot12-head.json`；base checkout 輸出到 `bot12-base.json`。兩份原始輸出逐位元組相同。
 
 舊名 → 新名：`feedInner31` → `feedInnerFromOuter`、`stepDrive28` → `stepDrive`；原公式保持。最沒把握三處：① 採藥／市集購藥都能提供灶房原料，因實際判斷是 `res.herb >= 1`；② 自然 5 日樣本不會自己採藥，藥膳 A 驗收以實際煮／吃任務另驗；③ `+35%` 落在純陽拳／羅漢手外功 XP，沿原入內回饋傳遞，沒有另造內功悟性倍率。
+
+## 第十八輪：R5 雙劍時機與 R6 山崖攀登（#523，規則 5.5）
+
+| 類別 | 指令、門檻與預期輸出 |
+|---|---|
+| A 雙劍 | `bash solo-sect/test/run.sh smoke` 包含 `test/unit/growth/phase7-dual-lineage-sect.test.mjs` 與 `test/unit/growth/phase3-crowd-synergy.test.mjs` 的同場條件：兩位持劍者須同目標、同近戰圈、站在對側且都真參戰；第二劍在第一劍造成的收招空檔內命中，在空檔外仍可招架；共同對練縮短跟進延遲。`twinSwordsDamageFactor` 固定傷害倍率已移除，N36 攔截照既有規則。 |
+| A 山崖 | 同一 `smoke` 包含 `test/unit/growth/phase6-awakening-cliff-qinggong.test.mjs`：未學步法不能登崖；入門／小成／大成依力量體重、步法火候、耐力分級。身法 100 但未學仍不能登；身法 0 而中級條件足夠可登中崖。高崖直上光壁不可達，繞 `cliff3Detour` 可達；耗竭後不可達；同一水平路程上坡實際步長小於平地。原真任務玉蜂漿、寒潭水、石刻與其斷言保留。 |
+| B | 本輪無新增亂數公式。原 N62 6,000 次出獵公式驗收仍在 smoke，期望 0.4926757803、99.9% 半寬 0.021407701；觀察值由該次 smoke 列出。 |
+| C | Node 22 `node solo-sect/tools/r18-cliff-duo-report.mjs --days=30`：12 種子、0.25 秒、警示逐一確認、無玩家崖指令；30 日首次到低／中／高崖人數 0／1／0，中崖只有 seed 1010 第 30 日。固定對側 map bout 單人 11/12、雙人 12/12；逐種子見[原始輸出](artifacts/r18/cliff-duo-head.json)。日程中未登某崖以 `null` 表示；不依 C 調常數。 |
+| bot12 | Node 22 `node solo-sect/tools/bot12.mjs solo-sect --json` 分別在 #535 base 與本輪 head 執行；[base](artifacts/r18/bot12-base.json)／[head](artifacts/r18/bot12-head.json)皆為 12 種子 30 日完整原始輸出。自然來犯 0 場→0 場（無糧財傳聞）；獨立有柵探針勝 96/96→96/96、守住 91→84、受傷 3→5；出獵擊倒 378→380、逃 94→103；惱羞 417→254。出獵與守柵在新山崖自主日程下取樣的角色狀態不同，R5 雙劍亦失去固定傷害倍率；這些 C 偏差照實列出，不以勝率係數補回。自然來犯與有柵探針分母分開。 |
+| golden | Node 22 `node solo-sect/tools/golden.mjs --write` 後 `--check`：隱居四格全部相符；規則 5.5、地圖崖路與自主日程中的 `cliffTrain` 等行動會改序列化狀態，故重產四格。異版存檔仍拒載；按 #488 不加 MIGRATIONS。 |
+| 畫面 | `python3 solo-sect/tools/r18-visual.py --seed 17` 由正常 UI 開局，生成[盲測 A](artifacts/r18/blind-A.png)／[盲測 B](artifacts/r18/blind-B.png)與[答案](artifacts/r18/blind-answers.json)。判準：已登崖的一張可辨岩面落腳點與可見繞行路線；另一張為平地場景。畫面落腳點不耗模擬 RNG。 |
+
+舊測試分類：Phase 3／7 舊斷言所依賴的 ×1.35 傷害已由 R5 明文撤回，因此改成同目標、對側、實際參戰與時間窗斷言；原真任務與招架可阻擋的要求保留。Phase 6 舊 `agility=32` 解鎖高崖改為力量／體重、步法與耐力前提，保留三崖逐階與全部實物回收斷言。沒有放寬非改規部分。
+
+舊名 → 新名：`twinSwordsCouple` → `pairedSwords`；畫面文字「夫妻雙劍／同場 ×1.35」→「同場雙劍／看準空檔」。最沒把握三處：① R5 沿用 N27 的招架收招秒數作配合時間，不新增獨立節拍；② R6 以低崖三丈與入門精力作連續借力基準，攀登量尺屬可推導的遊戲量測；③ 高崖繞行路肩位於兩崖之間，沒有垂繩物件，玩家可由可見路線及能力抵達。

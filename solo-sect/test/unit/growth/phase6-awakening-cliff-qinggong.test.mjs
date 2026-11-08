@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, route, setOrder, speedOf, tick } from '../../../src/sim.mjs';
+import { createState, moveStep, route, setOrder, speedOf, tick } from '../../../src/sim.mjs';
+import { NODES } from '../../../src/data.mjs';
 import { gainArt } from '../../../src/arts.mjs';
 import { bookStatus, readHermitageBook } from '../../../src/hermitage-books.mjs';
-import { canLeapCliff } from '../../../src/cliff.mjs';
+import { canLeapCliff, canClimbCliff, cliffSlopeFactor, climbAbility } from '../../../src/cliff.mjs';
 import { ergonomicFrame } from '../../../src/growth-playback.mjs';
 import { renderMicroStage } from '../../../src/pose-render.mjs';
 
@@ -11,6 +12,36 @@ const until = (s, condition) => {
   for (let i = 0; i < 4000 && !condition(); i++) tick(s);
   assert.ok(condition(), '真實任務須在固定時間內完成');
 };
+
+test('R6 路線分級看力量體重、步法與耐力；光壁不能直上，上坡減速', () => {
+  const s = createState(17, { hermitage: true }), d = s.ds[0];
+  d.skills.agility = 100;
+  assert.equal(canLeapCliff(d, 'cliff1'), false, '舊身法數字不解鎖山崖');
+  d.arts.jinyanStep = { xp: 1 };
+  assert.equal(canLeapCliff(d, 'cliff1'), true, '入門者在開局體力可攀易路');
+  d.skills.strength = 15;
+  assert.equal(canLeapCliff(d, 'cliff1'), true);
+  assert.equal(canLeapCliff(d, 'cliff2'), false, '入門步法不能爬中級路線');
+  d.arts.jinyanStep.xp = 25; d.skills.agility = 0;
+  assert.equal(canLeapCliff(d, 'cliff2'), true, '沒有 24 身法硬門檻');
+  assert.equal(canLeapCliff(d, 'cliff3'), false);
+  d.arts.jinyanStep.xp = 55;
+  assert.equal(canClimbCliff(d, 'cliff3', 'direct'), false, '光壁不因數值高而可直上');
+  assert.equal(canClimbCliff(d, 'cliff3', 'detour'), false, '步法夠但連續借力高度還不足');
+  d.skills.strength = 18;
+  assert.equal(canClimbCliff(d, 'cliff3', 'detour'), true, '借繞路分段上高崖');
+  assert.ok(route('cliff2', 'cliff3', d).includes('cliff3Detour'), '人物上高崖時真的走過光壁旁路肩');
+  d.needs.energy = 10;
+  assert.equal(climbAbility(d).grade < 3, true);
+  assert.equal(canClimbCliff(d, 'cliff3', 'detour'), false, '力竭時借力高度下降');
+  assert.ok(cliffSlopeFactor('herb', 'cliff1') < cliffSlopeFactor('cliff1', 'herb'));
+  const uphill = structuredClone(d), flat = structuredClone(d);
+  for (const actor of [uphill, flat]) { actor.at = 'herb'; actor.pos = [...NODES.herb]; actor.walked = 0; }
+  uphill.path = [{ n: 'cliff1', xy: [...NODES.cliff1] }];
+  flat.path = [{ n: 'herb', xy: [...NODES.cliff1] }]; // 同一水平位移，只移除高度差。
+  moveStep(uphill, .25); moveStep(flat, .25);
+  assert.ok(uphill.walked < flat.walked, '同一步長上坡實際走得較少');
+});
 
 test('R3 承接 Phase 6：純陽與羅漢分卷須讀才學會', () => {
   for (const [starter, heart, step, hv, sv] of [['chunyangFist', 'quanzhenXinfa', 'jinyanStep', 'quanzhen-heart', 'quanzhen-step'], ['luohanHands', 'shaolinXinfa', 'shaolinStep', 'shaolin-heart', 'shaolin-step']]) {
@@ -60,7 +91,7 @@ test('Phase 6：三級山崖依火候／身法逐一開放，真任務帶回草�
   assert.equal(setOrder(s, d.id, 'eat'), true);
   until(s, () => d.herbalDietUntil > s.t);
   assert.ok(d.qi > 0 && d.mood > 40, '靈泉藥膳在真用飯任務補內息與心情');
-  d.skills.agility = 32; d.arts.jinyanStep.xp = 55;
+  d.skills.agility = 32; d.skills.strength = 18; d.needs.energy = 80; d.arts.jinyanStep.xp = 55;
   assert.equal(canLeapCliff(d, 'cliff3'), true);
   assert.equal(setOrder(s, d.id, 'cliffComprehend'), true);
   until(s, () => s.hermitage.books.includes('quanzhen-sword'));
