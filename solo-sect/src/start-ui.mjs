@@ -4,7 +4,6 @@ import { budgetOf, spent, validStats, defaultStats, readHeart, VALUE_NAMES, reso
 import { TYPES, typeLabel, mbtiPersonality, MBTI_Q, quizResult, AXES as MBTI_AXES } from './social.mjs';
 import { mountChoiceButtons } from './choice-buttons.mjs';
 import { xiaHints } from './wuxia.mjs';
-import { genHints } from './sect.mjs';
 /* loop68 */
 /* loop72 */
 const css = `#start{position:fixed;inset:0;background:rgba(30,22,14,.88);z-index:50;overflow:auto;color:#f3e7cf;font:14px/1.5 serif}
@@ -71,7 +70,7 @@ export function choiceUI(S) {
   let el = document.getElementById('choice'); const ch = (S.hero?.askMajor || S.choices?.[0]?.forcePrompt) && S.choices?.[0];
   if (!ch) { el?.remove(); return false; }
   if (el?.dataset.id === ch.id) return true;
-  el?.remove(); el = document.createElement('div'); el.id = 'choice'; el.dataset.id = ch.id; const hints = xiaHints(ch) || genHints(ch); /* loop72 收養卡 */ /* loop68：奇遇卡後果說明（隨江湖面板開關） */
+  el?.remove(); el = document.createElement('div'); el.id = 'choice'; el.dataset.id = ch.id; const hints = xiaHints(ch); /* loop68：奇遇卡後果說明（隨江湖面板開關） */
   el.innerHTML = `${ch.portrait ? `<img src="${ch.portrait}" style="float:left;width:72px;height:96px;object-fit:cover;border-radius:6px;margin:0 10px 6px 0;border:1px solid #b89" onerror="this.remove()">` : ''}<b>【抉擇】${ch.title}</b><p>${ch.text}</p>${ch.sect === 'hermitageFounding' ? `<label>牌匾可自訂：<input data-found-plaque placeholder="留空用道統預設"></label>${ch.doctrines?.includes('orthodox') ? '<label>正宗立匾時的主脈：<select data-found-banner><option value="hero">先學一脈</option><option value="secondary">另一路</option></select></label>' : ''}` : ''}${ch.opts.map((o, i) => `<button data-pick="${i}">${o}</button>${hints?.[i] ? `<div class="small" data-hint="${i}">→ ${hints[i]}</div>` : ''}`).join('')}<div class="small">本心：${valLine(S.hero.values)}（違背主價值會添一層違心）</div>`;
   el.onclick = (e) => { const b = e.target.closest('[data-pick]'); if (!b) return; if (ch.sect === 'hermitageFounding') ch.foundingOptions = { plaque: el.querySelector('[data-found-plaque]')?.value || '', banner: el.querySelector('[data-found-banner]')?.value || 'hero' }; resolveChoice(S, ch.id, +b.dataset.pick); el.remove(); };
   document.body.appendChild(el); return true;

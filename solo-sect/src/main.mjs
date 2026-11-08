@@ -13,6 +13,7 @@ import { laborNote, statusHtml, jhuiHtml, archLine, pickModal, pending, isFolded
 import { sideCards, bioLine, chronHtml } from './util.mjs';
 import { memsOf, apprCands, takePupil, pupilsOf, XIA_STYLES, MANUALS, canAssemble, assemble, learnManual, likesOf, menuOf, aspOf, ASPIRATIONS } from './bonds.mjs';
 import { ARC13 } from './jianghu.mjs';
+import { pregnancyOf } from './family.mjs';
 import { GEN, canSucceed, succeed, heirs, heirArt, canBuildFac, buildFac, artKind, KIND_NAME, sectFac, rivalGate } from './sect.mjs';
 import { SECTS, SECT_K, RULE_LIB, JH, DAY as DAY13, HS, DUGU, ARTS, TIERS, VARIANTS, AURA, BREAK, ACTIVITIES as ACTS2, ROUTE, EXP, ENEMIES, CHORE_ACTS, CHORE_NAMES, QUOTA, PRIO, PROMOTE, RANK_NAMES, ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES, NODES, EDGES, CLIFFS, FACILITIES, ACTIVITIES, MOVES, MONSTERS, EXP_STYLES, CAMPS, ENDLESS, ROUTINE_MODES, ROUTINE_PERIODS, bindPortraitSet } from './data.mjs';
 import { canLeapCliff } from './cliff.mjs';
@@ -144,7 +145,7 @@ function draw() {
     const pose = displayPose(S,d,art,mv,S.t+acc,window.__sect.hitstop);
     g.save(); g.translate(x+impact.shake,y+bob); if (d.face < 0) g.scale(-1, 1);
     if (d.anim==='down') g.rotate(-1.3);
-    if (d.child && !d.adult) g.scale(0.62 + 0.03 * ((d.age || 6) - 6), 0.62 + 0.03 * ((d.age || 6) - 6));
+    if (d.child && !d.adult) g.scale(0.62 + 0.03 * ((d.age ?? 6) - 6), 0.62 + 0.03 * ((d.age ?? 6) - 6));
     drawPoseActor(g, d, pose);
     g.restore();
     if (d.carry?.stone) { g.fillStyle = '#8c8c8c'; g.beginPath(); g.arc(x + 10, y - 26, 6, 0, 7); g.fill(); } else if (d.carry) sprite('wood', x + 10, y - 18, 0.6);
@@ -509,7 +510,8 @@ function genHtml() { // v1.4 傳承
   const G = S.gen; if (!G) return ''; const out = [], nm = (id) => S.ds.find((d) => d.id === id)?.name || id;
   out.push(`🏛 ${S.sect?.name || '本門'}第 <b>${G.n}</b> 代掌門：${S.ds.find((d) => d.id === 'hero')?.name}　宿慧 ${'◆'.repeat(G.suhui)}${'◇'.repeat(GEN.suhuiMax - G.suhui)}（每傳一代，新開局自創 +1 點）`);
   if (G.couples.length) out.push(`💞 夫妻：${G.couples.map((c) => c.map(nm).join('＆')).join('、')}`);
-  const kids = S.ds.filter((d) => d.child); if (kids.length) out.push(`🧒 第二代：${kids.map((d) => `${d.name}（${d.age}歲${d.adult ? '・已成年' : ''}；養父母 ${d.child.parents.map(nm).join('、')}；悟${d.wu}根${d.root}）`).join('、')}`);
+  const kids = S.ds.filter((d) => d.child); if (kids.length) out.push(`🧒 第二代：${kids.map((d) => `${d.name}（${d.age}歲${d.adult ? '・已成年' : ''}${d.child.parents.length ? `；父母 ${d.child.parents.map(nm).join('、')}` : ''}；悟${d.wu}根${d.root}）`).join('、')}`);
+  for (const c of S.gen?.couples || []) { const ps = c.map((id) => S.ds.find((d) => d.id === id)).filter(Boolean); const m = ps.find((d) => d.pregnant); out.push(m ? `🤰 ${m.name}有孕（${Math.round(pregnancyOf(S, m) * 100)}%）` : `👪 ${ps.map((d) => `${d.name}${d.childWish ? `：${d.childWish.want ? '想要孩子' : d.childWish.why.join('、')}` : ''}`).join('；')}`); } // R7：兩人各自的想法
   const ms = S.ds.filter((d) => d.master); if (ms.length) out.push(`📿 師承（外功場同練才加速）：${ms.map((d) => `${nm(d.master)}→${d.name}${d.mentorArts31?.length ? `〔${d.mentorArts31.map((a) => ARTS.find((x) => x.id === a)?.name).join('、')}〕` : ''}`).join('、')}`);
   if (G.lineage.length) out.push(`📜 衣缽譜：${G.lineage.map((x) => `第${x.gen}代 ${x.name} ─${x.art}→ ${x.heir}`).join('；')}`);
   const c = canSucceed(S); out.push(c.ok ? `🎎 傳衣缽：<select id="heir">${heirs(S).map((d) => `<option value="${d.id}">${d.name}</option>`).join('')}</select> 傳 ${ARTS.find((a) => a.id === heirArt(S.ds.find((d) => d.id === 'hero')))?.name} <button data-succeed="1">傳位退隱</button>` : `🎎 衣缽：${c.why}`);

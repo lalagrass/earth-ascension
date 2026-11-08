@@ -16,7 +16,7 @@
     1012
   ],
   "total": {
-    "newDisciples": 27,
+    "newDisciples": 26,
     "famousVisits": 15,
     "activeRumors": 1,
     "totalRumors": 13,
@@ -103,7 +103,7 @@
     },
     {
       "seed": 1008,
-      "newDisciples": 5,
+      "newDisciples": 4,
       "famousVisits": 4,
       "activeRumors": 1,
       "totalRumors": 2,
