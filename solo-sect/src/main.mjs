@@ -12,6 +12,8 @@ import { lifeLabel } from './life-study.mjs';
 import { HOME, HOME_VIEW, CHUNK, CHUNK_CAP, lruGet, chunkKey, chunksInView, paintChunk, clampCam, camBounds, partyPos, partyDist, trailAt, SPOTS, styledPos, fogged, inVision, leftovers, FOG_W, FOG_H, WORLD, cellColor, STYLE_PATH, cloudAt, cloudPos, cloudSpots, partyCloud, CLOUD_MAP, ZOOMS, lodOf, TRAIL_END, raidDescent, RINGS, TRAIL, POP, capOf, denDown, raidMul, milestones, styleOf, teamStyle, UNLOCKS, ALL_SECS, secOpen, CHAPTER1, AUTO, autoDue, autosave, autoList, autoGet, suhuiOf, syncLegacy, routeSeg, segIndex, campsOpen, scoutOf, peaceOf, suggestTeam } from './world.mjs';
 import { laborNote, statusHtml, jhuiHtml, archLine, pickModal, pending, isFolded, foldKey, setAll, dsum, growthHtml, teachingBadge, battleRadarSvg } from './panel-ui.mjs';
 import { sideCards, bioLine, chronHtml } from './util.mjs';
+import { observeAchievementFacts, achievementRecord, restoreAchievementRecord } from './achievement-record.mjs';
+import { timelineHtml } from './milestones.mjs';
 import { memsOf, apprCands, takePupil, pupilsOf, XIA_STYLES, MANUALS, canAssemble, assemble, learnManual, likesOf, menuOf, aspOf, ASPIRATIONS } from './bonds.mjs';
 import { ARC13 } from './jianghu.mjs';
 import { pregnancyOf } from './family.mjs';
@@ -413,6 +415,10 @@ function panel() {
   $('rel').innerHTML = Object.entries(S.rel).map(([k, v]) => { const [a, b] = k.split('|').map((id) => S.ds.find((d) => d.id === id).name); const [A, B] = k.split('|').map((id) => S.ds.find((d) => d.id === id)); return `<div>${a}—${b}：${relStage(v)} ${v.toFixed(0)}${S.families.includes(k) ? ' 🏠' : ''} <span class="k">（${a}→${aff(S, A, B).toFixed(0)}／${b}→${aff(S, B, A).toFixed(0)}・合拍 ${compat(A, B).toFixed(1)}/${compat(B, A).toFixed(1)}）</span>${memsOf(S, A, B).slice(-2).map((m) => `<div class="k mem">📜 第${m.day}日・${m.where}：${m.text}</div>`).join('')}</div>`; }).join('') + bondsHtml(S);
   $('hero').innerHTML = heroCard(S);
   $('founding-action').innerHTML = S.hermitage?.active && canFoundHermitageSect(S).ok ? '<button data-found-hermitage>立匾開山・選道統</button><div class="k">立匾後，山下的人會聽說山門、有人上門拜師，也會引來覬覦糧財的人。</div>' : ''; // 24c #488：只向玩家說明後果，立匾仍由玩家決定。
+  observeAchievementFacts(S, { canFound: canFoundHermitageSect(S).ok });
+  const achievementHistory = achievementRecord(S);
+  if ($('timeline')) $('timeline').innerHTML = timelineHtml(achievementHistory);
+  for (const d of S.ds) { const card = document.querySelector(`[data-dcard="${d.id}"]`); if (card) { const bio = card.querySelector('.bio'); if (bio) bio.insertAdjacentHTML('afterend', `<details data-keep="timeline-${d.id}"><summary>個人里程碑</summary>${timelineHtml(achievementHistory, d.name)}</details>`); } }
   if ($('chron')) { $('chron').innerHTML = chronHtml(S); $('chron-wrap').hidden = false; }
   if ($('jhui')) { $('jhui').innerHTML = jhuiHtml(S, keepState()); $('jhui-wrap').hidden = false; }
   restoreKeep(); applyFold();
@@ -436,7 +442,7 @@ document.addEventListener('click', (e) => { const b = e.target.closest('[data-bu
 document.addEventListener('change', (e) => { if (e.target.dataset.branch) { const [id, art] = e.target.dataset.branch.split('|'); const d = S.ds.find((x) => x.id === id); if (d && e.target.value) rechooseBranch(d, art, e.target.value, S.t); panel(); return; } if (e.target.dataset.variant) { const [id, art] = e.target.dataset.variant.split('|'); const d = S.ds.find((x) => x.id === id); if (d && e.target.value) chooseVariant(d, art, e.target.value, S.t); panel(); return; } if ('artsof' in e.target.dataset) { window.__artsOf = e.target.value; panel(); return; } if (e.target.dataset.focus) { setFocus(S, e.target.dataset.focus, e.target.value || null); panel(); return; } if (e.target.dataset.q) { window.__ans[+e.target.dataset.q] = +e.target.value; panel(); return; } if (e.target.dataset.duty) { setDuty(S, e.target.dataset.duty, e.target.value, e.target.checked); panel(); return; } if (e.target.dataset.prio) { setPrio(S, e.target.dataset.prio, e.target.value); panel(); return; } if (e.target.dataset.style) setStyle(S, e.target.dataset.style, e.target.value); if (e.target.dataset.ord) { setOrder(S, e.target.dataset.ord, e.target.value || null); panel(); } });
 // review fix：存讀檔改用非阻斷提示（原本 alert() 會卡住瀏覽器自動化與遊戲迴圈）
 function toast(msg, bad = false) { let t = document.getElementById('toast'); if (!t) { t = document.createElement('div'); t.id = 'toast'; t.style.cssText = 'position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:99;padding:6px 14px;border-radius:6px;font-size:14px;pointer-events:none'; document.body.appendChild(t); } t.textContent = msg; t.style.background = bad ? '#7a2a1e' : '#3a5a2a'; t.style.color = '#fff'; t.style.display = 'block'; clearTimeout(t._h); t._h = setTimeout(() => { t.style.display = 'none'; }, 2000); }
-const saveWithUiHistory = () => save({ ...S, uiGrowthHistory: AXIS_HISTORY });
+const saveWithUiHistory = () => save({ ...S, uiGrowthHistory: AXIS_HISTORY, uiAchievementRecord: achievementRecord(S) });
 $('save').onclick = () => { try { localStorage.setItem('solo-sect-save', saveWithUiHistory()); toast(`已存檔（第 ${Math.floor(S.t / 600) + 1} 日）`); } catch (e) { toast('存檔失敗：' + e.message, true); } };
 $('load').onclick = () => { const r = load(localStorage.getItem('solo-sect-save') || ''); if (r.ok) { S = r.state; freshGame(); try { syncLegacy(localStorage, S); } catch {} toast('已讀檔'); } else incompatibleSave(r.err); panel(); };
 $('reset').onclick = () => newGame();
@@ -744,7 +750,7 @@ function chapterModal() {
 }
 let lastAuto = 0; const cue = {};
 /* loop65：換局／讀檔時重設只屬於上一局的介面狀態：自動存檔計時、音效佇列（log 頂端）、巡山提示 */
-function freshGame() { lastAuto = S.t; for (const k of Object.keys(cue)) delete cue[k]; lastExpT = null; GROWTH_MEMO.clear(); GROWTH_NOTICE.clear(); CARD_PORTRAITS.clear(); lastGrowth = ''; for (const k of Object.keys(GMEMO)) delete GMEMO[k]; for (const k of Object.keys(AXIS_HISTORY)) delete AXIS_HISTORY[k]; Object.assign(AXIS_HISTORY, S.uiGrowthHistory || {}); delete S.uiGrowthHistory;
+function freshGame() { restoreAchievementRecord(S, S.uiAchievementRecord); delete S.uiAchievementRecord; lastAuto = S.t; for (const k of Object.keys(cue)) delete cue[k]; lastExpT = null; GROWTH_MEMO.clear(); GROWTH_NOTICE.clear(); CARD_PORTRAITS.clear(); lastGrowth = ''; for (const k of Object.keys(GMEMO)) delete GMEMO[k]; for (const k of Object.keys(AXIS_HISTORY)) delete AXIS_HISTORY[k]; Object.assign(AXIS_HISTORY, S.uiGrowthHistory || {}); delete S.uiGrowthHistory;
   if (S.hermitage?.active) { const K = keepState(); for (const id of ['build', 'ranks', 'labor', 'ledger', 'recruit']) K[foldKey(id)] = true; activeRail = 'person'; } // 出自 Phase 4 規格：先聚焦雙人生活；仍可手動展開門派欄。
 }
 function audioStep() { for (const c of cuesFrom(cue, S)) { SFX[c]?.(); const p = c === 'breakthrough' ? (S.fx.find((f) => f.kind === 'break')?.pos || NODES.yard) : c === 'record' ? NODES.gate : c === 'chapter' ? NODES.hall : null; if (p) camFocus(p[0], p[1]); }
