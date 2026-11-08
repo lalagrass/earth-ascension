@@ -130,56 +130,80 @@ export function workStrCap(d, day, delta) {
 }
 export const laborToday = (d, day) => (d?.lg && d.lgDay === day ? d.lgGot || 0 : 0);
 
-// 出自 Phase 5 規格：18/36 是做活的凡軀／藥膳體魄上限；疲勞每次 25–35、單日最多 1.2 點。
-export const BODY_CONDITION = Object.freeze({ mundaneCap: 18, martialCap: 36, fatigueMax: 100, dailyGain: 1.2, workGain: 0.3,
-  fatigue: Object.freeze({ water: 30, chop: 30, quarry: 35, farm: 25, forage: 25, train: 35 }),
-  mealRelief: 65, mealCycles: 3, skilledCookCycles: 4, defaultCycles: 1 });
+// R2 #521：身體由負荷長出來。三個原因各自一條，不再有凡軀 18／破限 36、每日 1.2、成長週期與「多煮一輪」。
+// ① 負重比（Kenshi：負重越接近力氣上限練得越多）：同一份活，對越強的人刺激越小，stimulus = min(1, load / 現有能力)。
+// ② 體能－疲勞（Banister 1975 的 fitness–fatigue 模型）：每份活同時加體能 F 與疲勞 G，兩者各自按日指數衰減；表現 = F − G。
+// ③ 營養（Project Zomboid：蛋白質足 ×1.5、不足 ×0.7）：上一餐決定這一份活能長多少體能，不影響疲勞。
+// 個人上限由根骨推導：起始值 ×（1 + bestGain × 根骨／5）。根骨 5 可練到起始的三倍，根骨 2 約 1.8 倍（起始 10 時恰為舊的 18）。
+export const BODY_CONDITION = Object.freeze({
+  fitnessTau: 42, // 量測：Banister 體能衰減時間常數約 42 日（Banister & Calvert 1980；Busso 2003 綜述）
+  fatigueTau: 7, // 量測：同模型的疲勞衰減時間常數約 7 日
+  workdayShare: 1 / 3, // 設計旋鈕：一天約八小時全力重活可長期維持（農家日出而作）；一份活的負荷 = 活的時長 ÷（一天 × 此比例），痠痛門檻與體能尺度都由此推導
+  rootMax: 5, // 推導：根骨 1–5（data.mjs STATS）
+  bestGain: 2, // 參考：未受訓者經一兩年力量訓練，主要舉重常可到起始的兩三倍（Rippetoe《Starting Strength》新手線性進步；ExRx 力量標準表 untrained→advanced）
+  load: Object.freeze({ water: 12, chop: 12, quarry: 14, farm: 8, forage: 8, train: 14 }), // 設計旋鈕：該份活對力氣／身法幾點的人算「全力」；擔水兩桶、劈柴、搬石最重，種菜採藥最輕
+  nutrition: Object.freeze({ plain: 0.7, rich: 1.5 }), // 參考：Project Zomboid 蛋白質對力量／體能經驗的倍率
+});
+const dayDecay = (tau) => Math.exp(-1 / tau);
+// 推導：每天做滿一個全力工作日時，疲勞穩態 = 1 /(1 − e^(−1/τ疲勞))；疲勞超過這個穩態就是做過頭，痠痛。
+export const SORE_AT = 1 / (1 - dayDecay(BODY_CONDITION.fatigueTau));
+// 推導：同樣作息下體能穩態 F*；令 F* 時已長到可長空間的 1 − e^(−2)（約 86%），所以體能尺度 = F* / 2。
+export const FITNESS_SCALE = 1 / (1 - dayDecay(BODY_CONDITION.fitnessTau)) / 2;
 const bodyWork = { water: ['strength', 'agility'], chop: ['strength'], quarry: ['strength'], farm: ['agility'], forage: ['agility'], train: ['strength'] };
 export const bodyConditionOn = (s) => !!(s?.hermitage?.active || s?.herbalDiet);
+export const bodyCapOf = (d, skill) => (d.bodyBase?.[skill] ?? d.skills?.[skill] ?? 0) * (1 + BODY_CONDITION.bestGain * Math.max(1, Math.min(BODY_CONDITION.rootMax, d.root || 1)) / BODY_CONDITION.rootMax);
 export function ensureBodyCondition(d, day) {
-  if (d.bodyConditionDay !== day) { d.bodyConditionDay = day; d.muscleFatigue = 0; d.soreness = false; d.recoveryCyclesToday = 0; d.maxCyclesToday = BODY_CONDITION.defaultCycles; d.bodyGainToday = 0; }
-  d.muscleFatigue ??= 0; d.soreness ??= false; d.recoveryCyclesToday ??= 0; d.maxCyclesToday ??= BODY_CONDITION.defaultCycles; d.bodyGainToday ??= 0;
+  d.bodyBase ??= { strength: d.skills?.strength || 0, agility: d.skills?.agility || 0 };
+  d.fitness ??= { strength: 0, agility: 0 }; d.bodyFatigue ??= 0; d.nutrition ??= BODY_CONDITION.nutrition.plain;
+  d.bodyConditionDay ??= day;
+  const days = Math.max(0, day - d.bodyConditionDay);
+  if (days) { // 換日：體能與疲勞各自依時間常數衰減。
+    for (const k of Object.keys(d.fitness)) d.fitness[k] *= dayDecay(BODY_CONDITION.fitnessTau) ** days;
+    d.bodyFatigue *= dayDecay(BODY_CONDITION.fatigueTau) ** days; d.bodyConditionDay = day;
+  }
+  d.soreness = d.bodyFatigue >= SORE_AT;
+  d.muscleFatigue = Math.min(100, (d.bodyFatigue / SORE_AT) * 100); // 顯示用：疲勞佔痠痛門檻的百分比
   return d;
 }
-export function stepWorkCondition(d, s, act, delta = BODY_CONDITION.workGain) {
+export const bodyPerformance = (d, skill = 'strength') => (d.fitness?.[skill] || 0) - (d.bodyFatigue || 0);
+export function stepWorkCondition(d, s, act, loadMul = 1, dur = DAY * BODY_CONDITION.workdayShare) {
   if (!bodyConditionOn(s) || !bodyWork[act]) return { active: false, gained: 0 };
   ensureBodyCondition(d, s.day);
-  const previous = d.muscleFatigue, targets = bodyWork[act]; let gained = 0;
-  const budget = Math.max(0, BODY_CONDITION.dailyGain * d.maxCyclesToday - d.bodyGainToday);
-  if (!d.soreness && d.recoveryCyclesToday < d.maxCyclesToday && budget > 0) {
-    const cap = d.herbalDietUntil > s.t ? BODY_CONDITION.martialCap : BODY_CONDITION.mundaneCap;
-    for (const skill of targets) { const old = d.skills[skill] || 0, add = Math.max(0, Math.min(delta / targets.length, budget - gained, cap - old)); d.skills[skill] = old + add; gained += add; }
-    d.bodyGainToday += gained;
+  const targets = bodyWork[act], share = dur / (DAY * BODY_CONDITION.workdayShare); let gained = 0, effort = 0;
+  for (const skill of targets) {
+    const now = d.skills[skill] || 0, stimulus = Math.min(1, (BODY_CONDITION.load[act] * loadMul) / Math.max(1, now));
+    effort = Math.max(effort, stimulus);
+    if (d.soreness) continue; // 痠痛時做活只累，不長
+    d.fitness[skill] = (d.fitness[skill] || 0) + stimulus * share * d.nutrition;
+    const base = d.bodyBase[skill] ?? now, target = base + (bodyCapOf(d, skill) - base) * (1 - Math.exp(-d.fitness[skill] / FITNESS_SCALE));
+    if (target > now) { d.skills[skill] = target; gained += target - now; }
   }
-  d.muscleFatigue = Math.min(BODY_CONDITION.fatigueMax, previous + BODY_CONDITION.fatigue[act]);
-  if (d.muscleFatigue >= BODY_CONDITION.fatigueMax) d.soreness = true;
-  return { active: true, gained, fatigue: d.muscleFatigue, soreness: d.soreness };
+  d.bodyFatigue += effort * share; ensureBodyCondition(d, s.day);
+  return { active: true, gained, fatigue: d.muscleFatigue, soreness: d.soreness, stimulus: effort };
 }
 export function restBodyCondition(d, s) {
   if (!bodyConditionOn(s)) return false;
-  ensureBodyCondition(d, s.day);
-  if (d.soreness) { d.recoveryCyclesToday++; d.soreness = false; d.muscleFatigue = 0; return true; }
-  d.muscleFatigue = Math.max(0, d.muscleFatigue - BODY_CONDITION.fatigue.farm); // 出自 Phase 5 規格：歇息抵消一份最輕雜務疲勞。
-  return false;
+  ensureBodyCondition(d, s.day); return d.soreness; // 疲勞只隨日子消退；歇息本身不清疲勞
 }
 export function cookMedicatedMeal(s, chef) {
   if (!bodyConditionOn(s) || (s.res.herb || 0) < 1 || (s.res.food || 0) < 1) return null;
   resAdd(s, 'food', -1, 'kitchen'); resAdd(s, 'herb', -1, 'kitchen'); resAdd(s, 'medFood', 1, 'kitchen'); // 出自 Phase 5 規格：一份煮好的飯入藥升級，不憑空添一份餐食。
   const cold = (s.res.coldWater || 0) > 0; if (cold) resAdd(s, 'coldWater', -1, 'kitchen'); // 出自 Phase 6 規格：寒潭泉水只進藥膳，食用時回內息與心情。
-  const skilled = (chef?.skills?.cooking || 0) >= 16; // R4 規格：原黃蓉額外一輪來自通用廚藝 16，不依人物身分。
+  const skilled = (chef?.skills?.cooking || 0) >= 16; // R4 規格：好廚藝只改菜名，R2 起不再多給成長
   const name = chef?.mealName || (skilled ? '歸元藥膳' : '山草強身湯飯');
   (s.medFoodBatches ??= []).push({ name, chef: chef?.id || null, skilled, ...(cold ? { cold: true } : {}) });
   return name;
 }
+// 用飯：決定下一餐前的營養。藥膳有肉菜藥材算「足」，白飯算「不足」。
+export function applyPlainMeal(d, s) { if (!bodyConditionOn(s)) return; ensureBodyCondition(d, s.day); d.nutrition = BODY_CONDITION.nutrition.plain; }
 export function applyMedicatedMeal(d, s) {
   if (!bodyConditionOn(s) || !(s.res.medFood > 0)) return null;
   ensureBodyCondition(d, s.day);
-  const batch = (s.medFoodBatches || []).shift() || { name: '山草強身湯飯', rong: false };
-  resAdd(s, 'medFood', -1, 'meal'); if (d.soreness) d.recoveryCyclesToday++;
-  d.muscleFatigue = Math.max(0, d.muscleFatigue - BODY_CONDITION.mealRelief); d.soreness = false;
-  d.maxCyclesToday = batch.skilled || batch.rong ? BODY_CONDITION.skilledCookCycles : BODY_CONDITION.mealCycles;
+  const batch = (s.medFoodBatches || []).shift() || { name: '山草強身湯飯' };
+  resAdd(s, 'medFood', -1, 'meal');
+  d.nutrition = BODY_CONDITION.nutrition.rich;
   d.herbalDietUntil = s.t + DAY; d.herbalBuffName = batch.name;
-  return { name: batch.name, cycles: d.maxCyclesToday, fatigue: d.muscleFatigue, cold: !!batch.cold };
+  return { name: batch.name, nutrition: d.nutrition, fatigue: d.muscleFatigue, cold: !!batch.cold };
 }
 
 // ==== （原 steward.mjs）====

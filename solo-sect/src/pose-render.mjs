@@ -1079,11 +1079,11 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
   }
 
   if (ergo.laborDetail.muscleFatigue >= 100) {
-    headerText = '💪 肌肉疲勞已滿';
-    subText = `今日成長週期 ${ergo.laborDetail.recoveryCycleLabel}・需歇息或藥膳調養`;
+    headerText = '💪 肌肉痠痛';
+    subText = `${ergo.laborDetail.recoveryCycleLabel}・做活只累不長，要過幾天才消`;
   } else if (ergo.laborDetail.herbalBuffActive) {
     headerText = `🍵 ${focalActor.herbalBuffName || '藥膳'}溫養中`;
-    subText = `疲勞消退・今日超量恢復週期 ${ergo.laborDetail.recoveryCycleLabel}`;
+    subText = `吃得好，做活長得快・${ergo.laborDetail.recoveryCycleLabel}`;
   }
 
   if (g.fillRect && g.fillText) {

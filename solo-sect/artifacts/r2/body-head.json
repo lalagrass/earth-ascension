@@ -1,0 +1,1648 @@
+{
+ "days": 60,
+ "secondsPerTick": 6,
+ "alertPolicy": "clear after each tick",
+ "scope": "controlled C observation",
+ "summary": {
+  "solo": {
+   "heroStrengthGain30": 3.814,
+   "heroStrengthGain60": 4.104,
+   "heroAgilityGain30": 0.298,
+   "heroAgilityGain60": 0.343
+  },
+  "xiaolongnv": {
+   "heroStrengthGain30": 2.158,
+   "heroStrengthGain60": 2.826,
+   "heroAgilityGain30": 0.304,
+   "heroAgilityGain60": 0.379
+  },
+  "huangrong": {
+   "heroStrengthGain30": 2.316,
+   "heroStrengthGain60": 2.908,
+   "heroAgilityGain30": 0.254,
+   "heroAgilityGain60": 0.397
+  }
+ },
+ "rows": [
+  {
+   "opening": "solo",
+   "seed": 1001,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 13.879,
+     "agility": 10.371,
+     "fatigue": 86.6
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 14.154,
+     "agility": 10.391,
+     "fatigue": 90.2
+    }
+   ]
+  },
+  {
+   "opening": "solo",
+   "seed": 1002,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 13.662,
+     "agility": 10.232,
+     "fatigue": 96.6
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 13.662,
+     "agility": 10.232,
+     "fatigue": 100
+    }
+   ]
+  },
+  {
+   "opening": "solo",
+   "seed": 1003,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 13.92,
+     "agility": 10.329,
+     "fatigue": 87.2
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 14.18,
+     "agility": 10.343,
+     "fatigue": 88.8
+    }
+   ]
+  },
+  {
+   "opening": "solo",
+   "seed": 1004,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 13.838,
+     "agility": 10.288,
+     "fatigue": 94.1
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 14.33,
+     "agility": 10.352,
+     "fatigue": 91.3
+    }
+   ]
+  },
+  {
+   "opening": "solo",
+   "seed": 1005,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 13.714,
+     "agility": 10.233,
+     "fatigue": 95.3
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 14.076,
+     "agility": 10.323,
+     "fatigue": 91.8
+    }
+   ]
+  },
+  {
+   "opening": "solo",
+   "seed": 1006,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 13.639,
+     "agility": 10.262,
+     "fatigue": 94
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 13.853,
+     "agility": 10.286,
+     "fatigue": 97.7
+    }
+   ]
+  },
+  {
+   "opening": "solo",
+   "seed": 1007,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 13.863,
+     "agility": 10.391,
+     "fatigue": 90.2
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 14.147,
+     "agility": 10.474,
+     "fatigue": 91.2
+    }
+   ]
+  },
+  {
+   "opening": "solo",
+   "seed": 1008,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 13.78,
+     "agility": 10.261,
+     "fatigue": 91.1
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 13.813,
+     "agility": 10.261,
+     "fatigue": 94.3
+    }
+   ]
+  },
+  {
+   "opening": "solo",
+   "seed": 1009,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 13.394,
+     "agility": 10.235,
+     "fatigue": 94.4
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 14.104,
+     "agility": 10.236,
+     "fatigue": 86
+    }
+   ]
+  },
+  {
+   "opening": "solo",
+   "seed": 1010,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 13.814,
+     "agility": 10.298,
+     "fatigue": 93
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 14.09,
+     "agility": 10.308,
+     "fatigue": 93.9
+    }
+   ]
+  },
+  {
+   "opening": "solo",
+   "seed": 1011,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 13.928,
+     "agility": 10.347,
+     "fatigue": 87.1
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 14.159,
+     "agility": 10.387,
+     "fatigue": 89.6
+    }
+   ]
+  },
+  {
+   "opening": "solo",
+   "seed": 1012,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 13.758,
+     "agility": 10.379,
+     "fatigue": 91.7
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 13.876,
+     "agility": 10.422,
+     "fatigue": 100
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1001,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 10,
+     "agility": 16,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 11.959,
+     "agility": 10.329,
+     "fatigue": 32.3
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 12.863,
+     "agility": 16.582,
+     "fatigue": 30.6
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.602,
+     "agility": 10.493,
+     "fatigue": 33.2
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 13.774,
+     "agility": 16.872,
+     "fatigue": 31.3
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1002,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 10,
+     "agility": 16,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.158,
+     "agility": 10.194,
+     "fatigue": 37.8
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 12.662,
+     "agility": 16.901,
+     "fatigue": 33.8
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.665,
+     "agility": 10.355,
+     "fatigue": 33.4
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 13.727,
+     "agility": 17.096,
+     "fatigue": 33.2
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1003,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 10,
+     "agility": 16,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.012,
+     "agility": 10.305,
+     "fatigue": 38.7
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 13.09,
+     "agility": 16.667,
+     "fatigue": 40.1
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.541,
+     "agility": 10.358,
+     "fatigue": 33
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 13.655,
+     "agility": 17.034,
+     "fatigue": 32.2
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1004,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 10,
+     "agility": 16,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.366,
+     "agility": 10.304,
+     "fatigue": 47.9
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 13.163,
+     "agility": 16.701,
+     "fatigue": 43
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.94,
+     "agility": 10.377,
+     "fatigue": 39.8
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 14.143,
+     "agility": 16.95,
+     "fatigue": 37.5
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1005,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 10,
+     "agility": 16,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.065,
+     "agility": 10.263,
+     "fatigue": 36.4
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 12.845,
+     "agility": 16.69,
+     "fatigue": 35.6
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.871,
+     "agility": 10.372,
+     "fatigue": 38.9
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 13.937,
+     "agility": 17.033,
+     "fatigue": 33.3
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1006,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 10,
+     "agility": 16,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 11.919,
+     "agility": 10.289,
+     "fatigue": 35.1
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 12.82,
+     "agility": 16.799,
+     "fatigue": 33.9
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.783,
+     "agility": 10.468,
+     "fatigue": 40
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 14.04,
+     "agility": 16.93,
+     "fatigue": 37.6
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1007,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 10,
+     "agility": 16,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.282,
+     "agility": 10.41,
+     "fatigue": 45.1
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 13.31,
+     "agility": 16.693,
+     "fatigue": 42.1
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.909,
+     "agility": 10.445,
+     "fatigue": 36.6
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 14.315,
+     "agility": 16.973,
+     "fatigue": 37.5
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1008,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 10,
+     "agility": 16,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.465,
+     "agility": 10.413,
+     "fatigue": 44.8
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 13.239,
+     "agility": 16.608,
+     "fatigue": 38.7
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 13.058,
+     "agility": 10.413,
+     "fatigue": 39.4
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 14.134,
+     "agility": 16.999,
+     "fatigue": 35.2
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1009,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 10,
+     "agility": 16,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.137,
+     "agility": 10.192,
+     "fatigue": 35.5
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 13.317,
+     "agility": 16.743,
+     "fatigue": 41.6
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.826,
+     "agility": 10.375,
+     "fatigue": 44
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 13.871,
+     "agility": 17.038,
+     "fatigue": 31.7
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1010,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 10,
+     "agility": 16,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.045,
+     "agility": 10.225,
+     "fatigue": 26.9
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 13.075,
+     "agility": 16.764,
+     "fatigue": 30.8
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.833,
+     "agility": 10.313,
+     "fatigue": 33.5
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 14.117,
+     "agility": 17.1,
+     "fatigue": 31.4
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1011,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 10,
+     "agility": 16,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.208,
+     "agility": 10.323,
+     "fatigue": 43
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 13.133,
+     "agility": 16.625,
+     "fatigue": 38.9
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.767,
+     "agility": 10.387,
+     "fatigue": 36.4
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 14.068,
+     "agility": 16.922,
+     "fatigue": 37.8
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1012,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 10,
+     "agility": 16,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.265,
+     "agility": 10.301,
+     "fatigue": 43.1
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 13.31,
+     "agility": 16.682,
+     "fatigue": 40
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.734,
+     "agility": 10.379,
+     "fatigue": 34.5
+    },
+    {
+     "id": "xiaolongnv",
+     "root": 3,
+     "strength": 13.992,
+     "agility": 17.026,
+     "fatigue": 34.5
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1001,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4,
+     "agility": 18,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.398,
+     "agility": 10.32,
+     "fatigue": 51.3
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4.754,
+     "agility": 18.478,
+     "fatigue": 36.5
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 13.137,
+     "agility": 10.429,
+     "fatigue": 38.5
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 5.08,
+     "agility": 18.595,
+     "fatigue": 32.1
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1002,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4,
+     "agility": 18,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.184,
+     "agility": 10.172,
+     "fatigue": 37.6
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4.734,
+     "agility": 18.446,
+     "fatigue": 33.9
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.749,
+     "agility": 10.324,
+     "fatigue": 36.3
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4.99,
+     "agility": 18.577,
+     "fatigue": 33
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1003,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4,
+     "agility": 18,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.343,
+     "agility": 10.247,
+     "fatigue": 40.5
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4.831,
+     "agility": 18.475,
+     "fatigue": 37.1
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 13,
+     "agility": 10.363,
+     "fatigue": 42.4
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 5.074,
+     "agility": 18.637,
+     "fatigue": 36.9
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1004,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4,
+     "agility": 18,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.534,
+     "agility": 10.222,
+     "fatigue": 51.3
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4.84,
+     "agility": 18.476,
+     "fatigue": 40.8
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 13.159,
+     "agility": 10.356,
+     "fatigue": 34.2
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 5.066,
+     "agility": 18.559,
+     "fatigue": 30.8
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1005,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4,
+     "agility": 18,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.218,
+     "agility": 10.397,
+     "fatigue": 43.3
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4.772,
+     "agility": 18.294,
+     "fatigue": 34.1
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.867,
+     "agility": 10.397,
+     "fatigue": 32.5
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 5.035,
+     "agility": 18.498,
+     "fatigue": 32.9
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1006,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4,
+     "agility": 18,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.086,
+     "agility": 10.415,
+     "fatigue": 40.2
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4.755,
+     "agility": 18.231,
+     "fatigue": 31.9
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.823,
+     "agility": 10.472,
+     "fatigue": 35.9
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 5.027,
+     "agility": 18.437,
+     "fatigue": 33.9
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1007,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4,
+     "agility": 18,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.205,
+     "agility": 10.254,
+     "fatigue": 40.8
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4.769,
+     "agility": 18.433,
+     "fatigue": 32.2
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.712,
+     "agility": 10.415,
+     "fatigue": 36.4
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4.987,
+     "agility": 18.551,
+     "fatigue": 30
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1008,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4,
+     "agility": 18,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.127,
+     "agility": 10.265,
+     "fatigue": 38.1
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4.811,
+     "agility": 18.412,
+     "fatigue": 36.7
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.867,
+     "agility": 10.402,
+     "fatigue": 39.7
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 5.071,
+     "agility": 18.613,
+     "fatigue": 34.8
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1009,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4,
+     "agility": 18,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.316,
+     "agility": 10.19,
+     "fatigue": 40.9
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4.734,
+     "agility": 18.451,
+     "fatigue": 34.1
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.94,
+     "agility": 10.44,
+     "fatigue": 38.9
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4.985,
+     "agility": 18.577,
+     "fatigue": 31.5
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1010,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4,
+     "agility": 18,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.299,
+     "agility": 10.333,
+     "fatigue": 46.4
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4.757,
+     "agility": 18.415,
+     "fatigue": 35.6
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.883,
+     "agility": 10.333,
+     "fatigue": 34.5
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 5.059,
+     "agility": 18.656,
+     "fatigue": 37.5
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1011,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4,
+     "agility": 18,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.382,
+     "agility": 10.149,
+     "fatigue": 44.1
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4.776,
+     "agility": 18.519,
+     "fatigue": 36
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.908,
+     "agility": 10.217,
+     "fatigue": 33.2
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 5.026,
+     "agility": 18.681,
+     "fatigue": 34
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1012,
+   "start": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 10,
+     "agility": 10,
+     "fatigue": 0
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4,
+     "agility": 18,
+     "fatigue": 0
+    }
+   ],
+   "d30": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.344,
+     "agility": 10.186,
+     "fatigue": 43.5
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 4.812,
+     "agility": 18.443,
+     "fatigue": 39.9
+    }
+   ],
+   "d60": [
+    {
+     "id": "hero",
+     "root": 2,
+     "strength": 12.92,
+     "agility": 10.304,
+     "fatigue": 35.6
+    },
+    {
+     "id": "huangrong",
+     "root": 2,
+     "strength": 5.048,
+     "agility": 18.616,
+     "fatigue": 32.5
+    }
+   ]
+  }
+ ]
+}

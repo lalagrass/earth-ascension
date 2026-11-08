@@ -153,6 +153,14 @@ export const MIGRATIONS = [
       delete o.sect.partnerDiscipleId;
     }
   } },
+  { to: '4.9', note: 'R2（#521）：隱居局身體改由負重比、體能疲勞、營養推導；拿掉成長週期欄位；舊門派局不加欄位', up(o) {
+    if (!o.hermitage?.active && !o.herbalDiet) return;
+    for (const d of o.ds || []) {
+      delete d.recoveryCyclesToday; delete d.maxCyclesToday; delete d.bodyGainToday;
+      d.bodyBase ??= { strength: d.skills?.strength || 0, agility: d.skills?.agility || 0 }; // 舊檔不知起始值，以載入時為起點
+      d.fitness ??= { strength: 0, agility: 0 }; d.bodyFatigue ??= 0; d.nutrition ??= 0.7;
+    }
+  } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
 export function v150Up(o) {

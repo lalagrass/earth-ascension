@@ -91,6 +91,30 @@
       "source": "Phase 4 合參 Canvas 既有位置與 R4 #520 人物泛化",
       "reason": "畫布座標及共修分段從原畫面搬來，不改模擬。",
       "scope": "r4"
+    },
+    "r2_measured": {
+      "category": "量測",
+      "source": "Banister & Calvert 1980；Busso 2003（fitness–fatigue 模型時間常數）",
+      "reason": "體能約 42 日、疲勞約 7 日的衰減時間常數是運動科學量測值，不調手感。",
+      "scope": "r2"
+    },
+    "r2_reference": {
+      "category": "推導",
+      "source": "Project Zomboid 營養規則（蛋白質足 ×1.5、不足 ×0.7）；data.mjs STATS 根骨 1–5；Rippetoe《Starting Strength》、ExRx 力量標準表（未受訓→進階約兩三倍）",
+      "reason": "借用既有遊戲的營養倍率與本作根骨尺度，不另設新數。",
+      "scope": "r2"
+    },
+    "r2_knob": {
+      "category": "設計旋鈕",
+      "source": "R2 #521（擁有人 2026-11-08 D2：飲食不破上限）",
+      "reason": "一天約八小時全力重活可長期維持；各份活對幾點力氣／身法算全力。痠痛門檻與體能尺度都由此推導。",
+      "scope": "r2"
+    },
+    "r2_derived": {
+      "category": "推導",
+      "source": "R2 #521 economy.mjs SORE_AT／FITNESS_SCALE／muscleFatigue",
+      "reason": "由上面的時間常數與旋鈕算出（穩態公式、顯示百分比、1−e^(−2) 尺度），不是獨立數值。",
+      "scope": "r2"
     }
   },
   "entries": [
@@ -375,41 +399,6 @@
         "3"
       ],
       "group": "phase6_arts"
-    },
-    {
-      "file": "src/economy.mjs",
-      "sha256": "1b4076c13a47c73af0e458f1afa6f152204b22b85c2c6a95b4ea785ce01e8ae4",
-      "values": [
-        "18",
-        "36",
-        "100",
-        "1.2",
-        "0.3"
-      ],
-      "group": "phase5_body"
-    },
-    {
-      "file": "src/economy.mjs",
-      "sha256": "98b814c90512ffdc65343f6ae2fb858176191749e19569025c3ee8d25359f243",
-      "values": [
-        "30",
-        "30",
-        "35",
-        "25",
-        "25",
-        "35"
-      ],
-      "group": "phase5_body"
-    },
-    {
-      "file": "src/economy.mjs",
-      "sha256": "dbb57b1cafe1634909eb1ff1bdb779c93247926821633d2d691a8da0aef44617",
-      "values": [
-        "65",
-        "3",
-        "4"
-      ],
-      "group": "phase5_body"
     },
     {
       "file": "src/exp-map-combat.mjs",
@@ -834,22 +823,6 @@
     },
     {
       "file": "src/sim.mjs",
-      "sha256": "28230b0a749ee1121202a87b02f7ca5585bee901d04d07929a6c71860edc8419",
-      "values": [
-        "6"
-      ],
-      "group": "inherited"
-    },
-    {
-      "file": "src/sim.mjs",
-      "sha256": "6de6fba8e020b7a3fb86ff0a87d944370597614bd2c57e214afaee5e898c50c6",
-      "values": [
-        "100"
-      ],
-      "group": "inherited"
-    },
-    {
-      "file": "src/sim.mjs",
       "sha256": "47baec0b6f2bcea942aca431d291d7611275452478d00d04788632cab6d99cfc",
       "values": [
         "8"
@@ -956,14 +929,6 @@
       "group": "r4_reused"
     },
     {
-      "file": "src/economy.mjs",
-      "sha256": "92bf27b520d765c6758c00eed62cb960146c69078728b072f0475e6feb1d1467",
-      "values": [
-        "16"
-      ],
-      "group": "r4_reused"
-    },
-    {
       "file": "src/hero.mjs",
       "sha256": "b0cbd5249d47a99f3c4c7740ee2f74930a1ea24e2b49037db0f063f35b1dc84b",
       "values": [
@@ -1004,6 +969,101 @@
         "2"
       ],
       "group": "r4_reused"
+    },
+    {
+      "file": "src/economy.mjs",
+      "sha256": "ab5ff1567c2cf49e24899a400ef76de233ddd79ae5fa4e7de5bc84ed27758891",
+      "values": [
+        "42"
+      ],
+      "group": "r2_measured"
+    },
+    {
+      "file": "src/economy.mjs",
+      "sha256": "15f87ca3455f99530b0ff88cc0c6e8210934467010c471633c7cafb2071d6e44",
+      "values": [
+        "7"
+      ],
+      "group": "r2_measured"
+    },
+    {
+      "file": "src/economy.mjs",
+      "sha256": "323f8c8bbe762bdfec6a15cb3ad0c3b36a163df619e7618c49cd66327aabca50",
+      "values": [
+        "5"
+      ],
+      "group": "r2_reference"
+    },
+    {
+      "file": "src/economy.mjs",
+      "sha256": "4bffe7e51f9f164e28af8cf135c4f180180980f0349f919d932c96d24bf06525",
+      "values": [
+        "12",
+        "12",
+        "14",
+        "8",
+        "8",
+        "14"
+      ],
+      "group": "r2_knob"
+    },
+    {
+      "file": "src/economy.mjs",
+      "sha256": "2e59b7a18b260fef919d8c4230f8aaf1600addc8b5ba5a410c58209de9a178ac",
+      "values": [
+        "0.7",
+        "1.5"
+      ],
+      "group": "r2_reference"
+    },
+    {
+      "file": "src/economy.mjs",
+      "sha256": "9aa3250d33e0aca30a9f45940ca2297dc009012ba4c8b118b40f95298872133a",
+      "values": [
+        "100",
+        "100"
+      ],
+      "group": "r2_derived"
+    },
+    {
+      "file": "src/economy.mjs",
+      "sha256": "f6b335fc2890a1289889dbc9b29f90131122792bb5b802aa7b3b1f592ec96a3c",
+      "values": [
+        "16"
+      ],
+      "group": "r4_reused"
+    },
+    {
+      "file": "src/sim.mjs",
+      "sha256": "02b2f2dffc92bb0398348776e57255f694a4683c39bf2bb1dd11e2f882bf3cb2",
+      "values": [
+        "100"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/economy.mjs",
+      "sha256": "df6f41a758665a174d37f10e5c0358d93c11a596474a712e5ec7f92b4532c8ce",
+      "values": [
+        "3"
+      ],
+      "group": "r2_knob"
+    },
+    {
+      "file": "src/economy.mjs",
+      "sha256": "00ed3e10d7685124defafd78359a43c7c9e213eff399d778b99cff8a7d229613",
+      "values": [
+        "2"
+      ],
+      "group": "r2_reference"
+    },
+    {
+      "file": "src/economy.mjs",
+      "sha256": "0dec2f27e6114dec594f4cc58e25a91cde1adce27ae7f3e9f642a7b5cabe407d",
+      "values": [
+        "2"
+      ],
+      "group": "r2_derived"
     }
   ],
   "scanFiles": [

@@ -6,7 +6,7 @@ import { composure, assessLoad, postureMax, qiPow, topTier, hermitageStepActive 
 import { CLIFFS } from './data.mjs';
 
 export const PLAYBACK = Object.freeze({ pause: .5, uprightHip: 17, deepHipRatio: .5, tilt: 30, sway: 4, bodyScale: 10, legacyStart: .5 });
-// 出自 Phase 5 規格：12／16／18 對應生疏、漸熟、保健圓滿、藥膳破限四種雜務表現。
+// 出自 Phase 5 規格：12／16／18 對應生疏、漸熟、熟練、上段四種雜務表現（R2 起 18 以上只有根骨好、練得久的人到得了）。
 export function choreFluencyTier(d, act = 'water') {
   const strength = d?.skills?.strength || 0, agility = d?.skills?.agility || 0;
   const body = act === 'water' ? Math.min(strength, agility) : ['chop', 'quarry'].includes(act) ? strength : agility;
@@ -726,7 +726,7 @@ export function ergonomicFrame(d, s = {}, view = {}) {
   const isAxeStuck = isChop && (bodyMode ? fluencyTier === 0 : chopResidual > 0.7) && isImpact;
   const woodSplit = isChop && (bodyMode ? fluencyTier >= 2 : chopResidual <= 0.7) && isImpact;
   const herbalBuffActive = bodyMode && (d?.herbalDietUntil || 0) > (s?.t || 0);
-  const recoveryCycleLabel = bodyMode ? `${Math.min(d?.maxCyclesToday || 1, (d?.recoveryCyclesToday || 0) + 1)}/${d?.maxCyclesToday || 1}` : null;
+  const recoveryCycleLabel = bodyMode ? `疲勞 ${Math.round(d?.muscleFatigue || 0)}%` : null; // R2：疲勞佔痠痛門檻的比例，隨日子消退
   const qinggong = qinggongChoreBounds(d, s, view), cliffStage = cliffLeapStage(d, s, view);
 
   const laborDetail = {

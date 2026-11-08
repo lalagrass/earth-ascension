@@ -1,29 +1,44 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, emergency, foodLow, scoreActs, setOrder, tick } from '../../../src/sim.mjs';
-import { BODY_CONDITION, stepWorkCondition, restBodyCondition, ensureBodyCondition, cookMedicatedMeal, applyMedicatedMeal } from '../../../src/economy.mjs';
+import { BODY_CONDITION, SORE_AT, FITNESS_SCALE, bodyCapOf, stepWorkCondition, restBodyCondition, ensureBodyCondition, cookMedicatedMeal, applyMedicatedMeal, applyPlainMeal } from '../../../src/economy.mjs';
 import { choreFluencyTier, ergonomicFrame } from '../../../src/growth-playback.mjs';
 import { renderMicroStage } from '../../../src/pose-render.mjs';
 import { gainArt } from '../../../src/arts.mjs';
 
-test('Phase 5：未採藥的一日做活至疲勞滿，體魄受 18 與 1.2 上限，歇息後須等次日', () => {
+test('R2：同一份活對變強的人刺激較小；白飯長得比藥膳慢；休息日疲勞下降；上限由根骨推導', () => {
   const old = createState(42), oldHero = old.ds[0];
   assert.equal(stepWorkCondition(oldHero, old, 'chop').active, false);
-  assert.equal('muscleFatigue' in oldHero, false);
-  const s = createState(42, { hermitage: true }), d = s.ds[0];
-  d.skills.strength = 10;
-  for (let i = 0; i < 4; i++) stepWorkCondition(d, s, 'chop');
-  assert.ok(Math.abs(d.skills.strength - 11.2) < 1e-9);
-  assert.equal(d.muscleFatigue, 100); assert.equal(d.soreness, true);
-  stepWorkCondition(d, s, 'chop'); assert.ok(Math.abs(d.skills.strength - 11.2) < 1e-9);
-  assert.equal(restBodyCondition(d, s), true); assert.equal(d.recoveryCyclesToday, 1);
-  stepWorkCondition(d, s, 'chop'); assert.ok(Math.abs(d.skills.strength - 11.2) < 1e-9);
-  s.day++; ensureBodyCondition(d, s.day); assert.equal(d.recoveryCyclesToday, 0);
-  d.skills.strength = 17.9; stepWorkCondition(d, s, 'chop'); assert.equal(d.skills.strength, BODY_CONDITION.mundaneCap);
-  s.res.herb = 0; assert.equal(cookMedicatedMeal(s, d), null); assert.equal(s.res.medFood, 0);
+  assert.equal('muscleFatigue' in oldHero, false, '舊局不加身體欄位');
+  // 負重比：同一擔柴，力氣 10 的人是全力，力氣 15 的人只算 12/15。
+  const s = createState(42, { hermitage: true }), weak = s.ds[0];
+  ensureBodyCondition(weak, s.day);
+  weak.skills.strength = 10; const a = stepWorkCondition(weak, s, 'chop').stimulus;
+  weak.skills.strength = 15; const b = stepWorkCondition(weak, s, 'chop').stimulus;
+  assert.equal(a, 1); assert.ok(Math.abs(b - BODY_CONDITION.load.chop / 15) < 1e-12); assert.ok(b < a);
+  // 營養：同樣二十份活，吃藥膳的人比只吃白飯的人長得多。
+  const grow = (rich) => { const g = createState(42, { hermitage: true }), d = g.ds[0]; ensureBodyCondition(d, g.day);
+    if (rich) { g.res.medFood = 1; applyMedicatedMeal(d, g); } else applyPlainMeal(d, g);
+    for (let day = 0; day < 10; day++) { for (let i = 0; i < 2; i++) stepWorkCondition(d, g, 'chop', 1, 60); g.day++; ensureBodyCondition(d, g.day); }
+    return d.skills.strength - d.bodyBase.strength; };
+  assert.ok(grow(true) > grow(false), '藥膳長得比白飯快');
+  // 體能－疲勞：做到痠痛後只累不長；休息日疲勞按 7 日時間常數下降。
+  const t = createState(43, { hermitage: true }), d = t.ds[0]; ensureBodyCondition(d, t.day);
+  while (!d.soreness) stepWorkCondition(d, t, 'quarry');
+  const sore = d.skills.strength; stepWorkCondition(d, t, 'quarry'); assert.equal(d.skills.strength, sore, '痠痛時不長');
+  assert.equal(restBodyCondition(d, t), true, '歇息不會當場消痠痛');
+  const before = d.bodyFatigue; t.day++; ensureBodyCondition(d, t.day);
+  assert.ok(Math.abs(d.bodyFatigue - before * Math.exp(-1 / BODY_CONDITION.fatigueTau)) < 1e-9);
+  assert.ok(d.bodyFatigue < before);
+  // 上限：起始值 ×(1 + 2 × 根骨/5)，做再久也不超過；不再有 18／36。
+  for (const root of [1, 5]) { const u = createState(44, { hermitage: true }), p = u.ds[0]; p.root = root; ensureBodyCondition(p, u.day); p.nutrition = BODY_CONDITION.nutrition.rich;
+    for (let day = 0; day < 400; day++) { for (let i = 0; i < 3; i++) stepWorkCondition(p, u, 'chop'); u.day++; ensureBodyCondition(p, u.day); }
+    const cap = bodyCapOf(p, 'strength'); assert.ok(Math.abs(cap - p.bodyBase.strength * (1 + BODY_CONDITION.bestGain * root / 5)) < 1e-9); assert.ok(p.skills.strength <= cap + 1e-9); assert.ok(p.skills.strength > p.bodyBase.strength); }
+  assert.ok(SORE_AT > 0 && FITNESS_SCALE > 0);
+  s.res.herb = 0; assert.equal(cookMedicatedMeal(s, weak), null); assert.equal(s.res.medFood, 0);
 });
 
-test('Phase 5：黃蓉煮飯和用飯走真任務，藥膳消疲勞、四週期並破 18', () => {
+test('Phase 5：黃蓉煮飯和用飯走真任務；R2 起藥膳只給足營養，不消疲勞、不破上限', () => {
   const s = createState(17, { hermitage: true, partner: 'huangrong' }), d = s.ds[1];
   s.res.veg = 10;
   assert.equal(setOrder(s, d.id, 'forage'), true);
@@ -33,17 +48,13 @@ test('Phase 5：黃蓉煮飯和用飯走真任務，藥膳消疲勞、四週期�
   for (let i = 0; i < 4000 && !s.res.medFood; i++) tick(s);
   assert.equal(s.res.medFood, 1); assert.equal(s.res.herb, 0);
   assert.equal(s.medFoodBatches[0].name, '桃花歸元藥膳');
-  d.muscleFatigue = 100; d.soreness = true; d.skills.strength = 18;
+  ensureBodyCondition(d, s.day); d.bodyFatigue = SORE_AT * 2; ensureBodyCondition(d, s.day);
   assert.equal(setOrder(s, d.id, 'eat'), true); d.needs.hunger = 10;
   for (let i = 0; i < 4000 && !(d.herbalDietUntil > s.t); i++) tick(s);
-  assert.equal(s.res.medFood, 0); assert.equal(d.muscleFatigue, 35);
-  assert.equal(d.maxCyclesToday, 4); assert.equal(d.recoveryCyclesToday, 1);
-  stepWorkCondition(d, s, 'chop'); assert.ok(d.skills.strength > 18 && d.skills.strength <= 36);
-  for (let i = 0; i < 12; i++) { stepWorkCondition(d, s, 'chop'); if (d.soreness) restBodyCondition(d, s); }
-  assert.ok(d.bodyGainToday > BODY_CONDITION.dailyGain, '藥膳容許當日第二輪以上成長');
-  assert.ok(d.bodyGainToday <= BODY_CONDITION.dailyGain * 4);
+  assert.equal(s.res.medFood, 0); assert.equal(d.nutrition, BODY_CONDITION.nutrition.rich);
+  assert.equal(d.soreness, true, '藥膳不消疲勞');
   const ordinary = createState(19, { hermitage: true }), cook = ordinary.ds[0]; ordinary.res.herb = 1;
-  cookMedicatedMeal(ordinary, cook); assert.equal(applyMedicatedMeal(cook, ordinary).cycles, 3);
+  cookMedicatedMeal(ordinary, cook); assert.equal(applyMedicatedMeal(cook, ordinary).nutrition, BODY_CONDITION.nutrition.rich);
   const batch = createState(19, { hermitage: true }); batch.res.food = 1; batch.res.herb = 1;
   assert.ok(cookMedicatedMeal(batch, batch.ds[0]));
   assert.equal(batch.res.food, 0); assert.equal(batch.res.medFood, 1); assert.equal(batch.res.herb, 0);
@@ -52,11 +63,11 @@ test('Phase 5：黃蓉煮飯和用飯走真任務，藥膳消疲勞、四週期�
     const mealState = createState(17, { hermitage: true, partner: 'huangrong' }), eater = mealState.ds[0], chef = mealState.ds[1];
     mealState.res.food = plainFood; mealState.res.medFood = 1; mealState.res.veg = 0; mealState.res.herb = 0;
     mealState.medFoodBatches = [{ name: '桃花歸元藥膳', chef: chef.id, rong: true }]; chef.away = true;
-    eater.needs.hunger = 10; eater.muscleFatigue = 100; eater.soreness = true;
+    eater.needs.hunger = 10;
     assert.equal(scoreActs(mealState, eater).some(x => x.act === 'eat'), true, `普通飯 ${plainFood} 時藥膳可用`);
     assert.equal(setOrder(mealState, eater.id, 'eat'), true);
     for (let i = 0; i < 300 && !eater.herbalDietUntil; i++) tick(mealState);
-    assert.ok(eater.herbalDietUntil > mealState.t); assert.ok(eater.needs.hunger > 10); assert.equal(eater.muscleFatigue, 35);
+    assert.ok(eater.herbalDietUntil > mealState.t); assert.ok(eater.needs.hunger > 10); assert.equal(eater.nutrition, BODY_CONDITION.nutrition.rich);
     assert.equal(mealState.res.food, plainFood); assert.equal(mealState.res.medFood, 0);
     assert.equal(mealState.ledger.out.medFood, 1); assert.equal(mealState.ledger.out.food || 0, 0, '一餐只扣藥膳，不雙扣普通飯');
   }
