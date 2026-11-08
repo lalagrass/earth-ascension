@@ -3,14 +3,15 @@ import { ACTIVITIES } from './data.mjs';
 import { artById, learnArt } from './arts.mjs';
 import { readStarterBook } from './luohan-book.mjs';
 import { log } from './util.mjs';
+import { bodyCapOf } from './economy.mjs';
 
-// 前一卷 XP25、體魄 15／16 沿用 Phase 6 的已校準前置；XP55 是既有大成門檻。
+// 前一卷 XP25 與 XP55 沿用既有火候；體魄前置由個人可成長空間的一半推導（R2）。
 // 每卷研讀一次沿用 study 10 秒；入門拳仍照原來逐式讀譜的工時。
 export const HERMITAGE_VOLUMES = Object.freeze([
-  { id: 'quanzhen-heart', art: 'quanzhenXinfa', from: 'chunyangFist', xp: 25, skill: 'strength', value: 15, source: 'opening', route: 'chunyangFist' },
-  { id: 'quanzhen-step', art: 'jinyanStep', from: 'quanzhenXinfa', xp: 25, skill: 'agility', value: 16, source: 'opening', route: 'chunyangFist' },
-  { id: 'shaolin-heart', art: 'shaolinXinfa', from: 'luohanHands', xp: 25, skill: 'strength', value: 15, source: 'opening', route: 'luohanHands' },
-  { id: 'shaolin-step', art: 'shaolinStep', from: 'shaolinXinfa', xp: 25, skill: 'agility', value: 16, source: 'opening', route: 'luohanHands' },
+  { id: 'quanzhen-heart', art: 'quanzhenXinfa', from: 'chunyangFist', xp: 25, skill: 'strength', source: 'opening', route: 'chunyangFist' },
+  { id: 'quanzhen-step', art: 'jinyanStep', from: 'quanzhenXinfa', xp: 25, skill: 'agility', source: 'opening', route: 'chunyangFist' },
+  { id: 'shaolin-heart', art: 'shaolinXinfa', from: 'luohanHands', xp: 25, skill: 'strength', source: 'opening', route: 'luohanHands' },
+  { id: 'shaolin-step', art: 'shaolinStep', from: 'shaolinXinfa', xp: 25, skill: 'agility', source: 'opening', route: 'luohanHands' },
   { id: 'quanzhen-sword', art: 'quanzhenSword', from: 'jinyanStep', xp: 25, source: 'cliff', route: 'chunyangFist' },
   { id: 'xiantian-heart', art: 'xiantianGong', from: 'quanzhenXinfa', xp: 55, source: 'cliff', route: 'chunyangFist' },
   { id: 'shaolin-arhat', art: 'shaolinArhat', from: 'shaolinStep', xp: 55, source: 'cliff', route: 'luohanHands' },
@@ -29,6 +30,10 @@ export const HERMITAGE_VOLUMES = Object.freeze([
 export const volumeById = id => HERMITAGE_VOLUMES.find(v => v.id === id);
 export const volumeLineage = v => v?.lineage || ({ chunyangFist: 'quanzhen', luohanHands: 'shaolin', gumu: 'gumu', taohua: 'taohua' })[v?.route];
 export const volumeName = id => `${artById(volumeById(id)?.art)?.name || id}・${volumeById(id)?.stage || (volumeById(id)?.source === 'fragment' ? '殘卷' : '卷')}`;
+export const volumeBodyThreshold = (d, skill) => {
+  const base = d.bodyBase?.[skill] ?? d.skills?.[skill] ?? 0;
+  return base + (bodyCapOf(d, skill) - base) / 2;
+};
 export function seedHermitageBooks(s, opening, starter) {
   const routes = new Set([starter, ...(opening.people || []).map(p => p.awakeningPath).filter(Boolean)]);
   s.hermitage.books ??= HERMITAGE_VOLUMES.filter(v => v.source === 'opening' && routes.has(v.route)).map(v => v.id);
@@ -45,7 +50,7 @@ export function bookStatus(s, d, id, teacher = null) {
   if (!teacher && !s.hermitage.books?.includes(id)) return { ok: false, why: '尚未取得此卷' };
   if (teacher && (teacher === d || !teacher.arts?.[v.art] || teacher.away || teacher.hp <= 0)) return { ok: false, why: '師者尚不會此藝' };
   if (v.from && (d.arts?.[v.from]?.xp || 0) < v.xp) return { ok: false, why: `須先把《${artById(v.from).name}》練到 ${v.xp} 熟練` };
-  if (v.skill && (d.skills?.[v.skill] || 0) < v.value) return { ok: false, why: `身體功底 ${v.skill} 尚須 ${v.value}` };
+  if (v.skill && (d.skills?.[v.skill] || 0) < volumeBodyThreshold(d, v.skill)) return { ok: false, why: `身體功底 ${v.skill} 尚須 ${volumeBodyThreshold(d, v.skill)}` };
   return { ok: true, why: teacher ? '可由會的人傳授' : '可研讀' };
 }
 export function readHermitageBook(s, d, id, seconds = ACTIVITIES.study.dur) {

@@ -9,7 +9,7 @@ import { DAY } from '../../src/data.mjs';
 export const hash = (s) => {
   const state = JSON.parse(save(s));
   // R9：5.0 只淘汰舊開局，隱居模擬的舊 golden 仍逐位比較。
-  state.rules = '4.9';
+  state.rules = '4.95';
   if (state.migSteps) state.migSteps = state.migSteps.filter(step => step !== '5.0');
   return crypto.createHash('sha256').update(JSON.stringify(state)).digest('hex').slice(0, 16);
 };

@@ -8,13 +8,13 @@
 |---|---|---|
 | A 真畫面 | `python3 solo-sect/tools/r15-visual.py`；零 pageerror，只有隱居，姓名與 MBTI 寫入，4.9 檔拒載後新局畫面仍開 | [開局](artifacts/r15/only-hermitage-opening.png)、[拒載](artifacts/r15/version-mismatch-new-game.png)、[原始結果](artifacts/r15/visual-result.json)：均通過。 |
 | A 存檔 | Node 22 `bash solo-sect/test/run.sh smoke` 與 CI quick；同版原樣、異版／無隱居狀態回「存檔版本不符」 | 本地 smoke 60／60；CI 結果以 PR 最新 head 為準。 |
-| A golden | Node 22 `node solo-sect/tools/golden.mjs --check --tier hermitage`；原小龍女／黃蓉第 1、3、5 日 hash 逐位相同 | 三情境全通過；新增獨行一格，原兩格雜湊分別為 `926edfcb7a93f564/68018d996b7e94ed/e7e9803ef85b1357`、`4e20041dbe717cca/55846171e8711676/9fb9d3c37d22fcf2`。規則版欄位先正規化為 4.9，不遮蔽其他狀態。 |
+| A golden | Node 22 `node solo-sect/tools/golden.mjs --check --tier hermitage`；合入 R2／R3 的小龍女／黃蓉第 1、3、5 日 hash 逐位相同 | 三情境全通過；新增獨行一格，原兩格雜湊分別為 `19c8242b2b815851/a976e4d8832bec4a/4927c814412eebf5`、`8e51bbefb4dd7a94/0361d561adf61ca5/9c332c225c97380d`，與 #528 head 完全相同。僅規則版欄位正規化為 4.95，不遮蔽其他狀態。 |
 | B 機率 | `bash solo-sect/test/run.sh smoke`；保留原 N62 6,000 次公式期望 | R9 無新機率公式；N62 固定抽樣仍在 smoke。 |
-| C 受控 30 日 | Node 22 `node solo-sect/tools/r13-hermitage-report.mjs solo-sect`；三情境各 12 種子、6 秒 tick、每拍清警示 | [R13 原始](artifacts/r15/hermitage-r13.json)／[R14 前輪](artifacts/r15/hermitage-r14.json)／[R9 head](artifacts/r15/hermitage-head.json)。R9 與 R14 摘要逐欄相同，無方向反轉；相對 R13 的情緒差異來自 R3 不再自動學整門及讀卷節奏，不以 C 調參。此受控日程不代表自然 0.25 秒可達性。 |
+| C 受控 30 日 | Node 22 `node solo-sect/tools/r13-hermitage-report.mjs <checkout>/solo-sect`；三情境各 12 種子、6 秒 tick、每拍清警示 | 合入 R2／R3 後重新量測：[R14 4.95 base](artifacts/r15/hermitage-r14-r2-integrated.json)／[R9 5.0 head](artifacts/r15/hermitage-head-r2-integrated.json)。三情境摘要逐欄相同，無方向反轉；舊 R13／R14／R9 原始輸出另留同目錄供歷史比對。此受控日程不代表自然 0.25 秒可達性。 |
 
 舊名 → 新名：`origins.mjs` 出身同行生成 → `OPENING_SCENARIOS` 隱居情境列；`freshV095` → `initStateFields`；`quick/full/saves` golden → `hermitage` 唯一 tier；`comp→learnArt` 舊開局整門自悟 → `HERMITAGE_VOLUMES` 實物研讀／傳藝。舊測試更新：純舊開局與遷移案例移除；仍可從隱居開山接觸的經濟、收徒、守山行為改用明確成立的門派 fixture，原行為斷言保留。最沒把握三處：① `createState` 對未指定規格的工具仍產生預設隱居局，避免無頭工具崩潰；② 5.0 直接拒載舊檔，保留本機資料供使用者自行處理，符合存檔延後決定；③ R13 到 R14 的 30 日情緒已因 R3 演進，故同時附 R14 對照以隔離 R9 效果。
 
-## 第十四輪 R3：實物分卷、真傳藝、首日玩家立匾（#522，規則 4.9）
+## 第十四輪 R3：實物分卷、真傳藝、首日玩家立匾（#522，規則 4.95）
 
 實作 grass／Codex Cloud；從已合併第十三輪 `8751f09` 建立。只改隱居路線：外功達標後需讀到實物分卷才學新功，絕頂給卷不直接給整門；四段古墓／桃花功要有卷或會的人按原傳功時鐘教；獨行可到林中山洞尋另一脈殘卷。開山選道統由玩家第 1 日起自行按鈕決定，不自動排卡。舊開局的自練／觀摩、武學候選與 RNG 不動。完整規則、前置數值來源與遷移見 [隱居系統](docs/systems/hermitage.md)。
 

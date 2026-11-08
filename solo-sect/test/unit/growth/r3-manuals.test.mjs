@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, chooseHermitageBook, setOrder, tick, canFoundHermitageSect, queueHermitageFounding } from '../../../src/sim.mjs';
-import { bookStatus, readHermitageBook } from '../../../src/hermitage-books.mjs';
+import { bookStatus, readHermitageBook, volumeBodyThreshold } from '../../../src/hermitage-books.mjs';
 import { passPick, passDo } from '../../../src/bonds.mjs';
 
 test('R3：隱居卷有前置與真研讀時鐘，山洞得第二路，傳授者必須會，首日可自行立匾', () => {
@@ -10,7 +10,11 @@ test('R3：隱居卷有前置與真研讀時鐘，山洞得第二路，傳授者
   assert.equal(s.day, 1); assert.equal(canFoundHermitageSect(s).ok, true);
   assert.equal(s.choices.some(c => c.sect === 'hermitageFounding'), false);
   assert.equal(bookStatus(s, hero, 'quanzhen-heart').ok, false);
-  hero.arts.chunyangFist.xp = 25; hero.skills.strength = 15;
+  hero.arts.chunyangFist.xp = 25;
+  const strengthGate = volumeBodyThreshold(hero, 'strength');
+  hero.skills.strength = strengthGate - 0.01;
+  assert.equal(bookStatus(s, hero, 'quanzhen-heart').ok, false, '少於個人成長空間一半不可讀');
+  hero.skills.strength = strengthGate;
   assert.equal(hero.arts.quanzhenXinfa, undefined, '武道前置滿足也不會自悟整門');
   assert.equal(chooseHermitageBook(s, hero.id, 'quanzhen-heart'), true);
   for (let i = 0; i < 1000 && !hero.arts.quanzhenXinfa; i++) tick(s);
