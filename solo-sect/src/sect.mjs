@@ -9,7 +9,7 @@ import { UPKEEP, E as econOf } from './economy.mjs';
 import { affKey, relKey, log, resAdd, resSet, recordDeed } from './util.mjs';
 import { removeActor, cancelTask } from './core.mjs';
 import { addWexin } from './hero.mjs';
-export { TWIN_SWORDS_DAMAGE, twinSwordsPartner, twinSwordsDamageFactor } from './twin-swords.mjs';
+export { pairedSwordPartner, pairedSwordArrival } from './twin-swords.mjs';
 import { xidOf } from './wuxia.mjs';
 import { familyStep } from './family.mjs';
 // ==== （原 gen.mjs）====

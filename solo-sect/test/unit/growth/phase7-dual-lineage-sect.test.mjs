@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, canRecruit, canFoundHermitageSect, queueHermitageFounding, foundHermitageSect, setOrder, emergency, foodLow, scoreActs, skipsChores, tick } from '../../../src/sim.mjs';
-import { artById, ownLineageArt } from '../../../src/arts.mjs';
+import { artById, ownLineageArt, resolveSwing } from '../../../src/arts.mjs';
 import { sectBiasMul, DAY } from '../../../src/data.mjs';
 import { E as econOf, UPKEEP } from '../../../src/economy.mjs';
-import { assignDiscipleHall, sectRecruit, twinSwordsDamageFactor } from '../../../src/sect.mjs';
+import { assignDiscipleHall, sectRecruit, pairedSwordPartner, pairedSwordArrival } from '../../../src/sect.mjs';
 import { startMapBout, stepMapBout } from '../../../src/exp-map-combat.mjs';
 import { affKey } from '../../../src/util.mjs';
 
@@ -56,15 +56,38 @@ test('R3 承接 Phase 7：第 1 日玩家可主動立匾，雙堂仍保留雙脈
   assert.equal(s.sect.firstDiscipleId, yin.id);
   h.arts.quanzhenSword = { xp: 25 }; p.arts.yunvSword = { xp: 25 };
   h.pos = [100, 100]; p.pos = [124, 100];
-  assert.equal(twinSwordsDamageFactor(s, h, 'qz1', [h, p]), 1.35);
-  assert.equal(twinSwordsDamageFactor(s, h, 'fist', [h, p]), 1);
-  p.pos = [1100, 100]; assert.equal(twinSwordsDamageFactor(s, h, 'qz1', [h, p]), 1, '同隊但遠距不算並肩');
-  p.pos = [124, 100]; assert.equal(twinSwordsDamageFactor(s, h, 'qz1', [h]), 1, '同隊名冊尚在但未實際參戰不加成');
-  p.downUntil = s.t + 1; assert.equal(twinSwordsDamageFactor(s, h, 'qz1', [h, p]), 1, '倒地者不能合擊');
+  const target = { uid: 'foe', pos: [120, 100] };
+  p.swing = { mv: 'ys1', tgt: target.uid, at: s.t + .4 };
+  assert.equal(pairedSwordPartner(s, h, 'qz1', target, [h, p]), p);
+  assert.equal(pairedSwordPartner(s, h, 'fist', target, [h, p]), null);
+  p.pos = [110, 100]; assert.equal(pairedSwordPartner(s, h, 'qz1', target, [h, p]), null, '同一正面沒有夾角');
+  p.pos = [124, 100];
+  p.pos = [1100, 100]; assert.equal(pairedSwordPartner(s, h, 'qz1', target, [h, p]), null, '同隊但遠距不算並肩');
+  p.pos = [124, 100]; assert.equal(pairedSwordPartner(s, h, 'qz1', target, [h]), null, '同隊名冊尚在但未實際參戰不合擊');
+  p.downUntil = s.t + 1; assert.equal(pairedSwordPartner(s, h, 'qz1', target, [h, p]), null, '倒地者不能合擊');
+  p.downUntil = 0;
+  assert.equal(pairedSwordArrival(s, h, 'qz1', target, [h, p], s.t + .3) > s.t + .4, true, '第二劍等到同伴起手後的空檔');
   const soloDamage = mapSwordDamage(24, false);
-  assert.ok(Math.abs(mapSwordDamage(24) / soloDamage - 1.35) < 1e-9, '近身同場真傷害 ×1.35');
+  assert.ok(Math.abs(mapSwordDamage(24) - soloDamage) < 1e-9, '近身同場不再乘傷害倍率');
   assert.ok(Math.abs(mapSwordDamage(1000) - soloDamage) < 1e-9, '同隊遠距真傷害不變');
   h.skills.agility = 16; assert.equal(setOrder(s, h.id, 'cliffForage1'), true);
+});
+
+test('R5 第二劍只借收招時間窗，對練縮短跟進間隔，超出空檔仍可格擋', () => {
+  const s = hermit(); s.ds[1].arts.tianluoPalm = { xp: 25 }; foundHermitageSect(s, 'dualHall'); s.t = 10;
+  const [h, p] = s.ds, owner = { team: [h.id, p.id], n: 0, encN: 0 };
+  const bout = startMapBout(s, owner, 'bandit', { id: 'foot', from: 0, scale: 1 }, [h, p], [150, 100], [0, 100]);
+  const foe = bout.foes[0]; h.pos = [100, 100]; p.pos = [124, 100]; foe.pos = [120, 100];
+  p.swing = { mv: 'ys1', tgt: foe.uid, at: s.t + .2 };
+  const arrival = pairedSwordArrival(s, h, 'qz1', foe, [h, p], s.t + .1);
+  assert.ok(arrival > p.swing.at, '第二劍須等第一劍落下');
+  s.mem = [{ k: 'spar', a: h.id, b: p.id }];
+  const practiced = pairedSwordArrival(s, h, 'qz1', foe, [h, p], s.t + .1);
+  assert.ok(practiced > p.swing.at && practiced < arrival, '真對練縮短跟進延遲');
+  const blocked = structuredClone(foe), inGap = structuredClone(foe);
+  blocked.busyUntil = s.t; inGap.busyUntil = s.t + .2;
+  assert.equal(resolveSwing(s, h, blocked, () => .01, { move: 'qz1', wind: .4, map: true }).kind, 'parry');
+  assert.equal(resolveSwing(s, h, inGap, () => .01, { move: 'qz1', wind: .4, map: true }).kind, 'hit');
 });
 
 test('Phase 7：正宗立匾只讓掌門、伴侶、首徒使用秘傳；無名派可自訂匾', () => {

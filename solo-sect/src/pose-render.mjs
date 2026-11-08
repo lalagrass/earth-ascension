@@ -851,7 +851,7 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
   }
 
   // Phase 3 Scenario: Partner & Formation Synergy Overlays
-  if (synergy?.synergyMode === 'twinSwordsCouple') {
+  if (synergy?.synergyMode === 'pairedSwords') {
     if (g.beginPath && g.stroke) {
       if (g.save) g.save();
       g.strokeStyle = '#ffffff';
@@ -880,7 +880,7 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
     if (g.fillText) {
       g.fillStyle = '#2980b9';
       g.font = 'bold 12px sans-serif';
-      g.fillText('☯ 雙劍合璧・玉女素心！', 120, groundY - 120);
+      g.fillText('雙劍夾角・接招跟進', 120, groundY - 120);
     }
   }
 

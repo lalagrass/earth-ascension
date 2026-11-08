@@ -472,8 +472,8 @@ function drawMicroStage() {
       let extraTag = '';
       if (syn?.combinedArtName) {
         extraTag += `｜${syn.combinedArtName}`;
-      } else if (syn?.synergyMode === 'twinSwordsCouple') {
-        extraTag += '｜雙劍合璧';
+      } else if (syn?.synergyMode === 'pairedSwords') {
+        extraTag += '｜雙劍夾角';
       } else if (syn?.synergyMode === 'zhenwuArray') {
         extraTag += '｜真武七截陣';
       }

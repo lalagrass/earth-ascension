@@ -1,18 +1,33 @@
-// 出自 Phase 7 規格：雙劍合璧只在同一場真交手、近戰肩距內成立。
+// R5 #523：兩把劍沒有傷害倍率；優勢來自同一對手在收招前接到第二劍。
+import { ARTS } from './data.mjs';
+import { CLASH } from './arts.mjs';
 import { RING } from './combat-space.mjs';
 
-export const TWIN_SWORDS_DAMAGE = 1.35; // 出自 Phase 7 規格；與 Phase 3 的雙劍畫面倍率相同。
-const SWORD_MOVES = new Set(['qz1', 'qz2', 'ys1', 'ys2']);
+const swordMoves = new Set(ARTS.filter(a => a.weapon === 'sword').flatMap(a => a.techs || []));
+const idOf = a => a?.uid || a?.id;
+const live = (s, a) => a?.pos && a.hp > 25 && !(a.faintUntil > s.t) && !(a.downUntil > s.t);
 
-export function twinSwordsPartner(s, d, fighters = []) {
-  if (!s.hermitage?.founded || s.sect?.doctrine !== 'dualHall' || !d || !fighters.includes(d)
-    || d.hp <= 25 || d.faintUntil > s.t || d.downUntil > s.t || !d.pos) return null;
-  return fighters.find((p) => p !== d && p.hp > 25 && !(p.faintUntil > s.t) && !(p.downUntil > s.t) && p.pos
-    && Math.hypot(d.pos[0] - p.pos[0], d.pos[1] - p.pos[1]) <= RING.engage
-    && !!p.fem !== !!d.fem
-    && ((d.arts?.quanzhenSword && p.arts?.yunvSword) || (d.arts?.yunvSword && p.arts?.quanzhenSword))) || null;
+// 只驗同場、同目標與位置；性別、門派與流派都不影響時間。
+export function pairedSwordPartner(s, actor, moveId, target, fighters = []) {
+  if (!swordMoves.has(moveId) || !live(s, actor) || !target?.pos || !fighters.includes(actor)) return null;
+  const targetId = idOf(target);
+  if (Math.hypot(actor.pos[0] - target.pos[0], actor.pos[1] - target.pos[1]) > RING.engage) return null;
+  return fighters.find(p => p !== actor && live(s, p)
+    && Math.hypot(p.pos[0] - target.pos[0], p.pos[1] - target.pos[1]) <= RING.engage
+    // N44：目標兩側才真正形成夾角；點積為負即彼此不在同一個正面。
+    && (actor.pos[0] - target.pos[0]) * (p.pos[0] - target.pos[0])
+      + (actor.pos[1] - target.pos[1]) * (p.pos[1] - target.pos[1]) < 0
+    && swordMoves.has(p.swing?.mv || p.bswing?.mv || p.swing?.move)
+    && (p.swing?.target || p.swing?.tgt || p.bswing?.tgt) === targetId) || null;
 }
 
-export function twinSwordsDamageFactor(s, d, moveId, fighters = []) {
-  return SWORD_MOVES.has(moveId) && twinSwordsPartner(s, d, fighters) ? TWIN_SWORDS_DAMAGE : 1;
+// N46 真對練記憶縮短同伴收招後的跟進延遲；不加快自己的前搖。
+// 間隔借 N27 格架收招時間，每筆記憶是一次練習，沒有新秒數旋鈕。
+export function pairedSwordArrival(s, actor, moveId, target, fighters, naturalAt) {
+  const partner = pairedSwordPartner(s, actor, moveId, target, fighters);
+  if (!partner) return naturalAt;
+  const sharedSpars = (s.mem || []).filter(m => m.k === 'spar'
+    && ((m.a === actor.id && m.b === partner.id) || (m.a === partner.id && m.b === actor.id))).length;
+  const afterPartner = (partner.swing?.at || partner.bswing?.at || s.t) + CLASH.time.parryRecover / (1 + sharedSpars);
+  return Math.max(naturalAt, afterPartner);
 }
