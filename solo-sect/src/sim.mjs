@@ -185,7 +185,7 @@ export function canRecruit(s) {
   }
   const candidate=makeBare({id:next.id,adult:next.adult,skills:{...next.skills},situation:next.situation,support:next.support,canWork:next.canWork});
   const heardReason = `在${rumor.where}聽${rumor.witness}說「${rumor.text}」；${next.situation?.reason || '想找合適的師門'}`;
-  return {...admissionStatus(s,candidate),next,heard:true,heardReason,rumor:rumor.id};
+  return {...admissionStatus(s,candidate,rumor),next,heard:true,heardReason,rumor:rumor.id};
 }
 // 三問心印：預設答案取人選天性；答案→前兩個不重複特質為明面，人選天性補為第三（暗，相處 900 秒揭露）
 export function defaultAnswers(p) { return QUESTIONS.map((q) => { const i = q.a.findIndex(([, t]) => (p.personality || []).includes(t)); return i < 0 ? 0 : i; }); }

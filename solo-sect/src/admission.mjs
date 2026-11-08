@@ -7,6 +7,7 @@ export {bedCount} from './recruitment.mjs';
 export const HUNGER_PER_SECOND=.35;
 import {ACTIVITIES} from './data.mjs';
 import {seasonOf} from './economy.mjs';
+import {RUMOR_KINDS} from './rumors.mjs';
 export const dailyRations=s=>DAY*HUNGER_PER_SECOND*seasonOf(s).hunger/ACTIVITIES.eat.need.hunger;
 export const bodyExperience=d=>BODY_BASE.reduce((n,id)=>n+handUses(d,id),0)/BODY_BASE.length;
 export const guidanceSeconds=d=>PRACTICE.halfUses*BODY_TIMING.reaction*practiceResidual(bodyExperience(d));
@@ -14,12 +15,15 @@ export const competence=d=>Math.max(0,...['palm','leg','sword','staff','blade','
 export const unfoundedHermitage=s=>!!s.hermitage?.active; // 出自 H0 規格：同一狀態隔離隱居期的所有收徒入口。
 const available=d=>{const c=d.timePrev||d.timeToday;if(!c?.elapsed)return 0;return Math.min(DAY*PHASES.find(p=>p[1]==='night')[0],c.free*DAY/c.elapsed);};
 export function mentorFor(s,pupil){return s.ds.filter(m=>m!==pupil&&m.role!=='laborer'&&!m.away&&m.hp>30&&!(m.downUntil>s.t)&&bodyExperience(m)>bodyExperience(pupil)).map(m=>({m,free:available(m)-s.ds.filter(p=>p.guidanceMentor===m.id&&p!==pupil).reduce((n,p)=>n+guidanceSeconds(p),0)})).sort((a,b)=>b.free-a.free||a.m.id.localeCompare(b.m.id))[0]||null;}
-export function admissionStatus(s,candidate){
+export function admissionStatus(s,candidate,rumor=null){
  if(unfoundedHermitage(s))return {ok:false,why:'荒山隱居中，立匾後才收徒'};
  const beds=bedCount(s),mouths=s.ds.length+1,rations=dailyRations(s),foodNeed=mouths*rations,mentor=mentorFor(s,candidate),need=guidanceSeconds(candidate),offer=supportOffer(s,candidate);
  const outside={food:0,bed:0,status:competence(candidate),safety:0,autonomy:1,reason:'在村路討生活',...candidate.situation};
  const opinion=Math.max(0,...s.ds.map(d=>s.aff?.[`${candidate.id}>${d.id}`]||0))/100;
- const status=Math.max(0,...s.ds.map(competence));
+ // 門口人選只知道親見傳聞，不知道門內最強者的實際武學；
+ // 武勇見聞代表看過一名達一般成人基準的人出手，並非門派勝率加成。
+ // 名俠等已有私人往來者沒有公開傳聞參數，仍沿原先對人的認識。
+ const status=rumor ? (RUMOR_KINDS[rumor.kind]?.tags.includes('martial') ? PRACTICE.bodyScale : 0) : Math.max(0,...s.ds.map(competence));
  const safety=(s.fac?.watch?.stage||0)+(s.fence?.hp>0?s.fence.hp/(s.fence.max||s.fence.hp):0);
  const utility={food:1-outside.food,bed:1-outside.bed,status:(status-outside.status)/PRACTICE.bodyScale,safety:safety-outside.safety,opinion,autonomy:-outside.autonomy};
  const advantage=Object.values(utility).reduce((n,v)=>n+v,0),reason=`${outside.reason}；本門/現況差 ${advantage.toFixed(2)}（食${utility.food.toFixed(2)}、住${utility.bed.toFixed(2)}、功夫${utility.status.toFixed(2)}、安全${utility.safety.toFixed(2)}、交情${opinion.toFixed(2)}、牽掛${utility.autonomy.toFixed(2)}）`;
