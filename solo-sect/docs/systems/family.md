@@ -38,7 +38,7 @@
 | `massGain=0.22` | 量測 | IOM 2009：正常體重孕婦建議增重 11.5–16 公斤 |
 | `girlShare=100/205` | 量測 | WHO：出生性別比約 105 男比 100 女 |
 | `babyAge=3` | 參考 | RimWorld Biotech 的嬰兒期 |
-| `yearDays=28`、`adultAge=14` | 設計旋鈕（沿用） | 既有 GEN v1.4 |
+| `yearDays=DAYS_PER_YEAR=28`、`adultAge=14` | 設計旋鈕（沿用） | 既有 GEN v1.4；第二十六輪起與季節及體能成長共用[時間與尺度](time-and-scale.md)的 28 日年 |
 | 每日受孕機率 | 推導 | `1 − (1 − conceiveYear)^(1/yearDays)` |
 | 上陣禁令 | 參考 | ACOG 第 804 號意見：孕期避免有碰撞風險的運動 |
 

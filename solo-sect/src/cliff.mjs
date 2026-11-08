@@ -1,7 +1,7 @@
 import { ARTS, CLIFFS, NODES } from './data.mjs';
 import { artTier } from './arts.mjs';
 import { BODY_MECHANICS, bodyOf } from './contact.mjs';
-import { RING } from './combat-space.mjs';
+import { pixelsToMeters, zhangToMeters } from './time-scale.mjs';
 
 const ENTRY_ENERGY = 80; // 推導：hero.mjs、sim.mjs 與 family.mjs 共用的開局精力；入門者按開局狀態校準。
 
@@ -29,15 +29,15 @@ export function canClimbCliff(d, cliffId, route = 'detour') {
 
 export const canLeapCliff = (d, cliffId) => canClimbCliff(d, cliffId);
 
-// 把地圖一個既有近戰步幅視作水平單位；上坡步長照直角三角形斜邊折算。
+// R1 推導：俯視圖水平畫素與崖高的丈都先換公尺，斜坡按直角三角形折算。
 export function cliffSlopeFactor(from, to) {
   const a = NODES[from], b = NODES[to]; if (!a || !b) return 1;
   const heightOf = id => id === CLIFFS.cliff3.detour
     ? (CLIFFS.cliff2.heightZhang + CLIFFS.cliff3.heightZhang) / 2
     : (CLIFFS[id]?.heightZhang || 0);
-  const rise = Math.max(0, heightOf(to) - heightOf(from));
+  const rise = zhangToMeters(Math.max(0, heightOf(to) - heightOf(from)));
   if (!rise) return 1;
-  const run = Math.hypot(b[0] - a[0], b[1] - a[1]) / RING.step;
+  const run = pixelsToMeters(Math.hypot(b[0] - a[0], b[1] - a[1]));
   return run ? run / Math.hypot(run, rise) : 1;
 }
 

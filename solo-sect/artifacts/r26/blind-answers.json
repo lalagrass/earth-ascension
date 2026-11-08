@@ -1,0 +1,10 @@
+{
+  "seed": 17,
+  "answers": {
+    "A": "low-cliff",
+    "B": "waterfall"
+  },
+  "method": "real UI hermitage start; freeze; fixed hero position at one of two existing cliff nodes; map render only; no game rule mutation",
+  "pixelMeters": 0.025,
+  "zhangMeters": 3
+}

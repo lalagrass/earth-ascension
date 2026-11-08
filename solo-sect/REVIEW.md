@@ -1,5 +1,27 @@
 # 可重跑驗收
 
+## 第二十六輪：時間與尺度基準（#488，規則 6.0）
+
+| 類別 | 指令＋門檻＋預期輸出 |
+|---|---|
+| A 固定情境 | Node 22 `bash solo-sect/test/run.sh smoke`：100/100（含 merge-forward 的成就一）；`r26-time-scale.test.mjs` 要求 28 日年＝四季七日、24px 滑步約 0.6m、55px/s＝1.375m/s、七丈＝21m；崖坡等於公尺水平／斜邊、瀑下負荷等於 √(7/3)、42／7 現實日按 28/365.2425 換算且體能穩態比為 2。固定每日 25 秒練體 28 日，力量須在由日均負荷推得的平衡值 ±0.05。`node solo-sect/tools/time-constant-inventory.mjs --check`：`src` 的時間常數逐列與 `time-and-scale.md` 相同，490 列。 |
+| A golden／存檔 | Node 22 `node solo-sect/tools/golden.mjs --write --tier hermitage`，`node solo-sect/tools/golden.mjs --check --tier all`：隱居四格第 1／3／5 日全相符。12 個 hash 都變：規則 5.9→6.0，體能／疲勞快慢與崖坡影響日程；`solo-chunyang-42` 第 1 日體能／疲勞、活動和交手已不同，第 3／5 日武學進度、行動與 RNG 隨之分歧。異版存檔依既有 R9 拒載，不新增遷移。 |
+| A 盲圖／素材 | `python3 solo-sect/tools/r26-visual.py --seed 17`：正常 UI 開局，處理初始抉擇，再固定主角位置到低崖／飛瀑兩節點；零 pageerror。[盲圖 A](artifacts/r26/blind-A.png)／[B](artifacts/r26/blind-B.png)；[答案](artifacts/r26/blind-answers.json)。`node solo-sect/tools/check-assets.mjs`：168/168 有授權。 |
+| B 公式 | 本輪無新增隨機抽樣；同一 smoke 的 N62 6,000 次出獵選擇期望 .4926757803、99.9% 半寬 .021407701，觀測 .502 落在區間。坡度、落水負荷、日數換算皆以固定公式 A 驗。 |
+| C bot12 | Node 22 `node solo-sect/tools/bot12.mjs solo-sect --json`，[上一輪原始](artifacts/r26/bot12-base.json)／[本輪原始](artifacts/r26/bot12-head.json)。自然山賊 0→0；獨立有柵探針勝 96/96→96/96、守柵 89→92、傷 2→1；惱羞 279→202、巫藥時機 106→114、常見 DPS 中位 76.9→55.6。行走／體能日程已變，這些為 C，不為它調常數。 |
+| C 30／90 日 | Node 22 `node solo-sect/tools/playability-report.mjs solo-sect --days=30 --seeds=12 --step=1 --admissions` 與 `--days=90`；四開局 × 自然／引導 × 12 種子，1 秒 tick 並清除 alert 的受控觀察。與原始 [30 日基線](artifacts/playability/base-30d.json)／[90 日基線](artifacts/playability/base-90d.json) 及上一輪 [30 日](artifacts/r25/playability-head-30d.json)／[90 日](artifacts/r25/playability-head-90d.json) 對照；本輪 [30 日](artifacts/r26/playability-head-30d.json)／[90 日](artifacts/r26/playability-head-90d.json)。指標在本節下方列出，不把受控結果宣稱為正常 0.25 秒玩家行為。 |
+
+30 日 C：單人純陽自然上崖 1/12（第 28 日）→0/12，引導 5/12（第 18 日）→5/12（第 14 日）；小龍女／純陽引導 2/12（第 26 日）→5/12（第 20 日），黃蓉／羅漢引導 10/12（第 12 日）→12/12（第 9 日）。四開局引導的 30 日拜入人數中位皆不變（4／4／5／5）。引導低心情比例中位依序 .105→.105、.097→.118、.059→.038、.047→.050；自然單人純陽 .127→.138。體能成長提前與上崖路程增加同時作用，C 方向不一，不以比例調常數。
+
+90 日 C：四開局引導的低心情比例中位，上一輪→本輪依序 .029→.027、.022→.023、.030→.028、.028→.028；自然四局依序 .131→.145、.161→.162、.048→.054、.075→.086。單人純陽自然上崖 2/12（中位第 53 日）→2/12（第 56 日），引導 8/12（第 24 日）→7/12（第 16 日）；其餘開局逐種子見原始 JSON。此為 1 秒 tick、每拍清 alert 的受控量測；成就一 merge-forward 後已用本輪最新工具重跑 30／90 日各 96 局，里程碑欄位按同一張表輸出。
+
+合入成就一後的原 A 測試調整：`achievement1.test.mjs` 曾假定 seed 1001 三日內一定打倒山犬；本輪公尺坡路改變該自然遭遇時序。改以同一真局先走三日並確認未曾打倒，再固定 `seeEnemy(..., 'kill')` 交手結算事件，斷言里程碑日期等於實際當日。首達日的精確斷言保留，不把 C 遭遇日當成 A 前置。
+
+舊名 → 新名：本輪觸及行的舊抽象 `RING.step` 當一丈 → `METERS_PER_PIXEL` 與 `METERS_PER_ZHANG` 兩種明確單位；原 `BODY_CONDITION.fitnessTau`／`fatigueTau` 保留可讀名稱但改由 `growthDaysFromRealDays()` 推導。沒有改動帶輪次編號的識別字。
+
+最沒把握三處：① 近戰滑步 0.6m 是 R1 量測錨點，決定 0.025m/px；若美術尺寸後續變動，應整張地圖同時換算；② 飛瀑以同水量下落水速度比近似負荷，沒有流量／截面量測，故只作相對模型，不稱實際衝擊力；③ 42／7 現實日轉壓縮年使成長進度提早但同負荷的理論平衡比例不變，受控日程與原測試若有差異須按原因逐項重驗。
+
+
 ## 第二十四輪：前 30 日的路可看見、可走通（#488，規則 5.8）
 
 | 類別 | 指令＋門檻＋預期輸出 |

@@ -6,9 +6,10 @@ import { DAY, NODES, TRAITS } from './data.mjs';
 import { bedCount } from './recruitment.mjs';
 import { affKey, relKey, log } from './util.mjs';
 import { canHaveChildren } from './rare-arts.mjs';
+import { DAYS_PER_YEAR } from './time-scale.mjs';
 
 export const FAMILY = Object.freeze({
-  yearDays: 28, // 遊戲一年的日數；大人與孩子共用（擁有人 D4：單一時鐘）。
+  yearDays: DAYS_PER_YEAR, // 第 26 輪 #488：與季節、體能成長共用 28 日年；大人孩子同鐘。
   adultAge: 14, // 沿用既有成年年紀。
   gestationYears: 0.75, // 量測：足月妊娠約 40 週，約 9 個月。
   conceiveYear: 0.85, // 量測：想要孩子的伴侶約 85% 在一年內懷上（Gnoth 等 2003）。

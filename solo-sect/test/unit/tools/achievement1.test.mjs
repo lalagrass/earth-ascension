@@ -62,8 +62,11 @@ test('成就一 b：表驅動門派與個人時間線給出同一首次日', () 
   assert.equal(milestoneRows(achievementRecord(twins), twins.ds[0]).find(x => x.id === 'firstMove').day, null);
   assert.ok(MILESTONES.length >= 13);
   const trial = createState(1001, { opening: 'solo', starterArt: 'chunyangFist' });
-  for (let elapsed = 0; elapsed < 3 * DAY && !achievementRecord(trial).events['enemy.dog']; elapsed++) { tick(trial, 1); trial.alert = null; }
-  assert.equal(milestoneRows(achievementRecord(trial)).find(x => x.id === 'firstDog').day, 1);
+  for (let elapsed = 0; elapsed < 3 * DAY; elapsed++) { tick(trial, 1); trial.alert = null; }
+  assert.equal(milestoneRows(achievementRecord(trial)).find(x => x.id === 'firstDog').day, null);
+  // 第 26 輪的實際坡路會改變三日內是否遭遇山犬；固定交手結果驗首達日。
+  seeEnemy(trial, 'dog', 'kill', trial.ds[0]);
+  assert.equal(milestoneRows(achievementRecord(trial)).find(x => x.id === 'firstDog').day, trial.day);
 });
 
 test('成就一 c：每項成就固定未達／達成，門檻日正確，隱藏項達成前不顯示', () => {
