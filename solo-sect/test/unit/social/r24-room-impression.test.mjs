@@ -11,7 +11,7 @@ test('24f 名望者嫌破屋、修好回升；自在者不受房間觀感影響'
   s.fac.dorm.stage = 2;
   const repaired = moodTarget(d, s);
   assert.ok(repaired > worn);
-  d.values = { fame: 0, free: 25 };
+  d.personality = ['free']; d.values = { fame: 25, free: 0 };
   const adaptable = moodTarget(d, s);
   s.fac.dorm.stage = 0;
   assert.equal(moodTarget(d, s), adaptable);

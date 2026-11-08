@@ -321,9 +321,9 @@ export const TRAITS = {
   gentle: { name: '溫和', desc: '愛下廚照顧人，不愛打鬥', composure: 'steady', mods: { cook: 1.4, farm: 1.15, spar: 0.6 }, thoughtMul: { fight: 1.5 } },
   brave: { name: '膽大', desc: '受傷不太放在心上，愛切磋', composure: 'hot', mods: { spar: 1.4 }, thoughtMul: { fight: 0.4 } },
   optimist: { name: '樂天', desc: '天塌下來也笑得出來', moodBase: 8 },
-  worrier: { name: '多慮', desc: '小事也掛心', moodBase: -6, thoughtMul: { bad: 1.4 } },
+  worrier: { name: '多慮', desc: '小事也掛心', moodBase: -6, thoughtMul: { bad: 1.4 }, roomImpression: 0.5 }, // 24f R1 設計旋鈕：破屋讓多慮者額外在意半份。
   honest: { name: '憨厚', desc: '學得慢卻肯下笨功夫，基礎武學練得特別紮實', composure: 'steady', mods: { train: 1.1, leisure: 0.8 } },
-  free: { name: '灑脫', desc: '不拘一格，練功隨興，巧變的武學一點就通', mods: { train: 0.9, chat: 1.15, leisure: 1.2 } },
+  free: { name: '灑脫', desc: '不拘一格，練功隨興，巧變的武學一點就通', mods: { train: 0.9, chat: 1.15, leisure: 1.2 }, roomImpression: -1 }, // 24f R1 設計旋鈕：隨遇而安抵一份名望觀感。
   glutton: { name: '貪吃', desc: '吃得好心情就好，餓了特別煩', mods: { eat: 1.3 }, thoughtMul: { food: 1.8 } },
 };
 // 想法（記憶）：值、持續秒數、分類（給 thoughtMul 用）

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { ACTIVITIES, CLIFFS, NODES } from '../../../src/data.mjs';
 import { createState, scenicRecovery, tick } from '../../../src/sim.mjs';
-import { focusMul } from '../../../src/social.mjs';
+import { focusMul, moodStep, moodTarget } from '../../../src/social.mjs';
 import { cookMedicatedMeal, applyMedicatedMeal } from '../../../src/economy.mjs';
 
 test('24e 崖與空地同一練功基數；景致按休閒同秒數解悶並提高專注', () => {
@@ -30,4 +30,12 @@ test('24e 崖與空地同一練功基數；景致按休閒同秒數解悶並提�
   assert.ok(cookMedicatedMeal(s, s.ds[0]));
   assert.equal(s.res.beeJelly, 0);
   assert.equal(applyMedicatedMeal(s.ds[0], s).bee, true);
+  const viewed = createState(18, { kind: 'custom', hermitage: true, opening: 'solo', starterArt: 'chunyangFist' });
+  const visitor = viewed.ds[0]; visitor.thoughts = []; visitor.needs.fun = 0;
+  visitor.mood = moodTarget(visitor, viewed);
+  const lowMood = visitor.mood;
+  scenicRecovery(visitor, CLIFFS.cliff1, ACTIVITIES.leisure.dur);
+  assert.equal(visitor.needs.fun, ACTIVITIES.leisure.fun);
+  moodStep(viewed, visitor, 1);
+  assert.ok(visitor.mood > lowMood, '景致解悶後，心情沿現有目標回復');
 });
