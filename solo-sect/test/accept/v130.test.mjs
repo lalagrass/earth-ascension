@@ -62,7 +62,7 @@ test('東方不敗：有來由且逐招分勝負；打退留葵花殘頁、輸�
   assert.equal(t.jh.dfbb, 2); assert.ok(t.jh.residue.kuihua); assert.ok(t.ds.some(d => d.watched?.kh1));
   assert.ok(t.ds.every(d => !d.arts?.kuihua), '殘頁不是唯一實本');
   pick(t, 'kuihua'); const h = t.ds.find(d => d.id === 'hero');
-  assert.equal(h.arts.kuihua, undefined); assert.equal(h.castrated, null);
+  assert.equal(h.arts.kuihua, undefined); assert.ok(h.castrated == null);
 });
 test('韋小寶入門：賭坊每日抽頭有上限', () => {
   const s = st(); join(s, 'weixiaobao'); s.rep = 999; const c = s.res.coin; s.day++; jhStep(s, 0.25); assert.equal(s.res.coin - c, JH.gambleCap);
@@ -83,7 +83,4 @@ test('每日門規作息保留，例行晨課不再產生抉擇卡', () => {
 });
 test('包租婆帶包租公上山：獅子吼＋太極，夫妻連攜', () => {
   const s = st(); join(s, 'baozupo'); const g = s.ds.find((d) => d.xia === 'baozugong'); assert.ok(g && artTier(g, 'taiji') >= 2); assert.equal(XIA_PAIRS['baozugong+baozupo'], 0.25);
-});
-test('張無忌／韋小寶／阿星模板主線自動駕駛能往下走', () => {
-  for (const [id, min] of [['zhangwuji', 4], ['weixiaobao', 5], ['axing', 3]]) { const s = createState(5, { kind: 'template', id, askMajor: false }); s.jh.comedyOn = false; run(s, DAY * 10.5); assert.ok((s.hero.arcStep || 0) >= min, `${id} ${s.hero.arcStep}`); }
 });

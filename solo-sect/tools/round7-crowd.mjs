@@ -3,10 +3,9 @@
 import { pathToFileURL } from 'node:url';
 import { createState, tick } from '../src/sim.mjs';
 import { MOVES } from '../src/data.mjs';
-import { CLASH, interceptOpening, resolveSwing, windOf } from '../src/arts.mjs';
+import { CLASH, interceptOpening, resolveSwing, windOf, learnArt } from '../src/arts.mjs';
 import { BAND_CLASH, bandSyncDelay } from '../src/threat.mjs';
 import { attackTokenLimit } from '../src/tactics.mjs';
-import { teach, TEACH } from '../src/wuxia.mjs';
 
 const KINDS = ['read', 'dodge', 'parry', 'hit'];
 const NUMBERS = [1, 2, 3, 4, 6];
@@ -24,7 +23,9 @@ function day20() {
   // N50 removes the guaranteed opening master. Give this fixed combat fixture
   // the same third lesson from Hong Qigong explicitly; the crowd probe compares
   // timing with an already learned technique, not the chance to meet a master.
-  teach(state, master, 'xianglong', TEACH.xp[2], ['jianlong', 'feilong', 'kanglong']);
+  learnArt(master, 'xianglong', state.t);
+  master.arts.xianglong.xp = 100;
+  learnArt(master, 'xianglong', state.t);
   // 同級好手用郭靖自己已會的「亢龍」作對手招；同一門武學、同一火候，前搖較短。
   const peerMove = MOVES.find((m) => m.id === 'kanglong' && master.moves.includes(m.id));
   if (!peerMove) throw new Error('第 20 日郭靖尚未會亢龍，請檢查固定情境');
