@@ -381,7 +381,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '5.1'; /* R8 #526：外人所見傳聞決定上門，異版存檔拒載 */
+export const RULES_VERSION = '5.2'; /* R8 #526：承接已合併 R7 5.1，外人所見傳聞決定上門；異版存檔拒載 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [

@@ -4,7 +4,7 @@ import { createState } from '../harness/historical-party.mjs';
 import { tick } from '../../src/sim.mjs';
 import { RULES_VERSION, DAY } from '../../src/data.mjs';
 import { artMulParts, learnArt, artById } from '../../src/arts.mjs';
-import { GEN, genStep, adopt, marriable, canSucceed, succeed, heirs, removeDisciple, genResolve } from '../../src/sect.mjs';
+import { GEN, genStep, marriable, canSucceed, succeed, heirs, removeDisciple } from '../../src/sect.mjs';
 import { sectStep } from '../../src/sect.mjs';
 import { budgetOf, validStats, resolveChoice } from '../../src/hero.mjs';
 import { relKey } from '../../src/util.mjs';
@@ -13,19 +13,11 @@ const H = (s) => s.ds.find((d) => d.id === 'hero');
 const other = (s, n = 0) => s.ds.filter((d) => d.id !== 'hero' && d.adult)[n];
 const day = (s) => { s.day++; genStep(s); };
 const wed = (s, a, b) => { s.rel[relKey(a.id, b.id)] = 95; s.families.push(relKey(a.id, b.id)); a.personality = ['gentle']; b.personality = ['gentle']; a.sweet = b.id; b.sweet = a.id; s.gen.lastWed = -1e9; s.res.coin = Math.max(s.res.coin || 0, 500); }; // v1.8：心上人互指、喜事冷卻已過、付得起喜事錢
-test('成親要道侶＋雙向相容 ≥1；成親後跳收養卡', () => {
-  const s = mk(); const a = other(s, 0), b = other(s, 1); wed(s, a, b); assert.ok(marriable(s, a, b)); s.gen.lastAdopt = -1e9; s.choices = []; day(s);
-  assert.equal(s.gen.couples.length, 1); assert.equal(a.spouse, b.id); const ch = s.choices.find((c) => c.gen === 'adopt'); assert.ok(ch);
-  const n = s.ds.length; resolveChoice(s, ch.id, 0); assert.equal(s.ds.length, n + 1);
+test('成親要道侶＋雙向相容 ≥1；R7 起成親後不再跳收養卡', () => {
+  const s = mk(); const a = other(s, 0), b = other(s, 1); wed(s, a, b); assert.ok(marriable(s, a, b)); s.choices = []; day(s);
+  assert.equal(s.gen.couples.length, 1); assert.equal(a.spouse, b.id); assert.ok(!s.choices.some((c) => c.gen), 'R7 #524 拿掉收養');
 });
-test('收養的孩子承襲養父母性格、價值觀減半、悟性根骨部分承襲；拜師', () => {
-  const s = mk(); const h = H(s), b = other(s); const k = adopt(s, h, b, () => 0);
-  assert.equal(k.adult, false); assert.equal(k.age, GEN.adoptAge); assert.ok(k.personality.every((t) => h.personality.includes(t) || b.personality.includes(t)));
-  assert.equal(k.values.xia, Math.round((h.values.xia + 0) / 2 / 2)); assert.ok(k.wu >= 1 && k.wu <= 5); assert.ok(k.master);
-});
-test('孩子每 3 天長 1 歲，14 歲成年', () => {
-  const s = mk(); const k = adopt(s, H(s), null, () => 0); for (let i = 0; i < 40; i++) day(s); assert.ok(k.adult); assert.equal(k.child.grown, 24); assert.ok(k.age >= GEN.adultAge);
-});
+// R7 #524：舊的收養承襲與「孩子每 3 天長 1 歲」由 test/unit/social/r7-family.test.mjs 的生育、遺傳與單一年曆取代。
 test('師承：單有師徒關係不再常駐加速', () => {
   const s = mk(); const h = H(s), b = other(s); learnArt(h, 'pushPalm', s.t); h.arts.pushPalm.xp = 60; h.arts.pushPalm.bt1 = true; learnArt(b, 'pushPalm', s.t);
   const t0 = artMulParts(b, artById('pushPalm')).total; b.master = 'hero'; day(s); const t1 = artMulParts(b, artById('pushPalm')).total; assert.equal(t1, t0); /* #432：只在共同傳授任務加速 */

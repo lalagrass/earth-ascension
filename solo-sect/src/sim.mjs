@@ -28,6 +28,8 @@ import { jhStep, jhInit, jhevDaily } from './jianghu.mjs';
 import { sectStep, sectInit, sectRecruit, genStep, genInit, removeDisciple, canBuildFac, buildFac, queueHermitageFounding, foundHermitageSect, canFoundHermitageSect, twinSwordsDamageFactor } from './sect.mjs';
 import { applyHero, valueMul, easeWexin, onAssign, heroStep, heroAuto, pairBonus, awaken, econCoin, cookBonus } from './hero.mjs';
 import { SAVE_VERSION, initStateFields } from './save.mjs';
+import { bodyMassMul, expecting, isBaby } from './family.mjs';
+const BABY_ACTS = ['eat', 'rest']; // R7：嬰兒只吃和睡。
 import { cancelTask, removeActor, whAvail, freeSlot, freeSpot, reserve, sweepResv, actorBusy, needStep, boredMul, markDone, durOf, holder, CORE, STOCK_RESV, stockKey, stockReserved } from './core.mjs';
 /* loop140 */
 export { canExpedition, codexRows, reportText, segAt, ROUTE_END, dpsOf };
@@ -321,7 +323,7 @@ export const PRED = {
   woodRoom: (c) => c.wood < c.s.cap.wood, stoneRoom: (c) => c.stone < c.s.cap.stone, shortWood: (c) => c.shortWood, shortStone: (c) => c.shortStone,
   ripe: (c) => c.s.plots.some((p) => p.st === 'ripe'), siteWork: (c) => !!c.site && (c.haul || siteReady(c.site[1])),
   nightRest: (c) => c.ph === 'night' && c.n.energy < 95, cookable: (c) => vegFree(c.s) >= 2 && readyMealCount(c.s) < 10,
-  forayReady: (c) => c.s.forayPolicy !== 'forbid' && !c.s.band && !c.s.hunt && c.d.role !== 'laborer' && c.d.adult !== false && c.n.energy >= 45 && c.n.hunger >= 30 && canExpedition(c.s, [c.d.id]).ok,
+  forayReady: (c) => c.s.forayPolicy !== 'forbid' && !c.s.band && !c.s.hunt && c.d.role !== 'laborer' && c.d.adult !== false && !expecting(c.s, c.d) && c.n.energy >= 45 && c.n.hunger >= 30 && canExpedition(c.s, [c.d.id]).ok,
   patrolReady: (c) => PRED.forayReady(c) && !!forayChoice(c.s, c.d, 'practice'),
   animalTracks: (c) => (c.s.eco?.boar?.n || 0) > 0 && (c.s.pop?.foot?.n ?? POP.foot.start) > 0,
   practiceStuck: (c) => !!c.d.trainingWish || !!c.bt,
@@ -365,7 +367,7 @@ export function scoreActs(s, d) {
     const forage = out.find(o => o.act === 'forage');
     if (s.hermitage.active && forage && d.id === 'hero' && s.ds.length === 1 && !s.hermitage.books?.some(id => volumeById(id)?.source === 'fragment')) out.push({ act: 'searchFragment', score: forage.score, why: '到林中山洞找另一脈拳譜殘卷' });
   }
-  if (s.band && BAND.defendScore > 0 && canDefend(d)) out.push({ act: 'defend', score: BAND.defendScore, why: s.band.state === 'go' ? '山賊往菜園來了，去柵邊守著' : '山賊在撞柵，去打退他們' }); // loop3
+  if (s.band && BAND.defendScore > 0 && canDefend(d, s)) out.push({ act: 'defend', score: BAND.defendScore, why: s.band.state === 'go' ? '山賊往菜園來了，去柵邊守著' : '山賊在撞柵，去打退他們' }); // loop3
   if (d.ng && qiMax(d) > 0 && qiOf(d) < qiMax(d) * NG23.medLow) for (const o of out) if (o.act === 'meditate') { o.score *= NG23.medBoost; o.why += '（內力不足，先打坐回氣）'; } /* loop153 */
   if (d.lspec && isLabor(d)) for (const o of out) if (o.act === d.lspec) { o.score *= LABOR23.specMul; o.why += '（拿手活）'; } /* loop155 */
   drawBoost(s, d, out); // loop6
@@ -437,7 +439,7 @@ function assign(s, d, act, why) {
     const node = act === 'spar' ? 'yard' : 'court'; d.task = { act, fac: 'yard', node, phase: 'go', partner: p.id, resv: [`actor:${p.id}`] }; p.task = { act, fac: 'yard', node, phase: 'go', partner: d.id, resv: [`actor:${d.id}`] }; reserve(s, d, `actor:${p.id}`); reserve(s, p, `actor:${d.id}`);
     goto(d, node); goto(p, node); d.reason = why; p.reason = act === 'spar' ? `${d.name}邀來切磋` : act === 'encourage' ? `${d.name}來陪我說說話` : `${d.name}找來聊天`; if (act === 'encourage') p.task.act = 'chat', p.task.encouragedBy = d.id; return true;
   }
-  if (act === 'defend') { if (!s.band || !canDefend(d)) return false; d.task = { act, node: FENCE.node, phase: 'go' }; goto(d, FENCE.node); d.reason = why; return true; }
+  if (act === 'defend') { if (!s.band || !canDefend(d, s)) return false; d.task = { act, node: FENCE.node, phase: 'go' }; goto(d, FENCE.node); d.reason = why; return true; }
   if (act === 'repair') { if (!(repairScore(s, d) > 0)) return false; d.task = { act, node: FENCE.node, phase: 'go' }; goto(d, FENCE.node); d.reason = why; return true; }
   if (act === 'eat' && !hasMeal(s)) return false;
   if (act === 'eat' && !d.noPairMeal) mealInvite(s, d);
@@ -516,7 +518,7 @@ function decide(s, d) {
     if (!d.reason?.includes('站位都有人')) d.reason = `指派「${o === 'hunt' ? '狩獵' : ACTIVITIES[o].name}」暫不可行`; return false;
   }
   if ((shelterGo(s, d) || feedGo(s, d))) return true; // M3
-  const sc = scoreActs(s, d); d.why = sc.slice(0, 3).map((c) => ({ act: c.act, score: Math.round(c.score), f: c.f, why: c.why }));
+  const sc = scoreActs(s, d).filter((c) => !isBaby(d) || BABY_ACTS.includes(c.act)); d.why = sc.slice(0, 3).map((c) => ({ act: c.act, score: Math.round(c.score), f: c.f, why: c.why }));
   let noPracticeSpot = '';
   for (const c of sc) {
     if (assign(s, d, c.act, c.why)) { if (noPracticeSpot) d.reason = `${noPracticeSpot}；${d.reason}`; d.picked = c.act; d.decision = { layer: c.layer, act: c.act, why: d.reason }; return true; }
@@ -525,11 +527,11 @@ function decide(s, d) {
   return false;
 }
 
-export function speedOf(d) { return BASE_SPEED * (1 + d.skills.agility / 100) * (d.carry ? 0.7 : 1) * (d.needs.energy < 30 ? 0.8 : 1) * (1 + NG23.speedPerTier * Math.max(0, effectTier(d, 'speed') + 1) * stepDrive(d)) * (1 + 0.002 * mastery(d, 'shenfa')) * (d.path?.length ? yuqiMul(d) : 1) * (hermitageStepActive(d) ? 1.35 : 1); } /* 出自 Phase 6 規格：隱居主角悟輕功後腳程 +35%；舊角色沿原公式。 */
+export function speedOf(d, s = null) { return BASE_SPEED / (s ? bodyMassMul(s, d) : 1) * (1 + d.skills.agility / 100) * (d.carry ? 0.7 : 1) * (d.needs.energy < 30 ? 0.8 : 1) * (1 + NG23.speedPerTier * Math.max(0, effectTier(d, 'speed') + 1) * stepDrive(d)) * (1 + 0.002 * mastery(d, 'shenfa')) * (d.path?.length ? yuqiMul(d) : 1) * (hermitageStepActive(d) ? 1.35 : 1); } /* 出自 Phase 6 規格：隱居主角悟輕功後腳程 +35%；舊角色沿原公式。 */
 
-function moveStep(d, dt) {
+function moveStep(d, dt, s = null) {
   if (d.path.length && yuqiOn(d)) d.qi = Math.max(qiMax(d) * NG23.yuqi.keep, qiOf(d) - NG23.yuqi.drain * dt); /* loop153 御氣耗氣，留三成底、不會力竭 */
-  let left = speedOf(d) * dt;
+  let left = speedOf(d, s) * dt;
   while (left > 0 && d.path.length) {
     const tgt = d.path[0].xy, L = dist(d.pos, tgt);
     if (L <= left) { d.pos = [...tgt]; d.at = d.path[0].n; d.path.shift(); left -= L; d.walked += L; }
@@ -576,7 +578,7 @@ function doTask(s,d,dt){
     t.timer += dt;
     if (t.partner && !byId(s, t.partner)) { cancelTask(s, d, '對手不在了'); return; }
     if (t.act === 'spar' && t.partner && Math.floor(t.timer / 1.2) !== Math.floor((t.timer - dt) / 1.2)) { const p = byId(s, t.partner); const mv = MOVES.find((m) => m.id === d.moves[d.moves.length - 1]); s.fx.push({ kind: 'move', mfx: mv.fx, zx: (d.zixia || 0) >= 5, name: mv.name, color: mv.color, from: [...d.pos], to: [...p.pos], r: 12, ttl: 0.6 }); d.face = p.pos[0] >= d.pos[0] ? 1 : -1; d.anim = 'strike'; }
-    const effDur = durOf(s, t) / (laborSpeed(s, d, t.act)); /* loop155 幫工專長／清修 */
+    const effDur = durOf(s, t) * bodyMassMul(s, d) / (laborSpeed(s, d, t.act)); /* R7：孕期多出的體重讓活做得慢 */ /* loop155 幫工專長／清修 */
     if (A.energy && effDur > 0) d.needs.energy = clamp(d.needs.energy + A.energy * dt / effDur * (['water', 'chop', 'quarry', 'farm', 'forage', 'cliffForage1', 'cliffTrain', 'cliffWater', 'waterfallTrain'].includes(t.act) && hermitageInnerActive(d) ? 0.75 : 1), 0, 100); // 出自 Phase 6 規格：悟心法後做活精力消耗 −25%。
     if (t.act === 'rest' && d.ng) addQi(d, (restQi(d)) * dt); // loop103 歇息回內力
     if (t.act === 'rest') { const rate = (facStage(s, t.fac).restRate || 3) * (t.floor ? 0.6 : 1) * (1 + ART_GAIN.restPerTier * Math.max(0, effectTier(d, 'rest') + 1)) * effectMul(d, 'rest', s.t); if (t.timer < dt * 1.5) think(s, d, t.floor || (t.fac === 'hall' && s.fac.hall.stage === 0) ? 'floorSleep' : 'bedSleep'); d.needs.energy = clamp(d.needs.energy + rate * dt, 0, 100); d.hp = clamp(d.hp + 3 * dt, 0, 100); const night = phaseOf(s).id === 'night' && !s.hunt?.team.includes(d.id); if (!night && (d.needs.energy >= 100 || (d.order !== 'rest' && d.needs.energy >= CORE.wakeAt && t.timer > 4))) { restBodyCondition(d, s); finish(s, d); } return; }
@@ -663,7 +665,7 @@ function teachStep(s, m, dt) {
   if (!m.task) { const b = bestFac(s, m, 'train'); if (!b) { m.reason = `傳功站位都有人，等有人練完`; return true; }
     reserve(s, m, b.key); m.task = { act: 'teach', node: TEACH_JOIN.node, phase: 'go', partner: p.id, wait: 0, resv: [b.key], spot: b.spot, spotKind: b.spotKind }; goto(m, TEACH_JOIN.node, b.xy); m.reason = `到外功場傳授${p.name}`; }
   const t = m.task;
-  if (m.path.length) { moveStep(m, dt); return true; }
+  if (m.path.length) { moveStep(m, dt, s); return true; }
   t.phase = 'do';
   if (!p.task && !p.order) { const b = bestFac(s, p, 'train'); if (b) { reserve(s, p, b.key); p.task = { act: 'train', fac: b.f.id, node: b.f.node, phase: 'go', teach: m.id, resv: [b.key], spot: b.spot, spotKind: b.spotKind }; goto(p, b.f.node, b.xy); p.reason = `${m.name}要傳授武學`; } else p.reason = '傳功時練功站位都有人，暫在旁等候'; }
   const near = p.task?.teach === m.id && !p.path.length && dist(p.pos, m.pos) <= 60;
@@ -1045,7 +1047,7 @@ export function tick(s, dt = 0.25) {
     moodStep(s, d, dt); revealStep(s, d, dt); if (isLabor(d)) coworkStep(s, d, dt); else if (d.role === 'outer' && !d.rootKnown && Math.max(d.cowork || 0, d.together || 0) >= ROOT.revealAt) { d.rootKnown = true; log(s, `相處久了，看出外門${d.name}根骨「${ROOT.names[d.root]}」。`); }
     if (d.task?.act === 'teach' || (d.teachCool > 0 && !d.task && !d.order)) { if (teachStep(s, d, dt)) continue; } /* #417 N13 傳功＝師徒共同任務 */
     if (!d.task) decide(s, d);
-    if (d.task) { if(!(d.downUntil>s.t))moveStep(d,dt); tallyAct(d, d.task.act, dt); doTask(s, d, dt); } // M1 傳記：看得見的行為時間
+    if (d.task) { if(!(d.downUntil>s.t))moveStep(d,dt,s); tallyAct(d, d.task.act, dt); doTask(s, d, dt); } // M1 傳記：看得見的行為時間
     if (d.anim === 'strike' && d.cool < 0.6) d.anim = null;
   }
   { const em = emergency(s); if (em !== !!s.emergency) { s.emergency = em; if (outers(s).length >= QUOTA.outerMin) log(s, em ? (readyMealCount(s) <= 0 ? '斷糧了！內門弟子暫時放下功課回來幫忙。' : '野豬下山！內門弟子暫時回來顧家。') : '危機解除，內門弟子回去練功。'); } }
@@ -1063,7 +1065,7 @@ export function tick(s, dt = 0.25) {
   expStep(s, dt, H);
   popStep(s, dt); fogStep(s); // v1.55c 迷霧；v1.55a 各環族群（無亂數）
   paceStep(s); unlockStep(s); chapterStep(s); if (Math.floor(s.t) !== Math.floor(s.t - dt)) aspStep(s, think);
-  xiaStep(s, H); hsStep(s, 0.25, H); jhStep(s, 0.25, H); sectStep(s); genStep(s);
+  xiaStep(s, H); hsStep(s, 0.25, H); jhStep(s, 0.25, H); sectStep(s); genStep(s, () => rand(s));
   if (s.hero) { const h = byId(s, 'hero'); if (h && !h.away && h.hp <= EXP.hurtHeavy) awaken(s, h); heroStep(s); heroAuto(s); for (const d of s.ds) d.pairMul = pairBonus(s, d, aff); }
   sweepResv(s);
   for (const f of s.fx) f.ttl -= dt; s.fx = s.fx.filter((f) => f.ttl > 0);
