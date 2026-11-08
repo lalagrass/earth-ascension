@@ -72,4 +72,3 @@ export function observeAchievementFacts(s, facts = {}) {
   return r;
 }
 export const achievementRecord = s => observeAchievementFacts(s);
-
