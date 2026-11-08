@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { createState } from '../../harness/historical-party.mjs';
 import { tick } from '../../../src/sim.mjs';
 import { CATS, supOf, mastery, specGrow, SPEC, zhenK, bestSpec, learnArt } from '../../../src/arts.mjs';
-import { XIA } from '../../../src/wuxia.mjs';
+import { XIA, makeXiaCandidate } from '../../../src/wuxia.mjs';
 import { onJoin13 } from '../../../src/jianghu.mjs';
 export const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, v22: true, ...o });
 // #390：舊規則開局已不存在，原本的舊局對照組（OLD）與各測試裡的舊局斷言一併刪除
@@ -24,7 +24,7 @@ test('loop151 活動長專長：煉丹／療傷→醫術、採藥→毒術、守
 });
 test('loop151 程瑛／阿紫／程靈素：只在 v23 進池，入門帶招牌', () => {
   for (const k of ['chengying', 'azi', 'chenglingsu']) assert.ok(XIA[k]);
-  const s = V(); tick(s, 0.1); const d = hero(s);
+  const s = V(); tick(s, 0.1); const d = makeXiaCandidate(s, 'chengying'); s.ds.push(d);
   onJoin13(s, d, 'chengying'); assert.ok(d.arts.qimenZhen); tick(s, 0.1); assert.ok(bestSpec(s, 'zhenfa') > 0); assert.ok(zhenK(s) > 0 && zhenK(s) <= 1);
 });
 test('loop151 陣法：守柵時柵受傷減少（封頂 25%）', () => {
@@ -89,9 +89,9 @@ test('loop157 專長效果：毒術削敵、醫術解餘毒、陣法減速／先
   assert.equal(SPEC.poisonWeak, 0.15); assert.equal(SPEC.poisonT, 6); assert.equal(SPEC.zhenSlow, 0.2); assert.equal(SPEC.zhenScout, 0.15); assert.equal(SPEC.healMax, 0.5); assert.equal(SPEC.brewEvery, 3);
   assert.equal(specK(20), 0.5); assert.equal(specK(400), 1);
   const s = V(); tick(s, 0.1); const d = hero(s); assert.equal(hasPoison(s), false);
-  onJoin13(s, d, 'azi'); tick(s, 0.1); assert.ok(hasPoison(s));
+  const azi = makeXiaCandidate(s, 'azi'); s.ds.push(azi); onJoin13(s, azi, 'azi'); tick(s, 0.1); assert.ok(hasPoison(s));
   s.jh.poison = { id: d.id, until: s.t + 999 }; tick(s, 0.1); assert.ok(s.jh.poison, '無醫者不解');
-  onJoin13(s, d, 'chenglingsu'); tick(s, 0.1); assert.equal(s.jh.poison, null);
+  const healer = makeXiaCandidate(s, 'chenglingsu'); s.ds.push(healer); onJoin13(s, healer, 'chenglingsu'); tick(s, 0.1); assert.equal(s.jh.poison, null);
 });
 test('loop157 內功被動：吐納歇息回氣 ×1.5、紫霞打坐 +4／二層起氣宗 ×1.35、範圍半徑、劍招小成以下 +10%', () => {
   const s = V(); tick(s, 0.1); const d = hero(s); delete d.arts.breath; /* loop164 無名派家傳已帶吐納 */ const r0 = restQi(d); learnArt(d, 'breath', s.t); assert.equal(restQi(d), r0 * 1.5);

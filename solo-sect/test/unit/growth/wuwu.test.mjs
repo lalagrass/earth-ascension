@@ -13,7 +13,7 @@ import { canTeachArt, startTeachArt, stopTeachArt, teachCandidates, teachStage, 
 import { affKey } from '../../../src/util.mjs';
 import { points, T, raidResolve, threatDaily, threatBreakdown } from '../../../src/threat.mjs';
 import { showGuestMove, formReady } from '../../../src/wuxia.mjs';
-import { CARDS, jhStep } from '../../../src/jianghu.mjs';
+import { jhStep } from '../../../src/jianghu.mjs';
 
 const hero = () => createState(3).ds.find((d) => d.id === 'hero');
 
@@ -545,7 +545,7 @@ test('第二批絕活與內功被動各自觸發；乾坤只開第一層；觀�
 
   const zw = createState(4, { kind: 'template', id: 'zhangwuji', askMajor: false });
   const z = zw.ds.find((x) => x.id === 'hero');
-  CARDS.zwj3.opts[0][1](zw);
+  learnArt(z, 'qiankun', zw.t); z.arts.qiankun.xp = 1; // Retired template card; start with an already learned art to test its ceiling.
   assert.equal(artTier(z, 'qiankun'), 0);
   assert.ok(z.arts.qiankun.xp < 25);
   assert.equal(z.reflect, undefined);
