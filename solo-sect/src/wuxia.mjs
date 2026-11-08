@@ -9,6 +9,7 @@ import { learnArt, seedArts, artById, artTier } from './arts.mjs';
 import { log, resAdd } from './util.mjs';
 import { removeActor } from './core.mjs';
 import { onJoin13 } from './jianghu.mjs';
+import { rumorForVisitor } from './rumors.mjs';
 // ==== （原 wuxia.mjs）====
 // v1.1 名俠奇遇（ROADMAP §13）：名俠池（扣掉主角／同門）、觸發（巡山深度、下山、名聲、下廚）、突然入門的高手、
 // 第一組：郭靖、黃蓉（只有這兩位能入門當弟子）、洪七公（傳完就走的師父）；名俠只會離開，不會死
@@ -18,13 +19,13 @@ const kitchenLv = (s) => s.fac?.kitchen?.stage || 0;
 // 拙／剛的脾性：憨厚、較真、膽大，或悟性 ≤2
 export const dragonFit = (d) => (d.personality || []).some((p) => ['honest', 'stubborn', 'brave'].includes(p)) || (d.wu ?? 3) <= 2;
 export const XIA = {
-  guojing: { name: '郭靖', role: 'disciple', where: '村路', title: '村路上的憨厚少年', text: '一個背著長弓的少年在山門外跪了一夜：「求師父收我。我笨，可我肯練。」',
-    need: (s) => (s.records?.sect || 0) >= 250 || (s.rep || 0) >= 12, why: '巡山走過林地（250 步）或名聲 12' },
-  huangrong: { name: '黃蓉', role: 'disciple', where: '下山採買', title: '追上山的俏姑娘', text: '下山採買的弟子回來說，鎮上有個小叫化一路跟著郭靖，洗了臉竟是個俏姑娘：「靖哥哥，我也要拜師。」',
+  guojing: { name: '郭靖', role: 'disciple', motive: 'safety', where: '村路', title: '村路上的憨厚少年', text: '一個背著長弓的少年在山門外跪了一夜：「求師父收我。我笨，可我肯練。」',
+    need: () => true, why: '在村路聽過山門護人的傳聞' },
+  huangrong: { name: '黃蓉', role: 'disciple', motive: 'teaching', where: '下山採買', title: '追上山的俏姑娘', text: '下山採買的弟子回來說，鎮上有個小叫化一路跟著郭靖，洗了臉竟是個俏姑娘：「靖哥哥，我也要拜師。」',
     need: (s) => present(s, 'guojing') && s.t - (s.xia.joinT.guojing ?? (s.hero?.id === 'guojing' ? 0 : s.t)) >= DAY * 0.5, why: '郭靖在門中半天以上（下山採買時遇上）' },
-  linghuchong: { name: '令狐沖', role: 'disciple', where: '斷崖', title: '斷崖上喝酒的浪子', text: '巡山隊在斷崖邊遇到一個抱著酒罈的年輕人：「好酒！各位要不要來一碗？聽說你們門派不拘一格，我來討口酒喝。」',
-    need: (s) => (s.records?.sect || 0) >= 700 || (s.rep || 0) >= 25, why: '巡山走到斷崖（700 步）或名聲 25' },
-  hongqigong: { name: '洪七公', role: 'teacher', where: '膳房', title: '洪七公聞香而來', text: '一個背酒葫蘆的老叫化蹲在膳房門口吞口水：「好香！這手藝……是誰燒的？老叫化走不動了。」',
+  linghuchong: { name: '令狐沖', role: 'disciple', motive: 'martial', where: '斷崖', title: '斷崖上喝酒的浪子', text: '巡山隊在斷崖邊遇到一個抱著酒罈的年輕人：「好酒！各位要不要來一碗？聽說你們門派不拘一格，我來討口酒喝。」',
+    need: (s) => (s.records?.sect || 0) >= 700 || !!rumorForVisitor(s, ['martial']), why: '巡山到斷崖，或聽過門派交手傳聞' },
+  hongqigong: { name: '洪七公', role: 'teacher', motive: 'food', where: '膳房', title: '洪七公聞香而來', text: '一個背酒葫蘆的老叫化蹲在膳房門口吞口水：「好香！這手藝……是誰燒的？老叫化走不動了。」',
     need: (s) => present(s, 'huangrong') && (s.xia.cooks || 0) >= (s.hero?.flags?.hong ? 1 : 2) && (kitchenLv(s) >= 1 || s.hero?.flags?.hong), why: '黃蓉在門中且下過廚（膳房或郭靖主線）' },
 };
 // v1.3 第二組名俠（客卿）：楊過、小龍女、周伯通（師父，賭贏才教）、韋小寶（喜劇非戰鬥）、包租公／包租婆（功夫）
@@ -43,26 +44,26 @@ export const XIA_T = {
 // loop150 v2.3：只在 s.v23 新局進名俠池（舊局與 v2.2／v2.25 舊檔的池子不變）
 const facLv = (s, id) => s.fac?.[id]?.stage || 0;
 export const XIA23 = {
-  chengying: { name: '程瑛', role: 'disciple', where: '桃花林', title: '桃花島來的青衫少女', text: '山道上的桃花被人擺成了陣，一個青衫少女從陣裡走出來：「這山勢藏風聚氣，我想在這兒擺幾座陣。」',
-    need: (s) => (s.rep || 0) >= 16 || facLv(s, 'library') >= 1 || facLv(s, 'watch') >= 1, why: '名聲 16，或已建藏經閣／護山哨' },
-  azi: { name: '阿紫', role: 'disciple', where: '野藥圃', title: '藥圃裡抓毒蟲的紫衣少女', text: '野藥圃裡蹲著一個紫衣少女，手上纏著一條小青蛇：「你們這兒的毒草長得真好，我不走了。」',
+  chengying: { name: '程瑛', role: 'disciple', motive: 'teaching', where: '桃花林', title: '桃花島來的青衫少女', text: '山道上的桃花被人擺成了陣，一個青衫少女從陣裡走出來：「這山勢藏風聚氣，我想在這兒擺幾座陣。」',
+    need: (s) => !!rumorForVisitor(s, ['teaching']) || facLv(s, 'library') >= 1 || facLv(s, 'watch') >= 1, why: '聽過授課傳聞，或已建藏經閣／護山哨' },
+  azi: { name: '阿紫', role: 'disciple', motive: 'healing', where: '野藥圃', title: '藥圃裡抓毒蟲的紫衣少女', text: '野藥圃裡蹲著一個紫衣少女，手上纏著一條小青蛇：「你們這兒的毒草長得真好，我不走了。」',
     need: (s) => (s.res?.herb || 0) >= 6 && (s.day || 0) > 5, why: '第 5 日後且存藥 6' },
-  chenglingsu: { name: '程靈素', role: 'disciple', where: '山門', title: '揹藥簍的瘦弱姑娘', text: '一個揹著藥簍的瘦弱姑娘在山門外看了看傷者：「這傷我能治。讓我留下，替你們看病。」',
+  chenglingsu: { name: '程靈素', role: 'disciple', motive: 'healing', where: '山門', title: '揹藥簍的瘦弱姑娘', text: '一個揹著藥簍的瘦弱姑娘在山門外看了看傷者：「這傷我能治。讓我留下，替你們看病。」',
     need: (s) => facLv(s, 'clinic') >= 1 || facLv(s, 'alchemy') >= 1 || ((s.day || 0) > 4 && (s.ds || []).some((d) => !d.away && d.hp < 50)), why: '已建醫館／丹房，或第 4 日後有人受傷' },
 };
 
 const XIA13 = {
-  yangguo: { name: '楊過', role: 'guest', where: '後山', title: '後山的獨臂少年與神鵰', text: '後山出現一頭醜陋巨鵰，鵰後跟著一個灰衣少年：「借貴派一塊地方住幾天，我在等一個人。」',
-    need: (s) => (s.records?.sect || 0) >= 500 || (s.rep || 0) >= 18, why: '巡山走到山腰（500 步）或名聲 18' },
-  xiaolongnv: { name: '小龍女', role: 'guest', where: '古墓', title: '古墓裡的白衣女子', text: '後山石墓的門開了一道縫。一個白衣女子冷冷地說：「這裡太吵。」——她在找一個叫過兒的人。',
+  yangguo: { name: '楊過', role: 'guest', motive: 'martial', where: '後山', title: '後山的獨臂少年與神鵰', text: '後山出現一頭醜陋巨鵰，鵰後跟著一個灰衣少年：「借貴派一塊地方住幾天，我在等一個人。」',
+    need: (s) => (s.records?.sect || 0) >= 500 || !!rumorForVisitor(s, ['martial']), why: '巡山到山腰，或聽過交手傳聞' },
+  xiaolongnv: { name: '小龍女', role: 'guest', motive: 'martial', where: '古墓', title: '古墓裡的白衣女子', text: '後山石墓的門開了一道縫。一個白衣女子冷冷地說：「這裡太吵。」——她在找一個叫過兒的人。',
     need: (s) => present(s, 'yangguo') || (s.records?.sect || 0) >= 900, why: '楊過在門中，或巡山 900 步' },
-  zhoubotong: { name: '周伯通', role: 'teacher', where: '村路', title: '老頑童要打賭', text: '一個白鬍子老頭攔住巡山隊：「來來來，陪老頑童玩！贏了我就教你們好玩的功夫！」',
-    need: (s) => (s.day || 0) >= 4 && ((s.rep || 0) >= 10 || present(s, 'xiaolongnv')), why: '第 4 天後且名聲 10（或小龍女在門中）' },
-  weixiaobao: { name: '韋小寶', role: 'guest', where: '賭坊', title: '賭坊裡的小混混', text: '村路賭坊裡一個小滑頭贏光了全場：「這位掌門，收不收徒弟？我會拍馬屁、會賭錢、還會跑！」',
+  zhoubotong: { name: '周伯通', role: 'teacher', motive: 'martial', where: '村路', title: '老頑童要打賭', text: '一個白鬍子老頭攔住巡山隊：「來來來，陪老頑童玩！贏了我就教你們好玩的功夫！」',
+    need: (s) => (s.day || 0) >= 4 && (!!rumorForVisitor(s, ['martial']) || present(s, 'xiaolongnv')), why: '第 4 天後且聽過交手傳聞（或小龍女在門中）' },
+  weixiaobao: { name: '韋小寶', role: 'guest', motive: 'wealth', where: '賭坊', title: '賭坊裡的小混混', text: '村路賭坊裡一個小滑頭贏光了全場：「這位掌門，收不收徒弟？我會拍馬屁、會賭錢、還會跑！」',
     need: (s) => (s.res?.coin || 0) >= 20 && (s.day || 0) >= 3, why: '第 3 天後且香火錢 20' },
-  baozupo: { name: '包租婆', role: 'guest', where: '豬籠城寨', title: '豬籠城寨的包租婆', text: '一陣獅吼震得瓦片亂飛：「交租啊！」——山下大雜院的包租婆帶著老公搬上山來，說是避斧頭幫。',
+  baozupo: { name: '包租婆', role: 'guest', motive: 'safety', where: '豬籠城寨', title: '豬籠城寨的包租婆', text: '一陣獅吼震得瓦片亂飛：「交租啊！」——山下大雜院的包租婆帶著老公搬上山來，說是避斧頭幫。',
     need: (s) => (s.res && (s.ds || []).filter((d) => d.role === 'laborer').length >= 2) || s.hero?.id === 'axing', why: '雇了 2 個雜工（或阿星開局）' },
-  baozugong: { name: '包租公', role: 'guest', where: '豬籠城寨', title: '包租公', text: '', need: () => false, why: '跟包租婆一起來' },
+  baozugong: { name: '包租公', role: 'guest', motive: 'safety', where: '豬籠城寨', title: '包租公', text: '', need: () => false, why: '跟包租婆一起來' },
 };
 export const XIA_PAIRS = { 'guojing+huangrong': 0.25, 'hongqigong+huangrong': 0.1, 'xiaolongnv+yangguo': 0.25, 'baozugong+baozupo': 0.25 };
 Object.assign(XIA, XIA13, XIA23);
@@ -79,9 +80,9 @@ export function xiaStep(s, H) {
   if (unfoundedHermitage(s)) return; // 出自 H0 規格：未立匾沒有名俠登門卡；立匾後按原排程恢復。
   if (X.pending || s.t - X.lastT < DAY || !s.choices) return;
   for (const k of xiaPool(s)) {
-    if ((X.declined[k] || -1e9) > s.t - 3 * DAY || !XIA[k].need(s)) continue;
-    const A = XIA[k]; X.pending = k; X.lastT = s.t;
-    s.choices.push({ id: `xia-${k}`, xia: k, portrait: XIA23[k] ? null : `assets/portraits/${k}.png`, /* loop151 v2.3 三人無立繪 */ title: `【奇遇・${A.where}】${A.title}`, text: A.text+(A.role==='teacher'?'':`\n${xiaAdmission(s,k).why}`), opts: A.role === 'teacher' ? ['好酒好菜招待他', '門派窮，請他走'] : ['招待並商量入門', '婉拒'], at: s.t });
+    if ((X.declined[k] || -1e9) > s.t - 3 * DAY || !XIA[k].need(s) || !rumorForVisitor(s, [XIA[k].motive || 'teaching'])) continue;
+    const A = XIA[k], heard = rumorForVisitor(s, [A.motive || 'teaching']); X.pending = k; X.lastT = s.t;
+    s.choices.push({ id: `xia-${k}`, xia: k, portrait: XIA23[k] ? null : `assets/portraits/${k}.png`, /* loop151 v2.3 三人無立繪 */ title: `【奇遇・${A.where}】${A.title}`, text: `${A.text}\n在${heard.where}聽${heard.witness}說：「${heard.text}」。`+(A.role==='teacher'?'':`\n${xiaAdmission(s,k).why}`), opts: A.role === 'teacher' ? ['好酒好菜招待他', '門派窮，請他走'] : ['招待並商量入門', '婉拒'], at: s.t });
     log(s, `【奇遇】${A.title}：${A.text}`); if (!s.hero?.askMajor) s.autoAt = s.t; return;
   }
 }

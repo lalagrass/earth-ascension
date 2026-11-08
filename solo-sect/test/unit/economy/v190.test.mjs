@@ -6,6 +6,7 @@ import { tick, startBuild, buildWhy, buyLot, lotCost, lotsUsed, lotsOf } from '.
 import { DAY, FACILITIES, ROUTE, LOTS } from '../../../src/data.mjs';
 import { RAID, T, points, wealth, threatDaily, threatStep, raidResolve, raidAuto, headcount, threatHtml } from '../../../src/threat.mjs';
 import { suggestTeam } from '../../../src/world.mjs';
+import { recordRumor } from '../../../src/rumors.mjs';
 
 const H = { think: () => {} };
 const grow = (s, n) => { const b = s.ds.find((d) => d.id !== 'hero'); while (s.ds.length < n) s.ds.push({ ...structuredClone(b), id: `p${s.ds.length}`, adult: true, role: 'inner' }); return s; };
@@ -34,7 +35,9 @@ test('山賊：全派 <8 人威脅為 0（不來）；≥8 人隨家底與天數
   a.day = 2; assert.ok(points(a) < p2, '天數係數'); a.day = 60; a.res.coin = 1e6; assert.equal(points(a), RAID.cap);
 });
 test('勒索：付錢扣錢；迎戰勝負都只重傷不死、孩子不上陣；半日沒決定自動處置', () => {
-  const s = grow(createState(3), 9); s.day = RAID.first; s.res.coin = 400; s.ds[1].adult = false; const P = threatDaily(s); assert.ok(P && P.demand > 0);
+  const s = grow(createState(3), 9); s.day = 8; s.res.coin = 400; s.ds[1].adult = false;
+  recordRumor(s, 'trade', '藥舖掌櫃', 'market'); s.day = 10;
+  const P = threatDaily(s); assert.ok(P && P.demand > 0, '外人親見交易且山路行程完成後才可勒索');
   assert.match(threatHtml(s), /付錢了事/); const c0 = s.res.coin; assert.ok(raidResolve(s, 0, H).paid); assert.equal(s.res.coin, c0 - P.demand); assert.equal(T(s).paid, 1);
   for (const d of s.ds) d.needs.energy = 0; /* #431：只有無人能迎戰才即時結算 */
   // N43 一期最多兩次大威脅；此舊測試要隔離的是「迎戰只傷不死」，逐場明建待決事件，不偽造同一天來 40 夥。

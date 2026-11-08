@@ -1,0 +1,160 @@
+{
+  "days": 30,
+  "tickSeconds": 6,
+  "seeds": [
+    1001,
+    1002,
+    1003,
+    1004,
+    1005,
+    1006,
+    1007,
+    1008,
+    1009,
+    1010,
+    1011,
+    1012
+  ],
+  "total": {
+    "newDisciples": 85,
+    "famousVisits": 29,
+    "activeRumors": 0,
+    "totalRumors": 0,
+    "reachedSites": 0,
+    "raids": 26
+  },
+  "rows": [
+    {
+      "seed": 1001,
+      "newDisciples": 8,
+      "famousVisits": 2,
+      "activeRumors": 0,
+      "totalRumors": 0,
+      "reach": [],
+      "reachedSites": 0,
+      "raids": 4,
+      "raidHistory": 3
+    },
+    {
+      "seed": 1002,
+      "newDisciples": 6,
+      "famousVisits": 1,
+      "activeRumors": 0,
+      "totalRumors": 0,
+      "reach": [],
+      "reachedSites": 0,
+      "raids": 1,
+      "raidHistory": 1
+    },
+    {
+      "seed": 1003,
+      "newDisciples": 8,
+      "famousVisits": 3,
+      "activeRumors": 0,
+      "totalRumors": 0,
+      "reach": [],
+      "reachedSites": 0,
+      "raids": 2,
+      "raidHistory": 2
+    },
+    {
+      "seed": 1004,
+      "newDisciples": 7,
+      "famousVisits": 3,
+      "activeRumors": 0,
+      "totalRumors": 0,
+      "reach": [],
+      "reachedSites": 0,
+      "raids": 2,
+      "raidHistory": 2
+    },
+    {
+      "seed": 1005,
+      "newDisciples": 7,
+      "famousVisits": 3,
+      "activeRumors": 0,
+      "totalRumors": 0,
+      "reach": [],
+      "reachedSites": 0,
+      "raids": 2,
+      "raidHistory": 2
+    },
+    {
+      "seed": 1006,
+      "newDisciples": 7,
+      "famousVisits": 2,
+      "activeRumors": 0,
+      "totalRumors": 0,
+      "reach": [],
+      "reachedSites": 0,
+      "raids": 2,
+      "raidHistory": 2
+    },
+    {
+      "seed": 1007,
+      "newDisciples": 8,
+      "famousVisits": 3,
+      "activeRumors": 0,
+      "totalRumors": 0,
+      "reach": [],
+      "reachedSites": 0,
+      "raids": 2,
+      "raidHistory": 2
+    },
+    {
+      "seed": 1008,
+      "newDisciples": 8,
+      "famousVisits": 3,
+      "activeRumors": 0,
+      "totalRumors": 0,
+      "reach": [],
+      "reachedSites": 0,
+      "raids": 2,
+      "raidHistory": 2
+    },
+    {
+      "seed": 1009,
+      "newDisciples": 7,
+      "famousVisits": 2,
+      "activeRumors": 0,
+      "totalRumors": 0,
+      "reach": [],
+      "reachedSites": 0,
+      "raids": 2,
+      "raidHistory": 2
+    },
+    {
+      "seed": 1010,
+      "newDisciples": 7,
+      "famousVisits": 3,
+      "activeRumors": 0,
+      "totalRumors": 0,
+      "reach": [],
+      "reachedSites": 0,
+      "raids": 2,
+      "raidHistory": 2
+    },
+    {
+      "seed": 1011,
+      "newDisciples": 6,
+      "famousVisits": 3,
+      "activeRumors": 0,
+      "totalRumors": 0,
+      "reach": [],
+      "reachedSites": 0,
+      "raids": 3,
+      "raidHistory": 2
+    },
+    {
+      "seed": 1012,
+      "newDisciples": 6,
+      "famousVisits": 1,
+      "activeRumors": 0,
+      "totalRumors": 0,
+      "reach": [],
+      "reachedSites": 0,
+      "raids": 2,
+      "raidHistory": 2
+    }
+  ]
+}

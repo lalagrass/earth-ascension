@@ -1,17 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick, canRecruit, recruit, canPromote, quotaOf, setRecruitPolicy, attraction, foundHermitageSect } from '../../../src/sim.mjs';
+import { createState, tick, canRecruit, recruit, canPromote, quotaOf, setRecruitPolicy, foundHermitageSect } from '../../../src/sim.mjs';
 import { RECRUIT_POOL, DAY, ROOT, PROMOTE } from '../../../src/data.mjs';
 import { E } from '../../../src/economy.mjs';
 import { book } from '../../../src/util.mjs';
 import { returnFromWork } from '../../../src/recruitment.mjs';
 import { BODY_BASE } from '../../../src/starter-combat.mjs';
 import { T } from '../../../src/threat.mjs';
+import { recordRumor, fameOf, publicRumors } from '../../../src/rumors.mjs';
 
 test('N58 收徒方針、束脩／做工、少年名俠共用入門與師父熟識', () => {
   const mk = () => {
     const s = createState(17, { kind: 'custom', hermitage: true, opening: 'solo' });
     assert.equal(foundHermitageSect(s, 'single').ok, true); s.fac.dorm.stage = 1; s.res.food = 10; s.rep = 100;
+    recordRumor(s, 'school', '村中教塾先生', 'village');
+    recordRumor(s, 'rescue', '回村的樵夫', 'village');
+    recordRumor(s, 'trade', '藥舖掌櫃', 'market');
     const master = s.ds[0];
     master.practice.hands = Object.fromEntries(BODY_BASE.map((id) => [id, 500]));
     master.skills.palm = 100; master.timePrev = { day: 0, elapsed: DAY, free: 400, guided: 0 };
@@ -51,11 +55,13 @@ test('N58 收徒方針、束脩／做工、少年名俠共用入門與師父熟�
   assert.equal(canRecruit(noWork).offer.kind, 'food');
   assert.equal(recruit(noWork).ok, true);
 
-  const produced = mk(), before = attraction(produced);
-  book(produced, 'in', 'wood', 3, 'market'); assert.equal(attraction(produced), before);
-  book(produced, 'in', 'wood', 3, 'work'); assert.ok(attraction(produced) > before);
-  T(produced).won++; assert.ok(attraction(produced) > before + 1);
-  T(produced).deaths++; assert.ok(attraction(produced) < before + 1);
+  const produced = mk(), before = fameOf(produced), heard = publicRumors(produced).length;
+  book(produced, 'in', 'wood', 3, 'market'); assert.equal(fameOf(produced), before);
+  book(produced, 'in', 'wood', 3, 'work'); assert.equal(fameOf(produced), before, '自產若無外人見證，不會自動變成外界名聲');
+  T(produced).won++; assert.equal(publicRumors(produced).length, heard, '只改戰績帳，不能憑空生見聞');
+  recordRumor(produced, 'provisions', '山產行商', 'teahouse');
+  assert.equal(fameOf(produced), before + 1, '行商真的看見交易後才多一名知情者');
+  T(produced).deaths++; assert.equal(fameOf(produced), before + 1, '內部傷亡不直接改傳聞');
 
   const trainee = w.d; trainee.root = PROMOTE.rootMin; trainee.rootKnown = true;
   trainee.contrib = PROMOTE.contrib; trainee.known = [...trainee.personality];

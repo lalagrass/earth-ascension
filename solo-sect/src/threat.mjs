@@ -6,7 +6,8 @@ import { combatMoves,combatTacticStep,fretStep,chooseCombatMove, fastestMove, wi
 import { practiceWindow } from './practice.mjs';
 import { foeAction } from './starter-combat.mjs';
 import { log, seedMix, resAdd, recordDeed, tallyAct, chronOf } from './util.mjs';
-import { NODES, EDGES, SOURCES, DAY, SEASON_DAYS, FACILITIES, MOVES, ARTS, FENCE_FAC } from './data.mjs';
+import { NODES, EDGES, SOURCES, DAY, FACILITIES, MOVES, ARTS, FENCE_FAC } from './data.mjs';
+import { recordRumor, rumorForBandits, rumorForVisitor } from './rumors.mjs';
 export { FENCE_FAC };
 import { noteFret, interceptOpening, breakWindup, taijiReturn, zjHas, zjMark, zjIntercept, ZJ, partHit, resolveSwing, postureOf, postureRegen, postureHit, handleTake, topTierOf, windFrac, CLASH, perfectDodge, witchK, lightCross, WITCH } from './arts.mjs';
 import { qiInjuryFight28, qiInjuryAdd28, innerDrive28, mainOuterArt, CHAMP28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
@@ -269,40 +270,41 @@ export function bandWalk(b, dt) {
 // 山賊上門先勒索：付錢了事，或迎戰（勝率＝守方戰力／(戰力＋點數)）。只會重傷（氣血壓到 15），不會死人。
 // 玩家在收支區按鈕選；半日內沒選就由執事比較勒索金與迎戰預期損失自動決定（長跑與無人值守都走這條）。
 
-export const RAID = { minPop: 8, minPopRules: 4, // loop12：開了「太平與備料」（江湖規則）的新局，山賊門檻降為 4 人＝開局人數，第 8 日起就會來
-  first: 8, every: 6, jitter: 2, w: { coin: 1, food: 1, pill: 8, herb: 1, stage: 25 }, div: 2, dayK: 30, dayMax: 2, cap: 900,
+export const RAID = { minPop: 8, minPopRules: 4, // R8：人數仍影響搶掠收益；來犯日期改由親見傳聞決定。
+  w: { coin: 1, food: 1, pill: 8, herb: 1, stage: 25 }, div: 2, dayK: 30, dayMax: 2, cap: 900,
   wealthRatio: 1, combatK: 0.02, /* #431：威脅戰力改讀同源 dpsOf 後，原守柵值約 6–9 而招式 DPS 可達數百；按同一量尺重校戰力權重，不改任何門派勝率 */
   adaptMin: 0.6, adaptMax: 1.2, adaptDropLoss: 0.15, adaptDropHurt: 0.10, adaptRecover: 0.05,
   logAfter: 30, logK: 0.2, hurtCool: 2, // v2.1：第 30 日後天數係數改對數；山門重傷後下次上門再晚 hurtCool 日
   demand: { base: 20, k: 0.6, coinMax: 0.35, min: 10 }, wait: DAY / 2, hurtCost: 80, hurtHp: 15, winHurt: 0.4, steal: { coin: 0.15, food: 0.2 }, rep: 3 };
-// N43：一季風聲緊，重傷後原本給的養傷日數用作喘息；單次來犯的點數公式仍照舊。
-export const RAID_RHYTHM = { pressureDays: SEASON_DAYS, respiteDays: RAID.hurtCool,
-  minGap: RAID.every - RAID.jitter, maxBig: Math.ceil(SEASON_DAYS / (RAID.every - RAID.jitter)) };
+// R8（#507）：每一則走到聚落的傳聞最多引來一次大威脅；沿既有負傷養護日留出下一次間隔。
+export const RAID_RHYTHM = { minGap: RAID.hurtCool, maxBig: 1 };
+const recordDefenseRumor = s => recordRumor(s, 'defend', '退回村路的山賊', 'gate');
 export function raidPhase(s) {
-  const day = s.day || 1, cycleDays = RAID_RHYTHM.pressureDays + RAID_RHYTHM.respiteDays;
-  if (day < RAID.first) return { id: 'respite', cycle: -1, start: 1, nextPressure: RAID.first };
-  const cycle = Math.floor((day - RAID.first) / cycleDays), start = RAID.first + cycle * cycleDays;
-  return { id: day - start < RAID_RHYTHM.pressureDays ? 'pressure' : 'respite', cycle, start, nextPressure: start + cycleDays };
+  const rumor = rumorForBandits(s), due = rumor ? rumor.arrived + RUMOR.lead + peaceDelay(s) : Number.MAX_SAFE_INTEGER;
+  return { id: rumor && (s.day || 1) >= due ? 'pressure' : 'respite', cycle: rumor?.id ?? -1, start: due, nextPressure: due, rumor };
 }
 function advanceRaidRhythm(s, X, phase) {
   if (X.lastBigDay == null) X.lastBigDay = Math.max(0, ...(X.hist || []).map(h => h.day || 0), X.pending?.day || 0, s.band?.day || 0);
   if (X.rhythmCycle === phase.cycle) return;
   X.rhythmCycle = phase.cycle;
-  // 3.9 舊檔若正好讀在來犯期中，已排定或已結算的來犯仍佔本期名額；第二波同 n 不重算。
-  X.rhythmStrikes = new Set([...(X.hist || []).filter(h => h.day >= phase.start && h.day < phase.nextPressure).map(h => h.n),
-    ...(X.pending?.day >= phase.start && X.pending?.day < phase.nextPressure ? [X.pending.n] : []),
-    ...(s.band?.day >= phase.start && s.band?.day < phase.nextPressure ? [s.band.n] : [])]).size;
+  X.rhythmStrikes = 0;
+  X.next = phase.start; // 消息已傳到聚落，沿既有茶攤預警行程走到山門。
 }
-export function T(s) { return (s.threat ??= { next: RAID.first, n: 0, paid: 0, fought: 0, won: 0, homeHurt: 0, deaths: 0, pending: null, rng: 0, hist: [], adapt: 1, rhythmCycle: null, rhythmStrikes: 0, lastBigDay: 0 }); }
+export function T(s) { return (s.threat ??= { next: Number.MAX_SAFE_INTEGER, n: 0, paid: 0, fought: 0, won: 0, homeHurt: 0, deaths: 0, pending: null, rng: 0, hist: [], adapt: 1, rhythmCycle: null, rhythmStrikes: 0, lastBigDay: 0 }); }
 // N51：江湖客也是同一期的大威脅，與山賊共用名額／最短間隔，不另造時序門檻。
-export function majorThreatAvailable(s) {
-  const X = T(s), phase = raidPhase(s); advanceRaidRhythm(s, X, phase);
-  return phase.id === 'pressure' && X.rhythmStrikes < RAID_RHYTHM.maxBig && s.day >= (X.lastBigDay || 0) + RAID_RHYTHM.minGap
+export function majorThreatAvailable(s, kind = 'bandit') {
+  const X = T(s), phase = raidPhase(s);
+  if (kind === 'bandit') advanceRaidRhythm(s, X, phase);
+  const visitor = kind === 'visitor' ? rumorForVisitor(s, ['martial'], true) : null;
+  const heard = kind === 'visitor' ? visitor && s.day >= visitor.arrived + RUMOR.lead : phase.id === 'pressure';
+  return !!heard && s.day >= (X.lastBigDay || 0) + RAID_RHYTHM.minGap
     && !X.pending && !X.wave && !s.band && !s.jh?.visitor && !s.jh?.visitorPending;
 }
-export function reserveMajorThreat(s) {
-  if (!majorThreatAvailable(s)) return false;
-  const X = T(s); X.rhythmStrikes++; X.lastBigDay = s.day; X.next = Math.max(X.next, s.day + RAID_RHYTHM.minGap);
+export function reserveMajorThreat(s, kind = 'bandit') {
+  if (!majorThreatAvailable(s, kind)) return false;
+  const X = T(s), rumor = kind === 'visitor' ? rumorForVisitor(s, ['martial'], true) : raidPhase(s).rumor;
+  X.rhythmStrikes++; (X.usedRumors ??= []).push(rumor.id); X.lastBigDay = s.day;
+  X.rhythmCycle = null; X.next = Number.MAX_SAFE_INTEGER;
   return true;
 }
 const R = (s) => { const X = T(s); X.rng = ((X.rng || seedMix(s.seed || 1, 7477)) * 16807) % 2147483647; return X.rng / 2147483647; };
@@ -371,17 +373,13 @@ function rumorDaily(s) {
 }
 // M2（loop147）山賊餘黨反撲：剿寨後 BOSS.after 日殺回（前一日傳聞）；撐過＝山道永享太平
 export const BOSS = { after: 3, k: 1.4, min: 8, peaceMul: 0.4, peaceGap: 3, valor: 10 };
-function bossDaily(s, phase) {
+function bossDaily(s) {
   const X = T(s), B = X.boss; if (!B || B.state !== 'wait') return;
   const day = s.day || 0;
   const earliest = Math.max(day, B.day, (X.lastBigDay || 0) + RAID_RHYTHM.minGap);
-  const duePhase = raidPhase({ day: earliest });
-  if (duePhase.id === 'respite' || (duePhase.cycle === phase.cycle && X.rhythmStrikes >= RAID_RHYTHM.maxBig)) {
-    B.day = Math.max(earliest, duePhase.nextPressure); B.rumored = false;
-  } else if (earliest > B.day) { B.day = earliest; B.rumored = false; }
+  if (earliest > B.day) { B.day = earliest; B.rumored = false; }
   if (day === B.day - 1 && !B.rumored) { B.rumored = true; log(s, '【傳聞】山腳獵戶說，被剿散的山寨餘黨聚在後山，揚言明日就要殺回來報仇！'); }
   if (day < B.day) return;
-  if (phase.id === 'respite' || X.rhythmStrikes >= RAID_RHYTHM.maxBig) { B.day = Math.max(day + 1, phase.nextPressure); return; }
   if (X.pending || s.band || s.jh?.visitor || s.jh?.visitorPending) { B.day = day + 1; return; } // 撞上別的大威脅就順延一日
   const pts = Math.max(BOSS.min, Math.round(points(s) * BOSS.k)), p = winP(s, pts);
   B.state = 'on'; X.n++; X.rhythmStrikes++; X.lastBigDay = day;
@@ -399,20 +397,17 @@ export function threatDaily(s) {
   const X = T(s), phase = raidPhase(s);
   advanceRaidRhythm(s, X, phase);
   X.next = Math.max(X.next, (X.lastBigDay || 0) + RAID_RHYTHM.minGap);
-  const scheduledPhase = raidPhase({ day: X.next });
-  if (scheduledPhase.id === 'respite') X.next = scheduledPhase.nextPressure;
-  if (phase.id === 'respite' || X.rhythmStrikes >= RAID_RHYTHM.maxBig) X.next = Math.max(X.next, phase.nextPressure);
-  bossDaily(s, phase);
+  bossDaily(s);
   rumorDaily(s);
   if (X.adapt == null) X.adapt = 1;
   else if (X.adapt < 1) X.adapt = Math.min(1, +(X.adapt + (RAID.adaptRecover ?? 0.05)).toFixed(2));
   else if (X.adapt > 1) X.adapt = Math.max(1, +(X.adapt - (RAID.adaptRecover ?? 0.05)).toFixed(2));
-  if (X.pending || s.band || s.jh?.visitor || s.jh?.visitorPending || phase.id === 'respite' || X.rhythmStrikes >= RAID_RHYTHM.maxBig || (s.day || 0) < X.next) return null;
-  X.next = s.day + RAID.every + Math.floor(R(s) * (2 * RAID.jitter + 1)) - RAID.jitter;
-  if (X.taiping) X.next += BOSS.peaceGap; X.next += peaceDelay(s); // loop9 巡山太平→山賊延後
+  if (X.pending || s.band || s.jh?.visitor || s.jh?.visitorPending || phase.id === 'respite' || (s.day || 0) < X.next) return null;
   let pts = points(s); if (pts <= 0) return null;
+  (X.usedRumors ??= []).push(phase.cycle); X.rhythmStrikes++; X.lastBigDay = s.day;
+  X.next = Number.MAX_SAFE_INTEGER;
   const kind = pickKind(R(s)), K = kindOf(kind); if (K) pts = Math.max(1, Math.round(pts * K.pts)); // loop17 類型
-  X.n++; X.rhythmStrikes++; X.lastBigDay = s.day; const demand = K ? Math.round(demandOf(s, pts) * K.demand) : demandOf(s, pts), p = winP(s, pts);
+  X.n++; const demand = K ? Math.round(demandOf(s, pts) * K.demand) : demandOf(s, pts), p = winP(s, pts);
   X.pending = { n: X.n, pts, demand, p: +p.toFixed(2), at: s.t, until: s.t + RAID.wait, day: s.day, ...(kind ? { kind } : {}), ...(K?.noPay ? { noPay: true } : {}) };
   if (K?.noPay) { log(s, `【${K.name}】一夥山賊（威脅 ${pts}）趁夜摸上山來，不談價錢！迎戰勝算約 ${Math.round(p * 100)}%。`); return X.pending; }
   log(s, `${K ? `【${K.name}】` : ''}【山賊勒索】一夥山賊盯上本門的家底（威脅 ${pts}）：「留下 ${demand} 兩香火錢，保你們平安。」迎戰勝算約 ${Math.round(p * 100)}%（半日內不決定就由執事代為處置）`);
@@ -422,15 +417,9 @@ export function threatDaily(s) {
 function nextWave(s, src, win) { const X = T(s); if (!win || !src.kind || src.wave) return; if (R(s) >= (WAVE.p[src.kind] || 0)) return;
   X.wave = { at: s.t + WAVE.gap, pts: Math.max(1, Math.round(src.pts * WAVE.k)), kind: src.kind, n: src.n, day: src.day }; log(s, `【${kindOf(src.kind).name}】山賊退到山腳重整，揚言還要再殺上來！`); }
 function waveStep(s) {
-  const X = T(s), W = X.wave, phase = raidPhase(s);
-  if (!W || s.t < W.at || X.pending || s.band || s.jh?.visitor || s.jh?.visitorPending || phase.id === 'respite') return;
-  advanceRaidRhythm(s, X, phase);
-  // 同一期第二波是原來犯的延續；跨到下一期則佔下一期名額，也要留足原最短間隔。
-  if (W.day < phase.start) {
-    if (X.rhythmStrikes >= RAID_RHYTHM.maxBig || s.day < (X.lastBigDay || 0) + RAID_RHYTHM.minGap) return;
-    X.rhythmStrikes++; X.lastBigDay = s.day;
-    W.originDay = W.day; W.day = s.day; // 戰報以真正再次上山的日子歸入新一期。
-  }
+  const X = T(s), W = X.wave;
+  if (!W || s.t < W.at || X.pending || s.band || s.jh?.visitor || s.jh?.visitorPending) return;
+  // 第二波是同一夥人退到山腳後重整，不另消耗一則傳聞。
   X.wave = null; const p = winP(s, W.pts);
   X.pending = { n: W.n, pts: W.pts, demand: 0, p: +p.toFixed(2), at: s.t, until: s.t + RAID.wait / 4, day: W.day, kind: W.kind, noPay: true, wave: 2 }; log(s, `【第二波】${kindOf(W.kind).name}重整殺回（威脅 ${W.pts}），不談價錢！迎戰勝算約 ${Math.round(p * 100)}%。`); }
 export function threatStep(s, H) { waveStep(s); const P = T(s).pending; if (P && s.t >= P.until) raidResolve(s, raidAuto(s), H, true); }
@@ -460,10 +449,10 @@ export function bandStep(s, dt, H) {
   if (b.state === 'yard') { b.yardT = (b.yardT || 0) + dt; const fit = defs.some((d) => d.hp >= BAND.hpMin), ready = s.ds.some(canDefend);
     if (b.hp > 0 && b.yardT < BAND_CLASH.yardMax && (fit || ready)) return;
     s.band = null; const win = b.hp <= 0 || (!ready && R(s) < winP(s, Math.max(1, b.hp))); let hurt = null; qiInjuryFight28(s, defs, log);
-    if (win) { X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; if (R(s) < RAID.winHurt * (kindOf(X.cur)?.winHurt ?? 1)) hurt = hurtOne(s, H); log(s, `眾人在院裡和山賊一個個交手——打退了山賊！名聲 +${RAID.rep}${hurt ? `；${hurt.name}重傷` : ''}。`); }
+    if (win) { X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; recordDefenseRumor(s); if (R(s) < RAID.winHurt * (kindOf(X.cur)?.winHurt ?? 1)) hurt = hurtOne(s, H); log(s, `眾人在院裡和山賊一個個交手——打退了山賊！名聲 +${RAID.rep}${hurt ? `；${hurt.name}重傷` : ''}。`); }
     else hurt = raidLose(s, H, '院內交手，');
     bossEnd(s, b, win, defs); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(b.wave ? { wave: 2 } : {}), n: b.n, day: b.day, pts: b.pts, fight: win ? 'win' : 'lose', hurt: hurt?.id || null, map: true, broke: !!s.fence }); nextWave(s, b, win); return; }
-  if (b.hp <= 0) { qiInjuryFight28(s, defs, log); /* loop186 守柵實戰 */ if (b.members.length >= 2) for (let i = 0; i < defs.length; i++) for (let j = i + 1; j < defs.length; j++) { recordSocialEvent(s, 'surrounded', defs[i], defs[j]); recordSocialEvent(s, 'surrounded', defs[j], defs[i]); } s.band = null; X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; log(s, `守柵迎敵——${defs.map((d) => d.name).join('、') || '眾人'}把山賊打退了！名聲 +${RAID.rep}。`); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(b.wave ? { wave: 2 } : {}), n: b.n, day: b.day, pts: b.pts, fight: 'win', hurt: null, map: true, fence: s.fence?.hp ?? 0 }); for (const d of defs) recordDeed(s, d, 'defend'); recordDeed(s, null, 'raid', b.boss ? {} : { chron: `守柵打退山賊（${defs.map((d) => d.name).join('、') || '眾人'}）` }); bossEnd(s, b, true, defs); nextWave(s, b, true); return; }
+  if (b.hp <= 0) { qiInjuryFight28(s, defs, log); /* loop186 守柵實戰 */ if (b.members.length >= 2) for (let i = 0; i < defs.length; i++) for (let j = i + 1; j < defs.length; j++) { recordSocialEvent(s, 'surrounded', defs[i], defs[j]); recordSocialEvent(s, 'surrounded', defs[j], defs[i]); } s.band = null; X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; recordDefenseRumor(s); log(s, `守柵迎敵——${defs.map((d) => d.name).join('、') || '眾人'}把山賊打退了！名聲 +${RAID.rep}。`); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(b.wave ? { wave: 2 } : {}), n: b.n, day: b.day, pts: b.pts, fight: 'win', hurt: null, map: true, fence: s.fence?.hp ?? 0 }); for (const d of defs) recordDeed(s, d, 'defend'); recordDeed(s, null, 'raid', b.boss ? {} : { chron: `守柵打退山賊（${defs.map((d) => d.name).join('、') || '眾人'}）` }); bossEnd(s, b, true, defs); nextWave(s, b, true); return; }
   b.clock += dt; if (b.clock < BAND.hitEvery) return; b.clock -= BAND.hitEvery;
   const fd0 = Math.max(BAND.fenceDmg.min, Math.round(b.pts * BAND.fenceDmg.k)), fd = Math.max(1, Math.round(fd0 * (1 - SPEC.zhenMit * zhenK(s)) * (b.psn > s.t ? 1 - SPEC.poisonWeak : 1))); b.fenceDealt += fd; /* loop151 陣法護柵 */
   if (fenceHit(s, fd, '山賊', true).held) return;
@@ -472,7 +461,7 @@ export function bandStep(s, dt, H) {
   if (defs.some((d) => d.hp >= BAND.hpMin)) { b.state = 'yard'; b.yardT = 0; log(s, '山賊衝進菜園，和守柵的人短兵相接！'); return; }
   // loop14（方案 A）：柵破不再直接判敗，改回原勝率公式 winP 擲骰（與無柵同規則）
   s.band = null; const win = R(s) < winP(s, Math.max(1, b.hp)); let hurt = null; qiInjuryFight28(s, s.ds.filter((d) => d.task?.act === 'defend'), log); /* loop186 */ /* 用剩餘山賊戰力（守柵已削弱的部分算數） */
-  if (win) { X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; if (R(s) < RAID.winHurt * (kindOf(X.cur)?.winHurt ?? 1)) hurt = hurtOne(s, H); log(s, `木柵被撞破，眾人短兵相接——打退了山賊！名聲 +${RAID.rep}${hurt ? `；${hurt.name}重傷` : ''}。`); }
+  if (win) { X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; recordDefenseRumor(s); if (R(s) < RAID.winHurt * (kindOf(X.cur)?.winHurt ?? 1)) hurt = hurtOne(s, H); log(s, `木柵被撞破，眾人短兵相接——打退了山賊！名聲 +${RAID.rep}${hurt ? `；${hurt.name}重傷` : ''}。`); }
   else hurt = raidLose(s, H, '木柵被撞破，');
   bossEnd(s, b, win, s.ds.filter((d) => d.task?.act === 'defend'));
   X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(b.wave ? { wave: 2 } : {}), n: b.n, day: b.day, pts: b.pts, fight: win ? 'win' : 'lose', hurt: hurt?.id || null, map: true, broke: true }); nextWave(s, b, win);
@@ -492,7 +481,7 @@ export function raidResolve(s, i, H, auto = false) {
   if (i === 0 && !P.noPay && s.res.coin >= P.demand) { resAdd(s, 'coin', -P.demand); X.paid++; valorAdd(s, VALOR.pay); X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), n: P.n, day: P.day, pts: P.pts, pay: P.demand }); log(s, `${who}付了 ${P.demand} 兩，山賊點完錢下山去了。`); return { ok: true, paid: P.demand }; }
   if (s.ds.some(canDefend)) { X.fought++; valorAdd(s, VALOR.fight); s.band = newBand(P, FENCE.node,s); if (P.kind) s.band.kind = P.kind; if (P.wave) s.band.wave = P.wave; if (P.boss) s.band.boss = true; log(s, `${who}決定迎戰：一夥山賊（${P.pts}）從山門朝${fenceUp(s) ? '菜園木柵' : '院裡'}殺來！`); return { ok: true, band: true }; }
   X.fought++; valorAdd(s, VALOR.fight); const win = R(s) < P.p; let hurt = null; qiInjuryFight28(s, s.ds.filter(canDefend), log); /* loop186 迎戰實戰 */
-  if (win) { X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; if (R(s) < RAID.winHurt * (kindOf(X.cur)?.winHurt ?? 1)) hurt = hurtOne(s, H); log(s, `${who}迎戰山賊——打退了！名聲 +${RAID.rep}${hurt ? `；${hurt.name}重傷` : ''}。`); }
+  if (win) { X.won++; valorAdd(s, VALOR.win); s.rep = (s.rep || 0) + RAID.rep; recordDefenseRumor(s); if (R(s) < RAID.winHurt * (kindOf(X.cur)?.winHurt ?? 1)) hurt = hurtOne(s, H); log(s, `${who}迎戰山賊——打退了！名聲 +${RAID.rep}${hurt ? `；${hurt.name}重傷` : ''}。`); }
   else hurt = raidLose(s, H, who);
   bossEnd(s, P, win, []);
   X.hist.push({ ...(X.cur ? { kind: X.cur } : {}), ...(P.wave ? { wave: 2 } : {}), n: P.n, day: P.day, pts: P.pts, fight: win ? 'win' : 'lose', hurt: hurt?.id || null}); nextWave(s, P, win); return { ok: true, win, hurt: hurt?.id || null };

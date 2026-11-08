@@ -6,6 +6,7 @@ import { ARTS, RULES_VERSION, DAY, JH } from '../../src/data.mjs';
 import { artTier } from '../../src/arts.mjs';
 import { XIA_PAIRS, xiaResolve } from '../../src/wuxia.mjs';
 import { jhStep, jhResolve, card, comedyOk, CARDS } from '../../src/jianghu.mjs';
+import { recordRumor } from '../../src/rumors.mjs';
 const st = (o = {}) => { const s = createState(11, { kind: 'template', id: 'guojing', companion: 'huangrong', askMajor: true, ...o }); tick(s); s.jh.morningOn = false; return s; };
 const run = (s, t) => { const e = s.t + t; while (s.t < e) tick(s); };
 const pick = (s, k, i = 0) => { const ch = s.choices.find((c) => c.jh === k); assert.ok(ch, `card ${k}`); jhResolve(s, ch, i); };
@@ -36,11 +37,11 @@ test('周伯通：賭贏才教（先左右互搏給憨厚的，再空明拳）�
 });
 test('東方不敗：有來由且逐招分勝負；打退留葵花殘頁、輸了不死人，也不能入門', () => {
   const arrive = () => {
-    const s = st(); s.day = 8; s.t = 7 * DAY; s.rep = 60; s.res.coin = 2000; s.choices = [];
+    const s = st(); s.day = 8; s.t = 7 * DAY; recordRumor(s, 'tournament', '會武觀眾', 'market'); s.res.coin = 2000; s.choices = [];
     while (s.ds.length < 4) { const d = structuredClone(s.ds[0]); d.id = `visitor-test-${s.ds.length}`; s.ds.push(d); }
     jhStep(s, .25, { rand: () => .5 });
     const ch = s.choices.find(c => c.jh === 'dfbb');
-    assert.ok(ch); assert.match(ch.text, /名聲/); assert.ok(!('dongfangbubai' in (s.xia.done || {})));
+    assert.ok(ch); assert.match(ch.text, /會武觀眾/); assert.ok(!('dongfangbubai' in (s.xia.done || {})));
     const n = s.ds.length;
     jhResolve(s, ch, 0, { rand: () => .5 });
     assert.ok(s.jh.visitor?.bout); assert.equal(s.jh.dfbb, 0, '選應戰當下不預判輸贏');

@@ -1,6 +1,7 @@
 import { DAY, EXP, SEASONS, SEASON_DAYS, BREAK, FACILITIES } from './data.mjs';
 import { log, resAdd, pillNote } from './util.mjs';
 import { FENCE, lvOf } from './threat.mjs';
+import { recordRumor } from './rumors.mjs';
 // ==== （原 economy.mjs）====
 // v1.85 錢有出口（ROADMAP I-1／I-8／A10，擁有人預設）：月俸＋建築維護、山下市集、丹藥販售與陳化、下山義學。
 // 規則全在下面幾張表；sim.mjs 在換日時呼叫 econDaily(s, H)，H＝{ rand, cancelTask, think, removeDisciple }。
@@ -46,6 +47,7 @@ export const rareOn = (s, k) => !!(!!s && MARKET.rare[k]);
 export const cycleOf = (s) => Math.floor(((s.day || 1) - 1) / MARKET.every);
 export function market(s) { const X = E(s), M = X.market, c = cycleOf(s); if (M.cycle !== c) { const first = M.cycle == null; M.cycle = c; M.sold = {}; if (!first) caravan24(s); } return M; }
 function caravan24(s) { if (!CARAVAN24.prodFac.some((id) => (s.fac?.[id]?.stage || 0) >= 1)) return; resAdd(s, 'coin', CARAVAN24.produce); (s.v24n ??= {}).produce = (s.v24n.produce || 0) + CARAVAN24.produce;
+  recordRumor(s, 'provisions', '山產行商', 'market');
   log(s, `【山產交割】行商上山補貨，收走本門的菜蔬藥材，結了 ${CARAVAN24.produce} 香火錢。${lsStock24(s) ? `這回帶了 ${lsStock24(s)} 顆靈石（每顆 ${CARAVAN24.lsPrice}）。` : ''}`); }
 /* loop159 v2.4 Batch 0（擁有人 t189 P5/P6）：「商隊」＝每 5 日補貨的山下市集（程式沒有商隊系統，決定 169）。v24：靈石第 12 日起才上架、每集 1–2 顆（依種子與集數，不吃亂數流）、每顆 28；
    有生產設施（菜園／藥園／丹房）時每集開市另結「山產交割」+15。v22/v23 舊存檔維持 loop157 的 30×2。 */
@@ -64,7 +66,7 @@ export function marketWhy(s, k) {
 }
 export function marketDo(s, k) {
   const why = marketWhy(s, k); if (why) return { ok: false, why }; const p = priceOf(s, k), M = market(s);
-  if (k === 'pill') { resAdd(s, 'pill', -1); pillNote(s, 'sold', 1); resAdd(s, 'coin', p); M.sold.pill = (M.sold.pill || 0) + 1; log(s, `山下藥舖收了一顆療傷丹，得 ${p} 香火錢。`); return { ok: true, p }; }
+  if (k === 'pill') { resAdd(s, 'pill', -1); pillNote(s, 'sold', 1); resAdd(s, 'coin', p); M.sold.pill = (M.sold.pill || 0) + 1; recordRumor(s, 'trade', '藥舖掌櫃', 'market'); log(s, `山下藥舖收了一顆療傷丹，得 ${p} 香火錢。`); return { ok: true, p }; }
   resAdd(s, 'coin', -p); M.sold[k] = (M.sold[k] || 0) + 1;
   if (MARKET.rare[k]) { resAdd(s, k, 1); log(s, `在山下市集買了 1 份${k === 'tiemu' ? '鐵木' : '靈石'}，花 ${p}。`); }
   else if (k === 'herb') { resAdd(s, 'herb', 3); log(s, `在山下市集買了 3 份靈草，花 ${p}。`); }
@@ -92,8 +94,10 @@ export function schoolStep(s, H) {
   if (d) { d.away = false; d.task = null; d.path = []; d.at = 'gate'; d.pos = [...(H.gate || d.pos || [0, 0])]; d.reason = '義學歸來'; }
   const n = X.schoolN, r = () => H.rand(s), st = STYLES[Math.floor(r() * 2)], k = (a, b) => a + Math.floor(r() * (b - a + 1));
   const c = { id: `sch${n}`, name: NAMES[(n - 1) % NAMES.length] + (n > NAMES.length ? Math.ceil(n / NAMES.length) : ''), adult: true, sprite: r() < 0.5 ? 'hero' : 'senior', style: st, school: true,
+    situation: { seek: 'teaching', where: 'village', reason: '在村中義學跟著師兄學了半日' },
     skills: { leg: k(2, 7), palm: k(2, 7), strength: k(4, 12), farming: k(3, 10), herbal: k(2, 10), agility: k(5, 11), cooking: k(2, 10) }, traits: {}, personality: [['diligent', 'honest', 'brave', 'gentle', 'sociable'][Math.floor(r() * 5)]] };
-  X.pool.push(c); log(s, `${d?.name || '下山的弟子'}從山下義學帶回${c.name}，想拜入門下（不看名聲，有床位就能收）。`);
+  X.pool.push(c); recordRumor(s, 'school', c.name, 'village', `${d?.name || '下山的弟子'}在村中義學授課`);
+  log(s, `${d?.name || '下山的弟子'}從山下義學帶回${c.name}，他親眼看過山門授課，想拜入門下。`);
 }
 export function econDaily(s, H) { if (billDue(s)) settle(s, H); if (E(s).disrepair) for (const d of salaried(s)) d.mood = Math.max(0, (d.mood ?? 50) - 3); agePills(s); market(s); }
 

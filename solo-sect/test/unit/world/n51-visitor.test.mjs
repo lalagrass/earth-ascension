@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createState } from '../../../src/sim.mjs';
 import { DAY } from '../../../src/data.mjs';
 import { jhStep, jhResolve, visitorEligible, visitorReason, VISITOR_INCIDENTS } from '../../../src/jianghu.mjs';
+import { recordRumor } from '../../../src/rumors.mjs';
 
 test('N51 登門須有狀態理由與來犯點數，應戰後才在地圖逐招分勝負', () => {
   const s = createState(17, { kind: 'custom', hermitage: true, opening: 'solo', askMajor: false });
@@ -15,11 +16,12 @@ test('N51 登門須有狀態理由與來犯點數，應戰後才在地圖逐招�
   jhStep(s, .25, { rand: () => .5 });
   assert.equal(s.choices.some(x => x.jh === 'dfbb'), false);
   s.rep = 60;
-  s.day = 9; s.t += DAY;
-  assert.equal(visitorEligible(s, row), true, '同一威脅點數夠格，且名聲有明確理由');
+  recordRumor(s, 'tournament', '會武觀眾', 'market');
+  s.day = 10; s.t += 2 * DAY;
+  assert.equal(visitorEligible(s, row), true, '同一威脅點數夠格，且已聽到交手傳聞');
   jhStep(s, .25, { rand: () => .5 });
   const ch = s.choices.find(x => x.jh === 'dfbb');
-  assert.match(ch.text, /名聲/);
+  assert.match(ch.text, /會武觀眾/);
   jhResolve(s, ch, 0, { rand: () => .5 });
   const B = s.jh.visitor?.bout;
   assert.ok(B && B.near && B.foes.length === 1);

@@ -1,5 +1,24 @@
 # 可重跑驗收
 
+## 第十六輪 R8：名聲＝傳聞、山賊時序讀見聞（#526／#507，規則 5.1）
+
+實作 grass／Codex Cloud，疊第十五輪 #533。R8 先記外人親見，再沿山門—村路—市集—茶攤逐日傳開；立匾前匿名、N46 時限淡忘。候選人須在自己出沒地聽到符合處境的內容；名俠、N51 挑戰者與山賊也讀見聞。山賊仍從既有 `SOURCES.gate` 上地圖，威脅點數、守柵公式與勝負不改。#488 較新的擁有人決定取代 #526 的舊檔遷移要求：5.1 拒載異版，不寫 MIGRATIONS；未接觸使用者實際存檔。
+
+| 類 | 指令與門檻 | 預期／觀察 |
+|---|---|---|
+| A 見聞因果 | Node 22 `bash solo-sect/test/run.sh smoke`；`r8-rumor.test.mjs` 固定日序；六項條件皆須成立 | 無外人見聞不來新山賊或候選；匿名見聞不追認；救人只配村路求安全者；村路消息下一日到市集；第 30 日淡忘。smoke 61／61 通過。[原始日誌](artifacts/r16/smoke.log)。 |
+| A 歷輪行為 | CI 山門紀 quick／accept；原 N58 束脩／做工、N51 真地圖交手與 N43 餘黨／第二波斷言仍嚴格 | 固定情境明確加相符的目擊來源；不把舊名聲分數當成見聞。CI 待 PR 最新 head。 |
+| A 畫面盲測 | `python3 solo-sect/tools/r8-visual.py --seed 17`；零 pageerror、立匾前無傳聞，立匾後山民所見到村路且恰一個地點亮起 | [盲圖 A](artifacts/r16/blind-A.png)／[盲圖 B](artifacts/r16/blind-B.png)；[答案](artifacts/r16/blind-answers.json)，兩張是實際瀏覽器地圖與門派面板。 |
+| A 存檔／golden | Node 22 `node solo-sect/tools/golden.mjs --check`；三格唯一隱居 golden 都相符；異版載入拒絕 | `hermitage.json` 3／3；首、三、五日 hash 改變因 5.1 版欄位、新 `rumors`／`rumorSerial`、撤掉 `recruitment.produced`，以及未有外人見聞時 `threat.next` 不再排固定第八日。逐欄對比第 1／5 日只見這五處，未改隱居人物成長。 |
+| B 機率 | 同一 smoke 的 N62 6,000 次原公式測試；公式期望 .4926757803，99.9% 半寬 .021407701 | R8 無新概率公式；保留既有 B，觀測 .502 在區間內。 |
+| C 開山 30 日 | Node 22 `node solo-sect/tools/r8-rumor-report.mjs --root=<前輪或本輪>/solo-sect --days=30`；12 種子、6 秒一拍、清警示、首日開山與每日 bot | [前輪](artifacts/r16/rumor-base.json)／[本輪](artifacts/r16/rumor-head.json)：新門人 85→27、名俠來訪 29→15、有效傳聞 0→1、累積見聞 0→13、已到地點數合計 0→3、山賊 26→0。受控日程不等於自然 0.25 秒可達性；門人下降因沒有相符的外人消息就無人來，不為 C 調參。 |
+| C 原 bot12 | Node 22 `node solo-sect/tools/bot12.mjs <前輪或本輪>/solo-sect --json`，12 種子、30 日；未由 bot 立匾 | [前輪](artifacts/r16/bot12-base.json)／[本輪](artifacts/r16/bot12-head.json)：自然山賊皆 0，因一直匿名隱居；獨立有柵探針 96／96 勝、木柵守住 89→90、探針傷者 1→2。不能把探針當自然來犯。 |
+
+舊測試的規則分類：`h0-hermitage-isolation` 仍驗未立匾零登門，開山後多一個村路求安全者所聞；`n58-admission`／`n58-work-slot` 與 `accept/sim` 保留束脩、工作格和真收徒斷言，固定情境補已傳開的村路授課／救人／市集賣丹見聞，自產與戰績帳不再憑空增外界知情者；`n43-rhythm` 換掉已退役的固定七日週期，仍嚴驗一則只引一夥、傷後間隔、第二波及餘黨真因；`n51-visitor` 與 `accept/v130` 改由觀眾傳交手消息，保留威脅點數、選項不先決勝及地圖逐招；`accept/v110`／`v120` 以救人和糧食見聞觸發原名俠劇情，留原入門、冷卻和師徒斷言；`v190` 勒索場景由市場目擊而非已刪 `RAID.first` 排程引入，付錢、重傷、孩子安全與到期代決不動。
+
+舊名 → 新名：`attraction`／`recruitNeed` 數字門檻 → `fameOf`（只供面板參考）／`rumorForCandidate`（真正准入）；`RECRUIT.baseRep/stepRep` → 相符的見聞與處境；`RAID.first/every/jitter` → `raidPhase` 的傳聞抵達日；`rep` 來訪理由 → 帶目擊者與地點的 `visitorReason`。`s.rep` 仍供建築等既有內部進度，不決定本輪對外登門。最沒把握三處：① 遊戲目前沒有「救樵夫」可操作事件，因此只提供可追溯的 rescue 類型及 A 固定情境，不捏造自然救人次數；② 同一目擊者可傳多件事，知情人數按不同目擊者計，會低估轉述聽眾，故只供參考；③ 受控 bot 不主動交易、義學或會武，開山 C 的外人消息 13 則中有 12 則是立匾，沒有糧財見聞，來犯因果明確但早期壓力降低，由 Claude 決定是否日後加入可見外人事件，不以 C 數字補概率。
+
+
 ## 第十五輪 R9：唯一隱居開局（#529，規則 5.0）
 
 實作 grass／Codex Cloud，疊第十四輪 #528。舊道館的起局分支、遷移器、舊存檔回放及三層舊 golden 退場；資料只在版控中刪除，未碰使用者的實際存檔。開局保留隱居三情境，並在同一畫面設定姓名、12 點屬性、九問與 MBTI。跨版存檔明確拒載並開新局。現行規則見 [隱居系統](docs/systems/hermitage.md)。
