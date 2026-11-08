@@ -103,7 +103,12 @@ function draw() {
     const c = clampCam({ x: cam.x, y: cam.y, z: cam.z }, camBounds(S)); if (!on) { const u = clampCam({ x: cam.ux, y: cam.uy, z: cam.uz }, camBounds(S)); cam.ux = u.x; cam.uy = u.y; }
     g.translate(800, 450); g.scale(c.z, c.z); g.translate(-c.x, -c.y); drawWorld(c); g.save(); g.translate(HOME.x, HOME.y); }
   const ms = mapStage(S); g.drawImage(IMG[MAPS[ms]], 0, 0, 1600, 900);
-  if (S.hermitage) { g.save(); for (const [id, cliff] of Object.entries(CLIFFS)) {
+  if (S.hermitage) { g.save();
+    // R6 #523：可見的繞光壁路肩，角色尋路也會走這個節點。
+    g.strokeStyle = '#a9b7a5'; g.lineWidth = 3; g.setLineDash([8, 6]); g.beginPath();
+    g.moveTo(...NODES.cliff2); g.lineTo(...NODES[CLIFFS.cliff3.detour]); g.lineTo(...NODES.cliff3); g.stroke(); g.setLineDash([]);
+    g.fillStyle = '#f3ebcf'; g.font = 'bold 13px serif'; g.fillText('繞光壁山路', ...NODES[CLIFFS.cliff3.detour]);
+    for (const [id, cliff] of Object.entries(CLIFFS)) {
     // 出自 Phase 6 規格：地圖標出可攀登的三階絕壁及高度，解鎖狀態依主角實際身法。
     const [x, y] = NODES[id], ready = canLeapCliff(S.ds.find(d => d.id === 'hero'), id);
     g.fillStyle = ready ? '#4f8f77' : '#6c746f'; g.fillRect(x - 18, y - 14, 36, 12);

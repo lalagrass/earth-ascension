@@ -5,7 +5,7 @@ import {transferredDamage,moveStats,hermitageInnerActive,hermitageStepActive,art
 import { inventable, inventArt, readableRareBook, readRareBook } from './rare-arts.mjs';
 import { HERMITAGE_VOLUMES, seedHermitageBooks, bookStatus, readHermitageBook, cliffBook, forestFragment, volumeById } from './hermitage-books.mjs';
 import { spreadRumors, rumorForCandidate } from './rumors.mjs';
-import { canLeapCliff, CLIFF_ACT_NODE } from './cliff.mjs';
+import { canLeapCliff, cliffSlopeFactor, CLIFF_ACT_NODE } from './cliff.mjs';
 import {ringCapacity,attackTokenLimit,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} from './tactics.mjs';
 import {pickupDrop} from './techniques.mjs';
 import {forayChoice} from './foray-choice.mjs';
@@ -50,7 +50,7 @@ const ADJ = {};
 for (const [a, b] of EDGES) { const w = dist(NODES[a], NODES[b]); (ADJ[a] ||= []).push([b, w]); (ADJ[b] ||= []).push([a, w]); }
 export function route(from, to, d = null) {
   // 出自 Phase 6 規格：平地尋路沿舊圖；只有進出山崖時才納入已達門檻的崖點，避免舊局多一條捷徑。
-  const cliffTrip = !!(CLIFFS[from] || CLIFFS[to]);
+  const cliffTrip = !!(CLIFFS[from] || CLIFFS[to] || from === CLIFFS.cliff3.detour || to === CLIFFS.cliff3.detour);
   const D = { [from]: 0 }, P = {}, Q = new Set(Object.keys(NODES).filter(id => id === from || !CLIFFS[id] || (cliffTrip && canLeapCliff(d, id))));
   while (Q.size) {
     let u = null; for (const q of Q) if (D[q] !== undefined && (u === null || D[q] < D[u])) u = q;
@@ -548,13 +548,13 @@ function decide(s, d) {
 
 export function speedOf(d, s = null) { return BASE_SPEED / (s ? bodyMassMul(s, d) : 1) * (1 + d.skills.agility / 100) * (d.carry ? 0.7 : 1) * (d.needs.energy < 30 ? 0.8 : 1) * (1 + NG23.speedPerTier * Math.max(0, effectTier(d, 'speed') + 1) * stepDrive(d)) * (1 + 0.002 * mastery(d, 'shenfa')) * (d.path?.length ? yuqiMul(d) : 1) * (hermitageStepActive(d) ? 1.35 : 1); } /* 出自 Phase 6 規格：隱居主角悟輕功後腳程 +35%；舊角色沿原公式。 */
 
-function moveStep(d, dt, s = null) {
+export function moveStep(d, dt, s = null) {
   if (d.path.length && yuqiOn(d)) d.qi = Math.max(qiMax(d) * NG23.yuqi.keep, qiOf(d) - NG23.yuqi.drain * dt); /* loop153 御氣耗氣，留三成底、不會力竭 */
   let left = speedOf(d, s) * dt;
   while (left > 0 && d.path.length) {
-    const tgt = d.path[0].xy, L = dist(d.pos, tgt);
-    if (L <= left) { d.pos = [...tgt]; d.at = d.path[0].n; d.path.shift(); left -= L; d.walked += L; }
-    else { d.face = tgt[0] >= d.pos[0] ? 1 : -1; d.pos[0] += (tgt[0] - d.pos[0]) * left / L; d.pos[1] += (tgt[1] - d.pos[1]) * left / L; d.walked += left; left = 0; }
+    const tgt = d.path[0].xy, L = dist(d.pos, tgt), slope = cliffSlopeFactor(d.at, d.path[0].n);
+    if (L <= left * slope) { d.pos = [...tgt]; d.at = d.path[0].n; d.path.shift(); left -= L / slope; d.walked += L; }
+    else { const step = left * slope; d.face = tgt[0] >= d.pos[0] ? 1 : -1; d.pos[0] += (tgt[0] - d.pos[0]) * step / L; d.pos[1] += (tgt[1] - d.pos[1]) * step / L; d.walked += step; left = 0; }
   }
   d.skills.agility = Math.min(100, d.skills.agility + 0); // 腳力成長於交付時結算
 }

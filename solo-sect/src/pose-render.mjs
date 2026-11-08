@@ -1,5 +1,5 @@
 import {impactVisual} from './contact-view.mjs';
-import { MOVES, ACTIVITIES } from './data.mjs';
+import { MOVES, ACTIVITIES, CLIFFS } from './data.mjs';
 import { windOf, artTier, artById, focusOf } from './arts.mjs';
 import { playbackParams, PLAYBACK, ergonomicFrame } from './growth-playback.mjs';
 import { POSTURES, COMBAT_POSES, DAILY_POSES, EXTRA_TASK_POSES, routineFrame } from './routines.mjs';
@@ -256,6 +256,14 @@ export function renderMicroStage(g, s = {}, focalActor = null, customView = null
     g.fillStyle = '#94b9bd'; g.fillRect(306, 64, 14, groundY - 64);
     g.fillStyle = '#d9e2db'; g.fillRect(94, 79, 84, 12); g.fillRect(168, 53, 116, 10);
     g.fillStyle = '#3e684b'; g.fillRect(232, 109, 67, 6);
+    // R6 #523：落腳點只由崖的難度級推導畫面位置；不讀寫模擬亂數或攀登判定。
+    const cliff = CLIFFS[ergo.cliffLeapStage.id];
+    const holds = Math.ceil(cliff.heightZhang / cliff.routeGrade);
+    g.fillStyle = '#c6c9bb';
+    for (let i = 0; i < holds; i++) {
+      const jitter = Math.abs(Math.sin((i + 1) * cliff.heightZhang * cliff.routeGrade));
+      g.fillRect(8 + jitter * 48, 46 + (groundY - 58) * (i + 1) / (holds + 1), 12 / cliff.routeGrade, 3);
+    }
   }
   if (g.beginPath && g.stroke) {
     g.strokeStyle = '#b49f78';
