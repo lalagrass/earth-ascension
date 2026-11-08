@@ -5,6 +5,7 @@ import { makeBare } from './starter-combat.mjs';
 import { DAY, NODES, TRAITS } from './data.mjs';
 import { bedCount } from './recruitment.mjs';
 import { affKey, relKey, log } from './util.mjs';
+import { canHaveChildren } from './rare-arts.mjs';
 
 export const FAMILY = Object.freeze({
   yearDays: 28, // 遊戲一年的日數；大人與孩子共用（擁有人 D4：單一時鐘）。
@@ -49,6 +50,7 @@ export function childWish(s, d, spouse) {
   if (mother && (mother.age ?? 0) > FAMILY.motherMaxAge) why.push('年紀大了');
   if (d.values) { const main = Object.entries(d.values).sort((x, y) => y[1] - x[1])[0]?.[0]; if (FAMILY.cautious.includes(main)) why.push(main === 'wu' ? '一心在武道' : '想過逍遙日子'); }
   else if ((d.personality || []).some((t) => FAMILY.coldTraits.includes(t))) why.push('性子灑脫，不想安定');
+  if (!canHaveChildren(d) || !canHaveChildren(spouse)) why.push('已自宮，不能有後代'); // R11 #531
   const sit = householdSituation(s);
   if (!sit.food) why.push('家裡正在挨餓');
   if (!sit.bed) why.push(`床位不夠（${sit.beds}/${sit.mouths}）`);

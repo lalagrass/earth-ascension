@@ -381,7 +381,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '5.2'; /* R10 #530：整門只能學來、看人只得單招、傳承讀卷資料、白身開局 */
+export const RULES_VERSION = '5.3'; /* R11 #531：自創配方、奇書實物、自宮；白身更想找武學 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -907,6 +907,9 @@ Object.assign(ACTIVITIES, {
 // R3（#522）：沿既有 study／forage 的工時與耗力，不新增調勝率的常數。
 ACTIVITIES.readBook = { name: '茅廬研讀拳譜', dur: ACTIVITIES.study.dur, energy: ACTIVITIES.study.energy };
 ACTIVITIES.searchFragment = { name: '林中山洞尋殘卷', dur: ACTIVITIES.forage.dur, energy: ACTIVITIES.forage.energy };
+// R11 #531：自創沿用打坐的工時（閉關把會的幾門融在一起）；讀奇書沿用讀卷的工時。
+ACTIVITIES.invent = { name: '閉關自創武學', dur: ACTIVITIES.meditate.dur, energy: ACTIVITIES.meditate.energy, pose: 'sit' };
+ACTIVITIES.readRare = { name: '研讀奇書', dur: ACTIVITIES.readBook.dur, energy: ACTIVITIES.readBook.energy };
 // 7 座鎮派建築各自的活動（sect id → 活動資料，形狀同上）
 export const SIG_ACTS = {
   gaibang:   { name: '沿村乞討', dur: 10, energy: -6, perDay: 3, why: '打狗棒堂：沿村討口飯', eff: { res: { food: 2 } } },

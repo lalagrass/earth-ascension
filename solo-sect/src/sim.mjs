@@ -2,6 +2,7 @@ import {HUNGER_PER_SECOND,admissionStatus,unfoundedHermitage,mentorFor,guidanceS
 import {attraction,applicantAway,bookAdmissionWork,discipleCount,policyCap,recruitmentInit,recruitmentOf,returnFromWork,sendApplicantToWork,setRecruitPolicy} from './recruitment.mjs';
 export {attraction,policyCap,setRecruitPolicy} from './recruitment.mjs';
 import {transferredDamage,moveStats,hermitageInnerActive,hermitageStepActive,artTeacher} from './arts.mjs';
+import { inventable, inventArt, readableRareBook, readRareBook } from './rare-arts.mjs';
 import { HERMITAGE_VOLUMES, seedHermitageBooks, bookStatus, readHermitageBook, cliffBook, forestFragment, volumeById } from './hermitage-books.mjs';
 import { canLeapCliff, CLIFF_ACT_NODE } from './cliff.mjs';
 import {ringCapacity,attackTokenLimit,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} from './tactics.mjs';
@@ -364,6 +365,11 @@ export function scoreActs(s, d) {
     if (next && study) out.push({ act: 'readBook', score: study.score, why: `讀《${artById(next.art).name}》的實物卷` });
     const forage = out.find(o => o.act === 'forage');
     if (s.hermitage.active && forage && d.id === 'hero' && s.ds.length === 1 && !s.hermitage.books?.some(id => volumeById(id)?.source === 'fragment')) out.push({ act: 'searchFragment', score: forage.score, why: '到林中山洞找另一脈拳譜殘卷' });
+    // R11 #531：配方齊了才有「自創」可選，工時借打坐；奇書在自己手上、代價付過才讀得了。
+    const inv = inventable(s, d), still = out.find(o => o.act === 'meditate') || study;
+    if (inv && still) out.push({ act: 'invent', score: still.score, why: `把會的幾門融成《${artById(inv.art).name}》` });
+    const rare = readableRareBook(s, d);
+    if (rare && study) out.push({ act: 'readRare', score: study.score, why: `讀手上的《${rare.name}》` });
   }
   if (s.band && BAND.defendScore > 0 && canDefend(d, s)) out.push({ act: 'defend', score: BAND.defendScore, why: s.band.state === 'go' ? '山賊往菜園來了，去柵邊守著' : '山賊在撞柵，去打退他們' }); // loop3
   if (d.ng && qiMax(d) > 0 && qiOf(d) < qiMax(d) * NG23.medLow) for (const o of out) if (o.act === 'meditate') { o.score *= NG23.medBoost; o.why += '（內力不足，先打坐回氣）'; } /* loop153 */
@@ -398,6 +404,14 @@ function assign(s, d, act, why) {
     const volume = d.manualChoice && bookStatus(s, d, d.manualChoice).ok ? d.manualChoice : HERMITAGE_VOLUMES.find(v => bookStatus(s, d, v.id).ok)?.id;
     if (!volume) return false;
     d.task = { act, node: 'hall', phase: 'go', volume }; goto(d, 'hall'); d.reason = why || '讀拳譜'; return true;
+  }
+  if (act === 'invent') {
+    const r = inventable(s, d); if (!r) return false;
+    d.task = { act, node: 'hall', phase: 'go', art: r.art }; goto(d, 'hall'); d.reason = why || `閉關自創《${artById(r.art).name}》`; return true;
+  }
+  if (act === 'readRare') {
+    const b = readableRareBook(s, d); if (!b) return false;
+    d.task = { act, node: 'hall', phase: 'go', book: b.id }; goto(d, 'hall'); d.reason = why || `研讀《${b.name}》`; return true;
   }
   if (act === 'searchFragment') {
     if (!s.hermitage?.active || d.id !== 'hero' || s.ds.length !== 1 || s.hermitage.books?.some(id => volumeById(id)?.source === 'fragment')) return false;
@@ -628,6 +642,8 @@ function doTask(s,d,dt){
       if (t.act === 'study' && t.fac === 'library') { const page = readLuohanBook(d, effDur, s.t); if (page.learned) { log(s, `【拳譜】${d.name}對照身體起手，把《少林羅漢十八手》的二十二段讀完，開始依譜練掌。`); think(s, d, 'learned'); } else if (page.form) log(s, `${d.name}讀《羅漢十八手》到「${page.form}」，照著圖譜試擺。`, 'low'); }
       if (t.act === 'readBook') { const result = readHermitageBook(s, d, t.volume, effDur); if (result.learned) { d.manualChoice = null; think(s, d, 'learned'); } }
       if (t.act === 'searchFragment') forestFragment(s, d);
+      if (t.act === 'invent' && inventArt(s, d, t.art).ok) think(s, d, 'learned'); // R11：完成時配方仍要齊
+      if (t.act === 'readRare' && readRareBook(s, d, t.book).learned) think(s, d, 'learned');
       if (t.act === 'cliffComprehend') {
         cliffBook(s, d); // R3：拓錄成實物卷，回山讀完才學會。
       }

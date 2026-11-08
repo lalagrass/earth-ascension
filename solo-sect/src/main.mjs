@@ -14,6 +14,7 @@ import { sideCards, bioLine, chronHtml } from './util.mjs';
 import { memsOf, apprCands, takePupil, pupilsOf, XIA_STYLES, MANUALS, canAssemble, assemble, learnManual, likesOf, menuOf, aspOf, ASPIRATIONS } from './bonds.mjs';
 import { ARC13 } from './jianghu.mjs';
 import { pregnancyOf } from './family.mjs';
+import { RARE_BOOKS, rareBookState, selfCastrate, inventable } from './rare-arts.mjs';
 import { GEN, canSucceed, succeed, heirs, heirArt, canBuildFac, buildFac, artKind, KIND_NAME, sectFac, rivalGate } from './sect.mjs';
 import { SECTS, SECT_K, RULE_LIB, JH, DAY as DAY13, HS, DUGU, ARTS, TIERS, VARIANTS, AURA, BREAK, ACTIVITIES as ACTS2, ROUTE, EXP, ENEMIES, CHORE_ACTS, CHORE_NAMES, QUOTA, PRIO, PROMOTE, RANK_NAMES, ECON, ROOT, RES_NAMES, QUESTIONS, TRAITS, MAPS, POSTS, HABITAT, STYLES, NODES, EDGES, CLIFFS, FACILITIES, ACTIVITIES, MOVES, MONSTERS, EXP_STYLES, CAMPS, ENDLESS, ROUTINE_MODES, ROUTINE_PERIODS, bindPortraitSet } from './data.mjs';
 import { canLeapCliff } from './cliff.mjs';
@@ -390,7 +391,7 @@ function panel() {
    ${d.growMul ? `<div class="k">練功倍率（${artById(d.growMul.art)?.name}）×${d.growMul.total.toFixed(2)} = 天賦${d.growMul.talent.toFixed(2)}×狀態${d.growMul.state.toFixed(2)}×外部${d.growMul.ext.toFixed(2)}${d.growMul.gate < 1 ? `×悟性門檻${d.growMul.gate}` : ''}</div>` : ''}<div class="k">主修 ${STYLES[d.style]}・掌 ${d.skills.palm.toFixed(1)}・腿 ${d.skills.leg.toFixed(1)}・腳力 ${d.skills.agility.toFixed(1)}（${speedOf(d).toFixed(0)}px/s）・力氣 ${d.skills.strength.toFixed(1)}${laborNote(S, d)}・農 ${d.skills.farming.toFixed(1)}・廚 ${d.skills.cooking.toFixed(1)}</div>
    <div>${d.moves.map((m) => `<span class="mv">${MOVES.find((x) => x.id === m).name}</span>`).join('')}${d.pendingArt ? `<span class="mv new">可學：${artById(d.pendingArt).name}</span>` : ''}</div></details>
    <select data-style="${d.id}">${Object.entries(STYLES).map(([k, n]) => `<option value="${k}" ${d.style === k ? 'selected' : ''}>主修${n}</option>`).join('')}</select>
-   <select data-ord="${d.id}">${[...ORD, ['readBook', ACTIVITIES.readBook.name], ...(S.hermitage.active && S.ds.length === 1 && d.id === 'hero' ? [['searchFragment', ACTIVITIES.searchFragment.name]] : []), ...Object.entries(CLIFFS).flatMap(([id, cliff]) => canLeapCliff(d, id) ? cliff.acts.map(act => [act, ACTIVITIES[act].name]) : [])].map(([k, n]) => `<option value="${k}" ${(d.order || '') === k ? 'selected' : ''}>${n}</option>`).join('')}</select></div>`).join('');
+   <select data-ord="${d.id}">${[...ORD, ['readBook', ACTIVITIES.readBook.name], ...(S.hermitage.active && S.ds.length === 1 && d.id === 'hero' ? [['searchFragment', ACTIVITIES.searchFragment.name]] : []), ...(inventable(S, d) ? [['invent', ACTIVITIES.invent.name]] : []), ...(RARE_BOOKS.some(b => rareBookState(S, b.id).holder === d.id) ? [['readRare', ACTIVITIES.readRare.name]] : []), ...Object.entries(CLIFFS).flatMap(([id, cliff]) => canLeapCliff(d, id) ? cliff.acts.map(act => [act, ACTIVITIES[act].name]) : [])].map(([k, n]) => `<option value="${k}" ${(d.order || '') === k ? 'selected' : ''}>${n}</option>`).join('')}</select>${RARE_BOOKS.some(b => rareBookState(S, b.id).holder === d.id) && d.castrated == null ? `<button data-castrate="${d.id}" title="手上的奇書要先自宮才能練；永久、不可逆，之後不能有後代">自宮（不可逆）</button>` : ''}</div>`).join('');
   $('rel').innerHTML = Object.entries(S.rel).map(([k, v]) => { const [a, b] = k.split('|').map((id) => S.ds.find((d) => d.id === id).name); const [A, B] = k.split('|').map((id) => S.ds.find((d) => d.id === id)); return `<div>${a}—${b}：${relStage(v)} ${v.toFixed(0)}${S.families.includes(k) ? ' 🏠' : ''} <span class="k">（${a}→${aff(S, A, B).toFixed(0)}／${b}→${aff(S, B, A).toFixed(0)}・合拍 ${compat(A, B).toFixed(1)}/${compat(B, A).toFixed(1)}）</span>${memsOf(S, A, B).slice(-2).map((m) => `<div class="k mem">📜 第${m.day}日・${m.where}：${m.text}</div>`).join('')}</div>`; }).join('') + bondsHtml(S);
   $('hero').innerHTML = heroCard(S);
   $('founding-action').innerHTML = S.hermitage?.active && canFoundHermitageSect(S).ok ? '<button data-found-hermitage>立匾開山・選道統</button>' : ''; // R3 #522：開局第 1 日即由玩家自行決定。
@@ -759,6 +760,8 @@ try {
 
 // v1.85 市集／義學按鈕
 document.addEventListener('click', (e) => { const m = e.target.closest('[data-mkt]'); if (m && S) { const r = marketDo(S, m.dataset.mkt); toast(r.ok ? `成交 ${r.p}` : r.why, !r.ok); return; } if (e.target.closest('[data-school]') && S) { const r = startSchoolTrip(S); toast(r.ok ? `${r.d.name}下山義學去了` : r.why, !r.ok); } });
+// R11 #531：自宮由玩家明確確認，不可逆。
+document.addEventListener('click', (e) => { const b = S && e.target.closest('[data-castrate]'); if (!b) return; const d = S.ds.find((x) => x.id === b.dataset.castrate); if (d && window.confirm(`${d.name}要自宮嗎？永久、不可逆，之後不能有後代。`) && selfCastrate(S, d, true)) panel(); });
 document.addEventListener('click', (e) => { if (!S || !e.target.closest('[data-found-hermitage]')) return; const r = queueHermitageFounding(S); if (!r.ok) toast(r.why, true); else { choiceUI(S); panel(); } }); // R3 #522：玩家親自選牌匾與道統。
 
 // v1.9 I-2 擴地、I-6 山賊勒索、A9 因才派巡
