@@ -56,18 +56,3 @@ test('R3 承接 Phase 4：同住本身不送整門，會的人讀卷後才能傳
   assert.equal(readHermitageBook(s, partner, 'gumu-sword').learned, true);
   assert.equal(hero.arts.yunvJian, undefined, '第二式須另次傳授');
 });
-
-test('Phase 4：未選隱居的舊開局仍為三人且無隱居欄位', () => {
-  const s = createState(42);
-  assert.deepEqual(s.ds.map((d) => d.id), ['hero', 'origin-1', 'origin-2']);
-  assert.equal(s.hermitage, undefined);
-});
-
-test('Phase 4：純陽拳十二段有姿勢，讀完十二段才正式學會', () => {
-  assert.equal(ROUTINES.chunyang.forms.length, 12);
-  assert.ok(ROUTINES.chunyang.forms.every((form) => form.poses.length === 4));
-  const hero = createState(42, { kind: 'bare' }).ds[0];
-  for (let i = 0; i < 11; i++) assert.equal(readStarterBook(hero, 'chunyangFist').learned, false);
-  assert.equal(readStarterBook(hero, 'chunyangFist').learned, true);
-  assert.ok(hero.arts.chunyangFist);
-});

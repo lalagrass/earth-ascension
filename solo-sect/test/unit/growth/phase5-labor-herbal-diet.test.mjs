@@ -7,9 +7,7 @@ import { renderMicroStage } from '../../../src/pose-render.mjs';
 import { gainArt } from '../../../src/arts.mjs';
 
 test('R2：同一份活對變強的人刺激較小；白飯長得比藥膳慢；休息日疲勞下降；上限由根骨推導', () => {
-  const old = createState(42), oldHero = old.ds[0];
-  assert.equal(stepWorkCondition(oldHero, old, 'chop').active, false);
-  assert.equal('muscleFatigue' in oldHero, false, '舊局不加身體欄位');
+  // R9 已淘汰舊局；同一個隱居入口仍完整驗 R2 的負重、營養、疲勞與個人上限。
   // 負重比：同一擔柴，力氣 10 的人是全力，力氣 15 的人只算 12/15。
   const s = createState(42, { hermitage: true }), weak = s.ds[0];
   ensureBodyCondition(weak, s.day);
@@ -71,10 +69,6 @@ test('Phase 5：黃蓉煮飯和用飯走真任務；R2 起藥膳只給足營養�
     assert.equal(mealState.res.food, plainFood); assert.equal(mealState.res.medFood, 0);
     assert.equal(mealState.ledger.out.medFood, 1); assert.equal(mealState.ledger.out.food || 0, 0, '一餐只扣藥膳，不雙扣普通飯');
   }
-  const oldMeal = createState(19); oldMeal.res.food = 0; oldMeal.res.medFood = 1;
-  assert.equal(scoreActs(oldMeal, oldMeal.ds[0]).some(x => x.act === 'eat'), false, '舊局不啟用藥膳庫存');
-  oldMeal.res.veg = 0; oldMeal.res.medFood = 8;
-  assert.equal(emergency(oldMeal), true); assert.equal(foodLow(oldMeal), true, '舊局只計原本可用的存糧');
   const stores = createState(17, { hermitage: true }); stores.res.food = 0; stores.res.veg = 0; stores.res.medFood = 8; stores.mons = [];
   stores.ds.forEach((member) => { member.role = 'outer'; member.needs.hunger = 95; }); stores.emergency = false;
   assert.equal(emergency(stores), false); assert.equal(foodLow(stores), false);

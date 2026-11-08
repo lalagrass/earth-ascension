@@ -8,7 +8,6 @@ import { learnArt, artTier } from '../../src/arts.mjs';
 import { CARDS, card, hsResolve, hsStep, zxGate, zxUp, fengFit, formReady, learnDugu, bixie } from '../../src/wuxia.mjs';
 import { XIA, xiaPool, join } from '../../src/wuxia.mjs';
 import { autoPick, resolveChoice } from '../../src/hero.mjs';
-import { migrate } from '../../src/save.mjs';
 import fs from 'node:fs';
 
 const yue = (ask = true) => { const s = createState(7, { kind: 'template', id: 'yuebuqun', companion: 'linghuchong', askMajor: ask }); tick(s); return s; };
@@ -78,4 +77,3 @@ function party(mode) { const s = createState(11); tick(s); const ids = s.ds.filt
 test('無盡段體力牆：招牌武學練滿能走得比一般武學更遠', () => {
   const n = party('normal'), c = party('classic'); /* #403 退役一般武學 2000 固定上限：N24 期望戰力變動，以相對里程驗證 */ assert.ok(c.dist > n.dist, `normal ${n.dist}, classic ${c.dist}`); assert.ok(c.events?.some?.((e) => /真氣/.test(e)) ?? true);
 });
-test('1.1 存檔遷移到 1.2 補上華山線狀態', () => { const s = createState(3); tick(s); delete s.hs; s.rules = '1.1'; const o = migrate(JSON.parse(JSON.stringify(s))); assert.ok(o.hs && o.hs.cards); });

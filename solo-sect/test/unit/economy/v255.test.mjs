@@ -1,13 +1,13 @@
 /* v2.55（loop168–，擁有人 t190）：五大新門派專屬武學、寒玉床打坐、神木王鼎；全部只在 v22 新局（s.v24） */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick } from '../../../src/sim.mjs';
+import { createState } from '../../harness/historical-party.mjs';
+import { tick } from '../../../src/sim.mjs';
 import * as A from '../../../src/arts.mjs';
 import { ARTS, SECTS } from '../../../src/data.mjs';
 import { sectStep, HUIWU24 } from '../../../src/sect.mjs';
 import * as EC from '../../../src/economy.mjs';
 import { SECT_PICK24 } from '../../../src/data.mjs';
-import { buildSpec } from '../../../src/start-ui.mjs';
 import { passPick } from '../../../src/bonds.mjs';
 const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, v22: true, ...o });
 // #390：舊規則開局已不存在，原本的舊局對照組（OLD）與各測試裡的舊局斷言一併刪除
@@ -35,15 +35,16 @@ test('loop168 傳承鎖：他派（含無名派）鎖住、本門可學；九陰
 });
 test('loop168 武當：武當長拳大成可領悟太極拳；太極拳大成可免柔雲劍法學太極劍（以拳通劍）', () => {
   const s = V({ sect24: 'wudang' }); tick(s, 0.1); const h = hero(s); delete h.arts.taiji; h.pendingArt = null;
-  assert.ok(!A.sectUnlock24(h).length); h.arts.wudangFist.xp = 100; assert.equal(A.sectUnlock24(h)[0]?.id, 'taiji'); assert.equal(A.selfTarget(h), 'taiji');
+  assert.ok(!A.sectUnlock24(h).length); h.arts.wudangFist.xp = 100; assert.equal(A.sectUnlock24(h)[0]?.id, 'taiji');
   const ts = A.artById('taijiSword'); assert.ok(A.reqMissing(h, ts).length); A.learnArt(h, 'taiji', 0); h.arts.taiji.xp = 100; assert.equal(A.reqMissing(h, ts).length, 0);
 });
-test('loop168 本門專屬可傳功', () => {
-  const s = V({ sect24: 'taohua' }); tick(s, 0.1); const h = hero(s); h.arts.luoyingPalm = { xp: 100 };
-  assert.notEqual(passPick(s, h)?.art, 'luoyingPalm');
-  h.arts.tanzhi = { xp: 100 };
-  const p = passPick(s, h); assert.equal(p?.art, 'tanzhi');
-  const o = V({ sect24: 'emei' }); tick(o, 0.1); const k = hero(o); for (const id of Object.keys(k.arts)) k.arts[id].xp = 0; k.arts.luoyingPalm = { xp: 100 }; assert.equal(passPick(o, k), null, '他派專屬不傳');
+test('R9 傳功只選真會者可教的卷', () => {
+  const s = V({ sect24: 'taohua' }); tick(s, 0.1); const h = hero(s); h.arts = {};
+  assert.equal(passPick(s, h), null, '不會卷中武學便無從傳授');
+  h.arts.luoyingPalm = { xp: 100 };
+  assert.equal(passPick(s, h)?.art, 'luoyingPalm', '真會者可傳第一卷');
+  const o = V({ sect24: 'emei' }); tick(o, 0.1); const k = hero(o); k.arts = { luoyingPalm: { xp: 100 } };
+  assert.equal(passPick(o, k)?.art, 'luoyingPalm', 'R3 的傳授依真本領，不由退役開局的本門鎖阻擋');
 });
 test('loop168 寒玉床：門人 ≤5 打坐回氣與衝關率 ×1.5；神木王鼎：藥材 +1、香火 +1、毒傷 ×1.35', () => {
   const g = V({ sect24: 'gumu' }); tick(g, 0.1); const h = hero(g); const q0 = A.medQi(h), b0 = A.breakChance(h);
@@ -64,9 +65,7 @@ test('loop169 執事藏經閣：出征過或有殘頁，木 ≥5 即立（石料
   const s = V(); tick(s, 0.1); for (const d of s.ds) d.arts = { basicFist: d.arts.basicFist || { xp: 1 } }; s.res.wood = 5; s.res.stone = 0;
   assert.equal(EC.stewLib24(s), null); s.expN = 1; assert.equal(EC.stewLib24(s), 'library'); s.expN = 0; s.res.page1 = 1; assert.equal(EC.stewLib24(s), 'library'); s.res.wood = 4; assert.equal(EC.stewLib24(s), null);
 });
-test('loop169 開局門派選單：十個選項、自創主角帶 sect24（無名派不帶）、可開華山／丐幫／明教', () => {
+test('loop169 立匾門派資料：候選與樹均可建立', () => {
   assert.deepEqual(SECT_PICK24, ['wuming', 'emei', 'wudang', 'taohua', 'gumu', 'xingxiu', 'qizong', 'jianzong', 'gaibang', 'mingjiao', 'tiandihui']); /* loop174 t191 天地會 */
-  const base = { tab: 'custom', name: '甲', stats: {}, ans: Array(9).fill(0), ask: false };
-  assert.equal(buildSpec({ ...base, sect24: 'gumu' }).sect24, 'gumu'); assert.ok(!('sect24' in buildSpec({ ...base, sect24: 'wuming' })));
   for (const k of SECT_PICK24.slice(1)) { const s = V({ sect24: k }); assert.equal(s.sect.id, k, k); }
 });

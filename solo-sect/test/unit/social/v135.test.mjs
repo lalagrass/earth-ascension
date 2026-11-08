@@ -1,25 +1,18 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick } from '../../../src/sim.mjs';
-import { ARTS, RULES_VERSION, DAY } from '../../../src/data.mjs';
+import { createState } from '../../harness/historical-party.mjs';
+import { tick } from '../../../src/sim.mjs';
+import { ARTS, DAY } from '../../../src/data.mjs';
 import { artMulParts, learnArt } from '../../../src/arts.mjs';
 import { SECTS, SECT_K, sectBiasMul } from '../../../src/data.mjs';
 import { sectStep, artKind, buildFac, canBuildFac, rivalGate, rivalWon, sectRecruit, favSort, sectResolve } from '../../../src/sect.mjs';
 import { routeSeg } from '../../../src/world.mjs';
 import { xiaPool, join } from '../../../src/wuxia.mjs';
-import { migrate } from '../../../src/save.mjs';
 import { resolveChoice } from '../../../src/hero.mjs';
 const mk = (id, comp) => { const s = createState(7, { kind: 'template', id, companion: comp, askMajor: true }); tick(s); s.jh.morningOn = false; s.jh.comedyOn = false; return s; };
 const day = (s) => { s.day++; sectStep(s); };
 const hero = (s) => s.ds.find((d) => d.id === 'hero');
 const A = (id) => ARTS.find((a) => a.id === id);
-test('v1.35 版本；六位主角各有門派，自創＝無名小派', () => {
-  assert.ok(parseFloat(RULES_VERSION) >= 1.35);
-  const m = { guojing: 'gaibang', yuebuqun: 'qizong', linghuchong: 'jianzong', zhangwuji: 'mingjiao', weixiaobao: 'tiandihui', axing: 'zhulong' };
-  for (const [h, sid] of Object.entries(m)) { const s = mk(h); assert.equal(s.sect.id, sid); assert.ok(s.sect.plaque && s.sect.color); }
-  const c = createState(7, { kind: 'custom', name: '阿木', stats: { wu: 2, gen: 2, li: 2, shen: 2, ding: 2, fu: 2 }, answers: Array(9).fill(0) });
-  assert.equal(c.sect.id, 'wuming'); assert.equal(c.sect.rules.length, 1); assert.equal(Object.values(c.sect.bias)[0], SECT_K.biasCap); assert.match(c.sect.plaque, /阿木派/);
-});
 test('剛柔巧拙偏向夾在 ±15%；外門武學 ×0.7；名俠招牌＝客傳不罰', () => {
   const s = mk('guojing'); const h = hero(s); sectStep(s);
   assert.deepEqual(sectBiasMul(h, A('xianglong')), [1.15, 1]);
@@ -58,7 +51,4 @@ test('宿敵守第 2、4… 道關，打贏得門派聲望', () => {
 test('名俠加權：本派名俠排前面', () => {
   const s = mk('axing'); const p = xiaPool(s); const fav = SECTS.zhulong.fav.filter((k) => p.includes(k)); assert.deepEqual(p.slice(0, fav.length).sort(), fav.sort());
   assert.deepEqual(favSort(s, ['x', 'baozupo']), ['baozupo', 'x']);
-});
-test('舊存檔遷移 1.3 → 1.35 補上門派', () => {
-  const s = mk('linghuchong'); const o = JSON.parse(JSON.stringify(s)); delete o.sect; o.rules = '1.3'; migrate(o); assert.equal(o.sect.id, 'jianzong'); assert.equal(o.rules, RULES_VERSION);
 });

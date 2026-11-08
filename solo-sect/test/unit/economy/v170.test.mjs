@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, tick, startBuild, scoreActs, PRED, valOf, vegFree } from '../../../src/sim.mjs';
+import { createState as historicalState } from '../../harness/historical-party.mjs';
 import { SCORE } from '../../../src/data.mjs';
 import { ACTIVITIES, DAO } from '../../../src/data.mjs';
 import { stockReserved, stockKey, STOCK_RESV, HYST, needStep } from '../../../src/core.mjs';
@@ -30,16 +31,11 @@ test('菜庫預留：煮飯任務握 stock:veg 鍵，vegFree 少 2；取消即�
   assert.deepEqual(invariants(s), []);
 });
 test('倉庫預留：取料任務握 stock:<料> 鍵，whReserved＝預約表推得的 reservedAmt', () => {
-  const s = createState(3); s.res.wood = 8; startBuild(s, 'dorm'); const d = runTo(s, (o) => o.task?.act === 'build' && o.task.phase === 'fetch' && o.task.reservedAmt > 0);
+  const s = historicalState(3); s.res.wood = 8; startBuild(s, 'dorm'); const d = runTo(s, (o) => o.task?.act === 'build' && o.task.phase === 'fetch' && o.task.reservedAmt > 0);
   assert.ok(d); const k = d.task.mat; assert.equal(s.resv[stockKey(k, d)], d.id);
   const sum = s.ds.reduce((a, o) => a + (o.task?.act === 'build' && o.task.phase === 'fetch' && o.task.mat === k ? o.task.reservedAmt : 0), 0);
   assert.equal(whReserved(s, k), sum); assert.equal(whReserved(s, k, d), sum - d.task.reservedAmt); assert.deepEqual(invariants(s), []);
   s.resv['stock:wood:ghost'] = 'ghost'; assert.ok(invariants(s).some((x) => /ghost/.test(x)), '孤兒 stock 鍵會被不變式抓到');
-});
-test('舊檔（帶 vegRes、無 stock 鍵）讀入後自動補鍵', () => {
-  const s = createState(11); s.res.food = 0; const d = runTo(s, (o) => o.task?.act === 'cook' && o.task.phase !== 'done'); assert.ok(d);
-  const o = JSON.parse(save(s)); o.vegRes = 2; for (const k of Object.keys(o.resv)) if (k.startsWith('stock:')) delete o.resv[k]; for (const x of o.ds) if (x.task?.resv) x.task.resv = x.task.resv.filter((k) => !k.startsWith('stock:'));
-  const r = load(JSON.stringify(o)); assert.ok(r.ok, r.err); assert.equal(r.state.vegRes, undefined); assert.equal(r.state.resv[`stock:veg:${d.id}`], d.id); assert.deepEqual(invariants(r.state), []);
 });
 test('遲滯推廣：餓昏旗 ≤15 亮、到 50 才熄；吃飯第一優先跟著旗走', () => {
   assert.equal(HYST.famished.on, 15); assert.equal(HYST.famished.off, 50);

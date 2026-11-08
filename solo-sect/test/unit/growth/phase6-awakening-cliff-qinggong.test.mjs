@@ -12,7 +12,7 @@ const until = (s, condition) => {
   assert.ok(condition(), '真實任務須在固定時間內完成');
 };
 
-test('R3 承接 Phase 6：純陽與羅漢分卷須讀才學會，舊局不取得隱居卷', () => {
+test('R3 承接 Phase 6：純陽與羅漢分卷須讀才學會', () => {
   for (const [starter, heart, step, hv, sv] of [['chunyangFist', 'quanzhenXinfa', 'jinyanStep', 'quanzhen-heart', 'quanzhen-step'], ['luohanHands', 'shaolinXinfa', 'shaolinStep', 'shaolin-heart', 'shaolin-step']]) {
     const s = createState(17, { hermitage: true, starterArt: starter }), d = s.ds[0];
     assert.equal(bookStatus(s, d, hv).ok, false);
@@ -29,10 +29,7 @@ test('R3 承接 Phase 6：純陽與羅漢分卷須讀才學會，舊局不取得
     assert.ok(speedOf(d) > beforeSpeed);
     assert.ok(Math.abs(speedOf(d) / speedOf({ ...d, hermitageStarter: null }) - 1.35) < 1e-9);
   }
-  const old = createState(17), hero = old.ds[0];
-  hero.hermitageStarter = 'chunyangFist'; hero.arts.chunyangFist = { xp: 25 }; hero.skills.strength = 15;
-  assert.equal(bookStatus(old, hero, 'quanzhen-heart').ok, false);
-  assert.equal(hero.arts.quanzhenXinfa, undefined);
+
 });
 
 test('Phase 6：三級山崖依火候／身法逐一開放，真任務帶回草藥、玉蜂漿與寒潭水', () => {

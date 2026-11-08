@@ -1,7 +1,8 @@
 // v2.22 Batch 3：M1 傳記／大事紀、M2 山賊餘黨反撲、M3 結伴吃飯・送飯・柵破避難（皆只在 v22 基準下啟動，無新開關）
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick, save, pairOf, PAIR } from '../../src/sim.mjs';
+import { createState } from '../harness/historical-party.mjs';
+import { tick, save, pairOf, PAIR } from '../../src/sim.mjs';
 import { bioLine, bioLean, chronHtml, tallyAct, recordDeed } from '../../src/util.mjs';
 import { T, points, threatDaily, BOSS, bossEnd, shelterOnBreak, timid, SHELTER } from '../../src/threat.mjs';
 import { DAY } from '../../src/data.mjs';
@@ -54,7 +55,7 @@ test('M2 沒擋住：記入大事紀、不給太平', () => {
 // #390：舊局已不存在，刪「M2 非 v22 不排餘黨」
 
 // ---- M3 ----
-const pairUp = (s) => { const [a, b] = s.ds.filter((d) => d.id !== 'hero' && d.adult !== false); a.spouse = b.id; b.spouse = a.id; return [a, b]; };
+const pairUp = (s) => { s.ds[2].adult = true; const [a, b] = s.ds.filter((d) => d.id !== 'hero' && d.adult !== false); a.spouse = b.id; b.spouse = a.id; return [a, b]; }; // 歷史測試明建兩位成年門人；隱居開局不保證原三人皆成年。
 test('M3 pairOf：配偶優先', () => { const s = mk(); const [a, b] = pairUp(s); assert.equal(pairOf(s, a).id, b.id); });
 test('M3 另一半忙著幹活又餓：送飯過去（扣 1 飯、對方飽食上升、記事蹟）', () => {
   const s = mk(); const [a, b] = pairUp(s); s.res.food = 20;

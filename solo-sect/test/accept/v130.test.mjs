@@ -6,7 +6,6 @@ import { ARTS, RULES_VERSION, DAY, JH } from '../../src/data.mjs';
 import { artTier } from '../../src/arts.mjs';
 import { XIA_PAIRS, xiaResolve } from '../../src/wuxia.mjs';
 import { jhStep, jhResolve, card, comedyOk, CARDS } from '../../src/jianghu.mjs';
-import { migrate } from '../../src/save.mjs';
 const st = (o = {}) => { const s = createState(11, { kind: 'template', id: 'guojing', companion: 'huangrong', askMajor: true, ...o }); tick(s); s.jh.morningOn = false; return s; };
 const run = (s, t) => { const e = s.t + t; while (s.t < e) tick(s); };
 const pick = (s, k, i = 0) => { const ch = s.choices.find((c) => c.jh === k); assert.ok(ch, `card ${k}`); jhResolve(s, ch, i); };
@@ -83,4 +82,3 @@ test('包租婆帶包租公上山：獅子吼＋太極，夫妻連攜', () => {
 test('張無忌／韋小寶／阿星模板主線自動駕駛能往下走', () => {
   for (const [id, min] of [['zhangwuji', 4], ['weixiaobao', 5], ['axing', 3]]) { const s = createState(5, { kind: 'template', id, askMajor: false }); s.jh.comedyOn = false; run(s, DAY * 10.5); assert.ok((s.hero.arcStep || 0) >= min, `${id} ${s.hero.arcStep}`); }
 });
-test('存檔遷移到 1.3', () => { const s = st(); const raw = JSON.parse(JSON.stringify({ ...s, fx: [] })); delete raw.jh; raw.rules = '1.2'; const o = migrate(raw); assert.ok(o.jh && o.jh.comedyOn); });

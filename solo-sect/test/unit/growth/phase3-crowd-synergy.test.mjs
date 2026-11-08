@@ -113,24 +113,25 @@ test('2. 場景 B（雙劍合璧、真武七截陣、背靠背與借樹卡位 Pa
     id: 'yangguo',
     name: '楊過',
     skills: { strength: 35, agility: 35 },
-    arts: { yunv: { xp: 80 } }
+    arts: { quanzhenSword: { xp: 80 } }
   };
   const dPartner = {
     id: 'xiaolongnv',
     name: '小龍女',
+    fem: true,
     hp: 100,
     max: 100,
     skills: { strength: 30, agility: 40 },
-    arts: { yunv: { xp: 90 } },
+    arts: { yunvSword: { xp: 90 } },
     xia: 'xiaolongnv'
   };
   const opp = { id: 'jinlun', name: '金輪國師', skills: { strength: 40, agility: 32 } };
 
-  // 2.1 雙劍合璧（twinSwordsCouple）
-  const fCouple = crowdSynergyFrame(dHero, {}, {
+  // R9：退役舊局的伴侶捷徑；實際雙脈立匾後，兩人各會一脈劍法才顯合璧。
+  const dualHall = { hermitage: { founded: true }, sect: { doctrine: 'dualHall' } };
+  const fCouple = crowdSynergyFrame(dHero, dualHall, {
     opponent: opp,
     partner: dPartner,
-    isCouple: true,
     loadL: 1.0
   });
   assert.equal(fCouple.synergyMode, 'twinSwordsCouple', 'Couple partner triggers twinSwordsCouple');
@@ -139,10 +140,9 @@ test('2. 場景 B（雙劍合璧、真武七截陣、背靠背與借樹卡位 Pa
   assert.equal(fCouple.effectiveLoadL, 0.65, 'Load reduced by twin swords synergy to 0.65');
 
   const ctxCouple = createMockCtx();
-  renderMicroStage(ctxCouple, {}, dHero, {
+  renderMicroStage(ctxCouple, dualHall, dHero, {
     opponent: opp,
     partner: dPartner,
-    isCouple: true,
     loadL: 1.0
   });
   const hasCoupleText = ctxCouple.log.some((c) => c.name === 'fillText' && c.args[0]?.includes('雙劍合璧・玉女素心'));

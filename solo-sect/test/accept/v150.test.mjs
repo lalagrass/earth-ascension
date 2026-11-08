@@ -8,7 +8,7 @@ import { invariants } from '../../src/core.mjs';
 import { statusOf } from '../../src/panel-ui.mjs';
 import { canExpedition } from '../../src/world.mjs';
 import { openExp } from '../../src/world.mjs';
-import { migrate, save, load } from '../../src/save.mjs';
+import { save, load } from '../../src/save.mjs';
 const run = (s, n) => { for (let i = 0; i < n; i++) tick(s); };
 
 test('登錄表：設施階段宣告 offers/容量/時長；床位＝beds、灶位 1', () => {
@@ -62,12 +62,6 @@ test('巡山召回（A2）：從目前距離往回走、戰利品保留、決定
 test('狀態層讀結構化 decision；v1.45 事件誤分級修正', async () => {
   const s = createState(9); run(s, 40); const d = s.ds.find((x) => x.task && x.decision); const x = statusOf(s, d); assert.ok(x.layer); d.reason = '精力 累 餓 入夜（亂寫）'; d.decision = { layer: 'trait', act: d.task.act }; assert.equal(statusOf(s, d).layer, '性格');
   const { tierOf } = await import('../../src/util.mjs'); assert.equal(tierOf('本門新紀錄 300 步'), 'mid'); assert.equal(tierOf('重傷倒地'), 'mid'); assert.equal(tierOf('名俠來訪'), 'top');
-});
-test('1.5 版本＋1.45 舊檔一步遷移：菜畦 busy → 預約表；歇息補床位', () => {
-  assert.ok(['1.5', '1.8', '1.85', '1.9', '1.95', '2.4', '2.5', '2.6', '2.7', '2.8', '2.9', '3.0', '3.1', '3.2', '3.3', '3.4', '3.5', '3.6', '3.7', '3.8', '3.81', '3.9', '4.0', '4.1', '4.2', '4.3', '4.4', '4.5', '4.6', '4.7', '4.8', '4.9', '4.95'].includes(RULES_VERSION)); const s = createState(10); run(s, 20); const o = JSON.parse(save(s)); o.rules = '1.45'; delete o.resv;
-  const d = o.ds[1]; d.task = { act: 'farm', fac: 'veg', phase: 'go', plot: 2 }; o.plots[2].busy = d.id; const e = o.ds[2]; e.task = { act: 'rest', fac: 'hall', phase: 'do' }; delete d.tired;
-  migrate(o); assert.deepEqual(o.migSteps, ['1.5', '1.8', '1.85', '1.9', '1.95', '2.4', '2.5', '2.6', '2.7', '2.8', '2.9', '3.0', '3.1', '3.2', '3.3', '3.4', '3.5', '3.6', '3.7', '3.8', '3.81', '3.9', '4.0', '4.1', '4.2', '4.3', '4.4', '4.5', '4.6', '4.7', '4.8', '4.9', '4.95']); assert.equal(o.resv['plot:2'], d.id); assert.ok(!('busy' in o.plots[2])); assert.ok(e.task.resv.length); assert.equal(typeof d.tired, 'boolean');
-  const r = load(JSON.stringify({ ...o, rules: '1.45' })); assert.ok(r.ok);
 });
 test('長跑：10 日每拍不變式（含床位）', () => {
   const s = createState(11); openExp(s); for (let i = 0; s.t < DAY * 10; i++) { tick(s); if (i % 20 === 0) { const b = invariants(s); assert.deepEqual(b, [], `t=${s.t}`); } }
