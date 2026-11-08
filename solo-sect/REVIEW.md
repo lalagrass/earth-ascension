@@ -1,5 +1,9 @@
 # 可重跑驗收
 
+## R1 常數來由（#519）
+
+`node solo-sect/tools/audit-hermitage-constants.mjs --check --strict --list`：100／100 來源列吻合，未標 0，設計旋鈕 78 列／178 個數值；[逐列來源與理由](docs/systems/hermitage-constant-audit.json)、[旋鈕原始清單](artifacts/r13/r1-knobs.txt)。不更改任何值、模擬、版號或 golden。`bash solo-sect/test/run.sh smoke` 包含盤點檢查；R4 資料化時若原列退場，應先更新盤點再驗。新增值必須標類別、來源、理由。
+
 ## H0 隱居期隔離（#518，規則 4.7）
 
 世界理由與來源見 [隱居規則](docs/systems/hermitage.md)：茅廬有人同住，不代表山門已立。立匾前的名俠登門與 N58 收徒讀同一個未開山條件；開山後回到原規則，舊局不變。
