@@ -1,0 +1,114 @@
+{
+  "scope": "4 openings x natural/guided x 12 seeds; 1 second tick; clear alerts",
+  "days": [
+    30,
+    90
+  ],
+  "totals": {
+    "first-step": {
+      "day30": 96,
+      "day90": 96,
+      "denominator": 96
+    },
+    "own-art": {
+      "day30": 96,
+      "day90": 96,
+      "denominator": 96
+    },
+    "first-scroll": {
+      "day30": 96,
+      "day90": 96,
+      "denominator": 96
+    },
+    "high-place": {
+      "day30": 32,
+      "day90": 53,
+      "denominator": 96
+    },
+    "breakthrough": {
+      "day30": 96,
+      "day90": 96,
+      "denominator": 96
+    },
+    "two-arts": {
+      "day30": 80,
+      "day90": 84,
+      "denominator": 96
+    },
+    "dog-watch": {
+      "day30": 11,
+      "day90": 11,
+      "denominator": 96
+    },
+    "boar-watch": {
+      "day30": 3,
+      "day90": 10,
+      "denominator": 96
+    },
+    "bandit-watch": {
+      "day30": 18,
+      "day90": 49,
+      "denominator": 96
+    },
+    "defend-twice": {
+      "day30": 0,
+      "day90": 0,
+      "denominator": 96
+    },
+    "lair-run": {
+      "day30": 0,
+      "day90": 17,
+      "denominator": 96
+    },
+    "stand-banner": {
+      "day30": 48,
+      "day90": 48,
+      "denominator": 96
+    },
+    "first-student": {
+      "day30": 48,
+      "day90": 48,
+      "denominator": 96
+    },
+    "rumor-found": {
+      "day30": 48,
+      "day90": 48,
+      "denominator": 96
+    },
+    "hall-repaired": {
+      "day30": 48,
+      "day90": 48,
+      "denominator": 96
+    },
+    "first-graduate": {
+      "day30": 0,
+      "day90": 0,
+      "denominator": 96
+    },
+    "family-day": {
+      "day30": 16,
+      "day90": 67,
+      "denominator": 96
+    },
+    "quiet-cultivator": {
+      "day30": 96,
+      "day90": 96,
+      "denominator": 96
+    },
+    "wild-observer": {
+      "day30": 0,
+      "day90": 0,
+      "denominator": 96
+    },
+    "many-scrolls": {
+      "day30": 59,
+      "day90": 71,
+      "denominator": 96
+    }
+  },
+  "neverReachedDay90": {
+    "defend-twice": "同一人在兩次守柵地圖交手中勝利才會累積兩筆 `deed.defend`；受控日程未達兩次。",
+    "first-graduate": "外門須有貢獻並通過正式升內門考核；受控日程沒有啟動該考核。",
+    "wild-observer": "要在有足夠壓力的真交手中觸發 N35 悟招；這批受控日程沒有該事件。"
+  }
+}

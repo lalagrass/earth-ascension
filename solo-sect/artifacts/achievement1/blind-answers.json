@@ -1,0 +1,8 @@
+{
+  "seed": 17,
+  "answers": {
+    "A": "timeline",
+    "B": "achievements"
+  },
+  "method": "normal UI start; fixed day 3 deed, codex kill and witnessed rumor; no page errors"
+}

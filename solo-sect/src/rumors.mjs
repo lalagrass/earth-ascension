@@ -1,5 +1,6 @@
 // R8（#526／#507）：外人親見的事才成傳聞；人走到聚落才傳開。
 import { SOCIAL_EVENTS } from './social-thoughts.mjs';
+import { noteRumor } from './achievement-record.mjs';
 
 // 淡忘沿 N46「一起被圍／惱羞拉住」的 30 日記憶；山路走一日沿既有日節拍。
 const MEMORY_DAYS = SOCIAL_EVENTS.surrounded.days;
@@ -29,6 +30,7 @@ export function recordRumor(s, kind, witness, site = 'gate', detail = '', eviden
     ...(kind === 'rareBook' && evidence?.bookId ? { bookId: evidence.bookId, bookAt: evidence.at, bookHolder: evidence.holder } : {}),
     ...(evidence?.trade ? { trade: evidence.trade } : {}), ...(evidence?.stock ? { stock: evidence.stock } : {}) };
   rumorsOf(s).push(entry);
+  noteRumor(s, entry);
   return entry;
 }
 export function spreadRumors(s) {

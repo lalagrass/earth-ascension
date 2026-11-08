@@ -500,17 +500,17 @@ R1 **推導**：同一股水在更高落差下，忽略空氣阻力的衝擊速�
 | src/time-scale.mjs:8:physical scale:1 | 地圖尺度 | export const zhangToMeters = zhang => zhang * METERS_PER_ZHANG; |
 | src/time-scale.mjs:14:DAYS_PER_YEAR:1 | 成長年 | export const DAYS_PER_YEAR = 28; |
 | src/time-scale.mjs:16:REAL_DAYS_PER_YEAR:1 | 成長年 | export const REAL_DAYS_PER_YEAR = 365.2425; |
-| src/util.mjs:10:BUBBLE_TTL:1 | 動作秒 | export const BUBBLE_TTL = 8; |
-| src/world.mjs:23:projection scale:1 | 示意距離 | export const PX = 2.4; |
-| src/world.mjs:55:decay:1 | 生理日 | export const ECO2 = { immig: 1, immigNoDen: 0.5, br: 2, kill: 0.02, killMax: 0.3, decay: 0.85, denAt: 4, denDays: 5, denCut: 0.5 }; |
-| src/world.mjs:55:denDays:2 | 生理日 | export const ECO2 = { immig: 1, immigNoDen: 0.5, br: 2, kill: 0.02, killMax: 0.3, decay: 0.85, denAt: 4, denDays: 5, denCut: 0.5 }; |
-| src/world.mjs:57:DAYS:1 | 生理日 | const DAYS = DAY; |
-| src/world.mjs:188:every:1 | 動作秒 | export const AUTO = { keys: 3, prefix: 'solo-sect-auto-', every: 60 }; |
-| src/world.mjs:223:every:1 | 巡山距離 | return { id: 'end' + k, name: '絕頂之上・第${k}重', from, to: from + ENDLESS.len, every: 50, roster: ENDLESS.roster, find: ENDLESS.find, scale: (L.scale \|\| 1) * ENDLESS.mul ** k, gate: ENDLESS.gate, gateName: '第${k}重無名高手', en |
-| src/world.mjs:256:seconds:1 | 動作秒 | const mv=pick?.move;if(!mv)return {mv:null,dps:0,seconds:0}; |
-| src/world.mjs:297:perDay:1 | 生理日 | export const A9 = { minHp: 70, dps: 80, perDay: 5, idleCap: 20, mood: 10, diverse: 6, keep: 25, bond: 20 }; |
-| src/world.mjs:301:DAY literal:1 | 生理日 | const base = (d) => { const idle = Math.min(A9.idleCap, ((s.t - (d.lastExp ?? -DAY * 9)) / DAY) * A9.perDay), m = Math.max(0, (60 - d.mood) / 60) * A9.mood; return { sp: (dpsOf(s, d) / top) * A9.dps, idle, m }; }; |
-| src/world.mjs:554:coolFast:1 | 動作秒 | const cool = EXP.cool * (fast ? EXP.coolFast : 1); for (const d of team) d.restUntil = s.t + cool; |
+| src/util.mjs:11:BUBBLE_TTL:1 | 動作秒 | export const BUBBLE_TTL = 8; |
+| src/world.mjs:24:projection scale:1 | 示意距離 | export const PX = 2.4; |
+| src/world.mjs:56:decay:1 | 生理日 | export const ECO2 = { immig: 1, immigNoDen: 0.5, br: 2, kill: 0.02, killMax: 0.3, decay: 0.85, denAt: 4, denDays: 5, denCut: 0.5 }; |
+| src/world.mjs:56:denDays:2 | 生理日 | export const ECO2 = { immig: 1, immigNoDen: 0.5, br: 2, kill: 0.02, killMax: 0.3, decay: 0.85, denAt: 4, denDays: 5, denCut: 0.5 }; |
+| src/world.mjs:58:DAYS:1 | 生理日 | const DAYS = DAY; |
+| src/world.mjs:189:every:1 | 動作秒 | export const AUTO = { keys: 3, prefix: 'solo-sect-auto-', every: 60 }; |
+| src/world.mjs:224:every:1 | 巡山距離 | return { id: 'end' + k, name: '絕頂之上・第${k}重', from, to: from + ENDLESS.len, every: 50, roster: ENDLESS.roster, find: ENDLESS.find, scale: (L.scale \|\| 1) * ENDLESS.mul ** k, gate: ENDLESS.gate, gateName: '第${k}重無名高手', en |
+| src/world.mjs:258:seconds:1 | 動作秒 | const mv=pick?.move;if(!mv)return {mv:null,dps:0,seconds:0}; |
+| src/world.mjs:299:perDay:1 | 生理日 | export const A9 = { minHp: 70, dps: 80, perDay: 5, idleCap: 20, mood: 10, diverse: 6, keep: 25, bond: 20 }; |
+| src/world.mjs:303:DAY literal:1 | 生理日 | const base = (d) => { const idle = Math.min(A9.idleCap, ((s.t - (d.lastExp ?? -DAY * 9)) / DAY) * A9.perDay), m = Math.max(0, (60 - d.mood) / 60) * A9.mood; return { sp: (dpsOf(s, d) / top) * A9.dps, idle, m }; }; |
+| src/world.mjs:556:coolFast:1 | 動作秒 | const cool = EXP.cool * (fast ? EXP.coolFast : 1); for (const d of team) d.restUntil = s.t + cool; |
 | src/wuxia.mjs:26:DAY literal:1 | 生理日 | need: (s) => present(s, 'guojing') && s.t - (s.xia.joinT.guojing ?? (s.hero?.id === 'guojing' ? 0 : s.t)) >= DAY * 0.5, why: '郭靖在門中半天以上（下山採買時遇上）' }, |
 | src/wuxia.mjs:84:DAY literal:1 | 生理日 | if ((X.declined[k] \|\| -1e9) > s.t - 3 * DAY \|\| !XIA[k].need(s) \|\| !rumorForVisitor(s, [XIA[k].motive \|\| 'teaching'])) continue; |
 | src/wuxia.mjs:146:gap:1 | 生理日 | export const TEACH = { stages: 3, gap: DAY / 2, stay: 4 * DAY }; |

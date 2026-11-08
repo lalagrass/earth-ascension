@@ -9,7 +9,7 @@
   <div id="urgent" role="status"></div>
   <div id="micro-stage-wrap"><canvas id="micro-stage" width="360" height="220"></canvas><div id="micro-caption" title="點擊收合／展開微距實況窗"></div></div>
   <div id="focuscard"></div>
-  <nav id="rail-tabs" aria-label="右欄分頁"><button data-rail="person" class="on">人物</button><button data-rail="sect">門派</button><button data-rail="journey">遠行</button><button data-rail="records">紀錄</button></nav>
+  <nav id="rail-tabs" aria-label="右欄分頁"><button data-rail="person" class="on">人物</button><button data-rail="sect">門派</button><button data-rail="journey">遠行</button><button data-rail="records">紀錄</button><button data-rail="achievements">成就</button></nav>
  </div>
  <section data-rail-tab="person" class="active">
   <div id="hero"></div>
@@ -34,10 +34,12 @@
  </section>
  <section data-rail-tab="records">
   <div id="chron-wrap" hidden><h2>門派大事紀</h2><div id="chron"></div></div>
+  <h2>山門里程碑</h2><div id="timeline"></div>
   <div class="row"><button id="save">存檔</button><button id="load">讀檔</button><button id="reset">新局</button><button id="pset" title="PB-15/16/18 後製版畫像（舊圖保留）">畫像：舊</button><select id="autos"></select><button id="export">匯出存檔</button><label class="btn">匯入存檔<input id="import" type="file" accept=".json,application/json" hidden></label><button id="mute"></button></div>
   <h2>紀事</h2><ol id="log"></ol>
   <div class="row k"><button data-foldall="1">全部收合</button><button data-foldall="0">全部展開</button></div>
   <footer data-credits>致謝：<a href="https://game-icons.net/">Delapouite / game-icons.net</a>（<a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>；圖示去背、改深棕色）・霞鶩文楷（OFL）・Kenney（CC0） ・ <a href="tools/growth-preview.html">離線成長盲測驗收</a></footer>
  </section>
+ <section data-rail-tab="achievements"><h2>成就</h2><div id="achievements"></div></section>
 </aside></div>
 <script type="module" src="src/main.mjs"></script></body></html>
