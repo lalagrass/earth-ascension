@@ -11,6 +11,7 @@ export const VALUES = [['xia', '俠義'], ['sect', '門派'], ['qing', '情義']
 // 行動標籤 → 價值觀（autopilot：價值 × 標籤 進入天賦組）
 export const ACT_TAGS = {
   train: ['wu'], spar: ['wu', 'fame'], meditate: ['wu'], learn: ['wu'],
+  searchFragment: ['wu'], // 找武學是武道（讀譜、自創按所代替的練功／靜坐算）
   chat: ['qing'], encourage: ['qing', 'xia'],
   leisure: ['free'], forage: ['free'],
   build: ['sect'], chop: ['sect'], quarry: ['sect'], farm: ['sect'], cook: ['sect', 'qing'],

@@ -1,0 +1,236 @@
+{
+ "days": 60,
+ "secondsPerTick": 6,
+ "alertPolicy": "clear after each tick",
+ "scope": "controlled C observation",
+ "summary": {
+  "natural": {
+   "learned": "12/12",
+   "medianFirstArtDay": 4,
+   "medianFirstBookDay": 1
+  },
+  "player": {
+   "learned": "12/12",
+   "medianFirstArtDay": 1,
+   "medianFirstBookDay": 1
+  }
+ },
+ "rows": [
+  {
+   "mode": "natural",
+   "seed": 1001,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 4,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "natural",
+   "seed": 1002,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 4,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "natural",
+   "seed": 1003,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 4,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "natural",
+   "seed": 1004,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 4,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "natural",
+   "seed": 1005,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 3,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "natural",
+   "seed": 1006,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 4,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "natural",
+   "seed": 1007,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 6,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "natural",
+   "seed": 1008,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 3,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "natural",
+   "seed": 1009,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 4,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "natural",
+   "seed": 1010,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 3,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "natural",
+   "seed": 1011,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 3,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "natural",
+   "seed": 1012,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 4,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "player",
+   "seed": 1001,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 1,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "player",
+   "seed": 1002,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 1,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "player",
+   "seed": 1003,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 1,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "player",
+   "seed": 1004,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 1,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "player",
+   "seed": 1005,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 1,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "player",
+   "seed": 1006,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 1,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "player",
+   "seed": 1007,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 1,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "player",
+   "seed": 1008,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 1,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "player",
+   "seed": 1009,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 1,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "player",
+   "seed": 1010,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 1,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "player",
+   "seed": 1011,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 1,
+    "art": "chunyangFist"
+   }
+  },
+  {
+   "mode": "player",
+   "seed": 1012,
+   "firstBook": 1,
+   "firstArt": {
+    "day": 1,
+    "art": "chunyangFist"
+   }
+  }
+ ]
+}
