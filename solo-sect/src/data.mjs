@@ -382,7 +382,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '4.8'; /* R4 #520：隱居起手資料列，立匾道統依實際武學 */
+export const RULES_VERSION = '4.9'; /* R2 #521：隱居局身體由負重比、體能疲勞、營養推導 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
