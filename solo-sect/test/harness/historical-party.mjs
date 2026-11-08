@@ -25,7 +25,6 @@ export function createState(seed = 1, spec = null) {
     s.hero = { ...H, fu: st.fu, askMajor: spec.askMajor ?? true, arcStep: 0, sect24: spec.sect24 || HERO_SECT[T.id] };
     s.encExclude = [T.id]; s.choices = [];
     if (T.coinMul) s.res.coin *= T.coinMul;
-    sectInit(s);
   }
   for (let i = 1; i <= 2; i++) {
     const d = s.ds[i], old = DISCIPLES[i];
@@ -51,6 +50,13 @@ export function createState(seed = 1, spec = null) {
     s.encExclude.push(d.id);
     s.aff[`hero>${d.id}`] = 45;
     s.aff[`${d.id}>hero`] = 45;
+  }
+  // The historical sect mechanics are exercised after a chosen founding.
+  // New playable hermitage starts deliberately grant only the Quanzhen seed.
+  if (s.hero) {
+    s.hero.sect24 = spec?.sect24 || (spec?.kind === 'template' ? HERO_SECT[spec.id] : undefined);
+    sectInit(s);
+    for (const d of s.ds) { d.sectId = s.sect.id; d.stree = [...s.sect.tree]; d.sbias = s.sect.bias; }
   }
   return s;
 }

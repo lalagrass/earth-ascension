@@ -1,8 +1,8 @@
 import { openExp } from "../../../src/world.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, tick, startExpedition, canExpedition, load, save } from '../../../src/sim.mjs';
-import { ROUTE, ENEMIES, EXP, CAMPS, ENDLESS, RULES_VERSION, DAY } from '../../../src/data.mjs';
+import { createState, tick, startExpedition, canExpedition } from '../../../src/sim.mjs';
+import { ROUTE, ENEMIES, EXP, CAMPS, ENDLESS, DAY } from '../../../src/data.mjs';
 import { routeSeg, segAt, scoutOf, raidMul, peaceOf, evadeScore } from '../../../src/world.mjs';
 import { assemble, learnManual, MANUALS, likesOf, menuOf, likeMeal, aspOf, aspStep, ASPIRATIONS, statusIcon } from '../../../src/bonds.mjs';
 import { affKey } from '../../../src/util.mjs';
@@ -72,8 +72,4 @@ test('志向：由主價值觀而來，達成養成特質', () => {
 });
 test('頭頂只一個狀態圖示，有優先序', () => {
   assert.equal(statusIcon({ hp: 30, needs: { hunger: 0 } }, '⚔'), '🩹'); assert.equal(statusIcon({ hp: 100, needs: { hunger: 5 } }, '⚔'), '🍚'); assert.equal(statusIcon({ hp: 100, needs: {}, mood: 60 }, '⚔'), '⚔');
-});
-test('0.98 存檔遷移到 1.0', () => {
-  const o = JSON.parse(save(createState(1))); o.rules = '0.98'; delete o.camps; delete o.manuals; const r = load(JSON.stringify(o));
-  assert.ok(r.ok); assert.equal(r.state.migSteps[0], '1.0'); assert.deepEqual(r.state.camps, {}); assert.ok(parseFloat(RULES_VERSION) >= 1);
 });

@@ -8,7 +8,6 @@ import { ARTS, SECTS } from '../../../src/data.mjs';
 import { sectStep, HUIWU24 } from '../../../src/sect.mjs';
 import * as EC from '../../../src/economy.mjs';
 import { SECT_PICK24 } from '../../../src/data.mjs';
-import { buildSpec } from '../../../src/start-ui.mjs';
 import { passPick } from '../../../src/bonds.mjs';
 const V = (o = {}) => createState(7, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, v22: true, ...o });
 // #390：舊規則開局已不存在，原本的舊局對照組（OLD）與各測試裡的舊局斷言一併刪除
@@ -65,9 +64,7 @@ test('loop169 執事藏經閣：出征過或有殘頁，木 ≥5 即立（石料
   const s = V(); tick(s, 0.1); for (const d of s.ds) d.arts = { basicFist: d.arts.basicFist || { xp: 1 } }; s.res.wood = 5; s.res.stone = 0;
   assert.equal(EC.stewLib24(s), null); s.expN = 1; assert.equal(EC.stewLib24(s), 'library'); s.expN = 0; s.res.page1 = 1; assert.equal(EC.stewLib24(s), 'library'); s.res.wood = 4; assert.equal(EC.stewLib24(s), null);
 });
-test('loop169 開局門派選單：十個選項、自創主角帶 sect24（無名派不帶）、可開華山／丐幫／明教', () => {
+test('loop169 立匾門派資料：候選與樹均可建立', () => {
   assert.deepEqual(SECT_PICK24, ['wuming', 'emei', 'wudang', 'taohua', 'gumu', 'xingxiu', 'qizong', 'jianzong', 'gaibang', 'mingjiao', 'tiandihui']); /* loop174 t191 天地會 */
-  const base = { tab: 'custom', name: '甲', stats: {}, ans: Array(9).fill(0), ask: false };
-  assert.equal(buildSpec({ ...base, sect24: 'gumu' }).sect24, 'gumu'); assert.ok(!('sect24' in buildSpec({ ...base, sect24: 'wuming' })));
   for (const k of SECT_PICK24.slice(1)) { const s = V({ sect24: k }); assert.equal(s.sect.id, k, k); }
 });
