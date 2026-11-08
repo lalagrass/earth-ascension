@@ -4,12 +4,12 @@
 
 | 類別 | 指令＋門檻＋預期輸出 |
 |---|---|
-| A 固定情境 | Node 22 `bash solo-sect/test/run.sh smoke`：91/91。24a 缺石停工一日顯示缺料和每人理由；24b 所有傳聞種類有真產生處且只列當下可用收徒途徑；24d 平均者讀入門卷、半平均者兩倍時間、進階維持個人中點門檻；24e 崖上與空地練功基數一致、景致同秒數休閒回復；24f 名望者嫌破屋、自在者不受影響；24g 無傳聞不捐、具名傳聞捐修一次。 |
+| A 固定情境 | Node 22 `bash solo-sect/test/run.sh smoke`：91/91。24a 缺石停工一日顯示缺料和每人理由；24b 所有傳聞種類有真產生處且只列當下可用收徒途徑；24d 平均者讀入門卷、半平均者兩倍時間、進階維持個人中點門檻；24e 崖上與已建木樁場練功基數一致、景致同秒數休閒回復；24f 名望者嫌破屋、自在者不受影響；24g 無傳聞不捐、具名傳聞捐修一次，捐入與移往工地分別記帳而庫存淨額不變。 |
 | A golden | Node 22 `node solo-sect/tools/golden.mjs --write --tier hermitage && node solo-sect/tools/golden.mjs --check --tier all`：四格 × 第 1/3/5 日全部自檢。四格 hash 改變包含 5.7→5.8 版號；純陽／羅漢自然讀譜條件改變亦使成長與活動、RNG 後續改變；白身前五日僅 `/rules` 改變。 |
 | A 盲圖 | `python3 solo-sect/tools/r24-visual.py --seed 17`：零 pageerror；[A](artifacts/r24/blind-A.png)／[B](artifacts/r24/blind-B.png)；[答案](artifacts/r24/blind-answers.json)。真 UI 立匾後果與一日缺石理由各一張。 |
 | B 公式 | 無新隨機機率；同一 smoke 保留 N62 6,000 次出獵選擇公式，期望 .4926757803、99.9% 半寬 .021407701；觀測 .502 在區間。 |
 | C bot12 | Node 22 `node solo-sect/tools/bot12.mjs solo-sect --json`；[上一版](artifacts/r24/bot12-base.json)／[本輪](artifacts/r24/bot12-head.json)。自然山賊 0→0（未立匾）；獨立有柵探針勝 96/96→96/96、守住 84→86、傷 5→3；惱羞 254→285。早期研讀改變活動選擇，故後續 RNG 與訓練變動；這是 C，不為比例調參。 |
-| C 可玩性 | Node 22 `node solo-sect/tools/playability-report.mjs solo-sect`（30 日）與 `--days=60`；各為 4 開局 × 自然／引導 × 12 種子，1 秒 tick、每拍清 alert；與 [上一版 30 日](artifacts/playability/base-30d.json) 對照。[本輪 30 日](artifacts/r24/playability-head-30d.json)／[本輪 60 日](artifacts/r24/playability-head-60d.json)。這是受控 C 觀察。 |
+| C 可玩性 | Node 22 `node solo-sect/tools/playability-report.mjs solo-sect`（30 日）與 `--days=60`；各為 4 開局 × 自然／引導 × 12 種子，1 秒 tick、每拍清 alert；與 [上一版 30 日](artifacts/playability/base-30d.json) 對照。[本輪 30 日](artifacts/r24/playability-head-30d.json)／[本輪 60 日](artifacts/r24/playability-head-60d.json)。單人純陽 30 日自然上崖 0/12→0/12、引導 0/12→4/12（中位第 22 日）；60 日本輪自然 1/12（第 53 日）、引導 5/12（中位第 22 日）。白身 30／60 日自然與引導均 0/12，因開局無那兩本卷；60 日單人純陽引導局低心情比例中位 .578，留給第 25 輪追因。這是受控 C 觀察，與正常 0.25 秒節拍及警示暫停有別。 |
 
 舊名 → 新名：`CLIFF_TRAIN_MUL`、`yard.trainMul` → 移除，個人練功由 `focusMul` 接心情，木樁場以站位與切磋提供價值；`source` 不再兼作卷等級，新增 `HERMITAGE_VOLUMES.level`。舊 `RUMOR_KINDS.rescue` 沒有產生處，24b 刪除；24g 沿既有 `defend` 守護見聞。24a 列出所有在場成年者的當下選擇；職責是分數偏好而非硬性的工作能力鎖，不重算評分。
 
