@@ -1,5 +1,24 @@
 # 可重跑驗收
 
+## 第十四輪 R3：實物分卷、真傳藝、首日玩家立匾（#522，規則 4.95）
+
+實作 grass／Codex Cloud；從已合併第十三輪 `8751f09` 建立。只改隱居路線：外功達標後需讀到實物分卷才學新功，絕頂給卷不直接給整門；四段古墓／桃花功要有卷或會的人按原傳功時鐘教；獨行可到林中山洞尋另一脈殘卷。開山選道統由玩家第 1 日起自行按鈕決定，不自動排卡。舊開局的自練／觀摩、武學候選與 RNG 不動。完整規則、前置數值來源與遷移見 [隱居系統](docs/systems/hermitage.md)。
+
+| 類 | 重現指令／證據 | 門檻及結果 |
+|---|---|---|
+| A 固定情境 | Node 22 `bash solo-sect/test/run.sh smoke` | 合入 R2 後 62／62；R3 小測試驗個人門檻下不可讀、達標後實體任務才學、尋另一脈殘卷、真會者傳藝、首日立匾；原 Phase 4／6／7 測試依 R3 新規保留具體行為驗證。[原始日誌](artifacts/r14/smoke-r2-integration.log)。 |
+| A golden／遷移 | Node 22 `node solo-sect/tools/golden.mjs --write --tier hermitage`，再 `--check --tier all`；CI 同項另核 | 合入 R2 4.9 後 R3 為 4.95，只重產 `test/golden/hermitage.json`；[原始日誌](artifacts/r14/golden-r2-integration.log) quick 4、full 32、舊存檔 6、隱居 2 全相符；舊局 golden 檔不改。4.95 僅為舊隱居檔補未讀的起手卷。 |
+| A 真畫面盲測 | `python3 solo-sect/tools/r14-visual.py --seed=17`，種子可換 | 同一正常雙人開局 UI 的兩張 1600×900 圖：[A](artifacts/r14/blind-A.png)、[B](artifacts/r14/blind-B.png)，先辨可讀卷與已下研讀令，再讀獨立[答案](artifacts/r14/blind-answers.json)；`pageerror=[]`。 |
+| B 機率 | `bash solo-sect/test/run.sh smoke` | R3 不加新隨機公式；原 N62 6,000 次出獵期望測試保留。 |
+| C 隱居日數 | Node 22 `node solo-sect/tools/phase6-check.mjs <checkout>/solo-sect --days=10`，R2 base／R3 head 同命令 | 合入 R2 後重新以 12 種子、0.25 秒自然日程量測：[R2 base](artifacts/r14/heart-days-r2-base.json)／[R3 head](artifacts/r14/heart-days-r2-head.json)；兩者第 10 日心法、身法均 0／12，主角臂力約 11.9–12.2，未到新的個人門檻約 14；不替玩家點書卷或立匾，不為 C 調參。舊 4.8 base／4.9 head 原始列仍保留於同目錄。 |
+| C 舊局 bot12 | Node 22 `node solo-sect/tools/bot12.mjs <base 或 head>/solo-sect --json` | [base](artifacts/r14/bot12-base.json)／[head](artifacts/r14/bot12-head.json) `cmp` exit 0，SHA-256 均 `d8e5b46fb4b07edb3cb89d40519ee44d5acc457abb000b317b77ab88cc9bf68b`；自然山賊 53／62、柵欄探針 84／96、守住 48／96，`winP` 中位 .985，惱羞 1052。 |
+
+舊名 → 新名：`SHARED_AWAKENING`／`checkSharedAwakening` → `HERMITAGE_VOLUMES`／`teachableHermitageBook`；`checkExteriorToInteriorAwakening` → `bookStatus`／`readHermitageBook`；`dailyPipeline` 的自然排卡路徑 → `queueHermitageFounding` 玩家按鈕。舊保存欄位 `awakeningStage` 僅繼承實際已學段數。
+
+舊測試更新理由：Phase 4 四階與 Phase 6 心法／身法測試，原「條件滿即自悟」改驗有卷且讀完／真人傳功；Phase 7 原自然排立匾卡改驗第 1 日親按才出卡；R2 使原臂力 15／身法 16 的絕對前置不可達，改驗個人成長空間一半上下的固定反例；`v145-review`、`v145`、`v150` 的精確遷移序列在 R2 4.9 後追加 4.95，原順序與舊檔有效性斷言全留。
+
+最沒把握三處：① 獨行第二路固定在林中山洞找到，是 #522 指定的可達路徑，沒有另抽掉落率；② 四段卷允許先取得後等前卷 XP，這使卷物理上可早於可讀狀態；③ 10 日自然 C 尚有 6 人未自發選到研讀任務，已保留原始記錄，沒有為此增閱讀偏好係數。
+
 ## 第十三輪 R4 情境列與單脈（#520，規則 4.8）
 
 實作 grass／Codex Cloud；從已合併 Phase 7 的 `50b4b89` 接 H0、R1、R4。舊局情境列仍建立同一位初始弟子與兩位出身同行；隱居有小龍女、黃蓉、獨行三列，無新局伴侶／同行者身分欄位。開山查人物真武學；單脈只有兩選，師承查已會武學和好感，熟廚額外週期看 `cooking ≥16`。4.8 遷移保留舊隱居人物 id、段數、好感；舊局只多空遷移步，golden 正規化時去掉。

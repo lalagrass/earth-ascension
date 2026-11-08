@@ -2,7 +2,8 @@ import {originPeople,ORIGIN_RELATIONS} from './origins.mjs';
 import {HUNGER_PER_SECOND,admissionStatus,unfoundedHermitage,mentorFor,guidanceSeconds,clockActor,noteGuidance,guidanceLearning,guidanceDaily} from './admission.mjs';
 import {attraction,applicantAway,bookAdmissionWork,discipleCount,policyCap,recruitmentInit,recruitmentOf,returnFromWork,sendApplicantToWork,setRecruitPolicy} from './recruitment.mjs';
 export {attraction,policyCap,setRecruitPolicy} from './recruitment.mjs';
-import {transferredDamage,moveStats,checkSharedAwakening,checkExteriorToInteriorAwakening,hermitageInnerActive,hermitageStepActive} from './arts.mjs';
+import {transferredDamage,moveStats,hermitageInnerActive,hermitageStepActive} from './arts.mjs';
+import { HERMITAGE_VOLUMES, seedHermitageBooks, bookStatus, readHermitageBook, cliffBook, forestFragment, volumeById } from './hermitage-books.mjs';
 import { canLeapCliff, CLIFF_ACT_NODE } from './cliff.mjs';
 import {ringCapacity,attackTokenLimit,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} from './tactics.mjs';
 import {pickupDrop} from './techniques.mjs';
@@ -97,6 +98,7 @@ export function createState(seed = 1, heroSpec = null) {
       s.ds.push(person); initPair(s, hero, person, row.affinity);
       s.encExclude.push(person.xia);
     }
+    seedHermitageBooks(s, opening, starter);
     log(s, `【荒山隱居】${[hero, ...s.ds.filter((d) => d !== hero)].map((d) => d.name).join('與')}在終南茅廬安頓，先做活練功。`);
   }
   const originRows = opening.origins ? originPeople(heroSpec?.kind === 'template' ? heroSpec.id : null, heroSpec?.answers?.[0] || 0) : [];
@@ -265,6 +267,12 @@ export function setOrder(s, id, order) {
   d.order = order || null; cancelTask(s, d, '玩家改派');
   return true;
 }
+export function chooseHermitageBook(s, id, volume) {
+  const d = byId(s, id);
+  if (!d || !bookStatus(s, d, volume).ok) return false;
+  d.manualChoice = volume;
+  return setOrder(s, id, 'readBook');
+}
 
 // ---- 效用 AI ----
 // 可被邀聊：無玩家指派、未負重、未在施工/狩獵/歇息/聊天中
@@ -353,6 +361,13 @@ export function scoreActs(s, d) {
     const cliffId = CLIFF_ACT_NODE[act], source = out.find(o => o.act === base);
     if (source && canLeapCliff(d, cliffId)) out.push({ act, score: source.score, why: `輕功可到${CLIFFS[cliffId].name}，${ACTIVITIES[act].name}` });
   } // 出自 Phase 6 規格：解鎖後 AI 借原活動分數選崖上同類工作，不另立任意偏好常數。
+  if (s.hermitage) {
+    const next = HERMITAGE_VOLUMES.find(v => bookStatus(s, d, v.id).ok);
+    const study = out.find(o => o.act === 'study' || o.act === 'train');
+    if (next && study) out.push({ act: 'readBook', score: study.score, why: `讀《${artById(next.art).name}》的實物卷` });
+    const forage = out.find(o => o.act === 'forage');
+    if (s.hermitage.active && forage && d.id === 'hero' && s.ds.length === 1 && !s.hermitage.books?.some(id => volumeById(id)?.source === 'fragment')) out.push({ act: 'searchFragment', score: forage.score, why: '到林中山洞找另一脈拳譜殘卷' });
+  }
   if (s.band && BAND.defendScore > 0 && canDefend(d)) out.push({ act: 'defend', score: BAND.defendScore, why: s.band.state === 'go' ? '山賊往菜園來了，去柵邊守著' : '山賊在撞柵，去打退他們' }); // loop3
   if (d.ng && qiMax(d) > 0 && qiOf(d) < qiMax(d) * NG23.medLow) for (const o of out) if (o.act === 'meditate') { o.score *= NG23.medBoost; o.why += '（內力不足，先打坐回氣）'; } /* loop153 */
   if (d.lspec && isLabor(d)) for (const o of out) if (o.act === d.lspec) { o.score *= LABOR23.specMul; o.why += '（拿手活）'; } /* loop155 */
@@ -382,6 +397,15 @@ export function scoreActs(s, d) {
 }
 
 function assign(s, d, act, why) {
+  if (act === 'readBook') {
+    const volume = d.manualChoice && bookStatus(s, d, d.manualChoice).ok ? d.manualChoice : HERMITAGE_VOLUMES.find(v => bookStatus(s, d, v.id).ok)?.id;
+    if (!volume) return false;
+    d.task = { act, node: 'hall', phase: 'go', volume }; goto(d, 'hall'); d.reason = why || '讀拳譜'; return true;
+  }
+  if (act === 'searchFragment') {
+    if (!s.hermitage?.active || d.id !== 'hero' || s.ds.length !== 1 || s.hermitage.books?.some(id => volumeById(id)?.source === 'fragment')) return false;
+    d.task = { act, node: 'forest2', phase: 'go' }; goto(d, 'forest2'); d.reason = why || '林中山洞尋殘卷'; return true;
+  }
   if (CLIFF_ACT_NODE[act]) {
     const cliffId = CLIFF_ACT_NODE[act]; if (!s.hermitage || !canLeapCliff(d, cliffId)) return false;
     d.task = { act, node: cliffId, phase: 'go' }; goto(d, cliffId); d.reason = why || `上${CLIFFS[cliffId].name}${ACTIVITIES[act].name}`; return true;
@@ -522,7 +546,7 @@ function grow(s, d, sk, amt, src = 'train') {
   if (bodyConditionOn(s) && src === 'labor' && ['strength', 'agility'].includes(sk)) return; // 出自 Phase 5 規格：新局體魄由疲勞週期結算，不能從舊勞作通路繞過 18 點上限。
   const before = d.skills[sk]; d.skills[sk] = Math.min(100, before + amt * (d.traits.diligent || 1) * 0.3 * (1 - before / 130) * focusMul(d));
   if (src === 'labor' && sk === 'strength' && d.lg) d.skills[sk] = before + workStrCap(d, Math.floor(s.t / DAY), d.skills[sk] - before); // loop127 做活力氣每日軟上限
-  if (sk === d.style) { growEnsure(d); const o = gainArt(d, amt * (d.arts ? teachMul(s, d, focusOf(d)) : 1), focusMul(d), s.t, { raw, src }); /* #415 N12 師父傳授時段：這門名功練得快 */ if (o.feed) log(s, `${d.name}【${o.feed.label}】內功《${o.feed.name}》長進 ${o.feed.xp.toFixed(2)}`); if (o.next) log(s, `${d.name}功夫到了火候，可向師父求學「${o.next.name}」`); for (const m of o.moves) log(s, `${d.name}把已學套路的「${MOVES.find((x) => x.id === m).name}」練成了`); if (o.star) log(s, `${d.name}的基本功又添一顆星`); if (s.hermitage) checkExteriorToInteriorAwakening(d, s); return o; }
+  if (sk === d.style) { growEnsure(d); const o = gainArt(d, amt * (d.arts ? teachMul(s, d, focusOf(d)) : 1), focusMul(d), s.t, { raw, src }); /* #415 N12 師父傳授時段：這門名功練得快 */ if (o.feed) log(s, `${d.name}【${o.feed.label}】內功《${o.feed.name}》長進 ${o.feed.xp.toFixed(2)}`); if (o.next) log(s, `${d.name}功夫到了火候，可向師父求學「${o.next.name}」`); for (const m of o.moves) log(s, `${d.name}把已學套路的「${MOVES.find((x) => x.id === m).name}」練成了`); if (o.star) log(s, `${d.name}的基本功又添一顆星`); return o; }
 }
 
 const CLIFF_TRAIN_MUL = Object.freeze({ cliffTrain: 1.25, waterfallTrain: 1.4 }); // 出自 Phase 6 規格：試劍崖／飛瀑外功練體速度。
@@ -546,7 +570,7 @@ function doTask(s,d,dt){
   }
   if (t.phase === 'go' && !d.path.length) {
   if (t.partner) { const p = byId(s, t.partner); if (!p || p.task?.partner !== d.id) { d.task = null; return; } if (p.path.length) return; }
-    if (CLIFFS[t.node] && s.hermitage && !s.hermitage.exploredCliffs?.includes(t.node)) { (s.hermitage.exploredCliffs ??= []).push(t.node); log(s, `${d.name}踏上${CLIFFS[t.node].name}，望見山路又開了一層。`); if (s.hermitage.active) queueHermitageFounding(s); }
+    if (CLIFFS[t.node] && s.hermitage && !s.hermitage.exploredCliffs?.includes(t.node)) { (s.hermitage.exploredCliffs ??= []).push(t.node); log(s, `${d.name}踏上${CLIFFS[t.node].name}，望見山路又開了一層。`); }
     t.phase = 'do'; t.timer = 0; d.anim = t.act;
   }
   if (t.phase === 'do') {
@@ -586,7 +610,7 @@ function doTask(s,d,dt){
       if ((t.act === 'chat' || t.act === 'spar') && t.partner && d.id < t.partner) askStrong(s, d, byId(s, t.partner), grow, think, log); // loop8 請教
       // N42：平常練習只累積 N33 的手眼熟；整門功夫須有師父或譜。
       if (t.act === 'spar' && t.partner) { const p = byId(s, t.partner); if (d.id < p.id) { relAdd(s, d, p, 2); log(s, `${d.name}與${p.name}在${facStage(s, 'yard').offers.includes('spar') ? '木樁場' : '空地上徒手'}切磋`); addMem(s, d, p, 'spar'); const strength = (x) => (x.skills?.palm || 0) + (x.skills?.leg || 0) + (x.skills?.agility || 0); if (strength(d) !== strength(p)) recordSocialEvent(s, 'sparLoss', strength(d) > strength(p) ? d : p, strength(d) > strength(p) ? p : d); } }
-      if (s.hermitage && (t.act === 'train' || t.act === 'spar')) for (const person of s.ds) checkSharedAwakening(person, byId(s, 'hero'), s);
+      // R3：隱居局不再因練功或切磋而直接取得整門武學；須讀卷或由會的人傳授。
       if (A.fun) d.needs.fun = clamp((d.needs.fun ?? 60) + A.fun, 0, 100);
       if (t.act === 'leisure') think(s, d, 'idled');
       if (t.act === 'forage') d.needs.fun = clamp((d.needs.fun ?? 60) + (d.personality.includes('playful') ? 20 : 8), 0, 100);
@@ -605,13 +629,13 @@ function doTask(s,d,dt){
       if (t.act === 'pass' && t.lead && t.partner) { const p = byId(s, t.partner); if (p) passDo(s, d, p, t.art); }
       if (t.act === 'study') { const w = readStudy(s, d); if (w) log(s, `${d.name}在藏經閣讀了許久，忽然開竅——悟性長進了${d.rootKnown ? `（${w}）` : ''}。`); } // loop140 讀書長悟性
       if (t.act === 'study' && t.fac === 'library') { const page = readLuohanBook(d, effDur, s.t); if (page.learned) { log(s, `【拳譜】${d.name}對照身體起手，把《少林羅漢十八手》的二十二段讀完，開始依譜練掌。`); think(s, d, 'learned'); } else if (page.form) log(s, `${d.name}讀《羅漢十八手》到「${page.form}」，照著圖譜試擺。`, 'low'); }
+      if (t.act === 'readBook' && s.hermitage) { const result = readHermitageBook(s, d, t.volume, effDur); if (result.learned) { d.manualChoice = null; think(s, d, 'learned'); } }
+      if (t.act === 'searchFragment' && s.hermitage) forestFragment(s, d);
       if (t.act === 'cliffComprehend' && s.hermitage) {
-        const candidates = d.hermitageStarter === 'luohanHands' ? ['shaolinArhat'] : ['quanzhenSword', 'xiantianGong'];
-        const next = candidates.find(id => !d.arts?.[id] && (id !== 'xiantianGong' || (d.arts?.quanzhenXinfa?.xp || 0) >= 55)); // 出自 Phase 6 規格：全真劍或先天功、羅漢路高階心法沿同崖逐次參悟。
-        if (next) { learnArt(d, next, s.t); log(s, `【絕頂石刻】${d.name}對照前人刻痕，悟出《${artById(next).name}》。`); }
+        cliffBook(s, d); // R3：拓錄成實物卷，回山讀完才學會。
       }
       // 合參創派不由讀書或打坐的次數自動送出整門功夫。
-      if (t.act === 'study') { const g = studyChart24(s, d, () => rand(s)); if (g) log(s, `【藏經閣】${d.name}在書堆裡翻出一卷《${g.art.name}》，從此略通${CATS[g.cat].name}。`); } // loop160 Batch 1.2
+      if (t.act === 'study' && !s.hermitage) { const g = studyChart24(s, d, () => rand(s)); if (g) log(s, `【藏經閣】${d.name}在書堆裡翻出一卷《${g.art.name}》，從此略通${CATS[g.cat].name}。`); } // R3：隱居按實物分卷讀完才學；舊門派的藏經閣發現流程保持原樣。
       /* loop181 v2.8 經脈內傷：練功／切磋逆催累積，打坐／醫館化解 */
         finishTrainingWish(d,t.act);
       if (t.act === 'train' || t.act === 'spar') { const w = qiInjuryAdd28(s, d); if (w) log(s, `【經脈暗傷】${d.name}強以異種內息催動他派武學《${w.name}》，真氣逆行，經脈隱隱作痛！`); }
@@ -994,9 +1018,7 @@ export function dailyPipeline(s) {
   if (s.hermitage) {
     const hero = s.ds.find((d) => d.id === 'hero');
     if (hero && !hero.away && s.ds.some((d) => d !== hero && !d.away)) s.hermitage.livedDays = (s.hermitage.livedDays || 0) + 1;
-    for (const person of s.ds) checkSharedAwakening(person, hero, s);
-    checkExteriorToInteriorAwakening(hero, s);
-    if (s.hermitage.active) queueHermitageFounding(s);
+    // R3：不再由天數、身體數值或上崖事件自動送出整門武學或立匾卡。
   }
   fadeSocialThoughts(s);
   for (const x of returnFromWork(s)) log(s, `${x.id}下山做工攢足束脩，回到山門口等掌門決定。`);

@@ -3,6 +3,7 @@ import { RULES_VERSION, DISCIPLES, RECRUIT_POOL, MOOD, ECON, FACILITIES, CHORE_A
 import {discipleCount,recruitmentInit} from './recruitment.mjs';
 import { seedArts, growInit } from './arts.mjs';
 import { ensurePractice } from './practice.mjs';
+import { seedHermitageBooks } from './hermitage-books.mjs';
 import { sectOf, genInit } from './sect.mjs';
 import { suhuiOf } from './world.mjs';
 // v0.95 存檔：逐版遷移步驟（每步只做「升到該版」需要的事），加上每次讀檔都跑的修補
@@ -160,6 +161,11 @@ export const MIGRATIONS = [
       d.bodyBase ??= { strength: d.skills?.strength || 0, agility: d.skills?.agility || 0 }; // 舊檔不知起始值，以載入時為起點
       d.fitness ??= { strength: 0, agility: 0 }; d.bodyFatigue ??= 0; d.nutrition ??= 0.7;
     }
+  } },
+  { to: '4.95', note: 'R3（#522）：隱居已學武學原樣保留，未讀的入門分卷依起手與同住者武學路線補入；舊門派局不變', up(o) {
+    if (!o.hermitage) return;
+    const hero = o.ds?.find(d => d.id === 'hero');
+    seedHermitageBooks(o, { people: (o.ds || []).filter(d => d !== hero).map(d => ({ awakeningPath: d.awakeningPath })) }, hero?.hermitageStarter || 'chunyangFist');
   } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
