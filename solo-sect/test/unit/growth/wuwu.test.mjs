@@ -826,7 +826,8 @@ test('N12：每位師父每門名功只傳一人；受者上限傳者 − 1', ()
   const { s, m, d } = teachPair();
   assert.ok(startTeachArt(s, m, d, 'xianglong'));
   assert.equal(m.taught28.xianglong, d.id);
-  const e = s.ds[2];
+  // R9 的實際隱居開局只帶兩人；明確建立第二位徒弟來測一師只傳一人。
+  const e = structuredClone(d); e.id = 'second-pupil'; e.name = '第二徒弟'; s.ds.push(e);
   e.master = m.id; e.wu = 4; setAff(s, m, e, 70); delete e.arts.xianglong;
   stopTeachArt(s, m);
   assert.equal(canTeachArt(s, m, e, 'xianglong'), false, '風清揚只傳令狐沖');

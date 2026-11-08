@@ -1,7 +1,7 @@
 // Explicit cast for tests of older mechanics. Live N50 starts with ordinary people;
 // these tests need their original named actors to exercise the historical scenario.
 import { createState as currentState } from '../../src/sim.mjs';
-import { DISCIPLES, HEROES, HERO_SECT, OPENING_SCENARIOS } from '../../src/data.mjs';
+import { DISCIPLES, HEROES, HERO_SECT, OPENING_SCENARIOS, SECTS } from '../../src/data.mjs';
 import { mkComp, mainSub } from '../../src/hero.mjs';
 import { seedArts } from '../../src/arts.mjs';
 import { sectInit } from '../../src/sect.mjs';
@@ -56,6 +56,19 @@ export function createState(seed = 1, spec = null) {
   if (s.hero) {
     s.hero.sect24 = spec?.sect24 || (spec?.kind === 'template' ? HERO_SECT[spec.id] : undefined);
     sectInit(s);
+    // The retired Axing template carried Zhu Long's faction; it is no longer a
+    // selectable live start, so the historical fixture supplies its actual sect.
+    const historicalSect = spec?.kind === 'template' && HERO_SECT[spec.id];
+    if (historicalSect && s.sect.id !== historicalSect) {
+      const row = SECTS[historicalSect];
+      Object.assign(s.sect, { id: historicalSect, name: row.name, plaque: row.plaque,
+        bias: { ...row.bias }, tree: [...row.tree], ban: [...row.ban],
+        rules: [...row.rules], rivals: [...row.rivals] });
+    }
+    // Explicit post-founding state for tests of surviving sect mechanics.
+    s.sect.doctrine = 'single'; s.sect.bannerHall = 'yang';
+    s.sect.dualTree = { yang: [...s.sect.tree], yin: [] };
+    s.sect.lineages = { yang: s.sect.id, yin: null };
     for (const d of s.ds) { d.sectId = s.sect.id; d.stree = [...s.sect.tree]; d.sbias = s.sect.bias; }
   }
   return s;

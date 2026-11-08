@@ -38,12 +38,13 @@ test('loop168 武當：武當長拳大成可領悟太極拳；太極拳大成可
   assert.ok(!A.sectUnlock24(h).length); h.arts.wudangFist.xp = 100; assert.equal(A.sectUnlock24(h)[0]?.id, 'taiji');
   const ts = A.artById('taijiSword'); assert.ok(A.reqMissing(h, ts).length); A.learnArt(h, 'taiji', 0); h.arts.taiji.xp = 100; assert.equal(A.reqMissing(h, ts).length, 0);
 });
-test('loop168 本門專屬可傳功', () => {
-  const s = V({ sect24: 'taohua' }); tick(s, 0.1); const h = hero(s); h.arts.luoyingPalm = { xp: 100 };
-  assert.notEqual(passPick(s, h)?.art, 'luoyingPalm');
-  h.arts.tanzhi = { xp: 100 };
-  const p = passPick(s, h); assert.equal(p?.art, 'tanzhi');
-  const o = V({ sect24: 'emei' }); tick(o, 0.1); const k = hero(o); for (const id of Object.keys(k.arts)) k.arts[id].xp = 0; k.arts.luoyingPalm = { xp: 100 }; assert.equal(passPick(o, k), null, '他派專屬不傳');
+test('R9 傳功只選真會者可教的卷', () => {
+  const s = V({ sect24: 'taohua' }); tick(s, 0.1); const h = hero(s); h.arts = {};
+  assert.equal(passPick(s, h), null, '不會卷中武學便無從傳授');
+  h.arts.luoyingPalm = { xp: 100 };
+  assert.equal(passPick(s, h)?.art, 'luoyingPalm', '真會者可傳第一卷');
+  const o = V({ sect24: 'emei' }); tick(o, 0.1); const k = hero(o); k.arts = { luoyingPalm: { xp: 100 } };
+  assert.equal(passPick(o, k)?.art, 'luoyingPalm', 'R3 的傳授依真本領，不由退役開局的本門鎖阻擋');
 });
 test('loop168 寒玉床：門人 ≤5 打坐回氣與衝關率 ×1.5；神木王鼎：藥材 +1、香火 +1、毒傷 ×1.35', () => {
   const g = V({ sect24: 'gumu' }); tick(g, 0.1); const h = hero(g); const q0 = A.medQi(h), b0 = A.breakChance(h);

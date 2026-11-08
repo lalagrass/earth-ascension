@@ -23,7 +23,9 @@ test('loop171 位階鎖：一般弟子鎖、掌門／首徒／魁首可；顯示
   d.role = 'head'; assert.ok(!A.chiefLocked24(d, a)); d.role = 'inner'; d.chief24 = true; assert.ok(!A.chiefLocked24(d, a)); d.chief24 = false;
   give(d, 'lanhuaHand', 30); assert.ok(!A.chiefLocked24(d, a)); delete d.arts.lanhuaHand;
   give(d, 'luoyingPalm', 60);
-  give(h, 'lanhuaHand', 60); for (const x of s.ds) x.passDay = -1; s.passN = null; const p = passPick(s, h); assert.ok(!p || p.art !== 'lanhuaHand' || A.rankOk24(p.p));
+  give(h, 'lanhuaHand', 60); for (const x of s.ds) x.passDay = -1; s.passN = null; const p = passPick(s, h);
+  assert.equal(p?.art, 'lanhuaHand', 'R3 真師者可教卷，舊開局的掌門傳功限制已退役');
+  assert.equal(A.chiefLocked24(p.p, a), true, '舊門派位階函式仍反映歷史角色身分');
 });
 test('loop171 大比魁首得 chief24', () => {
   const s = V({ sect24: 'gumu' }); tick(s, 0.1); for (let i = 0; i < 4; i++) { const d = s.ds.find((x) => x.id !== 'hero'); if (!d) break; }

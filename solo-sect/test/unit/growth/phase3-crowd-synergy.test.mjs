@@ -118,6 +118,7 @@ test('2. 場景 B（雙劍合璧、真武七截陣、背靠背與借樹卡位 Pa
   const dPartner = {
     id: 'xiaolongnv',
     name: '小龍女',
+    fem: true,
     hp: 100,
     max: 100,
     skills: { strength: 30, agility: 40 },
