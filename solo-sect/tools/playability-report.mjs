@@ -20,6 +20,9 @@ const DAYS = arg('days', 30), SEEDS = arg('seeds', 12), STEP = arg('step', 1), S
 const DIAGNOSE = process.argv.includes('--diagnose');
 const ADMISSIONS = process.argv.includes('--admissions');
 const { moodParts } = DIAGNOSE ? await imp('social.mjs') : { moodParts: null };
+const { observeAchievementFacts, achievementRecord } = await imp('achievement-record.mjs');
+const { milestoneRows, MILESTONES } = await imp('milestones.mjs');
+const { achievementRows, ACHIEVEMENTS } = await imp('achievements.mjs');
 
 // 行動分類：玩家看得出「在做事」的類別。
 const CAT = {
@@ -35,9 +38,9 @@ const TAGS = ['大成', '拳譜', '成親', '有喜', '出生', '成年', '立�
 
 function play(opening, starterArt, seed, mode) {
   const s = createState(seed, { kind: 'custom', answers: Array(9).fill(0), askMajor: false, hermitage: true, opening, starterArt });
+  observeAchievementFacts(s);
   const seen = new Set(), days = [], first = {}, moodSnapshots = [];
   const countedAdmissions = new Set(s.ds.map(d => d.id)), bornHere = new Set(); let admissions = 0;
-  const mark = (k) => { first[k] ??= s.day; };
   let day = null, cur = null, lastAsk = -1, lastHpSnapshot = [], seenRaids = s.threat?.n || 0; const lastAct = {};
   // 6 秒一拍時，十秒上下的活動常在同一拍內做完、要到下一拍才排新活，取樣時 task 是空的；這段時間記在剛做完的活上。
   const actOf = (d) => (d.task?.act ? (lastAct[d.id] = d.task.act) : lastAct[d.id]);
@@ -45,11 +48,12 @@ function play(opening, starterArt, seed, mode) {
     tick(s, STEP); if (s.alert) s.alert = null;
     // 最後一拍可能剛跨到第 DAYS+1 日；該拍不屬於要求的報告窗口。
     if (s.day > DAYS) break;
+    observeAchievementFacts(s, { canFound: canFoundHermitageSect(s).ok });
     if (mode === 'guided') {
-      if (canFoundHermitageSect(s).ok) { const r = foundHermitageSect(s); if (r?.ok !== false) mark('founded'); }
+      if (canFoundHermitageSect(s).ok) foundHermitageSect(s);
       for (const ch of [...(s.choices || [])]) resolveChoice(s, ch.id, autoPick(s, ch));
       if (canRecruit(s).ok) recruit(s);
-      if (!Object.values(s.fac).some((f) => f.site)) { const f = FACILITIES.find((x) => s.fac[x.id] && !buildWhy(s, x.id)); if (f && startBuild(s, f.id) !== false) mark('build'); }
+      if (!Object.values(s.fac).some((f) => f.site)) { const f = FACILITIES.find((x) => s.fac[x.id] && !buildWhy(s, x.id)); if (f) startBuild(s, f.id); }
       if (!s.hermitage?.active && s.day !== lastAsk) { lastAsk = s.day; askRareBookRumor(s); startSchoolTrip(s); }
     }
     if (ADMISSIONS) for (const d of s.ds) {
@@ -87,15 +91,11 @@ function play(opening, starterArt, seed, mode) {
     for (const e of s.log) {
       const key = `${e.t}|${e.msg}`; if (seen.has(key)) continue; seen.add(key);
       if (e.tier === 'top') cur.top++;
-      for (const t of TAGS) if (e.msg.includes(t)) { cur.events[t] = (cur.events[t] || 0) + 1; mark(t); }
+      for (const t of TAGS) if (e.msg.includes(t)) cur.events[t] = (cur.events[t] || 0) + 1;
     }
-    if (h && Object.keys(h.arts || {}).length) mark('firstArt');
-    if (canFoundHermitageSect(s).ok) mark('canFound');
-    if (!s.hermitage?.active) mark('founded');
-    if (s.ds.length > (days[0]?.people || 1)) mark('grew');
-    if ((s.rumors || []).length) mark('rumor');
-    if (s.ds.some((d) => ['cliff1', 'cliff2', 'cliff3'].includes(d.at))) mark('cliff');
   }
+  for (const row of milestoneRows(achievementRecord(s))) if (row.day != null) first[row.id] = row.day;
+  const achievement = achievementRows(achievementRecord(s), { showHidden: true }).map(a => ({ id: a.id, kind: a.kind, done: a.done, day: a.day }));
   if (cur) cur.hpMedian = median(lastHpSnapshot);
   const h = s.ds.find((d) => d.id === 'hero');
   // 「沒事的日子」：這一天沒有任何一則有標記的事件，且主角超過一半時間在閒晃或沒事。
@@ -104,7 +104,7 @@ function play(opening, starterArt, seed, mode) {
   const stall = days.filter((d, i) => i > 0 && d.siteHave != null && d.siteHave === days[i - 1].siteHave).length;
   const frac = (k) => +(days.reduce((a, d) => a + d[k], 0) / Math.max(1, days.reduce((a, d) => a + d.samples, 0))).toFixed(3);
   const share = (k) => +(days.reduce((a, d) => a + (d.hero[k] || 0), 0) / days.reduce((a, d) => a + Object.values(d.hero).reduce((x, y) => x + y, 0), 0)).toFixed(3);
-  return { opening, starterArt, seed, mode, first, dull, dullDays: dull.length, siteStallDays: stall, famishedShare: frac('famished'), lowMoodShare: frac('lowMood'),
+  return { opening, starterArt, seed, mode, first, achievement, dull, dullDays: dull.length, siteStallDays: stall, famishedShare: frac('famished'), lowMoodShare: frac('lowMood'),
     ...(ADMISSIONS ? { admissions } : {}),
     ...(DIAGNOSE ? { moodSnapshots } : {}),
     ...(DAYS >= 15 ? { segments: segmentReport(days) } : {}),
@@ -122,10 +122,11 @@ const med = median;
 const reached = (g, k) => `${g.filter((r) => r.first[k] != null).length}/${g.length}`;
 const summary = CASES.flatMap(([o, st]) => ['natural', 'guided'].map((m) => {
   const g = rows.filter((r) => r.opening === o && r.starterArt === st && r.mode === m);
-  const keys = ['firstArt', 'canFound', 'founded', 'build', 'rumor', 'grew', 'cliff', '大成', '山賊', '名俠', '成親', '有喜', '出生'];
+  const keys = MILESTONES.map(m => m.id);
   return { case: `${o}/${st}/${m}`, dullDaysMedian: med(g.map((r) => r.dullDays)), siteStallDaysMedian: med(g.map((r) => r.siteStallDays)), famishedShareMedian: med(g.map((r) => r.famishedShare)), lowMoodShareMedian: med(g.map((r) => r.lowMoodShare)), heroShareMedian: Object.fromEntries(['grow', 'work', 'out', 'care', 'social', 'idle', 'none'].map((k) => [k, med(g.map((r) => r.heroShare[k]))])),
     ...(ADMISSIONS ? { admissionsMedian: med(g.map(r => r.admissions)) } : {}),
     reached: Object.fromEntries(keys.map((k) => [k, `${reached(g, k)}（中位第 ${med(g.map((r) => r.first[k])) ?? '—'} 日）`])),
+    achievementRate: Object.fromEntries(ACHIEVEMENTS.map(a => [a.id, `${g.filter(r => r.achievement.find(x => x.id === a.id)?.done).length}/${g.length}`])),
     endPeopleMedian: med(g.map((r) => r.end.people)), endArtsMedian: med(g.map((r) => r.end.heroArts.length)), choicesWaitingMax: Math.max(...g.map((r) => r.end.choicesWaiting)),
     ...(DAYS >= 15 ? { segments: aggregateSegments(g) } : {}) };
 }));

@@ -4,6 +4,7 @@ import { FOE_ACTIONS, foeAction, moveAvailable } from './starter-combat.mjs';
 import { recordExchange, practiceWindow } from './practice.mjs';
 import { ROUTE, NODES, ENEMIES, RAID_EVERY, DAY, ENDLESS, CAMPS, INSIGHT, EXP, MOVES, EXP_STYLES as STYLES, STYLE_TRAIT, EVADE, TRAITS, ARTS as ARTS_ALL, HS, DAO } from './data.mjs';
 import { log, affKey, resAdd } from './util.mjs';
+import { noteEnemy } from './achievement-record.mjs';
 import { addMem } from './bonds.mjs';
 import { CLASH, clashOdds, moveStats, windOf, spendQi, shieldHit, moveMul, cdMul, effectTier, artTier as effectTierOf, SPEC, zhenK, hasPoison, bestSpec, fengxueK, HARMONY24, stepDrive, artNoParry, applyArtOn, expCause, expectOf, innerOnHit, innerOnGetHit } from './arts.mjs';
 import { mateBonus } from './economy.mjs';
@@ -233,6 +234,7 @@ export function seeEnemy(s, k, how, d) {
   const c = (s.codex[k] ??= { seen: 0, kills: 0, fled: 0, insight: 0 });
   if (how === 'see') c.seen++; if (how === 'kill') c.kills++; if (how === 'fled') c.fled++;
   const v = INSIGHT[how] || 0; c.insight += v; if (d) { d.insight ??= {}; d.insight[k] = (d.insight[k] || 0) + v; }
+  noteEnemy(s, k, how, d);
 }
 export const insightTier = (v) => { let t = null; for (const x of INSIGHT.tiers) if (v >= x[0]) t = x[1]; return t; };
 export function codexRows(s) {
