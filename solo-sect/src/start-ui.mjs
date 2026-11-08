@@ -27,7 +27,7 @@ export function buildSpec(st) {
   const R = ruleSpec(st);
   return { kind: 'custom', name: st.name || '無名', stats: st.stats, answers: st.ans,
     ...(st.mbti ? { mbti: st.mbti } : {}), hermitage: true, opening: st.hermitOpening,
-    starterArt: st.starterArt === 'luohanHands' ? 'luohanHands' : 'chunyangFist',
+    starterArt: ['luohanHands', 'none'].includes(st.starterArt) ? st.starterArt : 'chunyangFist', // R10：白身沒有入門拳譜
     askMajor: st.ask, ...R };
 }
 const st = { name: '無名', stats: defaultStats(), ans: Array(9).fill(0), ask: true, mbti: '', mbtiMode: 'none', mq: Array(MBTI_Q.length).fill(null), hermitOpening: 'xiaolongnv', starterArt: 'chunyangFist' };
@@ -38,7 +38,7 @@ const valLine = (v) => Object.entries(v || {}).sort((a, b) => b[1] - a[1]).slice
 function render(el) {
   const bonus = 0, left = budgetOf(st.stats, bonus) - spent(st.stats), r = readHeart(st.ans);
   let h = `<div class="box"><h1>山門紀・終南荒山隱居</h1><p>在終南茅廬做活、練功；心法和輕功須讀分卷或向會的人學。可與另一人同住，也可獨自上山；立匾後才啟用門派制度。</p>`;
-  h += `<div class="q">名字 <input id="st-name" value="${st.name}" maxlength="6"></div><div class="q">開局人物 <select id="st-hermit-opening"><option value="xiaolongnv" ${st.hermitOpening === 'xiaolongnv' ? 'selected' : ''}>與小龍女同住</option><option value="huangrong" ${st.hermitOpening === 'huangrong' ? 'selected' : ''}>與黃蓉同住</option><option value="solo" ${st.hermitOpening === 'solo' ? 'selected' : ''}>獨自上山</option></select></div><div class="q">入門拳譜 <select id="st-starter-art"><option value="chunyangFist" ${st.starterArt === 'chunyangFist' ? 'selected' : ''}>全真・純陽拳</option><option value="luohanHands" ${st.starterArt === 'luohanHands' ? 'selected' : ''}>少林・羅漢拳</option></select></div>`;
+  h += `<div class="q">名字 <input id="st-name" value="${st.name}" maxlength="6"></div><div class="q">開局人物 <select id="st-hermit-opening"><option value="xiaolongnv" ${st.hermitOpening === 'xiaolongnv' ? 'selected' : ''}>與小龍女同住</option><option value="huangrong" ${st.hermitOpening === 'huangrong' ? 'selected' : ''}>與黃蓉同住</option><option value="solo" ${st.hermitOpening === 'solo' ? 'selected' : ''}>獨自上山</option></select></div><div class="q">入門拳譜 <select id="st-starter-art"><option value="chunyangFist" ${st.starterArt === 'chunyangFist' ? 'selected' : ''}>全真・純陽拳</option><option value="luohanHands" ${st.starterArt === 'luohanHands' ? 'selected' : ''}>少林・羅漢拳</option><option value="none" ${st.starterArt === 'none' ? 'selected' : ''}>白身・沒有拳譜，找師父、找譜</option></select></div>`;
   h += `<div style="margin-top:8px">屬性剩餘點數 <b>${left}</b>／${budgetOf(st.stats, bonus)}${st.stats.wu === 1 ? '（悟性 1：退 1 點，得「笨功夫」憨厚）' : ''}${bonus ? `　宿慧 +${bonus}` : ''}<div>${STATS.map(([k, n]) => `<span class="stat" title="${STAT_DESC[k]}">${n} <button data-st="${k}|-1">−</button> <b>${st.stats[k]}</b> <button data-st="${k}|1">＋</button></span>`).join('')}</div>`;
   h += `<h3>九問問心</h3>${Q9.map((q, i) => `<div class="q">${i + 1}. ${q.q}：<select data-q9="${i}">${q.a.map((a, j) => `<option value="${j}" ${st.ans[i] === j ? 'selected' : ''}>${a[0]}</option>`).join('')}</select></div>`).join('')}`;
   h += mbtiBlock(st);

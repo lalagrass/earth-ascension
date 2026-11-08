@@ -16,29 +16,29 @@
     1012
   ],
   "total": {
-    "newDisciples": 70,
-    "famousVisits": 26,
+    "newDisciples": 72,
+    "famousVisits": 59,
     "activeRumors": 0,
     "totalRumors": 0,
     "reachedSites": 0,
-    "raids": 22
+    "raids": 23
   },
   "rows": [
     {
       "seed": 1001,
       "newDisciples": 6,
-      "famousVisits": 2,
+      "famousVisits": 5,
       "activeRumors": 0,
       "totalRumors": 0,
       "reach": [],
       "reachedSites": 0,
-      "raids": 3,
-      "raidHistory": 3
+      "raids": 1,
+      "raidHistory": 1
     },
     {
       "seed": 1002,
       "newDisciples": 6,
-      "famousVisits": 2,
+      "famousVisits": 5,
       "activeRumors": 0,
       "totalRumors": 0,
       "reach": [],
@@ -49,7 +49,7 @@
     {
       "seed": 1003,
       "newDisciples": 6,
-      "famousVisits": 3,
+      "famousVisits": 5,
       "activeRumors": 0,
       "totalRumors": 0,
       "reach": [],
@@ -60,7 +60,7 @@
     {
       "seed": 1004,
       "newDisciples": 6,
-      "famousVisits": 2,
+      "famousVisits": 4,
       "activeRumors": 0,
       "totalRumors": 0,
       "reach": [],
@@ -71,7 +71,7 @@
     {
       "seed": 1005,
       "newDisciples": 6,
-      "famousVisits": 3,
+      "famousVisits": 5,
       "activeRumors": 0,
       "totalRumors": 0,
       "reach": [],
@@ -82,7 +82,7 @@
     {
       "seed": 1006,
       "newDisciples": 6,
-      "famousVisits": 2,
+      "famousVisits": 5,
       "activeRumors": 0,
       "totalRumors": 0,
       "reach": [],
@@ -93,7 +93,7 @@
     {
       "seed": 1007,
       "newDisciples": 6,
-      "famousVisits": 2,
+      "famousVisits": 5,
       "activeRumors": 0,
       "totalRumors": 0,
       "reach": [],
@@ -104,7 +104,7 @@
     {
       "seed": 1008,
       "newDisciples": 6,
-      "famousVisits": 2,
+      "famousVisits": 5,
       "activeRumors": 0,
       "totalRumors": 0,
       "reach": [],
@@ -114,19 +114,19 @@
     },
     {
       "seed": 1009,
-      "newDisciples": 4,
-      "famousVisits": 2,
+      "newDisciples": 6,
+      "famousVisits": 5,
       "activeRumors": 0,
       "totalRumors": 0,
       "reach": [],
       "reachedSites": 0,
-      "raids": 2,
-      "raidHistory": 2
+      "raids": 3,
+      "raidHistory": 3
     },
     {
       "seed": 1010,
       "newDisciples": 6,
-      "famousVisits": 2,
+      "famousVisits": 5,
       "activeRumors": 0,
       "totalRumors": 0,
       "reach": [],
@@ -137,24 +137,24 @@
     {
       "seed": 1011,
       "newDisciples": 6,
-      "famousVisits": 2,
+      "famousVisits": 5,
       "activeRumors": 0,
       "totalRumors": 0,
       "reach": [],
       "reachedSites": 0,
-      "raids": 1,
-      "raidHistory": 1
+      "raids": 2,
+      "raidHistory": 2
     },
     {
       "seed": 1012,
       "newDisciples": 6,
-      "famousVisits": 2,
+      "famousVisits": 5,
       "activeRumors": 0,
       "totalRumors": 0,
       "reach": [],
       "reachedSites": 0,
-      "raids": 1,
-      "raidHistory": 1
+      "raids": 2,
+      "raidHistory": 2
     }
   ]
 }
