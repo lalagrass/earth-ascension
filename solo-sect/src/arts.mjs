@@ -116,7 +116,7 @@ export const artOk = (d, a) => {
   if (L && !founded && !lineagesOf(d).has(L)) return false;
   const v = HERMITAGE_VOLUMES.find((x) => x.art === a.id);
   if (v?.from && (d.arts?.[v.from]?.xp || 0) < v.xp) return false;
-  if (v?.skill && (d.skills?.[v.skill] || 0) < volumeBodyThreshold(d, v.skill)) return false;
+  if (v?.level === 'advanced' && v.skill && (d.skills?.[v.skill] || 0) < volumeBodyThreshold(d, v.skill)) return false;
   return true;
 };
 /* loop164 v2.4 Batch 4.3 本門傳承鎖：他派專屬（名門 classic、非名俠招牌、在某派 tree 而不在本門 d.stree）預設不可自悟／自選；

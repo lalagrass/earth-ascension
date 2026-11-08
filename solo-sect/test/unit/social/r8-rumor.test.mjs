@@ -8,7 +8,7 @@ import { points, T, threatDaily } from '../../../src/threat.mjs';
 test('R8：外人親見、沿路傳播、處境相符、立匾與淡忘共同決定上門', () => {
   const s = createState(17, { kind: 'custom', opening: 'solo' });
   assert.equal(canRecruit(s).ok, false, '未立匾不可拜師');
-  recordRumor(s, 'rescue', '獲救樵夫', 'gate');
+  recordRumor(s, 'defend', '退賊樵夫', 'gate');
   s.day = 2; spreadRumors(s);
   assert.equal(publicRumors(s).length, 0, '未立匾時只能傳山上的怪人，無門派可找');
   s.hermitage.active = false; s.hermitage.founded = true; s.sect = { name: '試驗山門', plaque: '試驗山門' };
@@ -18,12 +18,12 @@ test('R8：外人親見、沿路傳播、處境相符、立匾與淡忘共同決
   assert.ok(points(s) > 0);
   threatDaily(s); assert.equal(T(s).pending, null, '有家底但無外人見過財物，不會憑空來山賊');
 
-  const seen = recordRumor(s, 'rescue', '獲救樵夫', 'gate');
+  const seen = recordRumor(s, 'defend', '退賊樵夫', 'gate');
   assert.equal(rumorForCandidate(s, RECRUIT_POOL.find(c => c.id === 'shitou')), null, '目擊者仍在山門，村裡還沒聽到');
   s.day = 3; spreadRumors(s);
   assert.deepEqual(rumorReach(s), ['village']);
-  assert.equal(rumorForCandidate(s, RECRUIT_POOL.find(c => c.id === 'shitou'))?.id, seen.id, '受山賊威脅的人聽得進救人消息');
-  assert.equal(rumorForCandidate(s, RECRUIT_POOL.find(c => c.id === 'aqing')), null, '想尋師者不因無關的救人傳聞上門');
+  assert.equal(rumorForCandidate(s, RECRUIT_POOL.find(c => c.id === 'shitou'))?.id, seen.id, '受山賊威脅的人聽得進退賊消息');
+  assert.equal(rumorForCandidate(s, RECRUIT_POOL.find(c => c.id === 'aqing')), null, '想尋師者不因無關的退賊傳聞上門');
   assert.equal(canRecruit(s).next.id, 'shitou', '候選卡挑到處境相符的人');
   s.day = 4; spreadRumors(s);
   assert.deepEqual(rumorReach(s), ['village', 'market'], '村人下山趕集，消息沿路多傳一站');

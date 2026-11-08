@@ -140,22 +140,22 @@ const YARD_OPEN_SPOTS = [40, 80, 120].flatMap((y, row) => [-75, -25, 25, 75].map
 const YARD_DUMMY_SPOTS = [-60, 0, 60, -90, 90].map((x, i) => ({ id: `dummy${i}`, offset: [x, -25], acts: ['train'], kind: 'dummy' }));
 export const FACILITIES = [
   { id: 'hall', name: '大廳', node: 'hall', stages: [
-    { name: '破道館', sprite: 'hall_s0', offers: ['rest', 'learn'], restRate: 3, beds: 3, learnDur: 8 },
-    { name: '大廳', sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 4, beds: 2, learnDur: 4, cost: { wood: 12, stone: 6, coin: 6 }, work: 30, rep: 20 },
-    { name: '正殿', sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 5, beds: 2, learnDur: 3, cost: { wood: 16, stone: 10, coin: 60 }, rare: { tiemu: 2 }, work: 40, rep: 40 }, // v1.9 I-2 三階：名聲＋巡山遠段稀有料
-    { name: '大殿', sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 6, beds: 3, learnDur: 2, cost: { wood: 20, stone: 14, coin: 120 }, rare: { tiemu: 3, lingshi: 2 }, work: 50, rep: 70 },
+    { name: '破道館', impression: -4, sprite: 'hall_s0', offers: ['rest', 'learn'], restRate: 3, beds: 3, learnDur: 8 },
+    { name: '大廳', impression: 2, sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 4, beds: 2, learnDur: 4, cost: { wood: 12, stone: 6, coin: 6 }, work: 30, rep: 20 },
+    { name: '正殿', impression: 4, sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 5, beds: 2, learnDur: 3, cost: { wood: 16, stone: 10, coin: 60 }, rare: { tiemu: 2 }, work: 40, rep: 40 }, // v1.9 I-2 三階：名聲＋巡山遠段稀有料
+    { name: '大殿', impression: 6, sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 6, beds: 3, learnDur: 2, cost: { wood: 20, stone: 14, coin: 120 }, rare: { tiemu: 3, lingshi: 2 }, work: 50, rep: 70 },
   ] },
   { id: 'yard', name: '外功場', node: 'yard', stages: [
-    { name: '空地', sprite: null, offers: ['train', 'meditate'], trainMul: 1, spots: YARD_OPEN_SPOTS },
-    { name: '木樁場', sprite: null, offers: ['train', 'spar', 'meditate'], trainMul: 1.6, dummies: 3, spots: [...YARD_DUMMY_SPOTS.slice(0, 3), ...YARD_OPEN_SPOTS], cost: { wood: 6 }, work: 15 },
-    { name: '演武場', sprite: null, offers: ['train', 'spar', 'meditate'], trainMul: 1.8, dummies: 4, spots: [...YARD_DUMMY_SPOTS.slice(0, 4), ...YARD_OPEN_SPOTS], cost: { wood: 12, stone: 8, coin: 40 }, rare: { tiemu: 2 }, work: 30, rep: 30 },
-    { name: '演武廣場', sprite: null, offers: ['train', 'spar', 'meditate'], trainMul: 2.0, dummies: 5, spots: [...YARD_DUMMY_SPOTS, ...YARD_OPEN_SPOTS], cost: { wood: 14, stone: 12, coin: 90 }, rare: { tiemu: 2, lingshi: 1 }, work: 40, rep: 60 },
+    { name: '空地', sprite: null, offers: ['train', 'meditate'], spots: YARD_OPEN_SPOTS },
+    { name: '木樁場', sprite: null, offers: ['train', 'spar', 'meditate'], dummies: 3, spots: [...YARD_DUMMY_SPOTS.slice(0, 3), ...YARD_OPEN_SPOTS], cost: { wood: 6 }, work: 15 },
+    { name: '演武場', sprite: null, offers: ['train', 'spar', 'meditate'], dummies: 4, spots: [...YARD_DUMMY_SPOTS.slice(0, 4), ...YARD_OPEN_SPOTS], cost: { wood: 12, stone: 8, coin: 40 }, rare: { tiemu: 2 }, work: 30, rep: 30 },
+    { name: '演武廣場', sprite: null, offers: ['train', 'spar', 'meditate'], dummies: 5, spots: [...YARD_DUMMY_SPOTS, ...YARD_OPEN_SPOTS], cost: { wood: 14, stone: 12, coin: 90 }, rare: { tiemu: 2, lingshi: 1 }, work: 40, rep: 60 },
   ] },
   { id: 'dorm', name: '宿舍', node: 'dorm', stages: [
-    { name: '破寢舍', sprite: 'dorm_s0', offers: [] },
-    { name: '小寢舍', sprite: 'dorm_s1', offers: ['rest'], restRate: 8, beds: 2, cost: { wood: 6 }, work: 18 },
-    { name: '宿舍', sprite: 'dorm_s1', offers: ['rest'], restRate: 8, beds: 6, cost: { wood: 10, stone: 4 }, work: 24, rep: 12 },
-    { name: '大通鋪', sprite: 'dorm_s1', offers: ['rest'], restRate: 8, beds: 10, cost: { wood: 16, stone: 8, coin: 40 }, work: 30, rep: 10 }, // v1.85 I-5：plain 能收到 10 人以上
+    { name: '破寢舍', impression: -6, sprite: 'dorm_s0', offers: [] },
+    { name: '小寢舍', impression: 2, sprite: 'dorm_s1', offers: ['rest'], restRate: 8, beds: 2, cost: { wood: 6 }, work: 18 },
+    { name: '宿舍', impression: 4, sprite: 'dorm_s1', offers: ['rest'], restRate: 8, beds: 6, cost: { wood: 10, stone: 4 }, work: 24, rep: 12 },
+    { name: '大通鋪', impression: 6, sprite: 'dorm_s1', offers: ['rest'], restRate: 8, beds: 10, cost: { wood: 16, stone: 8, coin: 40 }, work: 30, rep: 10 }, // v1.85 I-5：plain 能收到 10 人以上
   ] },
   { id: 'kitchen', name: '膳房', node: 'kitchen', stages: [
     { name: '露天灶', sprite: 'vat', offers: ['cook', 'eat'], cookDur: 12, cookYield: 3, mealBonus: 0 },
@@ -197,9 +197,9 @@ export const ACTIVITIES = {
   cook:   { name: '煮飯', dur: 0, pose: 'sit', energy: -3, skill: { cooking: 6 } }, // dur 由灶階段決定
   forage: { name: '採藥', dur: 8, pose: 'pick', energy: -6, skill: { herbal: 6 }, carry: { herb: 1 } },
   cliffForage1: { name: '低崖採靈草', dur: 8, pose: 'pick', energy: -6, skill: { herbal: 6 }, carry: { herb: 2, beeJelly: 1 } }, // 出自 Phase 6 規格：沿採藥工時，帶回藥材×2與玉蜂漿。
-  cliffTrain: { name: '試劍崖練功', dur: 10, pose: 'stand', energy: -10, skill: { style: 5 } }, // 出自 Phase 6 規格：沿練功工時，外功經驗×1.25。
+  cliffTrain: { name: '試劍崖練功', dur: 10, pose: 'stand', energy: -10, skill: { style: 5 } }, // 24e：與空地同一練功工時；景致經心情影響專注。
   cliffWater: { name: '寒潭挑靈泉', dur: 8, pose: 'carry', energy: -7, skill: { strength: 4 }, carry: { coldWater: 1 } }, // 出自 Phase 6 規格：沿挑水工時，帶回一份寒潭靈泉。
-  waterfallTrain: { name: '飛瀑練體', dur: 10, pose: 'stand', energy: -10, skill: { style: 5 } }, // 出自 Phase 6 規格：沿練功工時，體魄與外功經驗×1.4。
+  waterfallTrain: { name: '飛瀑練體', dur: 10, pose: 'stand', energy: -10, skill: { style: 5 } }, // 24e：與空地同一練功工時，負荷同 R2 一般練功。
   cliffComprehend: { name: '絕頂參悟石刻', dur: 12, pose: 'sit', energy: -8 }, // 出自 Phase 6 規格：沿打坐工時，絕頂才有參悟機會。
   quarry: { name: '採石', dur: 10, pose: 'chop', energy: -9, skill: { strength: 6 }, carry: { stone: 1 } },
   chop:   { name: '砍柴', dur: 8, pose: 'chop', energy: -8, skill: { strength: 5 }, carry: { wood: 1 } },
@@ -304,7 +304,7 @@ export const REP = { build: 5, kill: 1, learn: 2 };
 export const RECRUIT = { food: 3 }; // R8 #526：束脩量沿 N58；數字名聲招募門檻退場。
 export const RECRUIT_POOL = [
   { id: 'aqing', name: '阿青', adult: true, sprite: 'hero', style: 'palm', skills: { leg: 3, palm: 6, strength: 8, farming: 6, herbal: 4, agility: 9, cooking: 4 }, traits: { diligent: 1.3 }, personality: ['diligent', 'brave'], support: { food: 3 }, situation: { seek: 'teaching', where: 'village', reason: '在村路尋一處願意教人的山門' } },
-  { id: 'shitou', name: '石頭', adult: true, sprite: 'hero', style: 'leg', skills: { leg: 8, palm: 2, strength: 14, farming: 4, herbal: 2, agility: 8, cooking: 2 }, traits: {}, personality: ['honest', 'brave'], situation: { seek: 'safety', where: 'village', reason: '村路屢遭山賊，想學守住家人的本事' } },
+  { id: 'shitou', name: '石頭', adult: true, sprite: 'hero', style: 'leg', skills: { leg: 8, palm: 2, strength: 14, farming: 4, herbal: 2, agility: 8, cooking: 2 }, traits: {}, personality: ['honest', 'brave'], support: { stone: ACTIVITIES.quarry.carry.stone }, situation: { seek: 'safety', where: 'village', reason: '村路屢遭山賊，想學守住家人的本事' } }, // 24g：村民可帶一趟採石所得，數量由既有搬運量推導。
   // N58: the younger version has only an entry art and uses the same pool/admission path.
   // Age 13 is one year below the existing adult threshold 14; skills borrow Shitou's starter tier.
   { id: 'guojing', name: '郭靖', adult: false, age: 13, child: { since: 0, parents: [] }, youngHero: true, sprite: 'cousin', style: 'leg', skills: { leg: 8, palm: 2, strength: 14, farming: 4, herbal: 2, agility: 8, cooking: 2 }, traits: {}, personality: ['honest', 'brave'], support: { food: 3 }, starterArts: ['basicFist'], root: 3, situation: { seek: 'safety', where: 'village', reason: '村路不太平，想學一身護人的功夫' } },
@@ -321,9 +321,9 @@ export const TRAITS = {
   gentle: { name: '溫和', desc: '愛下廚照顧人，不愛打鬥', composure: 'steady', mods: { cook: 1.4, farm: 1.15, spar: 0.6 }, thoughtMul: { fight: 1.5 } },
   brave: { name: '膽大', desc: '受傷不太放在心上，愛切磋', composure: 'hot', mods: { spar: 1.4 }, thoughtMul: { fight: 0.4 } },
   optimist: { name: '樂天', desc: '天塌下來也笑得出來', moodBase: 8 },
-  worrier: { name: '多慮', desc: '小事也掛心', moodBase: -6, thoughtMul: { bad: 1.4 } },
+  worrier: { name: '多慮', desc: '小事也掛心', moodBase: -6, thoughtMul: { bad: 1.4 }, roomImpression: 0.5 }, // 24f R1 設計旋鈕：破屋讓多慮者額外在意半份。
   honest: { name: '憨厚', desc: '學得慢卻肯下笨功夫，基礎武學練得特別紮實', composure: 'steady', mods: { train: 1.1, leisure: 0.8 } },
-  free: { name: '灑脫', desc: '不拘一格，練功隨興，巧變的武學一點就通', mods: { train: 0.9, chat: 1.15, leisure: 1.2 } },
+  free: { name: '灑脫', desc: '不拘一格，練功隨興，巧變的武學一點就通', mods: { train: 0.9, chat: 1.15, leisure: 1.2 }, roomImpression: -1 }, // 24f R1 設計旋鈕：隨遇而安抵一份名望觀感。
   glutton: { name: '貪吃', desc: '吃得好心情就好，餓了特別煩', mods: { eat: 1.3 }, thoughtMul: { food: 1.8 } },
 };
 // 想法（記憶）：值、持續秒數、分類（給 thoughtMul 用）
@@ -378,11 +378,12 @@ export const THOUGHTS = {
 };
 export const NEED_MOOD = { hunger: [20, -10, 'food'], energy: [30, -8, 'bad'], social: [25, -6, 'social'], fun: [25, -6, 'bad'] };
 export const MOOD = { base: 50, up: 3, down: 2, low: 30, high: 70 }; // 每秒向目標移動；低／高門檻
+export const ROOM_IMPRESSION = { valueScale: 25, values: { fame: 1, free: -1 } }; // 24f R1 設計旋鈕：25 點價值觀為一份房間感受，名望在意、自在抵消。
 export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落時被壓低的「可延後」工作；種菜煮飯屬求生，不壓，避免餓→低落→不煮的死亡螺旋
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '5.7'; /* 第二十三輪 #488：舊劇情不再直接授整門；異版存檔拒載 */
+export const RULES_VERSION = '5.8'; /* 第 24 輪 #488：入門讀卷、崖上景致、房間觀感與捐修改模擬；異版存檔拒載 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -842,9 +843,9 @@ EDGES.push(['hall', 'library'], ['yard', 'quiet'], ['hall', 'shrine'], ['kitchen
 NODES.cliff3Detour = [1050, 310]; // R6 #523：繞開光壁的可見路肩，位置按 cliff2／cliff3 的地圖空地配置。
 EDGES.push(['herb', 'cliff1'], ['forest2', 'cliff1'], ['well', 'cliff2'], ['cliff1', 'cliff2'], ['cliff2', 'cliff3Detour'], ['cliff3Detour', 'cliff3']);
 export const CLIFFS = Object.freeze({
-  cliff1: { name: '斷木試劍崖', height: '三丈', heightZhang: 3, routeGrade: 1, hardest: '易攀岩面', acts: ['cliffForage1', 'cliffTrain'] },
-  cliff2: { name: '飛瀑寒潭崖', height: '七丈', heightZhang: 7, routeGrade: 2, hardest: '中段疏點', acts: ['cliffWater', 'waterfallTrain'] },
-  cliff3: { name: '終南絕頂・古墓石室崖', height: '十五丈', heightZhang: 15, routeGrade: 3, hardest: '頂端光壁', detour: 'cliff3Detour', acts: ['cliffComprehend'] },
+  cliff1: { name: '斷木試劍崖', scenery: '登高望遠', height: '三丈', heightZhang: 3, routeGrade: 1, hardest: '易攀岩面', acts: ['cliffForage1', 'cliffTrain'] },
+  cliff2: { name: '飛瀑寒潭崖', scenery: '瀑聲洗心', height: '七丈', heightZhang: 7, routeGrade: 2, hardest: '中段疏點', acts: ['cliffWater', 'waterfallTrain'] },
+  cliff3: { name: '終南絕頂・古墓石室崖', scenery: '雲海開闊', height: '十五丈', heightZhang: 15, routeGrade: 3, hardest: '頂端光壁', detour: 'cliff3Detour', acts: ['cliffComprehend'] },
 }); // R6 #523 規格高度 3／7／15 丈與易／中／難三路；最難一段只列性質，直上光壁不可攀，繞路可達。
 const B = (id, name, node, built, cost, work, offers, extra = {}, rep = 0) => ({ id, name, node, v16: true, stages: [{ name: '空地', sprite: null, offers: [] }, { name: built, sprite: null, offers, cost, work, rep: rep || undefined, ...extra }] });
 FACILITIES.push(

@@ -2,7 +2,7 @@
 import {BODY_TIMING,FOE_ACTIONS,limbAvailable} from './starter-combat.mjs';
 import {emitPractice} from './practice-events.mjs';
 export const CONTACT_MEDIA={impact:{momentum:true,tissue:true},irritant:{momentum:false,tissue:false}};
-export const BODY_MECHANICS={mass:70,balance:100,balanceRecovery:12,recoveryDelay:2.5,openSeconds:BODY_TIMING.reaction+BODY_TIMING.recovery+BODY_TIMING.step,painLimit:100,painRecovery:1};
+export const BODY_MECHANICS={mass:70,averageAdultSkill:10,balance:100,balanceRecovery:12,recoveryDelay:2.5,openSeconds:BODY_TIMING.reaction+BODY_TIMING.recovery+BODY_TIMING.step,painLimit:100,painRecovery:1}; // 24d：成年體能 10 沿開局主角，作入門卷閱讀速度基準。
 // 山鼠是環境動物，沒有進攻招表；仍保留原本較弱的架勢資料。
 export const PASSIVE_BODIES={rat:{balance:30}};
 export const TISSUES={blunt:[{id:'bruise',name:'瘀青',threshold:10,pain:1},{id:'skin',name:'皮破',threshold:24,pain:4},{id:'tendon',name:'傷筋',threshold:40,pain:9},{id:'bone',name:'斷骨',threshold:72,pain:16}],edge:[{id:'bruise',name:'瘀青',threshold:4,pain:1},{id:'skin',name:'皮破',threshold:8,pain:4},{id:'tendon',name:'傷筋',threshold:24,pain:9},{id:'bone',name:'斷骨',threshold:72,pain:16}]};

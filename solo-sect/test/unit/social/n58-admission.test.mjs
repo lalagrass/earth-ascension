@@ -14,7 +14,7 @@ test('N58 收徒方針、束脩／做工、少年名俠共用入門與師父熟�
     const s = createState(17, { kind: 'custom', hermitage: true, opening: 'solo' });
     assert.equal(foundHermitageSect(s, 'single').ok, true); s.fac.dorm.stage = 1; s.res.food = 10; s.rep = 100;
     recordRumor(s, 'school', '村中教塾先生', 'village');
-    recordRumor(s, 'rescue', '回村的樵夫', 'village');
+    recordRumor(s, 'defend', '回村的樵夫', 'village');
     recordRumor(s, 'trade', '藥舖掌櫃', 'market');
     const master = s.ds[0];
     master.practice.hands = Object.fromEntries(BODY_BASE.map((id) => [id, 500]));

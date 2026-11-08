@@ -23,7 +23,7 @@ test('名俠池排除已選主角／同門與已在門中者', () => {
   s.encExclude = []; join(s, 'guojing'); assert.ok(!xiaPool(s).includes('guojing'));
 });
 test('村路護人傳聞觸發郭靖奇遇，一天最多一個；收入門下帶高手底子', () => {
-  const s = st(); recordRumor(s, 'rescue', '回村樵夫', 'village'); xiaStep(s); const ch = s.choices.find((c) => c.xia); assert.equal(ch.xia, 'guojing');
+  const s = st(); recordRumor(s, 'defend', '回村樵夫', 'village'); xiaStep(s); const ch = s.choices.find((c) => c.xia); assert.equal(ch.xia, 'guojing');
   const n = s.choices.length; xiaStep(s); assert.equal(s.choices.length, n);
   prepareHistoricalAdmission(s, 'guojing');
   assert.equal(autoPick(s, ch), 0); xiaResolve(s, ch, 0); const g = s.ds.find((d) => d.xia === 'guojing');
@@ -33,7 +33,7 @@ test('名俠弟子：郭靖、黃蓉、令狐沖（v1.2）；洪七公是師父'
   assert.deepEqual(Object.keys(XIA).filter((k) => XIA[k].role === 'disciple' && !['chengying', 'azi', 'chenglingsu'].includes(k)) /* loop151 v2.3 三人只在 s.v23 新局進池 */.sort(), ['guojing', 'huangrong', 'linghuchong']); assert.equal(XIA.hongqigong.role, 'teacher');
 });
 test('婉拒三天內不再出現', () => {
-  const s = st(); recordRumor(s, 'rescue', '回村樵夫', 'village'); xiaStep(s); const ch = s.choices.find((c) => c.xia); xiaResolve(s, ch, 1); s.t += DAY * 1.5; xiaStep(s); assert.ok(!s.choices.some((c) => c.xia === ch.xia));
+  const s = st(); recordRumor(s, 'defend', '回村樵夫', 'village'); xiaStep(s); const ch = s.choices.find((c) => c.xia); xiaResolve(s, ch, 1); s.t += DAY * 1.5; xiaStep(s); assert.ok(!s.choices.some((c) => c.xia === ch.xia));
 });
 test('黃蓉下廚食誘→洪七公三段傳降龍，打狗棒法給黃蓉，傳完下山不死', () => {
   const s = st(); join(s, 'guojing'); join(s, 'huangrong'); recordRumor(s, 'provisions', '山產行商', 'teahouse'); const hr = s.ds.find((d) => d.xia === 'huangrong'), gj = s.ds.find((d) => d.xia === 'guojing');

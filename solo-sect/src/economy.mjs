@@ -192,10 +192,13 @@ export function restBodyCondition(d, s) {
 export function cookMedicatedMeal(s, chef) {
   if (!bodyConditionOn(s) || (s.res.herb || 0) < 1 || (s.res.food || 0) < 1) return null;
   resAdd(s, 'food', -1, 'kitchen'); resAdd(s, 'herb', -1, 'kitchen'); resAdd(s, 'medFood', 1, 'kitchen'); // 出自 Phase 5 規格：一份煮好的飯入藥升級，不憑空添一份餐食。
-  const cold = (s.res.coldWater || 0) > 0; if (cold) resAdd(s, 'coldWater', -1, 'kitchen'); // 出自 Phase 6 規格：寒潭泉水只進藥膳，食用時回內息與心情。
+  const cold = (s.res.coldWater || 0) > 0;
+  const bee = !cold && (s.res.beeJelly || 0) > 0;
+  if (cold) resAdd(s, 'coldWater', -1, 'kitchen');
+  else if (bee) resAdd(s, 'beeJelly', -1, 'kitchen'); // 24e：兩種崖上物產擇一入藥膳，沿現有回內息／心情效果。
   const skilled = (chef?.skills?.cooking || 0) >= 16; // R4 規格：好廚藝只改菜名，R2 起不再多給成長
   const name = chef?.mealName || (skilled ? '歸元藥膳' : '山草強身湯飯');
-  (s.medFoodBatches ??= []).push({ name, chef: chef?.id || null, skilled, ...(cold ? { cold: true } : {}) });
+  (s.medFoodBatches ??= []).push({ name, chef: chef?.id || null, skilled, ...(cold ? { cold: true } : {}), ...(bee ? { bee: true } : {}) });
   return name;
 }
 // 用飯：決定下一餐前的營養。藥膳有肉菜藥材算「足」，白飯算「不足」。
@@ -207,7 +210,7 @@ export function applyMedicatedMeal(d, s) {
   resAdd(s, 'medFood', -1, 'meal');
   d.nutrition = BODY_CONDITION.nutrition.rich;
   d.herbalDietUntil = s.t + DAY; d.herbalBuffName = batch.name;
-  return { name: batch.name, nutrition: d.nutrition, fatigue: d.muscleFatigue, cold: !!batch.cold };
+  return { name: batch.name, nutrition: d.nutrition, fatigue: d.muscleFatigue, cold: !!batch.cold, bee: !!batch.bee };
 }
 
 // ==== （原 steward.mjs）====
