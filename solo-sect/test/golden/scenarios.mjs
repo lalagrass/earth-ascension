@@ -45,5 +45,6 @@ export const casesOf = (tier) => {
     { key: 'xln-chunyang-42', seed: 42, days: T.days, dt: T.dt, checkpoints: T.checkpoints, hermitage: { opening: 'xiaolongnv', starterArt: 'chunyangFist' } },
     { key: 'hr-luohan-42', seed: 42, days: T.days, dt: T.dt, checkpoints: T.checkpoints, hermitage: { opening: 'huangrong', starterArt: 'luohanHands' } },
     { key: 'solo-chunyang-42', seed: 42, days: T.days, dt: T.dt, checkpoints: T.checkpoints, hermitage: { opening: 'solo', starterArt: 'chunyangFist' } },
+    { key: 'solo-baishen-42', seed: 42, days: T.days, dt: T.dt, checkpoints: T.checkpoints, hermitage: { opening: 'solo', starterArt: 'none' } }, // R10 白身
   ];
 };

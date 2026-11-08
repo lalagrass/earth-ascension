@@ -1,7 +1,7 @@
 import { createState, prepareHistoricalMentor } from '../harness/historical-party.mjs';
 import test from 'node:test'; import assert from 'node:assert/strict';
 import { tick, startBuild, startHunt, setOrder, save, load, routeLength, relKey, personalityFrom } from '../../src/sim.mjs';
-import { appetiteActMul31 } from '../../src/arts.mjs';
+import { appetiteActMul31, learnArt } from '../../src/arts.mjs';
 import { ACTIVITIES, RECRUIT_POOL, DAY, SEASON_DAYS } from '../../src/data.mjs';
 import { compat, relAdd, aff, moodParts } from '../../src/social.mjs';
 import { seasonOf } from '../../src/economy.mjs';
@@ -61,12 +61,12 @@ test('膳房可建且升級後每鍋產量提高', () => {
 
 // v0.3
 test('腿法路數練到門檻學到掃堂腿，不會誤學掌法招', () => {
-  const s = createState(21); s.res.food = 99; setOrder(s, 'senior', 'train'); run(s, 500); setOrder(s, 'senior', null); run(s, 400);
+  const s = createState(21); s.res.food = 99; learnArt(s.ds[0], 'sweepLeg', s.t); /* R10：整門要有會的人傳 */ setOrder(s, 'senior', 'train'); run(s, 500); setOrder(s, 'senior', null); run(s, 400);
   const d = s.ds[1]; assert.ok(d.moves.includes('kick'), d.moves.join()); assert.ok(!d.moves.includes('push'));
-  assert.ok(s.log.some((l) => l.msg.includes('師父傳授林師姐「掃堂腿」！')));
+  assert.ok(s.log.some((l) => l.msg.includes('傳授林師姐「掃堂腿」！')));
 });
 test('木樁場建成後會切磋，並加速練功', () => {
-  const s = createState(22); s.res.food = 99; s.res.wood = 6; startBuild(s, 'yard'); run(s, 1500);
+  const s = createState(22); s.res.food = 99; s.res.wood = 6; learnArt(s.ds[0], 'sweepLeg', s.t); /* R10：整門要有會的人傳 */ startBuild(s, 'yard'); run(s, 1500);
   assert.equal(s.fac.yard.stage, 1); assert.ok(s.log.some((l) => /切磋/.test(l.msg)));
 });
 

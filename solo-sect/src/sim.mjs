@@ -1,7 +1,7 @@
 import {HUNGER_PER_SECOND,admissionStatus,unfoundedHermitage,mentorFor,guidanceSeconds,clockActor,noteGuidance,guidanceLearning,guidanceDaily} from './admission.mjs';
 import {attraction,applicantAway,bookAdmissionWork,discipleCount,policyCap,recruitmentInit,recruitmentOf,returnFromWork,sendApplicantToWork,setRecruitPolicy} from './recruitment.mjs';
 export {attraction,policyCap,setRecruitPolicy} from './recruitment.mjs';
-import {transferredDamage,moveStats,hermitageInnerActive,hermitageStepActive} from './arts.mjs';
+import {transferredDamage,moveStats,hermitageInnerActive,hermitageStepActive,artTeacher} from './arts.mjs';
 import { HERMITAGE_VOLUMES, seedHermitageBooks, bookStatus, readHermitageBook, cliffBook, forestFragment, volumeById } from './hermitage-books.mjs';
 import { canLeapCliff, CLIFF_ACT_NODE } from './cliff.mjs';
 import {ringCapacity,attackTokenLimit,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} from './tactics.mjs';
@@ -86,8 +86,9 @@ export function createState(seed = 1, heroSpec = null) {
     Object.assign(s.res, opening.supplies);
     if (s.hero) s.hero.sect24 = 'quanzhen';
     const hero = byId(s, 'hero');
-    const starter = heroSpec.starterArt === 'luohanHands' ? 'luohanHands' : 'chunyangFist';
-    learnArt(hero, starter, s.t); hero.focus = starter; hero.hermitageStarter = starter;
+    // R10 #530：白身開局沒有入門拳譜，只能靠身體硬打，再去找師父、找譜。
+    const starter = heroSpec.starterArt === 'none' ? null : heroSpec.starterArt === 'luohanHands' ? 'luohanHands' : 'chunyangFist';
+    if (starter) { learnArt(hero, starter, s.t); hero.focus = starter; } else makeBare(hero); hero.hermitageStarter = starter;
     for (const row of opening.people) {
       const base = row.template || DISCIPLES[0];
       const person = mkDisciple({ ...base, ...row, skills: { ...DISCIPLES[0].skills, ...base.skills, ...row.skills } }, s.ds.length);
@@ -314,7 +315,7 @@ function scoreCtx(s, d) {
 const hasMeal = (s) => readyMealCount(s) > 0;
 export const PRED = {
   tired: (c) => c.d.tired, wake: (c) => c.n.energy < CORE.wakeAt, hurt: (c) => c.d.hp < 40, hasFood: (c) => hasMeal(c.s), foodLow: (c) => foodLow(c.s), starving: (c) => !!c.d.famished || c.n.hunger < 15, /* v1.7 遲滯：餓昏後吃到 50 才解除 */ hungry: (c) => c.n.hunger < 30,
-  others: (c) => c.others.length > 0, pp: (c) => !!c.pp, dull: (c) => c.fun < 25, encourageOk: (c) => !!c.low, pending: (c) => !!c.d.pendingArt,
+  others: (c) => c.others.length > 0, pp: (c) => !!c.pp, dull: (c) => c.fun < 25, encourageOk: (c) => !!c.low, pending: (c) => !!c.d.pendingArt && !!artTeacher(c.s, c.d, c.d.pendingArt), // R10：沒有會的人在，就沒有師父能傳
   btOk: (c) => !!c.bt && c.d.mood >= BREAK.moodMin && c.n.energy >= BREAK.energyMin, wexin: (c) => c.d.wexin > 0,
   sparOk: (c) => /* loop15：空地也能徒手過招 */ c.n.energy > 45 && c.others.some((o) => o.needs.energy > 45),
   woodRoom: (c) => c.wood < c.s.cap.wood, stoneRoom: (c) => c.stone < c.s.cap.stone, shortWood: (c) => c.shortWood, shortStone: (c) => c.shortStone,
@@ -615,7 +616,7 @@ function doTask(s,d,dt){
       if (A.social) d.needs.social = clamp(d.needs.social + A.social, 0, 100);
       if (t.act === 'meditate') { const b = btReady(d, s.t); if (!b) for (let i = 0; i < (facStage(s, t.fac).medEase || 1); i++) easeWexin(s, d); const r = b && resolveBreak(d, b, s.t, rand(s) - ngBreak(d)); /* loop105 內力衝關：成功率 +btBonus，仍封頂 0.9；loop108 已達 0.9 不扣 */ if (r?.ok && r.stage <= 2) { growEnsure(d); settleGrowth(d, r.art, d.arts[r.art.id], { src: 'break', stage: r.stage }); } /* loop79 突破里程碑 */ const bTier = r?.ok && breakTier(s, d, r); if (r?.ok) breakDeed(s, d, r); if (r?.ok) { think(s, d, 'btWin'); log(s, `${d.name}打坐衝關成功：「${r.art.name}」${r.stage === 1 ? '踏入大成' : r.stage === 2 ? '臻至化境' : '返璞歸真'}！`, bTier || undefined); s.fx.push({ kind: 'break', pos: [...d.pos], ttl: 1.2 }); } else if (r) { think(s, d, 'btFail'); log(s, `${d.name}衝關「${r.art.name}」失敗，歇一天再試`); } }
       if (t.act === 'meditate' && d.ng) addQi(d, medQi(d)); // loop103 打坐一次回內力（衝關扣用在前）
-      if (t.act === 'learn' && d.pendingArt) { const m = learnArt(d, d.pendingArt, s.t); s.rep = (s.rep || 0) + REP.learn; log(s, `師父傳授${d.name}「${m.name}」！`); think(s, d, 'learned'); }
+      if (t.act === 'learn' && d.pendingArt) { const teacher = artTeacher(s, d, d.pendingArt); if (teacher) { const m = learnArt(d, d.pendingArt, s.t); s.rep = (s.rep || 0) + REP.learn; log(s, `${teacher.name}傳授${d.name}「${m.name}」！`); think(s, d, 'learned'); } }
       if ((t.act === 'chat' || t.act === 'spar') && t.partner && d.id < t.partner) { const c = (s.cnt ??= { chat: 0, spar: 0 }); c[t.act]++; } // loop22 完成場次計數（opt-in）
       if (t.act === 'chat' && t.partner) { const p = byId(s, t.partner); d.together += 20; if (isLabor(d) && !isLabor(p)) d.cowork = (d.cowork || 0) + 30;
         if (t.encouragedBy) { think(s, d, 'encouraged', `（${p.name}）`); }

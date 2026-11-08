@@ -381,7 +381,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '5.1'; /* R7 #524：拿掉收養；兩人都想才生，孩子跟大人同一個年曆 */
+export const RULES_VERSION = '5.2'; /* R10 #530：整門只能學來、看人只得單招、傳承讀卷資料、白身開局 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [

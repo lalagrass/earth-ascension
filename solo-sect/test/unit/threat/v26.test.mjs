@@ -19,6 +19,7 @@ test('loop171 chiefOnly24：標記照規格', () => {
 test('loop171 位階鎖：一般弟子鎖、掌門／首徒／魁首可；顯示線索；不擋已會者', () => {
   const s = V({ sect24: 'taohua' }); tick(s, 0.1); const h = hero(s), d = other(s), a = A.artById('lanhuaHand'); assert.equal(d.sectId, 'taohua');
   assert.ok(A.chiefLocked24(d, a) && A.lockedArt24(d, a)); assert.ok(!A.chiefLocked24(h, a) && !A.lockedArt24(h, a));
+  give(d, 'luoyingPalm', 60); // R10：桃花武學屬桃花傳承，須先會本傳承前一門才看得到下一門
   assert.equal(A.artState(d, a).why, A.CHIEF24_WHY); assert.ok(A.artHints(d).find((r) => r.id === 'lanhuaHand').need.includes(A.CHIEF24_WHY));
   d.role = 'head'; assert.ok(!A.chiefLocked24(d, a)); d.role = 'inner'; d.chief24 = true; assert.ok(!A.chiefLocked24(d, a)); d.chief24 = false;
   give(d, 'lanhuaHand', 30); assert.ok(!A.chiefLocked24(d, a)); delete d.arts.lanhuaHand;
