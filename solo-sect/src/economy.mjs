@@ -49,7 +49,7 @@ export function market(s) { const X = E(s), M = X.market, c = cycleOf(s); if (M.
 export function mountainProduceSale(s) {
   if (!MOUNTAIN_MARKET.producerFacilities.some(id => (s.fac?.[id]?.stage || 0) >= 1)) return null;
   // 25d：行商原有的十五錢是這趟的購貨盤纏，不再是見到建築就付的收入。
-  // 藥材沿市集三份五錢；菜無既有市價，以一畦 HARVEST 份菜抵既有一天雇工 ECON.wage 推導。
+  // R1 分類：推導。藥材沿市集三份五錢；菜無既有市價，以一畦 HARVEST 份菜抵既有一天雇工 ECON.wage 推導。
   // 整畦成交，先留 FOOD_SEC 的當日菜額；這不是 N58 束脩錢與飯的交換率。
   const budget = MOUNTAIN_MARKET.buyBudget;
   const herb = Math.min(s.res.herb || 0, MARKET.stock.herb, Math.floor(budget * MARKET.herbBundle / MARKET.price.herb));
@@ -63,7 +63,8 @@ export function mountainProduceSale(s) {
   resAdd(s, 'coin', coin, 'market');
   E(s).produceEarned = (E(s).produceEarned || 0) + coin;
   const detail = `收走菜 ${veg} 份、藥 ${herb} 份，付 ${coin} 香火錢`;
-  recordRumor(s, 'provisions', '山產行商', 'market', detail, { trade: { coin, veg, herb }, stock: { coin: s.res.coin, food: s.res.food, pill: s.res.pill, herb: s.res.herb } });
+  // 行商只見到本次交割，不能把未見的院倉錢糧丹藥夾帶成公開消息。
+  recordRumor(s, 'provisions', '山產行商', 'market', detail, { trade: { coin, veg, herb } });
   log(s, `【山產交割】${detail}。${marketSpiritStoneStock(s) ? `這回帶了 ${marketSpiritStoneStock(s)} 顆靈石（每顆 ${MOUNTAIN_MARKET.lsPrice}）。` : ''}`);
   return { coin, veg, herb };
 }
@@ -84,7 +85,7 @@ export function marketWhy(s, k) {
 }
 export function marketDo(s, k) {
   const why = marketWhy(s, k); if (why) return { ok: false, why }; const p = priceOf(s, k), M = market(s);
-  if (k === 'pill') { resAdd(s, 'pill', -1); pillNote(s, 'sold', 1); resAdd(s, 'coin', p); M.sold.pill = (M.sold.pill || 0) + 1; recordRumor(s, 'trade', '藥舖掌櫃', 'market', `一顆療傷丹賣了 ${p} 香火錢`, { trade: { coin: p, pill: 1 }, stock: { coin: s.res.coin, food: s.res.food, pill: s.res.pill, herb: s.res.herb } }); log(s, `山下藥舖收了一顆療傷丹，得 ${p} 香火錢。`); return { ok: true, p }; }
+  if (k === 'pill') { resAdd(s, 'pill', -1); pillNote(s, 'sold', 1); resAdd(s, 'coin', p); M.sold.pill = (M.sold.pill || 0) + 1; recordRumor(s, 'trade', '藥舖掌櫃', 'market', `一顆療傷丹賣了 ${p} 香火錢`, { trade: { coin: p, pill: 1 } }); log(s, `山下藥舖收了一顆療傷丹，得 ${p} 香火錢。`); return { ok: true, p }; }
   resAdd(s, 'coin', -p); M.sold[k] = (M.sold[k] || 0) + 1;
   if (MARKET.rare[k]) { resAdd(s, k, 1); log(s, `在山下市集買了 1 份${k === 'tiemu' ? '鐵木' : '靈石'}，花 ${p}。`); }
   else if (k === 'herb') { resAdd(s, 'herb', MARKET.herbBundle); log(s, `在山下市集買了 ${MARKET.herbBundle} 份靈草，花 ${p}。`); }

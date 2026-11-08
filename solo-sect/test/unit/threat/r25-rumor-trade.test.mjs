@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState } from '../../../src/sim.mjs';
-import { market } from '../../../src/economy.mjs';
+import { market, marketDo } from '../../../src/economy.mjs';
 import { ECON, HARVEST } from '../../../src/data.mjs';
 import { recordRumor } from '../../../src/rumors.mjs';
 import { wealth, banditLoot, banditProfit, raidPhase } from '../../../src/threat.mjs';
@@ -20,15 +20,23 @@ test('25d 無交貨無財聞；只有房舍無油水；同油水聽過退賊更�
   assert.equal(s.rumors.filter(row => row.kind === 'provisions').length, 0);
 
   s.res.veg = 10;
+  s.res.coin += 1000; // 未被行商看見的家底，不應進成交見聞。
   s.day = 11;
   market(s);
   const rumor = s.rumors.find(row => row.kind === 'provisions');
   assert.ok(rumor?.trade?.veg > 0);
   assert.equal(s.res.veg, 10 - rumor.trade.veg);
-  assert.equal(s.res.coin, coin0 + rumor.trade.coin);
+  assert.equal(s.res.coin, coin0 + 1000 + rumor.trade.coin);
+  assert.equal(rumor.stock, undefined);
+  assert.equal(banditLoot(rumor), rumor.trade.coin);
   assert.equal(rumor.trade.veg % HARVEST, 0);
   assert.equal(rumor.trade.coin, rumor.trade.veg / HARVEST * ECON.wage);
   assert.match(rumor.text, /菜.*份.*藥.*份.*香火錢/);
+  s.res.pill = 1;
+  assert.equal(marketDo(s, 'pill').ok, true);
+  const pillSale = s.rumors.find(row => row.kind === 'trade');
+  assert.equal(pillSale.stock, undefined);
+  assert.equal(banditLoot(pillSale), pillSale.trade.coin);
 
   s.res.coin = s.res.food = s.res.pill = s.res.herb = 0;
   s.fac.hall.stage = 2;

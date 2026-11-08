@@ -36,7 +36,7 @@ test('山賊：全派未滿現行人數門檻威脅為 0；8 人隨可搬家底�
 });
 test('勒索：付錢扣錢；迎戰勝負都只重傷不死、孩子不上陣；半日沒決定自動處置', () => {
   const s = grow(createState(3), 9); s.day = 8; s.res.coin = 400; s.ds[1].adult = false;
-  recordRumor(s, 'trade', '藥舖掌櫃', 'market', '確有售丹收入', { trade: { coin: 400 }, stock: { coin: 400 } }); s.day = 10;
+  recordRumor(s, 'trade', '藥舖掌櫃', 'market', '確有售丹收入', { trade: { coin: 400 } }); s.day = 10;
   const P = threatDaily(s); assert.ok(P && P.demand > 0, '外人親見交易且山路行程完成後才可勒索');
   assert.match(threatHtml(s), /付錢了事/); const c0 = s.res.coin; assert.ok(raidResolve(s, 0, H).paid); assert.equal(s.res.coin, c0 - P.demand); assert.equal(T(s).paid, 1);
   for (const d of s.ds) d.needs.energy = 0; /* #431：只有無人能迎戰才即時結算 */

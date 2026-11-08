@@ -21,3 +21,7 @@
 少年郭靖是候選人資料列，走普通人同一個 `canRecruit → admissionStatus → recruit` 函式；他只帶入門的基礎拳，初始技能借用石頭同階，根骨沿用既有 `ROOT.inviteMin` 3，年齡 13 是現有成年門檻 14 的前一年。長成名俠的舊奇遇與客卿方向留待後續設計。
 
 參考：[#489 三層收徒規格](https://github.com/lalagrass/earth-ascension/issues/489) 的 Dwarf Fortress「自產成績引人」思路；[Gene Ching 的入門／入室描述](https://practicalmethod.com/2010/05/on-discipleship-by-gene-ching/) 提供外門與更親密師承的區分。本作沒有取用其文字、數值或角色資料。
+
+## 25c：人選帶著原來的生活來比較（#488）
+
+五位普通人選的資料列各寫現在有沒有飯、床與安全；收徒仍由 `admissionStatus` 比較入門後與原生活。市集有飯的人不會被當成一無所有；家中有飯有床的人聽見立匾也不會因此想搬來。所聞功夫只看傳到聚落的具名武藝見聞，不偷看門內實際最強弟子。救人、退賊等見聞沿既有 `RUMOR_KINDS` 標籤，不加名聲門檻或抽籤。這沿用人按處境遷移的 Dwarf Fortress 訪客想法及本作 R8 傳聞路徑，未借用其人物資料或數字。
