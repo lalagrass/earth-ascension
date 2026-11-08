@@ -95,6 +95,7 @@ test('招收受村路傳聞、床位、束脩或工作與師父真空檔約束�
   const s = createState(41); s.res.food = 10; assert.equal(canRecruit(s).ok, false); recordRumor(s, 'school', '村中教塾先生', 'village');
   const cap = capacity(s); assert.equal(cap, 3); assert.match(canRecruit(s).why, /床位/);
   s.fac.dorm.stage = 1; s.res.food = 20; prepareHistoricalMentor(s); const r = recruit(s); assert.ok(r.ok, r.why); assert.equal(s.res.food, 20 + 3 - ACTIVITIES.eat.use.food); assert.equal(r.d.at, 'gate'); assert.equal(s.ds.length, 4);
+  recordRumor(s, 'rescue', '回村樵夫', 'village'); // 阿青已入門；下一位石頭因護人見聞才來。
   s.res.food = 0; s.fac.dorm.stage = 2; assert.equal(canRecruit(s).workAway, true); assert.match(canRecruit(s).why, /付不起束脩/);
 });
 test('大廳擴建需名聲；母版階段隨建設 S0→S1→S2', () => {

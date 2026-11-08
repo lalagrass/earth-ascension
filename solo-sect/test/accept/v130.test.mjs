@@ -37,7 +37,9 @@ test('周伯通：賭贏才教（先左右互搏給憨厚的，再空明拳）�
 });
 test('東方不敗：有來由且逐招分勝負；打退留葵花殘頁、輸了不死人，也不能入門', () => {
   const arrive = () => {
-    const s = st(); s.day = 8; s.t = 7 * DAY; recordRumor(s, 'tournament', '會武觀眾', 'market'); s.res.coin = 2000; s.choices = [];
+    const s = st(); s.day = 8; recordRumor(s, 'tournament', '會武觀眾', 'market');
+    s.day = 10; s.t = 9 * DAY; // 見聞到達後，沿既有茶攤預警行程再走兩日才可登門。
+    s.res.coin = 2000; s.choices = [];
     while (s.ds.length < 4) { const d = structuredClone(s.ds[0]); d.id = `visitor-test-${s.ds.length}`; s.ds.push(d); }
     jhStep(s, .25, { rand: () => .5 });
     const ch = s.choices.find(c => c.jh === 'dfbb');
