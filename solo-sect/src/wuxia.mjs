@@ -2,13 +2,14 @@ import {admissionStatus,prepareAdmission,unfoundedHermitage} from './admission.m
 import {BODY_BASE} from './starter-combat.mjs';
 import { styleOk } from './bonds.mjs';
 import { favSort } from './sect.mjs';
-import { DAY, TIERS, TREES, HS, DUGU, MOVES, COMPANIONS, ACTIVITIES, buildCards } from './data.mjs';
+import { DAY, TIERS, TREES, HS, DUGU, COMPANIONS, ACTIVITIES, buildCards } from './data.mjs';
 import { think, initPair, meetOpinion } from './social.mjs';
 import { encounterPool, mkComp, heroById, addWexin } from './hero.mjs';
-import { learnArt, seedArts, artById, artTier } from './arts.mjs';
+import { watchMove, seedArts, artById, artTier } from './arts.mjs';
+import { rareBookState, selfCastrate, readRareBook } from './rare-arts.mjs';
 import { log, resAdd } from './util.mjs';
 import { removeActor } from './core.mjs';
-import { onJoin13 } from './jianghu.mjs';
+import { onJoin13, giveArrivalArt } from './jianghu.mjs';
 import { rumorForVisitor } from './rumors.mjs';
 // ==== （原 wuxia.mjs）====
 // v1.1 名俠奇遇（ROADMAP §13）：名俠池（扣掉主角／同門）、觸發（巡山深度、下山、名聲、下廚）、突然入門的高手、
@@ -114,6 +115,11 @@ const XIA_SITUATIONS={
 };
 const XIA_START_SKILLS={linghuchong:{leg:16,palm:36,strength:14,farming:2,herbal:2,agility:30,cooking:2},default:{leg:14,palm:30,strength:36,farming:6,herbal:2,agility:14,cooking:2}};
 const XIA_PALM_MIN={weixiaobao:4,default:30};
+// Named visitors arrive already knowing their own arts; this is character data, not a teaching event.
+export const XIA_ARRIVAL_ARTS = Object.freeze({
+  yangguo: ['anran', 'xuantie'], xiaolongnv: ['yunv'], baozupo: ['shihou'], baozugong: ['taiji'],
+  chengying: ['qimenZhen'], azi: ['xingxiuDu'], chenglingsu: ['yaowang'],
+});
 export function makeXiaCandidate(s,k){
  const c=COMPANIONS[k],Y=XIA_T[k],T=heroById(k),info=Y||T;
  if(!c&&!info)throw Error('未知名俠 '+k);
@@ -122,6 +128,7 @@ export function makeXiaCandidate(s,k){
  Object.assign(d,{companion:false,xia:k,reason:'名俠入門',mood:80,role:'inner',guest:XIA[k]?.role==='guest'});
  d.skills.palm=Math.max(d.skills.palm,XIA_PALM_MIN[k]??XIA_PALM_MIN.default);
  d.arts={};d.moves=['fist',...BODY_BASE];d.focus=null;seedArts(d);
+ for (const art of XIA_ARRIVAL_ARTS[k] || []) giveArrivalArt(s, d, art, TIERS[2][0] + 1);
  d.situation={food:1,bed:1,autonomy:1,reason:'已有自己的生活與武學，留下須更合處境',...XIA_SITUATIONS[k]};
  return d;
 }
@@ -136,7 +143,7 @@ export function join(s,k){
   log(s, `【名俠入門】${d.name}拜入門下！${c.reason}`); return d;
 }
 // 洪七公分三段傳降龍十八掌：每段要先吃到黃蓉一頓菜（食誘），傳人要有拙／剛的脾性；第三段順帶把打狗棒法傳給黃蓉，然後飄然而去
-export const TEACH = { stages: 3, gap: DAY / 2, xp: [1, TIERS[1][0] + 1, TIERS[2][0] + 1], stay: 4 * DAY };
+export const TEACH = { stages: 3, gap: DAY / 2, stay: 4 * DAY };
 export function pickStudent(s) {
   const c = s.ds.filter((d) => d.role !== 'laborer' && dragonFit(d));
   return c.find((d) => xidOf(s, d) === 'guojing') || c.sort((a, b) => (a.wu ?? 3) - (b.wu ?? 3))[0] || null;
@@ -148,20 +155,14 @@ function teachStep(s, H) {
   const st = pickStudent(s); if (!st) { if (!T.warned) { T.warned = true; log(s, '洪七公搖頭：「降龍十八掌講的是剛猛笨拙，你們這兒沒一個傻小子。」'); } return; }
   if (st.away) return;
   T.stage++; T.lastStageT = s.t; T.student = st.id;
-  const techs = artById('xianglong').techs;
-  teach(s, st, 'xianglong', TEACH.xp[T.stage - 1], techs.slice(0, T.stage)); think(s, st, 'xiaTaught');
-  const mv = techs[T.stage - 1];
-  log(s, `【傳功 ${T.stage}/3】洪七公吃飽了，把降龍十八掌第 ${T.stage} 段傳給${st.name}——「${({ jianlong: '見龍在田', feilong: '飛龍在天', kanglong: '亢龍有悔' })[mv]}」！`);
+  const mv = showGuestMove(s, st, 'xianglong'); think(s, st, 'xiaTaught');
+  log(s, `【指點 ${T.stage}/3】洪七公吃飽了，讓${st.name}看會${mv ? `一招「${mv.name}」` : '一段動作'}；整門仍要按師徒傳授。`);
   s.fx?.push({ kind: 'dragon', pos: [...(st.pos || [800, 450])], ttl: 2.2 });
   const hr = s.ds.find((d) => xidOf(s, d) === 'huangrong');
-  if (hr && T.stage >= 2) { teach(s, hr, 'dagou', TEACH.xp[T.stage - 1]); log(s, `洪七公把打狗棒法${T.stage === 2 ? '起手' : '要訣'}傳給${hr.name}。`); }
+  if (hr && T.stage >= 2) { showGuestMove(s, hr, 'dagou'); log(s, `洪七公讓${hr.name}觀摩打狗棒法的一招；整門仍要師傳。`); }
   if (T.stage === 3) arcAdvance(s, 3, '降龍傳人');
 }
-export function teach(s, d, id, xp, taught) {
-  learnArt(d, id, s.t); const r = d.arts[id]; r.xp = Math.max(r.xp, xp);
-  if (taught?.length) r.taught = [...new Set([...(r.taught || []), ...taught])];
-  learnArt(d, id, s.t);
-}
+export function showGuestMove(s, d, id) { return watchMove(d, artById(id)); }
 function leaveTeacher(s) {
   const T = s.xia.teacher; s.xia.teacher = null; s.xia.done[T.id] = true; s.xia.left[T.id] = true;
   log(s, T.stage >= TEACH.stages ? '洪七公抹抹嘴：「吃人嘴軟，該教的都教了。」背起酒葫蘆，飄然下山。' : '洪七公等不到合意的傳人，留下一句「後會有期」便下山去了。');
@@ -229,17 +230,22 @@ export function zxGate(s, d) {
   return null;
 }
 export function zxUp(s, d) {
-  d.zixia = zxLayer(d) + 1; s.hs.zx = 0; learnArt(d, 'zixia', s.t); d.arts.zixia.xp = Math.min(100, d.zixia * 11 + 1); think(s, d, 'zixiaUp');
+  if (!d?.arts?.zixia) return false; // Cultivation advances an already learned art; it never creates one.
+  d.zixia = zxLayer(d) + 1; s.hs.zx = 0; d.arts.zixia.xp = Math.min(100, d.zixia * 11 + 1); think(s, d, 'zixiaUp');
   s.fx?.push({ kind: 'zixia', pos: [...(d.pos || [800, 450])], ttl: 2.0 }); log(s, `【紫霞神功 第 ${d.zixia} 層】${d.name}閉關衝關，紫氣自頂門升起${d.zixia >= 5 ? '，劍刃隱隱泛紫' : ''}。`);
   if (d.zixia === 3 && isHero(s, 'yuebuqun')) card(s, 'cave'); if (d.zixia === 7 && isHero(s, 'yuebuqun')) arc(s, 4, '紫霞七層：偽君子能否撐過七天不虧心？');
+  return true;
 }
 // ---- 辟邪劍譜：捷徑，自宮＋斷情 ----
-export function bixie(s, d) {
-  s.hs.bixie = 3; s.hs.bixieT = s.t; d.duanqing = s.t; learnArt(d, 'bixie', s.t); d.arts.bixie.xp = TIERS[2][0] + 5; d.arts.bixie.bt1 = true; learnArt(d, 'bixie', s.t);
+export function bixie(s, d, confirm = false) {
+  if (!d || rareBookState(s, 'bixie-robe').holder !== d.id || confirm !== true) return false;
+  if (d.castrated == null && !selfCastrate(s, d, confirm)) return false;
+  if (!readRareBook(s, d, 'bixie-robe').learned) return false;
+  s.hs.bixie = 3; s.hs.bixieT = s.t; d.duanqing = s.t;
   for (const k of Object.keys(s.rel || {})) if (k.includes(d.id) && /couple|spouse|lover/.test(JSON.stringify(s.rel[k]))) delete s.rel[k];
   const n = find(s, 'ningzhongze'), y = find(s, 'yuelingshan'); if (n) { bump(s, n, d, -40); n.lockDown = true; } if (y) think(s, y, 'bixieShock');
   for (const o of s.ds) if (o !== d && o.role !== 'laborer') think(s, o, 'bixieShock');
-  log(s, `【辟邪劍法】${d.name}閉門七日，再出來時嗓音尖細、出劍快如鬼魅。（斷情：從此不近道侶，寧中則好感只會往下掉）`); arc(s, 3, '辟邪：捷徑到手，人心盡失');
+  log(s, `【辟邪劍法】${d.name}讀完親自取得的袈裟，從此不近道侶。`); arc(s, 3, '辟邪：捷徑到手，人心盡失'); return true;
 }
 // ---- 獨孤九劍 ----
 export const duguForms = (d) => (d.dugu || []).length;
@@ -265,7 +271,11 @@ export function formReady(s, d, f) { if (f.id === 'dg0') return true; if (!(d.du
   const ins = Math.max(0, ...f.foes.map((k) => s.codex?.[k]?.insight || 0)); if (ins < f.need) return false;
   return !f.inner || Object.keys(d.arts || {}).some((id) => artTier(d, id) >= 4) || zxLayer(d) >= 9; }
 export function learnDugu(s, d, id) {
-  d.dugu ??= []; if (d.dugu.includes(id)) return false; d.dugu.push(id); learnArt(d, 'dugu', s.t); d.arts.dugu.xp = Math.min(100, d.dugu.length * 11 + 1); if (!d.moves.includes(id)) d.moves.push(id);
+  if (!d?.arts?.dugu) { // Wind's demonstration is one move, not the whole art.
+    if (id !== 'dg0' || d.moves?.includes(id)) return false;
+    (d.moves ??= []).push(id); (d.watched ??= {})[id] = 'dugu'; return true;
+  }
+  d.dugu ??= []; if (d.dugu.includes(id)) return false; d.dugu.push(id); if (d.arts?.dugu) d.arts.dugu.xp = Math.min(100, d.dugu.length * 11 + 1); if (!d.moves.includes(id)) d.moves.push(id); (d.watched ??= {})[id] = 'dugu';
   const f = DUGU.find((x) => x.id === id); if (id === 'dg0') think(s, d, 'duguGot'); log(s, `【獨孤九劍・${f.name}】${d.name}${id === 'dg0' ? '悟通總訣' : `見識過${f.foes.map((k) => k).length ? '對應的敵人' : ''}，悟出${f.name}`}（${d.dugu.length}/${DUGU.length}）`);
   s.fx?.push({ kind: 'dugu', pos: [...(d.pos || [800, 450])], ttl: 1.6 });
   if (d.dugu.length >= 3) arc(s, 4, '九劍湊齊三式'); return true;
@@ -281,7 +291,7 @@ function arc(s, n, text) { const H = s.hero; if (!H || H.kind !== 'template' || 
 export function hsStep(s, dt, H) {
   s.hs ??= hsInit(); const X = s.hs, d = heroD(s), yue = isHero(s, 'yuebuqun'), lhcH = isHero(s, 'linghuchong');
   // 開局：岳不群帶紫霞第一層
-  if (yue && d && !d.zixia) { d.zixia = 1; learnArt(d, 'zixia', s.t); d.arts.zixia.xp = 12; }
+  if (yue && d?.arts?.zixia && !d.zixia) d.zixia = 1;
   // 紫霞衝關：打坐／練功累積
   for (const p of s.ds) if (p.zixia && !p.away && ['meditate', 'train'].includes(p.task?.act)) { X.zx += dt; if (X.zx >= HS.zxNeed * zxLayer(p) && !zxGate(s, p)) zxUp(s, p); }
   for (const p of s.ds) if (p.arts?.zixia) p.arts.zixia.xp = Math.min(100, zxLayer(p) * 11 + 1);

@@ -1,0 +1,6368 @@
+{
+ "days": 30,
+ "seeds": 12,
+ "secondsPerTick": 1,
+ "alertPolicy": "clear after each tick",
+ "scope": "controlled C observation",
+ "summary": [
+  {
+   "case": "solo/chunyangFist/natural",
+   "dullDaysMedian": 0,
+   "siteStallDaysMedian": 0,
+   "famishedShareMedian": 0.009,
+   "lowMoodShareMedian": 0.154,
+   "heroShareMedian": {
+    "grow": 0.494,
+    "work": 0.084,
+    "out": 0.002,
+    "care": 0.385,
+    "social": 0,
+    "idle": 0.036,
+    "none": 0
+   },
+   "reached": {
+    "firstArt": "12/12（中位第 1 日）",
+    "canFound": "12/12（中位第 1 日）",
+    "founded": "0/12（中位第 — 日）",
+    "build": "0/12（中位第 — 日）",
+    "rumor": "0/12（中位第 — 日）",
+    "grew": "0/12（中位第 — 日）",
+    "cliff": "0/12（中位第 — 日）",
+    "大成": "12/12（中位第 2 日）",
+    "山賊": "0/12（中位第 — 日）",
+    "名俠": "0/12（中位第 — 日）",
+    "成親": "0/12（中位第 — 日）",
+    "有喜": "0/12（中位第 — 日）",
+    "出生": "0/12（中位第 — 日）"
+   },
+   "endPeopleMedian": 1,
+   "endArtsMedian": 2,
+   "choicesWaitingMax": 0
+  },
+  {
+   "case": "solo/chunyangFist/guided",
+   "dullDaysMedian": 0,
+   "siteStallDaysMedian": 8,
+   "famishedShareMedian": 0.033,
+   "lowMoodShareMedian": 0.197,
+   "heroShareMedian": {
+    "grow": 0.411,
+    "work": 0.153,
+    "out": 0.005,
+    "care": 0.338,
+    "social": 0.038,
+    "idle": 0.004,
+    "none": 0
+   },
+   "reached": {
+    "firstArt": "12/12（中位第 1 日）",
+    "canFound": "0/12（中位第 — 日）",
+    "founded": "12/12（中位第 1 日）",
+    "build": "12/12（中位第 1 日）",
+    "rumor": "12/12（中位第 1 日）",
+    "grew": "12/12（中位第 2 日）",
+    "cliff": "0/12（中位第 — 日）",
+    "大成": "12/12（中位第 6 日）",
+    "山賊": "7/12（中位第 24 日）",
+    "名俠": "7/12（中位第 8 日）",
+    "成親": "2/12（中位第 28 日）",
+    "有喜": "0/12（中位第 — 日）",
+    "出生": "0/12（中位第 — 日）"
+   },
+   "endPeopleMedian": 5,
+   "endArtsMedian": 3,
+   "choicesWaitingMax": 0
+  },
+  {
+   "case": "solo/none/natural",
+   "dullDaysMedian": 0,
+   "siteStallDaysMedian": 0,
+   "famishedShareMedian": 0.031,
+   "lowMoodShareMedian": 0.186,
+   "heroShareMedian": {
+    "grow": 0.491,
+    "work": 0.097,
+    "out": 0.004,
+    "care": 0.377,
+    "social": 0,
+    "idle": 0.031,
+    "none": 0
+   },
+   "reached": {
+    "firstArt": "12/12（中位第 10 日）",
+    "canFound": "12/12（中位第 10 日）",
+    "founded": "0/12（中位第 — 日）",
+    "build": "0/12（中位第 — 日）",
+    "rumor": "0/12（中位第 — 日）",
+    "grew": "0/12（中位第 — 日）",
+    "cliff": "0/12（中位第 — 日）",
+    "大成": "11/12（中位第 13 日）",
+    "山賊": "0/12（中位第 — 日）",
+    "名俠": "0/12（中位第 — 日）",
+    "成親": "0/12（中位第 — 日）",
+    "有喜": "0/12（中位第 — 日）",
+    "出生": "0/12（中位第 — 日）"
+   },
+   "endPeopleMedian": 1,
+   "endArtsMedian": 1,
+   "choicesWaitingMax": 0
+  },
+  {
+   "case": "solo/none/guided",
+   "dullDaysMedian": 0,
+   "siteStallDaysMedian": 4,
+   "famishedShareMedian": 0.031,
+   "lowMoodShareMedian": 0.11,
+   "heroShareMedian": {
+    "grow": 0.456,
+    "work": 0.135,
+    "out": 0.004,
+    "care": 0.358,
+    "social": 0.035,
+    "idle": 0.011,
+    "none": 0
+   },
+   "reached": {
+    "firstArt": "12/12（中位第 10 日）",
+    "canFound": "0/12（中位第 — 日）",
+    "founded": "12/12（中位第 10 日）",
+    "build": "12/12（中位第 10 日）",
+    "rumor": "12/12（中位第 10 日）",
+    "grew": "12/12（中位第 11 日）",
+    "cliff": "0/12（中位第 — 日）",
+    "大成": "12/12（中位第 13 日）",
+    "山賊": "6/12（中位第 29 日）",
+    "名俠": "9/12（中位第 9 日）",
+    "成親": "0/12（中位第 — 日）",
+    "有喜": "0/12（中位第 — 日）",
+    "出生": "0/12（中位第 — 日）"
+   },
+   "endPeopleMedian": 5,
+   "endArtsMedian": 1,
+   "choicesWaitingMax": 0
+  },
+  {
+   "case": "xiaolongnv/chunyangFist/natural",
+   "dullDaysMedian": 0,
+   "siteStallDaysMedian": 0,
+   "famishedShareMedian": 0.009,
+   "lowMoodShareMedian": 0.074,
+   "heroShareMedian": {
+    "grow": 0.486,
+    "work": 0.064,
+    "out": 0.003,
+    "care": 0.388,
+    "social": 0.051,
+    "idle": 0.009,
+    "none": 0
+   },
+   "reached": {
+    "firstArt": "12/12（中位第 1 日）",
+    "canFound": "12/12（中位第 1 日）",
+    "founded": "0/12（中位第 — 日）",
+    "build": "0/12（中位第 — 日）",
+    "rumor": "0/12（中位第 — 日）",
+    "grew": "0/12（中位第 — 日）",
+    "cliff": "3/12（中位第 16 日）",
+    "大成": "12/12（中位第 4 日）",
+    "山賊": "0/12（中位第 — 日）",
+    "名俠": "0/12（中位第 — 日）",
+    "成親": "2/12（中位第 30 日）",
+    "有喜": "0/12（中位第 — 日）",
+    "出生": "0/12（中位第 — 日）"
+   },
+   "endPeopleMedian": 2,
+   "endArtsMedian": 4,
+   "choicesWaitingMax": 0
+  },
+  {
+   "case": "xiaolongnv/chunyangFist/guided",
+   "dullDaysMedian": 0,
+   "siteStallDaysMedian": 4,
+   "famishedShareMedian": 0.021,
+   "lowMoodShareMedian": 0.147,
+   "heroShareMedian": {
+    "grow": 0.445,
+    "work": 0.101,
+    "out": 0.009,
+    "care": 0.357,
+    "social": 0.045,
+    "idle": 0.001,
+    "none": 0
+   },
+   "reached": {
+    "firstArt": "12/12（中位第 1 日）",
+    "canFound": "0/12（中位第 — 日）",
+    "founded": "12/12（中位第 1 日）",
+    "build": "12/12（中位第 1 日）",
+    "rumor": "12/12（中位第 1 日）",
+    "grew": "12/12（中位第 2 日）",
+    "cliff": "1/12（中位第 29 日）",
+    "大成": "12/12（中位第 3 日）",
+    "山賊": "11/12（中位第 24 日）",
+    "名俠": "7/12（中位第 5 日）",
+    "成親": "5/12（中位第 28 日）",
+    "有喜": "0/12（中位第 — 日）",
+    "出生": "0/12（中位第 — 日）"
+   },
+   "endPeopleMedian": 7,
+   "endArtsMedian": 5,
+   "choicesWaitingMax": 0
+  },
+  {
+   "case": "huangrong/luohanHands/natural",
+   "dullDaysMedian": 0,
+   "siteStallDaysMedian": 0,
+   "famishedShareMedian": 0.016,
+   "lowMoodShareMedian": 0.056,
+   "heroShareMedian": {
+    "grow": 0.482,
+    "work": 0.07,
+    "out": 0.005,
+    "care": 0.386,
+    "social": 0.062,
+    "idle": 0.006,
+    "none": 0
+   },
+   "reached": {
+    "firstArt": "12/12（中位第 1 日）",
+    "canFound": "12/12（中位第 1 日）",
+    "founded": "0/12（中位第 — 日）",
+    "build": "0/12（中位第 — 日）",
+    "rumor": "0/12（中位第 — 日）",
+    "grew": "0/12（中位第 — 日）",
+    "cliff": "12/12（中位第 1 日）",
+    "大成": "12/12（中位第 2 日）",
+    "山賊": "0/12（中位第 — 日）",
+    "名俠": "0/12（中位第 — 日）",
+    "成親": "3/12（中位第 27 日）",
+    "有喜": "1/12（中位第 24 日）",
+    "出生": "0/12（中位第 — 日）"
+   },
+   "endPeopleMedian": 2,
+   "endArtsMedian": 3,
+   "choicesWaitingMax": 0
+  },
+  {
+   "case": "huangrong/luohanHands/guided",
+   "dullDaysMedian": 0,
+   "siteStallDaysMedian": 4,
+   "famishedShareMedian": 0.018,
+   "lowMoodShareMedian": 0.098,
+   "heroShareMedian": {
+    "grow": 0.487,
+    "work": 0.067,
+    "out": 0.007,
+    "care": 0.431,
+    "social": 0.046,
+    "idle": 0.001,
+    "none": 0
+   },
+   "reached": {
+    "firstArt": "12/12（中位第 1 日）",
+    "canFound": "0/12（中位第 — 日）",
+    "founded": "12/12（中位第 1 日）",
+    "build": "12/12（中位第 1 日）",
+    "rumor": "12/12（中位第 1 日）",
+    "grew": "12/12（中位第 2 日）",
+    "cliff": "11/12（中位第 10 日）",
+    "大成": "12/12（中位第 3 日）",
+    "山賊": "12/12（中位第 24 日）",
+    "名俠": "9/12（中位第 2 日）",
+    "成親": "5/12（中位第 28 日）",
+    "有喜": "0/12（中位第 — 日）",
+    "出生": "0/12（中位第 — 日）"
+   },
+   "endPeopleMedian": 7,
+   "endArtsMedian": 3,
+   "choicesWaitingMax": 0
+  }
+ ],
+ "rows": [
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1001,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "巡山": 1,
+    "大成": 2,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.012,
+   "lowMoodShare": 0.163,
+   "heroShare": {
+    "grow": 0.5,
+    "work": 0.077,
+    "out": 0.002,
+    "care": 0.386,
+    "social": 0,
+    "idle": 0.034,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 4,
+    "food": 7,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "巡山": 27,
+    "大成": 1,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1002,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "巡山": 1,
+    "大成": 2,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.007,
+   "lowMoodShare": 0.154,
+   "heroShare": {
+    "grow": 0.495,
+    "work": 0.084,
+    "out": 0.002,
+    "care": 0.39,
+    "social": 0,
+    "idle": 0.028,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 14,
+    "food": 8,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "巡山": 26,
+    "大成": 1,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1003,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "巡山": 1,
+    "大成": 2,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.009,
+   "lowMoodShare": 0.13,
+   "heroShare": {
+    "grow": 0.493,
+    "work": 0.087,
+    "out": 0.002,
+    "care": 0.381,
+    "social": 0,
+    "idle": 0.037,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 4,
+    "food": 2,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "巡山": 22,
+    "大成": 1,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1004,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "巡山": 1,
+    "大成": 2,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.007,
+   "lowMoodShare": 0.111,
+   "heroShare": {
+    "grow": 0.498,
+    "work": 0.076,
+    "out": 0.002,
+    "care": 0.387,
+    "social": 0,
+    "idle": 0.037,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 4,
+    "food": 6,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "巡山": 25,
+    "大成": 1,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1005,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "巡山": 1,
+    "大成": 4,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.006,
+   "lowMoodShare": 0.13,
+   "heroShare": {
+    "grow": 0.506,
+    "work": 0.07,
+    "out": 0.002,
+    "care": 0.385,
+    "social": 0,
+    "idle": 0.037,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 87,
+    "food": 8,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "巡山": 22,
+    "大成": 1,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1006,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "巡山": 1,
+    "大成": 12,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.01,
+   "lowMoodShare": 0.172,
+   "heroShare": {
+    "grow": 0.504,
+    "work": 0.081,
+    "out": 0.002,
+    "care": 0.385,
+    "social": 0,
+    "idle": 0.028,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 72,
+    "food": 4,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "巡山": 25,
+    "大成": 1,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1007,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "巡山": 1,
+    "大成": 2,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.013,
+   "lowMoodShare": 0.15,
+   "heroShare": {
+    "grow": 0.492,
+    "work": 0.08,
+    "out": 0.002,
+    "care": 0.389,
+    "social": 0,
+    "idle": 0.037,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 14,
+    "food": 8,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "巡山": 25,
+    "大成": 1,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1008,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "巡山": 1,
+    "大成": 9,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.008,
+   "lowMoodShare": 0.182,
+   "heroShare": {
+    "grow": 0.494,
+    "work": 0.084,
+    "out": 0.002,
+    "care": 0.388,
+    "social": 0,
+    "idle": 0.031,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 8,
+    "food": 8,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "巡山": 29,
+    "大成": 1,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1009,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "巡山": 1,
+    "大成": 2,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.008,
+   "lowMoodShare": 0.118,
+   "heroShare": {
+    "grow": 0.477,
+    "work": 0.108,
+    "out": 0.002,
+    "care": 0.376,
+    "social": 0,
+    "idle": 0.037,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 14,
+    "food": 6,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "巡山": 20,
+    "大成": 1,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1010,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "巡山": 1,
+    "大成": 12,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.028,
+   "lowMoodShare": 0.272,
+   "heroShare": {
+    "grow": 0.484,
+    "work": 0.106,
+    "out": 0.003,
+    "care": 0.378,
+    "social": 0,
+    "idle": 0.03,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 10,
+    "food": 7,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "巡山": 33,
+    "大成": 1,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1011,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "巡山": 1,
+    "大成": 2,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.008,
+   "lowMoodShare": 0.116,
+   "heroShare": {
+    "grow": 0.491,
+    "work": 0.085,
+    "out": 0.002,
+    "care": 0.385,
+    "social": 0,
+    "idle": 0.036,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 14,
+    "food": 6,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "巡山": 20,
+    "大成": 1,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1012,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "巡山": 1,
+    "大成": 6,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.036,
+   "lowMoodShare": 0.173,
+   "heroShare": {
+    "grow": 0.479,
+    "work": 0.103,
+    "out": 0.002,
+    "care": 0.382,
+    "social": 0,
+    "idle": 0.034,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 45,
+    "food": 7,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "巡山": 21,
+    "大成": 1,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1001,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 3,
+    "傳授": 4,
+    "會武": 15,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 12,
+   "famishedShare": 0.054,
+   "lowMoodShare": 0.253,
+   "heroShare": {
+    "grow": 0.366,
+    "work": 0.287,
+    "out": 0.003,
+    "care": 0.291,
+    "social": 0.05,
+    "idle": 0.003,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 7,
+    "food": 8,
+    "rumors": 6,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 2
+    },
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "巡山": 49,
+    "拜入": 11,
+    "慕名": 4,
+    "大成": 2,
+    "傳授": 1,
+    "會武": 2,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1002,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 7,
+    "名俠": 8,
+    "傳授": 8,
+    "會武": 15,
+    "傳聞": 17,
+    "山賊": 24,
+    "重傷": 26
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 5,
+   "famishedShare": 0.025,
+   "lowMoodShare": 0.13,
+   "heroShare": {
+    "grow": 0.485,
+    "work": 0.143,
+    "out": 0.005,
+    "care": 0.325,
+    "social": 0.037,
+    "idle": 0.003,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist"
+    ],
+    "founded": true,
+    "coin": 60,
+    "food": 1,
+    "rumors": 9,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 3,
+     "herb": 1
+    },
+    "choicesWaiting": 0,
+    "raids": 2,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "巡山": 43,
+    "拜入": 11,
+    "慕名": 3,
+    "大成": 4,
+    "名俠": 1,
+    "傳授": 3,
+    "會武": 2,
+    "傳聞": 4,
+    "山賊": 9,
+    "重傷": 1
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1003,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 6,
+    "傳授": 7,
+    "會武": 15,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 16,
+   "famishedShare": 0.045,
+   "lowMoodShare": 0.204,
+   "heroShare": {
+    "grow": 0.434,
+    "work": 0.141,
+    "out": 0.003,
+    "care": 0.38,
+    "social": 0.032,
+    "idle": 0.01,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 68,
+    "food": 4,
+    "rumors": 4,
+    "facilities": {
+     "yard": 1
+    },
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "巡山": 47,
+    "拜入": 4,
+    "慕名": 1,
+    "大成": 2,
+    "傳授": 1,
+    "會武": 2,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1004,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 3,
+    "傳授": 4,
+    "會武": 15,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 7,
+   "famishedShare": 0.072,
+   "lowMoodShare": 0.218,
+   "heroShare": {
+    "grow": 0.441,
+    "work": 0.204,
+    "out": 0.003,
+    "care": 0.324,
+    "social": 0.027,
+    "idle": 0.002,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 3,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 11,
+    "food": 7,
+    "rumors": 5,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 1
+    },
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "巡山": 48,
+    "拜入": 7,
+    "慕名": 2,
+    "大成": 2,
+    "傳授": 1,
+    "會武": 2,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1005,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "名俠": 8,
+    "大成": 9,
+    "傳授": 10,
+    "會武": 15,
+    "傳聞": 17,
+    "山賊": 24,
+    "重傷": 26
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 1,
+   "famishedShare": 0.023,
+   "lowMoodShare": 0.061,
+   "heroShare": {
+    "grow": 0.409,
+    "work": 0.124,
+    "out": 0.014,
+    "care": 0.421,
+    "social": 0.027,
+    "idle": 0.005,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist"
+    ],
+    "founded": true,
+    "coin": 32,
+    "food": 11,
+    "rumors": 9,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 3,
+     "herb": 1
+    },
+    "choicesWaiting": 0,
+    "raids": 2,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "巡山": 22,
+    "拜入": 11,
+    "慕名": 3,
+    "名俠": 1,
+    "大成": 4,
+    "傳授": 3,
+    "會武": 2,
+    "傳聞": 4,
+    "山賊": 9,
+    "重傷": 1
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1006,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "名俠": 14,
+    "大成": 14,
+    "會武": 15,
+    "傳授": 16,
+    "傳聞": 17,
+    "山賊": 24,
+    "重傷": 26,
+    "成親": 28
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 8,
+   "famishedShare": 0.024,
+   "lowMoodShare": 0.248,
+   "heroShare": {
+    "grow": 0.411,
+    "work": 0.108,
+    "out": 0.008,
+    "care": 0.433,
+    "social": 0.038,
+    "idle": 0.002,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 45,
+    "food": 0,
+    "rumors": 9,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 2
+    },
+    "choicesWaiting": 0,
+    "raids": 2,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "巡山": 46,
+    "拜入": 11,
+    "慕名": 3,
+    "名俠": 1,
+    "大成": 3,
+    "會武": 2,
+    "傳授": 2,
+    "傳聞": 4,
+    "山賊": 7,
+    "重傷": 1,
+    "成親": 1
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1007,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 4,
+    "傳授": 5,
+    "會武": 15,
+    "傳聞": 17,
+    "名俠": 20,
+    "山賊": 24,
+    "重傷": 26
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 9,
+   "famishedShare": 0.027,
+   "lowMoodShare": 0.164,
+   "heroShare": {
+    "grow": 0.379,
+    "work": 0.15,
+    "out": 0.006,
+    "care": 0.413,
+    "social": 0.041,
+    "idle": 0.011,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 68,
+    "food": 11,
+    "rumors": 9,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 3
+    },
+    "choicesWaiting": 0,
+    "raids": 2,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "巡山": 21,
+    "拜入": 11,
+    "慕名": 3,
+    "大成": 3,
+    "傳授": 1,
+    "會武": 2,
+    "傳聞": 4,
+    "名俠": 1,
+    "山賊": 7,
+    "重傷": 1
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1008,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "名俠": 8,
+    "大成": 8,
+    "傳授": 9,
+    "會武": 15,
+    "傳聞": 17,
+    "山賊": 24,
+    "重傷": 26,
+    "成親": 28
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 3,
+   "famishedShare": 0.033,
+   "lowMoodShare": 0.145,
+   "heroShare": {
+    "grow": 0.459,
+    "work": 0.153,
+    "out": 0.006,
+    "care": 0.325,
+    "social": 0.052,
+    "idle": 0.006,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 36,
+    "food": 7,
+    "rumors": 10,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 2
+    },
+    "choicesWaiting": 0,
+    "raids": 2,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "巡山": 40,
+    "拜入": 11,
+    "慕名": 3,
+    "名俠": 1,
+    "大成": 4,
+    "傳授": 3,
+    "會武": 2,
+    "傳聞": 4,
+    "山賊": 8,
+    "重傷": 1,
+    "成親": 1
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1009,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 10,
+    "傳授": 11,
+    "會武": 15,
+    "名俠": 17,
+    "傳聞": 17,
+    "山賊": 24,
+    "重傷": 26
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 3,
+   "famishedShare": 0.03,
+   "lowMoodShare": 0.12,
+   "heroShare": {
+    "grow": 0.477,
+    "work": 0.124,
+    "out": 0.005,
+    "care": 0.334,
+    "social": 0.059,
+    "idle": 0.001,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 56,
+    "food": 7,
+    "rumors": 10,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 3
+    },
+    "choicesWaiting": 0,
+    "raids": 2,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "巡山": 59,
+    "拜入": 11,
+    "慕名": 3,
+    "大成": 4,
+    "傳授": 2,
+    "會武": 2,
+    "名俠": 1,
+    "傳聞": 4,
+    "山賊": 12,
+    "重傷": 1
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1010,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 4,
+    "傳授": 5,
+    "會武": 15,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 16,
+   "famishedShare": 0.048,
+   "lowMoodShare": 0.258,
+   "heroShare": {
+    "grow": 0.365,
+    "work": 0.295,
+    "out": 0.003,
+    "care": 0.305,
+    "social": 0.028,
+    "idle": 0.004,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 3,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 8,
+    "food": 5,
+    "rumors": 5,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 1
+    },
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "巡山": 52,
+    "拜入": 7,
+    "慕名": 2,
+    "大成": 2,
+    "傳授": 1,
+    "會武": 2,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1011,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 4,
+    "傳授": 5,
+    "名俠": 8,
+    "會武": 15,
+    "傳聞": 17,
+    "山賊": 24,
+    "重傷": 26
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 6,
+   "famishedShare": 0.022,
+   "lowMoodShare": 0.147,
+   "heroShare": {
+    "grow": 0.316,
+    "work": 0.237,
+    "out": 0.015,
+    "care": 0.4,
+    "social": 0.028,
+    "idle": 0.004,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 7,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist"
+    ],
+    "founded": true,
+    "coin": 7,
+    "food": 10,
+    "rumors": 9,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 3,
+     "kitchen": 1,
+     "veg": 3
+    },
+    "choicesWaiting": 0,
+    "raids": 2,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "巡山": 40,
+    "拜入": 15,
+    "慕名": 5,
+    "大成": 5,
+    "傳授": 3,
+    "名俠": 1,
+    "會武": 2,
+    "傳聞": 4,
+    "山賊": 9,
+    "重傷": 1
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "chunyangFist",
+   "seed": 1012,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 3,
+    "傳授": 4,
+    "會武": 15,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 16,
+   "famishedShare": 0.133,
+   "lowMoodShare": 0.197,
+   "heroShare": {
+    "grow": 0.395,
+    "work": 0.206,
+    "out": 0.002,
+    "care": 0.338,
+    "social": 0.05,
+    "idle": 0.009,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 3,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 33,
+    "food": 9,
+    "rumors": 4,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 1
+    },
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "巡山": 37,
+    "拜入": 6,
+    "慕名": 2,
+    "大成": 3,
+    "傳授": 1,
+    "會武": 2,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1001,
+   "mode": "natural",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "傳聞": 17,
+    "firstArt": 17,
+    "canFound": 17,
+    "大成": 18
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.031,
+   "lowMoodShare": 0.241,
+   "heroShare": {
+    "grow": 0.476,
+    "work": 0.119,
+    "out": 0.004,
+    "care": 0.376,
+    "social": 0,
+    "idle": 0.025,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 14,
+    "food": 3,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 2,
+    "巡山": 32,
+    "傳聞": 2,
+    "大成": 1
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1002,
+   "mode": "natural",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "firstArt": 4,
+    "canFound": 4,
+    "大成": 7,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.026,
+   "lowMoodShare": 0.16,
+   "heroShare": {
+    "grow": 0.488,
+    "work": 0.097,
+    "out": 0.006,
+    "care": 0.377,
+    "social": 0,
+    "idle": 0.032,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 10,
+    "food": 6,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 2,
+    "巡山": 31,
+    "大成": 1,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1003,
+   "mode": "natural",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "firstArt": 5,
+    "canFound": 5,
+    "大成": 12,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.008,
+   "lowMoodShare": 0.168,
+   "heroShare": {
+    "grow": 0.499,
+    "work": 0.09,
+    "out": 0.012,
+    "care": 0.368,
+    "social": 0,
+    "idle": 0.031,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 6,
+    "food": 5,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 2,
+    "巡山": 29,
+    "大成": 1,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1004,
+   "mode": "natural",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "firstArt": 10,
+    "canFound": 10,
+    "傳聞": 17,
+    "大成": 18
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.02,
+   "lowMoodShare": 0.186,
+   "heroShare": {
+    "grow": 0.492,
+    "work": 0.102,
+    "out": 0.004,
+    "care": 0.378,
+    "social": 0,
+    "idle": 0.025,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 11,
+    "food": 6,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 2,
+    "巡山": 32,
+    "傳聞": 2,
+    "大成": 1
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1005,
+   "mode": "natural",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "firstArt": 8,
+    "canFound": 8,
+    "大成": 11,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.009,
+   "lowMoodShare": 0.16,
+   "heroShare": {
+    "grow": 0.481,
+    "work": 0.11,
+    "out": 0.002,
+    "care": 0.371,
+    "social": 0,
+    "idle": 0.036,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 90,
+    "food": 7,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 2,
+    "巡山": 16,
+    "大成": 1,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1006,
+   "mode": "natural",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "firstArt": 7,
+    "canFound": 7,
+    "大成": 13,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.021,
+   "lowMoodShare": 0.153,
+   "heroShare": {
+    "grow": 0.477,
+    "work": 0.108,
+    "out": 0.004,
+    "care": 0.377,
+    "social": 0,
+    "idle": 0.034,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 72,
+    "food": 7,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 2,
+    "巡山": 24,
+    "大成": 1,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1007,
+   "mode": "natural",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "firstArt": 14,
+    "canFound": 14,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.046,
+   "lowMoodShare": 0.329,
+   "heroShare": {
+    "grow": 0.491,
+    "work": 0.081,
+    "out": 0.003,
+    "care": 0.407,
+    "social": 0,
+    "idle": 0.019,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 10,
+    "food": 3,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 2,
+    "巡山": 42,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1008,
+   "mode": "natural",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "firstArt": 16,
+    "canFound": 16,
+    "傳聞": 17,
+    "大成": 18
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.031,
+   "lowMoodShare": 0.229,
+   "heroShare": {
+    "grow": 0.481,
+    "work": 0.103,
+    "out": 0.004,
+    "care": 0.387,
+    "social": 0,
+    "idle": 0.026,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 6,
+    "food": 5,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 2,
+    "巡山": 36,
+    "傳聞": 2,
+    "大成": 1
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1009,
+   "mode": "natural",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "firstArt": 10,
+    "canFound": 10,
+    "大成": 16,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.133,
+   "lowMoodShare": 0.275,
+   "heroShare": {
+    "grow": 0.494,
+    "work": 0.097,
+    "out": 0.003,
+    "care": 0.376,
+    "social": 0,
+    "idle": 0.03,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 14,
+    "food": 8,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 2,
+    "巡山": 21,
+    "大成": 1,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1010,
+   "mode": "natural",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "firstArt": 10,
+    "canFound": 10,
+    "大成": 16,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.088,
+   "lowMoodShare": 0.182,
+   "heroShare": {
+    "grow": 0.496,
+    "work": 0.089,
+    "out": 0.004,
+    "care": 0.375,
+    "social": 0,
+    "idle": 0.037,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 8,
+    "food": 8,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 2,
+    "巡山": 28,
+    "大成": 1,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1011,
+   "mode": "natural",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "firstArt": 7,
+    "canFound": 7,
+    "大成": 9,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.01,
+   "lowMoodShare": 0.154,
+   "heroShare": {
+    "grow": 0.49,
+    "work": 0.097,
+    "out": 0.004,
+    "care": 0.377,
+    "social": 0,
+    "idle": 0.031,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 14,
+    "food": 5,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 2,
+    "巡山": 23,
+    "大成": 1,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1012,
+   "mode": "natural",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "firstArt": 12,
+    "canFound": 12,
+    "大成": 13,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.142,
+   "lowMoodShare": 0.242,
+   "heroShare": {
+    "grow": 0.5,
+    "work": 0.091,
+    "out": 0.004,
+    "care": 0.374,
+    "social": 0,
+    "idle": 0.032,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 1,
+    "heroArts": [
+     "chunyangFist"
+    ],
+    "founded": false,
+    "coin": 14,
+    "food": 6,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 2,
+    "巡山": 24,
+    "大成": 1,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1001,
+   "mode": "guided",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "傳聞": 17,
+    "founded": 17,
+    "build": 17,
+    "奇書": 17,
+    "立匾": 17,
+    "firstArt": 17,
+    "rumor": 17,
+    "拜入": 18,
+    "慕名": 18,
+    "grew": 18,
+    "大成": 21,
+    "傳授": 22
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 5,
+   "famishedShare": 0.069,
+   "lowMoodShare": 0.321,
+   "heroShare": {
+    "grow": 0.394,
+    "work": 0.223,
+    "out": 0.004,
+    "care": 0.348,
+    "social": 0.019,
+    "idle": 0.013,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "chunyangFist",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 6,
+    "food": 2,
+    "rumors": 5,
+    "facilities": {
+     "yard": 1
+    },
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 2,
+    "巡山": 40,
+    "傳聞": 2,
+    "奇書": 2,
+    "立匾": 1,
+    "拜入": 4,
+    "慕名": 1,
+    "大成": 1,
+    "傳授": 1
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1002,
+   "mode": "guided",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "founded": 4,
+    "build": 4,
+    "奇書": 4,
+    "立匾": 4,
+    "firstArt": 4,
+    "rumor": 4,
+    "拜入": 5,
+    "名俠": 5,
+    "grew": 5,
+    "大成": 6,
+    "慕名": 12,
+    "會武": 15,
+    "傳聞": 17,
+    "傳授": 18,
+    "山賊": 24,
+    "重傷": 26
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 4,
+   "famishedShare": 0.023,
+   "lowMoodShare": 0.148,
+   "heroShare": {
+    "grow": 0.394,
+    "work": 0.123,
+    "out": 0.017,
+    "care": 0.425,
+    "social": 0.037,
+    "idle": 0.004,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "chunyangFist"
+    ],
+    "founded": true,
+    "coin": 56,
+    "food": 9,
+    "rumors": 11,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 3
+    },
+    "choicesWaiting": 0,
+    "raids": 2,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 3,
+    "巡山": 22,
+    "奇書": 2,
+    "立匾": 1,
+    "拜入": 11,
+    "名俠": 1,
+    "大成": 5,
+    "慕名": 3,
+    "會武": 2,
+    "傳聞": 4,
+    "傳授": 2,
+    "山賊": 13,
+    "重傷": 1
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1003,
+   "mode": "guided",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "founded": 5,
+    "build": 5,
+    "奇書": 5,
+    "立匾": 5,
+    "firstArt": 5,
+    "rumor": 5,
+    "拜入": 6,
+    "名俠": 6,
+    "grew": 6,
+    "大成": 8,
+    "慕名": 11,
+    "會武": 15,
+    "傳授": 16,
+    "傳聞": 17,
+    "山賊": 24
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.016,
+   "lowMoodShare": 0.118,
+   "heroShare": {
+    "grow": 0.411,
+    "work": 0.112,
+    "out": 0.016,
+    "care": 0.425,
+    "social": 0.033,
+    "idle": 0.003,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "chunyangFist"
+    ],
+    "founded": true,
+    "coin": 70,
+    "food": 9,
+    "rumors": 10,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 3,
+     "herb": 2
+    },
+    "choicesWaiting": 0,
+    "raids": 2,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 4,
+    "巡山": 12,
+    "奇書": 2,
+    "立匾": 1,
+    "拜入": 11,
+    "名俠": 1,
+    "大成": 4,
+    "慕名": 3,
+    "會武": 2,
+    "傳授": 3,
+    "傳聞": 4,
+    "山賊": 9
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1004,
+   "mode": "guided",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "founded": 10,
+    "build": 10,
+    "奇書": 10,
+    "立匾": 10,
+    "firstArt": 10,
+    "rumor": 10,
+    "拜入": 11,
+    "慕名": 11,
+    "grew": 11,
+    "會武": 15,
+    "傳聞": 17,
+    "大成": 18,
+    "傳授": 19
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 13,
+   "famishedShare": 0.104,
+   "lowMoodShare": 0.366,
+   "heroShare": {
+    "grow": 0.381,
+    "work": 0.24,
+    "out": 0.004,
+    "care": 0.343,
+    "social": 0.021,
+    "idle": 0.011,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "chunyangFist",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 18,
+    "food": 7,
+    "rumors": 5,
+    "facilities": {
+     "yard": 1
+    },
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 2,
+    "巡山": 45,
+    "奇書": 2,
+    "立匾": 1,
+    "拜入": 4,
+    "慕名": 1,
+    "會武": 2,
+    "傳聞": 2,
+    "大成": 2,
+    "傳授": 1
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1005,
+   "mode": "guided",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "founded": 8,
+    "build": 8,
+    "奇書": 8,
+    "立匾": 8,
+    "firstArt": 8,
+    "rumor": 8,
+    "拜入": 9,
+    "名俠": 9,
+    "grew": 9,
+    "大成": 11,
+    "會武": 15,
+    "慕名": 16,
+    "傳聞": 17,
+    "傳授": 22,
+    "山賊": 29
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.02,
+   "lowMoodShare": 0.036,
+   "heroShare": {
+    "grow": 0.456,
+    "work": 0.132,
+    "out": 0.002,
+    "care": 0.336,
+    "social": 0.067,
+    "idle": 0.007,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 7,
+    "heroArts": [
+     "chunyangFist",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 45,
+    "food": 7,
+    "rumors": 10,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 3,
+     "kitchen": 1,
+     "veg": 3
+    },
+    "choicesWaiting": 0,
+    "raids": 1,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 6,
+    "巡山": 14,
+    "奇書": 2,
+    "立匾": 1,
+    "拜入": 16,
+    "名俠": 1,
+    "大成": 5,
+    "會武": 2,
+    "慕名": 5,
+    "傳聞": 3,
+    "傳授": 3,
+    "山賊": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1006,
+   "mode": "guided",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "founded": 7,
+    "build": 7,
+    "奇書": 7,
+    "立匾": 7,
+    "firstArt": 7,
+    "rumor": 7,
+    "拜入": 8,
+    "名俠": 8,
+    "grew": 8,
+    "大成": 11,
+    "會武": 15,
+    "傳聞": 17,
+    "慕名": 17,
+    "傳授": 22,
+    "山賊": 29
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 5,
+   "famishedShare": 0.025,
+   "lowMoodShare": 0.101,
+   "heroShare": {
+    "grow": 0.457,
+    "work": 0.131,
+    "out": 0.004,
+    "care": 0.357,
+    "social": 0.044,
+    "idle": 0.007,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "chunyangFist",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 31,
+    "food": 6,
+    "rumors": 9,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 2
+    },
+    "choicesWaiting": 0,
+    "raids": 1,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 2,
+    "巡山": 58,
+    "奇書": 2,
+    "立匾": 1,
+    "拜入": 11,
+    "名俠": 1,
+    "大成": 3,
+    "會武": 2,
+    "傳聞": 3,
+    "慕名": 3,
+    "傳授": 2,
+    "山賊": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1007,
+   "mode": "guided",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "founded": 14,
+    "build": 14,
+    "奇書": 14,
+    "立匾": 14,
+    "firstArt": 14,
+    "rumor": 14,
+    "會武": 15,
+    "拜入": 15,
+    "名俠": 15,
+    "grew": 15,
+    "傳聞": 17,
+    "大成": 17,
+    "慕名": 25,
+    "傳授": 30
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.022,
+   "lowMoodShare": 0.101,
+   "heroShare": {
+    "grow": 0.433,
+    "work": 0.151,
+    "out": 0.003,
+    "care": 0.363,
+    "social": 0.04,
+    "idle": 0.011,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "chunyangFist",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 19,
+    "food": 12,
+    "rumors": 5,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1
+    },
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 2,
+    "巡山": 31,
+    "奇書": 2,
+    "立匾": 1,
+    "會武": 2,
+    "拜入": 9,
+    "名俠": 1,
+    "傳聞": 2,
+    "大成": 2,
+    "慕名": 3,
+    "傳授": 1
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1008,
+   "mode": "guided",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "founded": 16,
+    "build": 16,
+    "奇書": 16,
+    "立匾": 16,
+    "firstArt": 16,
+    "rumor": 16,
+    "拜入": 17,
+    "名俠": 17,
+    "傳聞": 17,
+    "grew": 17,
+    "大成": 19,
+    "慕名": 22,
+    "傳授": 29
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 2,
+   "famishedShare": 0.031,
+   "lowMoodShare": 0.103,
+   "heroShare": {
+    "grow": 0.478,
+    "work": 0.12,
+    "out": 0.004,
+    "care": 0.358,
+    "social": 0.03,
+    "idle": 0.011,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "chunyangFist"
+    ],
+    "founded": true,
+    "coin": 30,
+    "food": 11,
+    "rumors": 8,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 1
+    },
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 5,
+    "巡山": 42,
+    "奇書": 2,
+    "立匾": 1,
+    "拜入": 9,
+    "名俠": 2,
+    "傳聞": 2,
+    "大成": 4,
+    "慕名": 2,
+    "傳授": 1
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1009,
+   "mode": "guided",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "founded": 10,
+    "build": 10,
+    "奇書": 10,
+    "立匾": 10,
+    "firstArt": 10,
+    "rumor": 10,
+    "拜入": 11,
+    "名俠": 11,
+    "grew": 11,
+    "大成": 12,
+    "會武": 15,
+    "傳聞": 17,
+    "慕名": 18,
+    "傳授": 21,
+    "山賊": 29
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 2,
+   "famishedShare": 0.063,
+   "lowMoodShare": 0.086,
+   "heroShare": {
+    "grow": 0.486,
+    "work": 0.135,
+    "out": 0.003,
+    "care": 0.341,
+    "social": 0.026,
+    "idle": 0.009,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "chunyangFist"
+    ],
+    "founded": true,
+    "coin": 33,
+    "food": 6,
+    "rumors": 9,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 3
+    },
+    "choicesWaiting": 0,
+    "raids": 1,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 3,
+    "巡山": 35,
+    "奇書": 2,
+    "立匾": 1,
+    "拜入": 11,
+    "名俠": 1,
+    "大成": 5,
+    "會武": 2,
+    "傳聞": 3,
+    "慕名": 3,
+    "傳授": 2,
+    "山賊": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1010,
+   "mode": "guided",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "founded": 10,
+    "build": 10,
+    "奇書": 10,
+    "立匾": 10,
+    "firstArt": 10,
+    "rumor": 10,
+    "拜入": 11,
+    "名俠": 11,
+    "grew": 11,
+    "大成": 13,
+    "會武": 15,
+    "傳聞": 17,
+    "慕名": 18,
+    "傳授": 21,
+    "山賊": 29
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.044,
+   "lowMoodShare": 0.073,
+   "heroShare": {
+    "grow": 0.469,
+    "work": 0.149,
+    "out": 0.004,
+    "care": 0.338,
+    "social": 0.029,
+    "idle": 0.012,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "chunyangFist"
+    ],
+    "founded": true,
+    "coin": 28,
+    "food": 10,
+    "rumors": 9,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 2
+    },
+    "choicesWaiting": 0,
+    "raids": 1,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 3,
+    "巡山": 23,
+    "奇書": 2,
+    "立匾": 1,
+    "拜入": 11,
+    "名俠": 1,
+    "大成": 5,
+    "會武": 2,
+    "傳聞": 3,
+    "慕名": 3,
+    "傳授": 3,
+    "山賊": 2
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1011,
+   "mode": "guided",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "founded": 7,
+    "build": 7,
+    "奇書": 7,
+    "立匾": 7,
+    "firstArt": 7,
+    "rumor": 7,
+    "拜入": 8,
+    "名俠": 8,
+    "grew": 8,
+    "大成": 11,
+    "會武": 15,
+    "傳聞": 17,
+    "慕名": 23,
+    "傳授": 26
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 7,
+   "famishedShare": 0.03,
+   "lowMoodShare": 0.11,
+   "heroShare": {
+    "grow": 0.438,
+    "work": 0.158,
+    "out": 0.004,
+    "care": 0.359,
+    "social": 0.035,
+    "idle": 0.007,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "chunyangFist"
+    ],
+    "founded": true,
+    "coin": 27,
+    "food": 7,
+    "rumors": 6,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 1
+    },
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 2,
+    "巡山": 34,
+    "奇書": 2,
+    "立匾": 1,
+    "拜入": 9,
+    "名俠": 1,
+    "大成": 3,
+    "會武": 2,
+    "傳聞": 2,
+    "慕名": 3,
+    "傳授": 1
+   }
+  },
+  {
+   "opening": "solo",
+   "starterArt": "none",
+   "seed": 1012,
+   "mode": "guided",
+   "first": {
+    "拳譜": 1,
+    "巡山": 1,
+    "founded": 12,
+    "build": 12,
+    "奇書": 12,
+    "立匾": 12,
+    "firstArt": 12,
+    "rumor": 12,
+    "拜入": 13,
+    "慕名": 13,
+    "grew": 13,
+    "會武": 15,
+    "大成": 16,
+    "傳聞": 17,
+    "傳授": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 6,
+   "famishedShare": 0.086,
+   "lowMoodShare": 0.165,
+   "heroShare": {
+    "grow": 0.459,
+    "work": 0.123,
+    "out": 0.004,
+    "care": 0.361,
+    "social": 0.036,
+    "idle": 0.016,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "chunyangFist"
+    ],
+    "founded": true,
+    "coin": 19,
+    "food": 4,
+    "rumors": 5,
+    "facilities": {
+     "hall": 1,
+     "yard": 1
+    },
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 2,
+    "巡山": 27,
+    "奇書": 2,
+    "立匾": 1,
+    "拜入": 4,
+    "慕名": 1,
+    "會武": 2,
+    "大成": 3,
+    "傳聞": 2,
+    "傳授": 1
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1001,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "拳譜": 1,
+    "傳授": 1,
+    "巡山": 1,
+    "大成": 2,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.007,
+   "lowMoodShare": 0.06,
+   "heroShare": {
+    "grow": 0.481,
+    "work": 0.074,
+    "out": 0.002,
+    "care": 0.376,
+    "social": 0.056,
+    "idle": 0.009,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "tianluoPalm",
+     "basicSword"
+    ],
+    "founded": false,
+    "coin": 28,
+    "food": 11,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 6,
+    "傳授": 2,
+    "巡山": 24,
+    "大成": 7,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1002,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "傳授": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "大成": 4,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.01,
+   "lowMoodShare": 0.059,
+   "heroShare": {
+    "grow": 0.482,
+    "work": 0.064,
+    "out": 0.002,
+    "care": 0.386,
+    "social": 0.056,
+    "idle": 0.01,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "basicSword",
+     "tianluoPalm"
+    ],
+    "founded": false,
+    "coin": 66,
+    "food": 10,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "傳授": 2,
+    "拳譜": 6,
+    "巡山": 27,
+    "大成": 6,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1003,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "傳授": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "大成": 5,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.006,
+   "lowMoodShare": 0.061,
+   "heroShare": {
+    "grow": 0.506,
+    "work": 0.039,
+    "out": 0.002,
+    "care": 0.395,
+    "social": 0.052,
+    "idle": 0.005,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "basicSword",
+     "tianluoPalm"
+    ],
+    "founded": false,
+    "coin": 88,
+    "food": 9,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "傳授": 2,
+    "拳譜": 6,
+    "巡山": 16,
+    "大成": 7,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1004,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "拳譜": 1,
+    "傳授": 1,
+    "巡山": 1,
+    "大成": 3,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.021,
+   "lowMoodShare": 0.082,
+   "heroShare": {
+    "grow": 0.484,
+    "work": 0.061,
+    "out": 0.004,
+    "care": 0.396,
+    "social": 0.039,
+    "idle": 0.016,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "tianluoPalm",
+     "basicSword"
+    ],
+    "founded": false,
+    "coin": 23,
+    "food": 8,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 5,
+    "傳授": 2,
+    "巡山": 62,
+    "大成": 5,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1005,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "拳譜": 1,
+    "傳授": 1,
+    "巡山": 1,
+    "大成": 4,
+    "傳聞": 17,
+    "成親": 29
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.008,
+   "lowMoodShare": 0.061,
+   "heroShare": {
+    "grow": 0.493,
+    "work": 0.054,
+    "out": 0.012,
+    "care": 0.386,
+    "social": 0.046,
+    "idle": 0.009,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "tianluoPalm",
+     "basicSword"
+    ],
+    "founded": false,
+    "coin": 5,
+    "food": 5,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 6,
+    "傳授": 2,
+    "巡山": 23,
+    "大成": 7,
+    "傳聞": 2,
+    "成親": 1
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1006,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "拳譜": 1,
+    "傳授": 1,
+    "巡山": 1,
+    "大成": 4,
+    "傳聞": 17,
+    "成親": 30
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.01,
+   "lowMoodShare": 0.085,
+   "heroShare": {
+    "grow": 0.444,
+    "work": 0.108,
+    "out": 0.003,
+    "care": 0.384,
+    "social": 0.052,
+    "idle": 0.009,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "tianluoPalm",
+     "basicSword"
+    ],
+    "founded": false,
+    "coin": 6,
+    "food": 11,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 4,
+    "傳授": 2,
+    "巡山": 43,
+    "大成": 3,
+    "傳聞": 2,
+    "成親": 1
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1007,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "傳授": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "大成": 4,
+    "傳聞": 17,
+    "cliff": 25
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.005,
+   "lowMoodShare": 0.082,
+   "heroShare": {
+    "grow": 0.483,
+    "work": 0.066,
+    "out": 0.013,
+    "care": 0.387,
+    "social": 0.042,
+    "idle": 0.008,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "basicSword",
+     "tianluoPalm"
+    ],
+    "founded": false,
+    "coin": 37,
+    "food": 10,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "傳授": 2,
+    "拳譜": 6,
+    "巡山": 28,
+    "大成": 6,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1008,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "拳譜": 1,
+    "傳授": 1,
+    "巡山": 1,
+    "大成": 6,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.013,
+   "lowMoodShare": 0.101,
+   "heroShare": {
+    "grow": 0.492,
+    "work": 0.063,
+    "out": 0.002,
+    "care": 0.394,
+    "social": 0.04,
+    "idle": 0.008,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "tianluoPalm",
+     "basicSword"
+    ],
+    "founded": false,
+    "coin": 91,
+    "food": 4,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 6,
+    "傳授": 2,
+    "巡山": 26,
+    "大成": 7,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1009,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "傳授": 1,
+    "巡山": 1,
+    "拳譜": 1,
+    "大成": 9,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.009,
+   "lowMoodShare": 0.074,
+   "heroShare": {
+    "grow": 0.488,
+    "work": 0.064,
+    "out": 0.002,
+    "care": 0.4,
+    "social": 0.04,
+    "idle": 0.006,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "basicSword",
+     "tianluoPalm"
+    ],
+    "founded": false,
+    "coin": 41,
+    "food": 8,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "傳授": 2,
+    "巡山": 41,
+    "拳譜": 6,
+    "大成": 5,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1010,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "拳譜": 1,
+    "傳授": 1,
+    "巡山": 1,
+    "大成": 2,
+    "cliff": 16,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.007,
+   "lowMoodShare": 0.054,
+   "heroShare": {
+    "grow": 0.486,
+    "work": 0.065,
+    "out": 0.003,
+    "care": 0.39,
+    "social": 0.048,
+    "idle": 0.009,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "tianluoPalm",
+     "basicSword"
+    ],
+    "founded": false,
+    "coin": 23,
+    "food": 11,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 6,
+    "傳授": 2,
+    "巡山": 24,
+    "大成": 7,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1011,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "拳譜": 1,
+    "傳授": 1,
+    "巡山": 1,
+    "大成": 4,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.027,
+   "lowMoodShare": 0.133,
+   "heroShare": {
+    "grow": 0.443,
+    "work": 0.115,
+    "out": 0.002,
+    "care": 0.376,
+    "social": 0.051,
+    "idle": 0.012,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "tianluoPalm",
+     "basicSword"
+    ],
+    "founded": false,
+    "coin": 42,
+    "food": 5,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 6,
+    "傳授": 2,
+    "巡山": 50,
+    "大成": 6,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1012,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "拳譜": 1,
+    "傳授": 1,
+    "cliff": 1,
+    "巡山": 1,
+    "大成": 2,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.007,
+   "lowMoodShare": 0.038,
+   "heroShare": {
+    "grow": 0.491,
+    "work": 0.057,
+    "out": 0.005,
+    "care": 0.388,
+    "social": 0.052,
+    "idle": 0.008,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "tianluoPalm",
+     "basicSword"
+    ],
+    "founded": false,
+    "coin": 73,
+    "food": 5,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 6,
+    "傳授": 2,
+    "巡山": 19,
+    "大成": 8,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1001,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "拳譜": 1,
+    "傳授": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 6,
+    "會武": 15,
+    "傳聞": 17,
+    "cliff": 29
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 8,
+   "famishedShare": 0.021,
+   "lowMoodShare": 0.147,
+   "heroShare": {
+    "grow": 0.449,
+    "work": 0.169,
+    "out": 0.002,
+    "care": 0.339,
+    "social": 0.038,
+    "idle": 0.002,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "tianluoPalm",
+     "basicSword",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 34,
+    "food": 12,
+    "rumors": 6,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 2
+    },
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "拳譜": 11,
+    "傳授": 4,
+    "巡山": 46,
+    "拜入": 9,
+    "慕名": 3,
+    "大成": 9,
+    "會武": 2,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1002,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "傳授": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 3,
+    "會武": 15,
+    "傳聞": 17,
+    "山賊": 24,
+    "重傷": 26
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 4,
+   "famishedShare": 0.017,
+   "lowMoodShare": 0.172,
+   "heroShare": {
+    "grow": 0.412,
+    "work": 0.101,
+    "out": 0.007,
+    "care": 0.431,
+    "social": 0.047,
+    "idle": 0.002,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 7,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "basicSword",
+     "tianluoPalm",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 36,
+    "food": 1,
+    "rumors": 11,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 3,
+     "kitchen": 1,
+     "veg": 3,
+     "herb": 1
+    },
+    "choicesWaiting": 0,
+    "raids": 2,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "傳授": 5,
+    "拳譜": 21,
+    "巡山": 10,
+    "拜入": 16,
+    "慕名": 5,
+    "大成": 17,
+    "會武": 2,
+    "傳聞": 4,
+    "山賊": 9,
+    "重傷": 1
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1003,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "傳授": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 2,
+    "會武": 15,
+    "傳聞": 17,
+    "山賊": 24
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 4,
+   "famishedShare": 0.022,
+   "lowMoodShare": 0.146,
+   "heroShare": {
+    "grow": 0.377,
+    "work": 0.151,
+    "out": 0.009,
+    "care": 0.409,
+    "social": 0.052,
+    "idle": 0.003,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 7,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "basicSword",
+     "tianluoPalm",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 42,
+    "food": 0,
+    "rumors": 11,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 3,
+     "kitchen": 1,
+     "veg": 3,
+     "herb": 2
+    },
+    "choicesWaiting": 0,
+    "raids": 2,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "傳授": 4,
+    "拳譜": 22,
+    "巡山": 18,
+    "拜入": 16,
+    "慕名": 5,
+    "大成": 13,
+    "會武": 2,
+    "傳聞": 4,
+    "山賊": 7
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1004,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "拳譜": 1,
+    "傳授": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 4,
+    "名俠": 5,
+    "會武": 15,
+    "傳聞": 17,
+    "山賊": 17,
+    "成親": 23,
+    "重傷": 24
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 7,
+   "famishedShare": 0.016,
+   "lowMoodShare": 0.314,
+   "heroShare": {
+    "grow": 0.403,
+    "work": 0.097,
+    "out": 0.219,
+    "care": 0.24,
+    "social": 0.038,
+    "idle": 0.001,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "tianluoPalm",
+     "basicSword"
+    ],
+    "founded": true,
+    "coin": 52,
+    "food": 0,
+    "rumors": 10,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 3,
+     "herb": 2
+    },
+    "choicesWaiting": 0,
+    "raids": 3,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "拳譜": 15,
+    "傳授": 6,
+    "巡山": 14,
+    "拜入": 11,
+    "慕名": 3,
+    "大成": 16,
+    "名俠": 1,
+    "會武": 2,
+    "傳聞": 5,
+    "山賊": 27,
+    "成親": 2,
+    "重傷": 2
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1005,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "拳譜": 1,
+    "傳授": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 3,
+    "名俠": 8,
+    "會武": 15,
+    "傳聞": 17,
+    "山賊": 24,
+    "重傷": 26
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 1,
+   "famishedShare": 0.015,
+   "lowMoodShare": 0.054,
+   "heroShare": {
+    "grow": 0.533,
+    "work": 0.056,
+    "out": 0.012,
+    "care": 0.357,
+    "social": 0.041,
+    "idle": 0,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 7,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "tianluoPalm",
+     "basicSword",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 34,
+    "food": 7,
+    "rumors": 10,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 3,
+     "kitchen": 1,
+     "veg": 3,
+     "herb": 1
+    },
+    "choicesWaiting": 0,
+    "raids": 2,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "拳譜": 21,
+    "傳授": 6,
+    "巡山": 66,
+    "拜入": 14,
+    "慕名": 4,
+    "大成": 19,
+    "名俠": 1,
+    "會武": 2,
+    "傳聞": 4,
+    "山賊": 9,
+    "重傷": 1
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1006,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "拳譜": 1,
+    "傳授": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 3,
+    "會武": 15,
+    "傳聞": 17,
+    "山賊": 29
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 5,
+   "famishedShare": 0.03,
+   "lowMoodShare": 0.106,
+   "heroShare": {
+    "grow": 0.445,
+    "work": 0.172,
+    "out": 0.002,
+    "care": 0.334,
+    "social": 0.045,
+    "idle": 0.001,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "tianluoPalm",
+     "basicSword",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 32,
+    "food": 9,
+    "rumors": 8,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 3
+    },
+    "choicesWaiting": 0,
+    "raids": 1,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "拳譜": 10,
+    "傳授": 5,
+    "巡山": 34,
+    "拜入": 10,
+    "慕名": 3,
+    "大成": 11,
+    "會武": 2,
+    "傳聞": 3,
+    "山賊": 2
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1007,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "傳授": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "名俠": 2,
+    "grew": 2,
+    "大成": 3,
+    "慕名": 9,
+    "會武": 15,
+    "傳聞": 17,
+    "山賊": 24,
+    "重傷": 26,
+    "成親": 28
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 4,
+   "famishedShare": 0.033,
+   "lowMoodShare": 0.146,
+   "heroShare": {
+    "grow": 0.44,
+    "work": 0.21,
+    "out": 0.002,
+    "care": 0.303,
+    "social": 0.043,
+    "idle": 0.001,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 7,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "basicSword",
+     "tianluoPalm",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 110,
+    "food": 9,
+    "rumors": 10,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 3,
+     "kitchen": 1,
+     "veg": 3,
+     "herb": 1
+    },
+    "choicesWaiting": 0,
+    "raids": 2,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "傳授": 7,
+    "拳譜": 16,
+    "巡山": 18,
+    "拜入": 15,
+    "名俠": 2,
+    "大成": 14,
+    "慕名": 4,
+    "會武": 2,
+    "傳聞": 4,
+    "山賊": 10,
+    "重傷": 1,
+    "成親": 1
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1008,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "拳譜": 1,
+    "傳授": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "名俠": 2,
+    "grew": 2,
+    "大成": 3,
+    "慕名": 14,
+    "會武": 15,
+    "傳聞": 17,
+    "成親": 28,
+    "山賊": 29
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 1,
+   "famishedShare": 0.019,
+   "lowMoodShare": 0.036,
+   "heroShare": {
+    "grow": 0.509,
+    "work": 0.061,
+    "out": 0.003,
+    "care": 0.351,
+    "social": 0.073,
+    "idle": 0.002,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 7,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "tianluoPalm",
+     "basicSword"
+    ],
+    "founded": true,
+    "coin": 40,
+    "food": 12,
+    "rumors": 10,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 3,
+     "kitchen": 1,
+     "veg": 3,
+     "herb": 2
+    },
+    "choicesWaiting": 0,
+    "raids": 1,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "拳譜": 27,
+    "傳授": 5,
+    "巡山": 39,
+    "拜入": 14,
+    "名俠": 1,
+    "大成": 21,
+    "慕名": 4,
+    "會武": 2,
+    "傳聞": 3,
+    "成親": 1,
+    "山賊": 2
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1009,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "傳授": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "名俠": 2,
+    "grew": 2,
+    "拳譜": 2,
+    "大成": 3,
+    "慕名": 11,
+    "會武": 15,
+    "傳聞": 17,
+    "山賊": 24,
+    "重傷": 26,
+    "成親": 29
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 4,
+   "famishedShare": 0.015,
+   "lowMoodShare": 0.195,
+   "heroShare": {
+    "grow": 0.441,
+    "work": 0.088,
+    "out": 0.009,
+    "care": 0.426,
+    "social": 0.035,
+    "idle": 0.001,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 7,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "basicSword",
+     "tianluoPalm",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 80,
+    "food": 0,
+    "rumors": 10,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 3,
+     "kitchen": 1,
+     "veg": 3,
+     "herb": 1
+    },
+    "choicesWaiting": 0,
+    "raids": 2,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "傳授": 5,
+    "巡山": 30,
+    "拜入": 12,
+    "名俠": 2,
+    "拳譜": 22,
+    "大成": 18,
+    "慕名": 3,
+    "會武": 2,
+    "傳聞": 4,
+    "山賊": 16,
+    "重傷": 1,
+    "成親": 1
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1010,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "拳譜": 1,
+    "傳授": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 4,
+    "名俠": 5,
+    "會武": 15,
+    "傳聞": 17,
+    "山賊": 19,
+    "成親": 23
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 4,
+   "famishedShare": 0.018,
+   "lowMoodShare": 0.228,
+   "heroShare": {
+    "grow": 0.455,
+    "work": 0.059,
+    "out": 0.025,
+    "care": 0.41,
+    "social": 0.048,
+    "idle": 0,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "tianluoPalm",
+     "basicSword"
+    ],
+    "founded": true,
+    "coin": 57,
+    "food": 0,
+    "rumors": 11,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 3,
+     "herb": 2
+    },
+    "choicesWaiting": 0,
+    "raids": 3,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "拳譜": 19,
+    "傳授": 5,
+    "巡山": 15,
+    "拜入": 8,
+    "慕名": 2,
+    "大成": 15,
+    "名俠": 1,
+    "會武": 2,
+    "傳聞": 5,
+    "山賊": 24,
+    "成親": 2
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1011,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "拳譜": 1,
+    "傳授": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 8,
+    "會武": 15,
+    "傳聞": 17,
+    "山賊": 24,
+    "重傷": 26
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 6,
+   "famishedShare": 0.022,
+   "lowMoodShare": 0.238,
+   "heroShare": {
+    "grow": 0.423,
+    "work": 0.077,
+    "out": 0.013,
+    "care": 0.444,
+    "social": 0.042,
+    "idle": 0.001,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "tianluoPalm",
+     "basicSword",
+     "haotianPalm"
+    ],
+    "founded": true,
+    "coin": 52,
+    "food": 0,
+    "rumors": 10,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 3
+    },
+    "choicesWaiting": 0,
+    "raids": 2,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "拳譜": 11,
+    "傳授": 4,
+    "巡山": 24,
+    "拜入": 10,
+    "慕名": 3,
+    "大成": 7,
+    "會武": 2,
+    "傳聞": 4,
+    "山賊": 16,
+    "重傷": 1
+   }
+  },
+  {
+   "opening": "xiaolongnv",
+   "starterArt": "chunyangFist",
+   "seed": 1012,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "拳譜": 1,
+    "傳授": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 2,
+    "名俠": 5,
+    "會武": 15,
+    "傳聞": 17,
+    "山賊": 29
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 2,
+   "famishedShare": 0.026,
+   "lowMoodShare": 0.046,
+   "heroShare": {
+    "grow": 0.463,
+    "work": 0.156,
+    "out": 0.003,
+    "care": 0.325,
+    "social": 0.052,
+    "idle": 0.002,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 7,
+    "heroArts": [
+     "basicFist",
+     "chunyangFist",
+     "tianluoPalm",
+     "basicSword"
+    ],
+    "founded": true,
+    "coin": 62,
+    "food": 7,
+    "rumors": 10,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 3,
+     "kitchen": 1,
+     "veg": 3,
+     "herb": 1
+    },
+    "choicesWaiting": 0,
+    "raids": 1,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "拳譜": 30,
+    "傳授": 6,
+    "巡山": 36,
+    "拜入": 17,
+    "慕名": 5,
+    "大成": 18,
+    "名俠": 1,
+    "會武": 2,
+    "傳聞": 3,
+    "山賊": 2
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1001,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "大成": 2,
+    "cliff": 2,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.019,
+   "lowMoodShare": 0.096,
+   "heroShare": {
+    "grow": 0.455,
+    "work": 0.098,
+    "out": 0.002,
+    "care": 0.39,
+    "social": 0.045,
+    "idle": 0.009,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": false,
+    "coin": 54,
+    "food": 10,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 5,
+    "巡山": 70,
+    "大成": 6,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1002,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "拳譜": 1,
+    "cliff": 1,
+    "巡山": 1,
+    "大成": 2,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.016,
+   "lowMoodShare": 0.053,
+   "heroShare": {
+    "grow": 0.475,
+    "work": 0.073,
+    "out": 0.003,
+    "care": 0.382,
+    "social": 0.062,
+    "idle": 0.006,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": false,
+    "coin": 89,
+    "food": 13,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 5,
+    "巡山": 44,
+    "大成": 6,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1003,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "拳譜": 1,
+    "cliff": 1,
+    "巡山": 1,
+    "大成": 2,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.023,
+   "lowMoodShare": 0.088,
+   "heroShare": {
+    "grow": 0.458,
+    "work": 0.095,
+    "out": 0.006,
+    "care": 0.39,
+    "social": 0.042,
+    "idle": 0.01,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": false,
+    "coin": 110,
+    "food": 10,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 4,
+    "巡山": 48,
+    "大成": 5,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1004,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "拳譜": 1,
+    "cliff": 1,
+    "巡山": 1,
+    "大成": 3,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.005,
+   "lowMoodShare": 0.056,
+   "heroShare": {
+    "grow": 0.481,
+    "work": 0.052,
+    "out": 0.005,
+    "care": 0.397,
+    "social": 0.063,
+    "idle": 0.003,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": false,
+    "coin": 51,
+    "food": 3,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 5,
+    "巡山": 32,
+    "大成": 6,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1005,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "拳譜": 1,
+    "cliff": 1,
+    "巡山": 1,
+    "大成": 2,
+    "傳聞": 17,
+    "成親": 22,
+    "有喜": 24
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.02,
+   "lowMoodShare": 0.09,
+   "heroShare": {
+    "grow": 0.478,
+    "work": 0.077,
+    "out": 0.002,
+    "care": 0.4,
+    "social": 0.04,
+    "idle": 0.004,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": false,
+    "coin": 34,
+    "food": 12,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 5,
+    "巡山": 58,
+    "大成": 6,
+    "傳聞": 2,
+    "成親": 1,
+    "有喜": 1
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1006,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "cliff": 2,
+    "大成": 2,
+    "傳聞": 17,
+    "成親": 27
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.016,
+   "lowMoodShare": 0.071,
+   "heroShare": {
+    "grow": 0.47,
+    "work": 0.062,
+    "out": 0.008,
+    "care": 0.4,
+    "social": 0.055,
+    "idle": 0.006,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": false,
+    "coin": 26,
+    "food": 12,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 5,
+    "巡山": 54,
+    "大成": 6,
+    "傳聞": 2,
+    "成親": 1
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1007,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "拳譜": 1,
+    "cliff": 1,
+    "巡山": 1,
+    "大成": 2,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.01,
+   "lowMoodShare": 0.045,
+   "heroShare": {
+    "grow": 0.482,
+    "work": 0.061,
+    "out": 0.006,
+    "care": 0.38,
+    "social": 0.066,
+    "idle": 0.006,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": false,
+    "coin": 58,
+    "food": 13,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 5,
+    "巡山": 24,
+    "大成": 6,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1008,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "拳譜": 1,
+    "cliff": 1,
+    "巡山": 1,
+    "大成": 3,
+    "傳聞": 17,
+    "成親": 29
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.019,
+   "lowMoodShare": 0.056,
+   "heroShare": {
+    "grow": 0.492,
+    "work": 0.073,
+    "out": 0.002,
+    "care": 0.364,
+    "social": 0.064,
+    "idle": 0.004,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": false,
+    "coin": 6,
+    "food": 8,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 5,
+    "巡山": 42,
+    "大成": 6,
+    "傳聞": 2,
+    "成親": 1
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1009,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "大成": 2,
+    "cliff": 2,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.01,
+   "lowMoodShare": 0.044,
+   "heroShare": {
+    "grow": 0.494,
+    "work": 0.06,
+    "out": 0.002,
+    "care": 0.381,
+    "social": 0.058,
+    "idle": 0.004,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm",
+     "shaolinXinfa"
+    ],
+    "founded": false,
+    "coin": 66,
+    "food": 12,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 6,
+    "巡山": 27,
+    "大成": 6,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1010,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "cliff": 2,
+    "大成": 3,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.005,
+   "lowMoodShare": 0.02,
+   "heroShare": {
+    "grow": 0.506,
+    "work": 0.039,
+    "out": 0.008,
+    "care": 0.377,
+    "social": 0.063,
+    "idle": 0.007,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": false,
+    "coin": 48,
+    "food": 14,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 5,
+    "巡山": 25,
+    "大成": 7,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1011,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "拳譜": 1,
+    "cliff": 1,
+    "巡山": 1,
+    "大成": 2,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.016,
+   "lowMoodShare": 0.041,
+   "heroShare": {
+    "grow": 0.484,
+    "work": 0.07,
+    "out": 0.003,
+    "care": 0.374,
+    "social": 0.066,
+    "idle": 0.004,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": false,
+    "coin": 67,
+    "food": 10,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 5,
+    "巡山": 24,
+    "大成": 6,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1012,
+   "mode": "natural",
+   "first": {
+    "firstArt": 1,
+    "canFound": 1,
+    "拳譜": 1,
+    "cliff": 1,
+    "巡山": 1,
+    "大成": 6,
+    "傳聞": 17
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 0,
+   "famishedShare": 0.009,
+   "lowMoodShare": 0.047,
+   "heroShare": {
+    "grow": 0.487,
+    "work": 0.055,
+    "out": 0.006,
+    "care": 0.386,
+    "social": 0.062,
+    "idle": 0.005,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 2,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": false,
+    "coin": 101,
+    "food": 12,
+    "rumors": 0,
+    "facilities": {},
+    "choicesWaiting": 0,
+    "raids": 0,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "拳譜": 5,
+    "巡山": 31,
+    "大成": 6,
+    "傳聞": 2
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1001,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "cliff": 2,
+    "大成": 3,
+    "會武": 15,
+    "傳聞": 17,
+    "傳授": 22,
+    "山賊": 24,
+    "重傷": 26
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 4,
+   "famishedShare": 0.014,
+   "lowMoodShare": 0.059,
+   "heroShare": {
+    "grow": 0.426,
+    "work": 0.074,
+    "out": 0.013,
+    "care": 0.431,
+    "social": 0.054,
+    "idle": 0.001,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 7,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": true,
+    "coin": 44,
+    "food": 8,
+    "rumors": 10,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 3,
+     "kitchen": 1,
+     "veg": 3,
+     "herb": 2
+    },
+    "choicesWaiting": 0,
+    "raids": 2,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "拳譜": 17,
+    "巡山": 38,
+    "拜入": 10,
+    "慕名": 10,
+    "大成": 17,
+    "會武": 2,
+    "傳聞": 4,
+    "傳授": 4,
+    "山賊": 10,
+    "重傷": 1
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1002,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "名俠": 2,
+    "grew": 2,
+    "大成": 2,
+    "cliff": 8,
+    "慕名": 10,
+    "會武": 15,
+    "傳聞": 17,
+    "傳授": 22,
+    "山賊": 24,
+    "重傷": 26,
+    "成親": 29
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 2,
+   "famishedShare": 0.015,
+   "lowMoodShare": 0.098,
+   "heroShare": {
+    "grow": 0.423,
+    "work": 0.078,
+    "out": 0.007,
+    "care": 0.438,
+    "social": 0.053,
+    "idle": 0.001,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 7,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": true,
+    "coin": 62,
+    "food": 8,
+    "rumors": 10,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 3,
+     "kitchen": 1,
+     "veg": 3,
+     "herb": 3
+    },
+    "choicesWaiting": 0,
+    "raids": 2,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "拳譜": 20,
+    "巡山": 30,
+    "拜入": 10,
+    "名俠": 1,
+    "大成": 19,
+    "慕名": 8,
+    "會武": 2,
+    "傳聞": 4,
+    "傳授": 4,
+    "山賊": 16,
+    "重傷": 1,
+    "成親": 1
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1003,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "名俠": 2,
+    "grew": 2,
+    "大成": 3,
+    "cliff": 6,
+    "慕名": 7,
+    "傳授": 14,
+    "會武": 15,
+    "傳聞": 17,
+    "山賊": 19,
+    "成親": 28
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 5,
+   "famishedShare": 0.018,
+   "lowMoodShare": 0.224,
+   "heroShare": {
+    "grow": 0.375,
+    "work": 0.045,
+    "out": 0.017,
+    "care": 0.529,
+    "social": 0.034,
+    "idle": 0,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 7,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": true,
+    "coin": 38,
+    "food": 0,
+    "rumors": 11,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 3,
+     "kitchen": 1,
+     "veg": 3,
+     "herb": 2
+    },
+    "choicesWaiting": 0,
+    "raids": 3,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "拳譜": 14,
+    "巡山": 19,
+    "拜入": 10,
+    "名俠": 1,
+    "大成": 18,
+    "慕名": 8,
+    "傳授": 7,
+    "會武": 2,
+    "傳聞": 5,
+    "山賊": 19,
+    "成親": 1
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1004,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "名俠": 2,
+    "grew": 2,
+    "大成": 2,
+    "慕名": 11,
+    "cliff": 13,
+    "會武": 15,
+    "傳聞": 17,
+    "傳授": 26,
+    "山賊": 29
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 1,
+   "famishedShare": 0.022,
+   "lowMoodShare": 0.057,
+   "heroShare": {
+    "grow": 0.527,
+    "work": 0.067,
+    "out": 0.002,
+    "care": 0.359,
+    "social": 0.043,
+    "idle": 0.001,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 7,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": true,
+    "coin": 36,
+    "food": 7,
+    "rumors": 10,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 3,
+     "kitchen": 1,
+     "veg": 3
+    },
+    "choicesWaiting": 0,
+    "raids": 1,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "拳譜": 14,
+    "巡山": 62,
+    "拜入": 10,
+    "名俠": 1,
+    "大成": 17,
+    "慕名": 8,
+    "會武": 2,
+    "傳聞": 3,
+    "傳授": 6,
+    "山賊": 2
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1005,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "拳譜": 1,
+    "cliff": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 7,
+    "會武": 15,
+    "傳聞": 17,
+    "名俠": 23,
+    "傳授": 27,
+    "山賊": 29
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 5,
+   "famishedShare": 0.027,
+   "lowMoodShare": 0.06,
+   "heroShare": {
+    "grow": 0.526,
+    "work": 0.047,
+    "out": 0.005,
+    "care": 0.376,
+    "social": 0.046,
+    "idle": 0,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 7,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": true,
+    "coin": 35,
+    "food": 9,
+    "rumors": 9,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 3,
+     "kitchen": 1,
+     "veg": 3
+    },
+    "choicesWaiting": 0,
+    "raids": 1,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "拳譜": 15,
+    "巡山": 46,
+    "拜入": 10,
+    "慕名": 8,
+    "大成": 17,
+    "會武": 2,
+    "傳聞": 3,
+    "名俠": 1,
+    "傳授": 4,
+    "山賊": 2
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1006,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 4,
+    "cliff": 10,
+    "會武": 15,
+    "傳聞": 17,
+    "名俠": 23,
+    "傳授": 23,
+    "山賊": 29
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 8,
+   "famishedShare": 0.031,
+   "lowMoodShare": 0.108,
+   "heroShare": {
+    "grow": 0.487,
+    "work": 0.099,
+    "out": 0.002,
+    "care": 0.336,
+    "social": 0.073,
+    "idle": 0.002,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 7,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": true,
+    "coin": 40,
+    "food": 9,
+    "rumors": 9,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 3,
+     "kitchen": 1,
+     "veg": 3
+    },
+    "choicesWaiting": 0,
+    "raids": 1,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "拳譜": 24,
+    "巡山": 66,
+    "拜入": 10,
+    "慕名": 8,
+    "大成": 19,
+    "會武": 2,
+    "傳聞": 3,
+    "名俠": 1,
+    "傳授": 5,
+    "山賊": 2
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1007,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 4,
+    "會武": 15,
+    "傳聞": 17,
+    "山賊": 22,
+    "傳授": 23,
+    "重傷": 24
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 5,
+   "famishedShare": 0.017,
+   "lowMoodShare": 0.187,
+   "heroShare": {
+    "grow": 0.388,
+    "work": 0.046,
+    "out": 0.036,
+    "care": 0.483,
+    "social": 0.048,
+    "idle": 0,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": true,
+    "coin": 74,
+    "food": 0,
+    "rumors": 9,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 3
+    },
+    "choicesWaiting": 0,
+    "raids": 2,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "拳譜": 13,
+    "巡山": 62,
+    "拜入": 7,
+    "慕名": 6,
+    "大成": 12,
+    "會武": 2,
+    "傳聞": 4,
+    "山賊": 16,
+    "傳授": 3,
+    "重傷": 5
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1008,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "名俠": 2,
+    "grew": 2,
+    "大成": 3,
+    "慕名": 4,
+    "會武": 15,
+    "傳聞": 17,
+    "山賊": 17,
+    "cliff": 17,
+    "傳授": 18,
+    "重傷": 19,
+    "成親": 27
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 4,
+   "famishedShare": 0.01,
+   "lowMoodShare": 0.154,
+   "heroShare": {
+    "grow": 0.401,
+    "work": 0.055,
+    "out": 0.006,
+    "care": 0.483,
+    "social": 0.053,
+    "idle": 0.002,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 7,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": true,
+    "coin": 42,
+    "food": 3,
+    "rumors": 12,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 3,
+     "kitchen": 1,
+     "veg": 3,
+     "herb": 1
+    },
+    "choicesWaiting": 0,
+    "raids": 3,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "拳譜": 17,
+    "巡山": 39,
+    "拜入": 10,
+    "名俠": 1,
+    "大成": 15,
+    "慕名": 8,
+    "會武": 2,
+    "傳聞": 5,
+    "山賊": 19,
+    "傳授": 3,
+    "重傷": 5,
+    "成親": 1
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1009,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "名俠": 2,
+    "grew": 2,
+    "大成": 2,
+    "會武": 15,
+    "慕名": 15,
+    "傳聞": 17,
+    "cliff": 24,
+    "傳授": 26,
+    "山賊": 29
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 3,
+   "famishedShare": 0.017,
+   "lowMoodShare": 0.055,
+   "heroShare": {
+    "grow": 0.498,
+    "work": 0.082,
+    "out": 0.002,
+    "care": 0.376,
+    "social": 0.039,
+    "idle": 0.003,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 7,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": true,
+    "coin": 37,
+    "food": 7,
+    "rumors": 9,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 3,
+     "kitchen": 1,
+     "veg": 3,
+     "herb": 1
+    },
+    "choicesWaiting": 0,
+    "raids": 1,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "拳譜": 11,
+    "巡山": 47,
+    "拜入": 10,
+    "名俠": 1,
+    "大成": 17,
+    "會武": 2,
+    "慕名": 8,
+    "傳聞": 3,
+    "傳授": 7,
+    "山賊": 2
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1010,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 2,
+    "會武": 15,
+    "傳聞": 17,
+    "cliff": 18,
+    "傳授": 27,
+    "山賊": 29
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 10,
+   "famishedShare": 0.017,
+   "lowMoodShare": 0.092,
+   "heroShare": {
+    "grow": 0.505,
+    "work": 0.069,
+    "out": 0.005,
+    "care": 0.375,
+    "social": 0.044,
+    "idle": 0.002,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 5,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": true,
+    "coin": 57,
+    "food": 7,
+    "rumors": 8,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 2,
+     "kitchen": 1,
+     "veg": 3
+    },
+    "choicesWaiting": 0,
+    "raids": 1,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "拳譜": 12,
+    "巡山": 41,
+    "拜入": 7,
+    "慕名": 6,
+    "大成": 11,
+    "會武": 2,
+    "傳聞": 3,
+    "傳授": 3,
+    "山賊": 2
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1011,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 3,
+    "名俠": 5,
+    "cliff": 8,
+    "傳授": 13,
+    "會武": 15,
+    "傳聞": 17,
+    "山賊": 19,
+    "重傷": 21,
+    "成親": 29
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 1,
+   "famishedShare": 0.032,
+   "lowMoodShare": 0.092,
+   "heroShare": {
+    "grow": 0.53,
+    "work": 0.066,
+    "out": 0.007,
+    "care": 0.356,
+    "social": 0.039,
+    "idle": 0.002,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 7,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": true,
+    "coin": 23,
+    "food": 10,
+    "rumors": 9,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 3,
+     "kitchen": 1,
+     "veg": 3,
+     "herb": 1
+    },
+    "choicesWaiting": 0,
+    "raids": 3,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "拳譜": 17,
+    "巡山": 60,
+    "拜入": 8,
+    "慕名": 8,
+    "大成": 18,
+    "名俠": 1,
+    "傳授": 6,
+    "會武": 2,
+    "傳聞": 5,
+    "山賊": 24,
+    "重傷": 2,
+    "成親": 1
+   }
+  },
+  {
+   "opening": "huangrong",
+   "starterArt": "luohanHands",
+   "seed": 1012,
+   "mode": "guided",
+   "first": {
+    "founded": 1,
+    "build": 1,
+    "奇書": 1,
+    "立匾": 1,
+    "firstArt": 1,
+    "rumor": 1,
+    "拳譜": 1,
+    "巡山": 1,
+    "拜入": 2,
+    "慕名": 2,
+    "grew": 2,
+    "大成": 3,
+    "名俠": 5,
+    "會武": 15,
+    "傳聞": 17,
+    "cliff": 17,
+    "傳授": 18,
+    "山賊": 19,
+    "成親": 23,
+    "重傷": 26
+   },
+   "dull": [],
+   "dullDays": 0,
+   "siteStallDays": 1,
+   "famishedShare": 0.026,
+   "lowMoodShare": 0.215,
+   "heroShare": {
+    "grow": 0.358,
+    "work": 0.041,
+    "out": 0.028,
+    "care": 0.541,
+    "social": 0.031,
+    "idle": 0.001,
+    "none": 0
+   },
+   "end": {
+    "day": 31,
+    "people": 7,
+    "heroArts": [
+     "basicFist",
+     "luohanHands",
+     "luoyingPalm"
+    ],
+    "founded": true,
+    "coin": 85,
+    "food": 1,
+    "rumors": 12,
+    "facilities": {
+     "hall": 1,
+     "yard": 1,
+     "dorm": 3,
+     "kitchen": 1,
+     "veg": 3,
+     "herb": 2
+    },
+    "choicesWaiting": 0,
+    "raids": 3,
+    "deaths": 0
+   },
+   "eventTotals": {
+    "奇書": 3,
+    "立匾": 1,
+    "拳譜": 20,
+    "巡山": 24,
+    "拜入": 12,
+    "慕名": 10,
+    "大成": 16,
+    "名俠": 1,
+    "會武": 2,
+    "傳聞": 5,
+    "傳授": 4,
+    "山賊": 15,
+    "成親": 1,
+    "重傷": 3
+   }
+  }
+ ]
+}

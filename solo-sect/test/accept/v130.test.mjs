@@ -33,7 +33,8 @@ test('周伯通：賭贏才教（先左右互搏給憨厚的，再空明拳）�
   const H = { rand: () => 0.99 }; s.choices = []; jhStep(s, 0.25, H); const coin = s.res.coin; jhResolve(s, s.choices.find((c) => c.jh === 'zbt'), 0, H); assert.equal(s.jh.zbt.losses, 1);
   // 贏
   s.jh.rng = 1; for (let i = 0; i < 2; i++) { s.day++; s.choices = []; jhStep(s, 0.25); const ch = s.choices.find((c) => c.jh === 'zbt'); jhResolve(s, ch, 0, { rand: () => 0 }); }
-  assert.equal(s.jh.zbt, null); assert.ok(s.ds.some((d) => d.arts?.zuoyou) && s.ds.some((d) => d.arts?.kongming)); assert.ok(s.res.coin >= coin);
+  assert.equal(s.jh.zbt, null); assert.ok(s.ds.some((d) => d.watched?.km1));
+  assert.ok(s.ds.every((d) => !d.arts?.zuoyou && !d.arts?.kongming), '短住名師不直接給整門'); assert.ok(s.res.coin >= coin);
 });
 test('東方不敗：有來由且逐招分勝負；打退留葵花殘頁、輸了不死人，也不能入門', () => {
   const arrive = () => {
@@ -58,9 +59,10 @@ test('東方不敗：有來由且逐招分勝負；打退留葵花殘頁、輸�
   const { s: t } = arrive();
   t.jh.visitor.bout.foes[0].hp = 0; // 固定擊退情境：殘頁與斷情選擇仍保留。
   t.t += .25; jhStep(t, .25, { rand: () => .5 });
-  assert.equal(t.jh.dfbb, 2); assert.ok(t.ds.some(d => d.arts?.kuihua?.xp >= JH.residueXp));
+  assert.equal(t.jh.dfbb, 2); assert.ok(t.jh.residue.kuihua); assert.ok(t.ds.some(d => d.watched?.kh1));
+  assert.ok(t.ds.every(d => !d.arts?.kuihua), '殘頁不是唯一實本');
   pick(t, 'kuihua'); const h = t.ds.find(d => d.id === 'hero');
-  assert.equal(h.moodCap, 80); assert.ok(h.duanqing != null);
+  assert.equal(h.arts.kuihua, undefined); assert.equal(h.castrated, null);
 });
 test('韋小寶入門：賭坊每日抽頭有上限', () => {
   const s = st(); join(s, 'weixiaobao'); s.rep = 999; const c = s.res.coin; s.day++; jhStep(s, 0.25); assert.equal(s.res.coin - c, JH.gambleCap);

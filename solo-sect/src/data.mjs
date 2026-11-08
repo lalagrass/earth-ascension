@@ -382,7 +382,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '5.6'; /* 第二十二輪 #488：奇書見聞與遠行搜尋；異版存檔拒載 */
+export const RULES_VERSION = '5.7'; /* 第二十三輪 #488：舊劇情不再直接授整門；異版存檔拒載 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -822,7 +822,7 @@ export const JH = {
   comedyWeek: 2, comedyDays: 7,
   anranMood: 30, anranMax: 1.5, twin: 1.3, kongming: 1.15, pair: 0.25,
   gambleBase: 2, gambleCap: 6, recruitBonus: 0.4, baoyi: 0.5, reflect: 0.3, jiuyangSta: 30,
-  hiddenMax: 3, hiddenP: 0.35, residueXp: 20, diaoFeeds: 3, honeyHeal: 15,
+  hiddenMax: 3, hiddenP: 0.35, diaoFeeds: 3, honeyHeal: 15,
 };
 Object.assign(TRAITS, { quiet: { name: '清冷', desc: '心情起伏減半，不喜熱鬧', composure: 'steady', mods: { train: 1.05, leisure: 0.9 } }, chi: { name: '癡', desc: '心情隨意中人起伏', mods: {}, mods24: { train: 1.25, study: 1.2, chat: 0.8 } } }); /* loop187 v2.9 mods24：只 d.v24 新局生效（舊局 mods 不動） */
 TRAITS.quiet.mods24 = { meditate: 1.35, study: 1.2, chat: 0.75 };
