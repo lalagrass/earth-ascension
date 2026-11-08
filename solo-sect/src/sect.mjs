@@ -2,6 +2,7 @@ import {BODY_MECHANICS} from './contact.mjs';
 import {makeBare} from './starter-combat.mjs';
 import { DAY, NODES, SECTS, SECT_K, RULE_LIB, HERO_SECT, CUSTOM_BY_VALUE, CUSTOM_RIVALS, WUMING_KIT24, ARTS, SECT_PICK24 } from './data.mjs';
 import { seedArts, learnArt, artTier, artById, artOk, reqMissing, curCap, focusOf, specK, bestSpec, chiefLocked24, mastery, primaryCat, CATS, qiInjuryFight28, temperOf, TEMPER29, yunvOpen24, ponderLuoying, practiceLuoying } from './arts.mjs';
+import { HERMITAGE_VOLUMES, volumeLineage } from './hermitage-books.mjs';
 import { dpsOf } from './world.mjs';
 import { compat, think } from './social.mjs';
 import { APPR } from './bonds.mjs';
@@ -132,8 +133,10 @@ const knownLineage = (d) => {
 const hermitageLineages = (s) => {
   const routes = [];
   for (const person of s.ds) {
-    const id = knownLineage(person);
-    if (id && !routes.some((r) => r.id === id)) routes.push({ id, teacher: person.id, tree: [...SECTS[id].tree] });
+    const primary = knownLineage(person);
+    const fromVolumes = HERMITAGE_VOLUMES.filter(v => s.hermitage?.books?.includes(v.id) && person.arts?.[v.art]).map(volumeLineage).filter(Boolean);
+    const candidates = person.originSect && fromVolumes.includes(person.originSect) ? fromVolumes : [primary, ...fromVolumes];
+    for (const id of candidates) if (id && !routes.some((r) => r.id === id)) routes.push({ id, teacher: person.id, tree: [...SECTS[id].tree] }); // R3：獨行者讀到第二脈真卷，可由同一人立兩脈。
   }
   return routes;
 };
@@ -147,18 +150,14 @@ export function applySectLineage(s, d) {
   d.foundedLineage = !!s.hermitage?.founded && (s.sect.doctrine !== 'orthodox' || d.stree.length > s.sect.tree.length);
   return d;
 }
-export function canFoundHermitageSect(s, manual = false) {
+export function canFoundHermitageSect(s) {
   if (!s.hermitage?.active || s.hermitage.founded) return { ok: false, why: '已非荒山隱居時期' };
   const h = heroD(s); if (!h || h.away || h.hp <= 0) return { ok: false, why: '主角尚未在山中' };
-  const routes = hermitageLineages(s), heart = h.hermitageStarter === 'luohanHands' ? 'shaolinXinfa' : 'quanzhenXinfa';
-  const step = h.hermitageStarter === 'luohanHands' ? 'shaolinStep' : 'jinyanStep';
-  const others = s.ds.filter((d) => d !== h && !d.away && d.hp > 0);
-  const martial = !!(h.arts?.[heart] && h.arts?.[step] && (!others.length || others.some((d) => (d.awakeningStage || 0) >= 2)));
-  const trial = !!(s.hermitage.exploredCliffs?.length || s.threat?.won > 0);
-  return { ok: !!routes.length && (manual || martial || trial), martial, trial, routes, why: routes.length ? '尚須武道小成、上崖或守山勝場' : '尚未帶有可立脈的武學' };
+  const routes = hermitageLineages(s);
+  return { ok: !!routes.length, routes, why: routes.length ? '' : '尚未帶有可立脈的武學' }; // R3 #522：玩家第 1 日即可決定立匾；不再看武道、山崖或守山。
 }
-export function queueHermitageFounding(s, manual = false) {
-  const ready = canFoundHermitageSect(s, manual); if (!ready.ok) return ready;
+export function queueHermitageFounding(s) {
+  const ready = canFoundHermitageSect(s); if (!ready.ok) return ready;
   if (s.choices?.some((c) => c.sect === 'hermitageFounding')) return { ok: true };
   const dual = ready.routes.length >= 2;
   const doctrines = dual ? ['dualHall', 'orthodox', 'wuming'] : ['single', 'wuming'];
@@ -180,7 +179,7 @@ export function assignDiscipleHall(s, d) {
   return d.hall;
 }
 export function foundHermitageSect(s, doctrine = null, customPlaque = '') {
-  const ready = canFoundHermitageSect(s, true); if (!ready.ok) return ready;
+  const ready = canFoundHermitageSect(s); if (!ready.ok) return ready;
   const routes = ready.routes, dual = routes.length >= 2;
   doctrine ??= dual ? 'dualHall' : 'single';
   if (!(dual ? ['dualHall', 'orthodox', 'wuming'] : ['single', 'wuming']).includes(doctrine)) return { ok: false, why: '目前武學脈絡不支援此道統' };
@@ -281,7 +280,7 @@ export function buildFac(s, force) {
 }
 /* #409 桃花：碧波心法到小成後，在島上自己看出落英，次日才上手。不經師父。 */
 function luoyingDaily(s) {
-  if (s.sect?.id !== 'taohua') return;
+  if (s.hermitage || s.sect?.id !== 'taohua') return; // R3：隱居路線不沿用舊桃花自悟整門。
   for (const d of s.ds) {
     if (d.role === 'laborer' || d.away) continue;
     if (!d.luoyingClue) { if (ponderLuoying(d)) log(s, `${d.name}在島上對著落花比劃，掌路自己浮出來。`); }

@@ -52,6 +52,7 @@ label.btn { border:1px solid #888; padding:2px 8px; border-radius:4px; cursor:po
 @font-face{font-family:WenKaiSubset;src:url('assets/ui/LXGWWenKai-subset.ttf') format('truetype');font-display:swap}
 #panel{box-sizing:border-box;width:var(--pw);padding:0 12px 14px;background:#e6d7b6 url('assets/ui/kenney/panel_beige.png') center/100% 100% no-repeat;scrollbar-color:#a7834e #e6d7b6;scrollbar-width:thin}
 #rail-head{position:sticky;top:0;z-index:4;padding:10px 5px 7px;background:#e9dbba;border-bottom:2px solid #a48353;box-shadow:0 3px 7px #65482b35}
+#panel:has(#hermit-books:not(:empty)) #rail-head{max-height:40vh;overflow-y:auto}/* R3：隱居分卷在門派頁；上方人物卡至多佔視窗四成，卷按鈕可實際點到。 */
 #rail-head h1,#panel h2,.focus-level,.level-card{font-family:WenKaiSubset,'Noto Serif TC',serif}
 #rail-head h1{font-size:22px;margin:0 0 2px}
 #rail-head #clock{font-size:12px;line-height:1.35}

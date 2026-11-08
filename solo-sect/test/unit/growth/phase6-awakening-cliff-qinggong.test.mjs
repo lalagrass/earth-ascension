@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, route, setOrder, speedOf, tick } from '../../../src/sim.mjs';
-import { checkExteriorToInteriorAwakening, gainArt } from '../../../src/arts.mjs';
+import { gainArt } from '../../../src/arts.mjs';
+import { bookStatus, readHermitageBook } from '../../../src/hermitage-books.mjs';
 import { canLeapCliff } from '../../../src/cliff.mjs';
 import { ergonomicFrame } from '../../../src/growth-playback.mjs';
 import { renderMicroStage } from '../../../src/pose-render.mjs';
@@ -11,25 +12,26 @@ const until = (s, condition) => {
   assert.ok(condition(), '真實任務須在固定時間內完成');
 };
 
-test('Phase 6：純陽與羅漢由外而內兩階確定性頓悟，舊局不觸發', () => {
-  for (const [starter, heart, step] of [['chunyangFist', 'quanzhenXinfa', 'jinyanStep'], ['luohanHands', 'shaolinXinfa', 'shaolinStep']]) {
+test('R3 承接 Phase 6：純陽與羅漢分卷須讀才學會，舊局不取得隱居卷', () => {
+  for (const [starter, heart, step, hv, sv] of [['chunyangFist', 'quanzhenXinfa', 'jinyanStep', 'quanzhen-heart', 'quanzhen-step'], ['luohanHands', 'shaolinXinfa', 'shaolinStep', 'shaolin-heart', 'shaolin-step']]) {
     const s = createState(17, { hermitage: true, starterArt: starter }), d = s.ds[0];
-    assert.equal(checkExteriorToInteriorAwakening(d, s), null);
+    assert.equal(bookStatus(s, d, hv).ok, false);
     d.arts[starter].xp = 25; d.skills.strength = 15;
-    assert.equal(checkExteriorToInteriorAwakening(d, s), heart);
-    assert.equal(checkExteriorToInteriorAwakening(d, s), null);
+    assert.equal(d.arts[heart], undefined);
+    assert.equal(readHermitageBook(s, d, hv).art, heart);
+    assert.equal(readHermitageBook(s, d, hv).learned, false);
     gainArt(d, 5, 1, s.t, { raw: 5, src: 'train' });
-    assert.ok(d.arts[heart].xp > 0, '兩路外功都回饋已悟心法');
+    assert.ok(d.arts[heart].xp > 0, '兩路外功都回饋已讀心法');
     const beforeSpeed = speedOf(d);
     d.arts[heart].xp = 25; d.skills.agility = 16;
-    assert.equal(checkExteriorToInteriorAwakening(d, s), step);
+    assert.equal(d.arts[step], undefined);
+    assert.equal(readHermitageBook(s, d, sv).art, step);
     assert.ok(speedOf(d) > beforeSpeed);
     assert.ok(Math.abs(speedOf(d) / speedOf({ ...d, hermitageStarter: null }) - 1.35) < 1e-9);
-    assert.equal(checkExteriorToInteriorAwakening(d, s), null);
   }
   const old = createState(17), hero = old.ds[0];
   hero.hermitageStarter = 'chunyangFist'; hero.arts.chunyangFist = { xp: 25 }; hero.skills.strength = 15;
-  assert.equal(checkExteriorToInteriorAwakening(hero, old), null);
+  assert.equal(bookStatus(old, hero, 'quanzhen-heart').ok, false);
   assert.equal(hero.arts.quanzhenXinfa, undefined);
 });
 
@@ -38,9 +40,9 @@ test('Phase 6：三級山崖依火候／身法逐一開放，真任務帶回草�
   assert.equal(canLeapCliff(d, 'cliff1'), false);
   assert.equal(setOrder(s, d.id, 'cliffForage1'), false);
   d.arts.chunyangFist.xp = 25; d.skills.strength = 15;
-  checkExteriorToInteriorAwakening(d, s);
+  readHermitageBook(s, d, 'quanzhen-heart');
   d.arts.quanzhenXinfa.xp = 25; d.skills.agility = 16;
-  checkExteriorToInteriorAwakening(d, s);
+  readHermitageBook(s, d, 'quanzhen-step');
   assert.deepEqual(['cliff1', 'cliff2', 'cliff3'].map(id => canLeapCliff(d, id)), [true, false, false]);
   assert.equal(setOrder(s, d.id, 'cliffForage1'), true);
   until(s, () => s.res.beeJelly === 1);
@@ -64,7 +66,9 @@ test('Phase 6：三級山崖依火候／身法逐一開放，真任務帶回草�
   d.skills.agility = 32; d.arts.jinyanStep.xp = 55;
   assert.equal(canLeapCliff(d, 'cliff3'), true);
   assert.equal(setOrder(s, d.id, 'cliffComprehend'), true);
-  until(s, () => !!d.arts.quanzhenSword);
+  until(s, () => s.hermitage.books.includes('quanzhen-sword'));
+  assert.equal(d.arts.quanzhenSword, undefined, '拓錄石刻只得卷，不立即悟整門');
+  assert.equal(readHermitageBook(s, d, 'quanzhen-sword').art, 'quanzhenSword');
   assert.ok(s.hermitage.exploredCliffs.includes('cliff3'));
   assert.equal(route('herb', 'well').some(id => id.startsWith('cliff')), false, '平地路徑不借山崖捷徑');
 });

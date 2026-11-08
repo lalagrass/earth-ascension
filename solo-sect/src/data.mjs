@@ -382,7 +382,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '4.8'; /* R4 #520：隱居起手資料列，立匾道統依實際武學 */
+export const RULES_VERSION = '4.9'; /* R3 #522：隱居武學從拳譜卷／會的人傳授，立匾由玩家選時 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
@@ -907,6 +907,9 @@ Object.assign(ACTIVITIES, {
   watch:   { name: '護山哨瞭望', dur: 10, energy: -5, skill: { agility: 3 }, gen: { base: 40, why: '上哨崗守獸道', cond: 'always', perDay: 4 }, eff: { watch: 1 } },
   sig:     { name: '鎮派功課', dur: 8, gen: { base: 48, why: '鎮派建築的功課', cond: 'always' } }, // 實際名稱／時長／效果見 SIG_ACTS
 });
+// R3（#522）：沿既有 study／forage 的工時與耗力，不新增調勝率的常數。
+ACTIVITIES.readBook = { name: '茅廬研讀拳譜', dur: ACTIVITIES.study.dur, energy: ACTIVITIES.study.energy };
+ACTIVITIES.searchFragment = { name: '林中山洞尋殘卷', dur: ACTIVITIES.forage.dur, energy: ACTIVITIES.forage.energy };
 // 7 座鎮派建築各自的活動（sect id → 活動資料，形狀同上）
 export const SIG_ACTS = {
   gaibang:   { name: '沿村乞討', dur: 10, energy: -6, perDay: 3, why: '打狗棒堂：沿村討口飯', eff: { res: { food: 2 } } },

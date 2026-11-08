@@ -1,0 +1,10 @@
+{
+  "seed": 17,
+  "answers": {
+    "A": "books available",
+    "B": "reading ordered"
+  },
+  "method": "normal hermitage UI, companion start, sect book button",
+  "reader": "hero",
+  "volume": "gumu-palm"
+}
