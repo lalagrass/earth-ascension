@@ -1,5 +1,6 @@
 # FEATURES.md：codex/solo-sect-grok（山門紀 solo-sect）
 
+> 第十九輪 R7（#524，規則 5.1）：拿掉收養。成親的兩人各自決定要不要孩子，兩人都想才懷孕；懷孕影響母親做活與上陣；孩子由父母遺傳根骨、悟性，按大人年曆長大。見 [family.md](docs/systems/family.md)。
 > 第十五輪 R9（#529，規則 5.0）：唯一新局是終南荒山隱居；主角自訂姓名、12 點屬性、九問和 MBTI。舊開局與其 golden／舊存檔回放已退場；跨版存檔顯示「存檔版本不符」並回到新局。下方舊版本矩陣是交付沿革，標示舊開局的列不代表現行入口；現行驗收見 REVIEW。
 > 前輪 R2／R3 已整合：身體由負重、體能疲勞、營養和根骨上限推導；心法／身法卷的體魄門檻取個人成長空間一半，前卷 XP、真研讀及傳授時鐘仍在。
 
@@ -86,7 +87,7 @@ Artifact 目錄：[`artifacts/features/77e1b2d/`](artifacts/features/77e1b2d/REA
 | SS-JIANGHU | v1.3 | 楊過、小龍女、周伯通、東方不敗、火雲邪神、海大富、《功夫》隱藏高手；喜劇卡、晨課令（可關） | 已接線 | 通過（單元） | src/jianghu.mjs | `node --test test/v130.test.mjs` | shots/v130-*（腳本） | 數值沒經過長期試玩 |
 | SS-SECT | ROADMAP §18；擁有人 t103u；v1.35 | 主角＝門派 → 匾額、旗 → 門規、禁學、外門 ×0.7、師門質疑卡 → 鎮派設施 | 已接線 | 通過（單元） | src/sect.mjs, src/data.mjs | `node --test test/v135.test.mjs` | shots/v135-*（腳本） | 設施只有一級；自創主角「多一格自選設施」沒做；門規條件簡化 |
 | SS-SECT-FEUD | v1.35 | 巡山第 2、4… 道關由宿敵把守（強 15%），打贏加門派聲望 | 已接線 | 通過（單元）；UI 流程戰報出現「鐵掌幫高手（狼王）」 | src/sect.mjs, src/world.mjs | `node --test test/v135.test.mjs` | flow-report.png | **宿敵守關沿用原守關敵的圖和數值底（只改名稱與強度）** |
-| SS-GEN-MARRY-ADOPT | ROADMAP §5（只收養、不生育）；v1.4 | 道侶＋雙向相容 → 成親 → 收養卡 → 孩童 6 歲入門 | 已接線 | 通過（單元） | src/sect.mjs | `node --test test/v140.test.mjs` | shots/v140-01（腳本） | **收養卡只在沒有孩子時才出現**（不能收第二個） |
+| SS-GEN-MARRY-ADOPT | R7 #524（取代 v1.4 收養） | 道侶＋雙向相容 → 成親 → 兩人各自決定 → 兩人都想才懷孕 → 足月出生 → 同一年曆長大 | 已接線 | 通過（單元） | src/family.mjs | `node --test test/unit/social/r7-family.test.mjs` | — | 收養已拿掉 |
 | SS-GEN-AGE | v1.4 | 孩子每 3 日長 1 歲，14 歲成年換立繪；成人每 28 日長 1 歲 | 孩童已接線；成人年齡＝展示 | 通過（單元，只測孩童） | src/sect.mjs | `node --test test/v140.test.mjs` | shots/v140-01（腳本） | **成人年齡只有顯示**，不影響數值、不會老化 |
 | SS-GEN-LINEAGE | v1.4 | 拜師 → 師父大成以上武學練 ×1.2 | 已接線 | 通過（單元） | src/sect.mjs, src/util.mjs | `node --test test/v140.test.mjs` | shots/v140-02（腳本） | — |
 | SS-GEN-SUCCEED | docs/architecture/PROTAGONIST.md；v1.4 | 主角化境 → 「傳位退隱」 → 繼承人接掌 → 世代 +1、宿慧 +1 | 已接線 | **77e1b2d：失敗**（P1-3 一般傳人卡片 TypeError；[review](artifacts/review-fix/README.md)）→ **d2692d9：通過**（`test/v145-review.test.mjs`；通過（單元）） | src/sect.mjs, src/main.mjs | `node --test test/v140.test.mjs` | shots/v140-02、v140-03（腳本） | **繼承人沒有自己的主線劇情**；傳位不能撤回 |
@@ -175,7 +176,7 @@ Artifact 目錄：[`artifacts/features/77e1b2d/`](artifacts/features/77e1b2d/REA
   - 巡山要等巡山面板解鎖（COM-UNLOCK）。
   - 名俠、華山、江湖線依主角模板和名聲、深度觸發。
   - 衣缽要先有成年內門弟子，主角也要有化境武學。
-  - 收養要先成親。
+  - 生孩子要先成親，且兩人都想要。
 - **取消／恢復**
   - 巡山出發後不能取消，只會自動回頭。
   - 抉擇卡可以選「詢問／自動」，但選了不能撤回。

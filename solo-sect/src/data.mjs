@@ -381,7 +381,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '5.0'; /* R9 #529：唯一終南隱居開局；舊道館存檔拒載 */
+export const RULES_VERSION = '5.1'; /* R7 #524：拿掉收養；兩人都想才生，孩子跟大人同一個年曆 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [

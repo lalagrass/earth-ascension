@@ -11,6 +11,7 @@ import { addWexin, awaken } from './hero.mjs';
 import { aff } from './social.mjs';
 import { rivalGate, rivalWon } from './sect.mjs';
 import { startMapBout, stepMapBout } from './exp-map-combat.mjs';
+import { expecting } from './family.mjs'; // R7：知道有孕後不上陣
 // ==== （原 world.mjs）====
 // v1.55a 同圖延伸：世界座標、7 環、巢點與山徑、各環族群、獸襲下山（演出）、鏡頭邊界、256px 區塊
 // 原則：權威模擬不看鏡頭；這裡只有 popStep 會寫狀態，而且不用亂數。
@@ -295,7 +296,7 @@ export function teamStyle(team) {
 // 第二人起：搭檔默契（上一趟同隊 +25、好感 /100×20）＋換個走法 +6。v1.9 長跑：沒有默契項時岳不群 30 日到頂 1/5（隊友輪來輪去），加了才回 ≥4/5
 export const A9 = { minHp: 70, dps: 80, perDay: 5, idleCap: 20, mood: 10, diverse: 6, keep: 25, bond: 20 };
 export function suggestTeam(s, n = 2) {
-  const ok = s.ds.filter((d) => d.role !== 'laborer' && d.adult !== false && !d.away && d.hp > A9.minHp && !((d.restUntil || 0) > s.t) && !s.hunt?.team.includes(d.id));
+  const ok = s.ds.filter((d) => d.role !== 'laborer' && d.adult !== false && !expecting(s, d) && !d.away && d.hp > A9.minHp && !((d.restUntil || 0) > s.t) && !s.hunt?.team.includes(d.id));
   if (!ok.length) return { ids: [], why: [] }; const top = Math.max(...ok.map((d) => dpsOf(s, d))) || 1, last = s.lastExp?.style;
   const base = (d) => { const idle = Math.min(A9.idleCap, ((s.t - (d.lastExp ?? -DAY * 9)) / DAY) * A9.perDay), m = Math.max(0, (60 - d.mood) / 60) * A9.mood; return { sp: (dpsOf(s, d) / top) * A9.dps, idle, m }; };
   const pick = [], why = [], lastTeam = s.lastExp?.ids || [];
