@@ -310,6 +310,9 @@ export const RECRUIT_POOL = [
   { id: 'guojing', name: '郭靖', adult: false, age: 13, child: { since: 0, parents: [] }, youngHero: true, sprite: 'cousin', style: 'leg', skills: { leg: 8, palm: 2, strength: 14, farming: 4, herbal: 2, agility: 8, cooking: 2 }, traits: {}, personality: ['honest', 'brave'], support: { food: 3 }, starterArts: ['basicFist'], root: 3, situation: { food: 0, bed: 0, safety: 0, seek: 'safety', where: 'village', reason: '村路不太平，借住借食，想學一身護人的功夫' } },
   { id: 'xiaomei', name: '小梅', adult: true, fem: true, sprite: 'senior', style: 'palm', skills: { leg: 2, palm: 4, strength: 4, farming: 10, herbal: 14, agility: 11, cooking: 12 }, traits: { social: 1.4 }, personality: ['gentle', 'sociable'], support: { coin: 3 }, situation: { food: 1, bed: 0, safety: 0, autonomy: 0, seek: 'healing', where: 'market', reason: '在市集幫藥舖做事，有飯吃但借住，想學療傷' } },
   { id: 'laoqi', name: '老七', adult: true, sprite: 'hero', style: 'leg', skills: { leg: 6, palm: 6, strength: 10, farming: 12, herbal: 6, agility: 7, cooking: 8 }, traits: { diligent: 1.1 }, personality: ['gentle', 'optimist'], situation: { food: 0, bed: 1, safety: 0, autonomy: 0, seek: 'food', where: 'market', reason: '在市集討生活，家裡有住處卻缺糧' } },
+  // 第二十六輪補 #488：食宿、安全與自己作主都有保障；原有農務／藥舖技能尺度，不添招募機率。
+  { id: 'tiansheng', name: '田生', adult: true, sprite: 'hero', style: 'palm', skills: { leg: 2, palm: 2, strength: 10, farming: 12, herbal: 4, agility: 7, cooking: 8 }, traits: {}, personality: ['honest', 'diligent'], support: { food: RECRUIT.food }, situation: { food: 1, bed: 1, safety: 1, autonomy: 1, seek: 'teaching', where: 'village', reason: '家裡有田有屋，日子安穩，只願拜真正會教人的師門' } },
+  { id: 'shopapprentice', name: '店裡學徒', adult: true, sprite: 'senior', style: 'palm', skills: { leg: 2, palm: 2, strength: 7, farming: 4, herbal: 6, agility: 9, cooking: 8 }, traits: {}, personality: ['sociable', 'diligent'], support: { coin: RECRUIT.food }, situation: { food: 1, bed: 1, safety: 1, autonomy: 1, seek: 'teaching', where: 'market', reason: '在市集店裡有飯有住，想尋有真本領的師父才肯離開' } },
 ];
 
 // v0.6 切片：性格特質（RimWorld traits／DF facets 的簡化版）與心情
@@ -383,7 +386,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '6.0'; /* 第 26 輪 #488：統一地圖公尺尺度、瀑下負荷及 28 日成長年體能時間常數；異版存檔拒載 */
+export const RULES_VERSION = '6.1'; /* 第 26 輪補 #488：補兩列生活安穩的收徒人選；異版存檔拒載 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
