@@ -303,13 +303,13 @@ export const HUNT_WAVES = 3, WAVE_GAP = 6;
 export const REP = { build: 5, kill: 1, learn: 2 };
 export const RECRUIT = { food: 3 }; // R8 #526：束脩量沿 N58；數字名聲招募門檻退場。
 export const RECRUIT_POOL = [
-  { id: 'aqing', name: '阿青', adult: true, sprite: 'hero', style: 'palm', skills: { leg: 3, palm: 6, strength: 8, farming: 6, herbal: 4, agility: 9, cooking: 4 }, traits: { diligent: 1.3 }, personality: ['diligent', 'brave'], support: { food: 3 }, situation: { seek: 'teaching', where: 'village', reason: '在村路尋一處願意教人的山門' } },
-  { id: 'shitou', name: '石頭', adult: true, sprite: 'hero', style: 'leg', skills: { leg: 8, palm: 2, strength: 14, farming: 4, herbal: 2, agility: 8, cooking: 2 }, traits: {}, personality: ['honest', 'brave'], support: { stone: ACTIVITIES.quarry.carry.stone }, situation: { seek: 'safety', where: 'village', reason: '村路屢遭山賊，想學守住家人的本事' } }, // 24g：村民可帶一趟採石所得，數量由既有搬運量推導。
+  { id: 'aqing', name: '阿青', adult: true, sprite: 'hero', style: 'palm', skills: { leg: 3, palm: 6, strength: 8, farming: 6, herbal: 4, agility: 9, cooking: 4 }, traits: { diligent: 1.3 }, personality: ['diligent', 'brave'], support: { food: 3 }, situation: { food: 0, bed: 0, safety: 0, autonomy: 0, seek: 'teaching', where: 'village', reason: '在村路尋一處願意教人的山門，借住借食' } },
+  { id: 'shitou', name: '石頭', adult: true, sprite: 'hero', style: 'leg', skills: { leg: 8, palm: 2, strength: 14, farming: 4, herbal: 2, agility: 8, cooking: 2 }, traits: {}, personality: ['honest', 'brave'], support: { stone: ACTIVITIES.quarry.carry.stone }, situation: { food: 0, bed: 0, safety: 0, seek: 'safety', where: 'village', reason: '村路屢遭山賊，糧住難安，想學守住家人的本事' } }, // 24g：村民可帶一趟採石所得，數量由既有搬運量推導。
   // N58: the younger version has only an entry art and uses the same pool/admission path.
   // Age 13 is one year below the existing adult threshold 14; skills borrow Shitou's starter tier.
-  { id: 'guojing', name: '郭靖', adult: false, age: 13, child: { since: 0, parents: [] }, youngHero: true, sprite: 'cousin', style: 'leg', skills: { leg: 8, palm: 2, strength: 14, farming: 4, herbal: 2, agility: 8, cooking: 2 }, traits: {}, personality: ['honest', 'brave'], support: { food: 3 }, starterArts: ['basicFist'], root: 3, situation: { seek: 'safety', where: 'village', reason: '村路不太平，想學一身護人的功夫' } },
-  { id: 'xiaomei', name: '小梅', adult: true, fem: true, sprite: 'senior', style: 'palm', skills: { leg: 2, palm: 4, strength: 4, farming: 10, herbal: 14, agility: 11, cooking: 12 }, traits: { social: 1.4 }, personality: ['gentle', 'sociable'], support: { coin: 3 }, situation: { seek: 'healing', where: 'market', reason: '在市集幫藥舖做事，想學療傷' } },
-  { id: 'laoqi', name: '老七', adult: true, sprite: 'hero', style: 'leg', skills: { leg: 6, palm: 6, strength: 10, farming: 12, herbal: 6, agility: 7, cooking: 8 }, traits: { diligent: 1.1 }, personality: ['gentle', 'optimist'], situation: { seek: 'food', where: 'market', reason: '在市集討生活，家裡缺糧' } },
+  { id: 'guojing', name: '郭靖', adult: false, age: 13, child: { since: 0, parents: [] }, youngHero: true, sprite: 'cousin', style: 'leg', skills: { leg: 8, palm: 2, strength: 14, farming: 4, herbal: 2, agility: 8, cooking: 2 }, traits: {}, personality: ['honest', 'brave'], support: { food: 3 }, starterArts: ['basicFist'], root: 3, situation: { food: 0, bed: 0, safety: 0, seek: 'safety', where: 'village', reason: '村路不太平，借住借食，想學一身護人的功夫' } },
+  { id: 'xiaomei', name: '小梅', adult: true, fem: true, sprite: 'senior', style: 'palm', skills: { leg: 2, palm: 4, strength: 4, farming: 10, herbal: 14, agility: 11, cooking: 12 }, traits: { social: 1.4 }, personality: ['gentle', 'sociable'], support: { coin: 3 }, situation: { food: 1, bed: 0, safety: 0, autonomy: 0, seek: 'healing', where: 'market', reason: '在市集幫藥舖做事，有飯吃但借住，想學療傷' } },
+  { id: 'laoqi', name: '老七', adult: true, sprite: 'hero', style: 'leg', skills: { leg: 6, palm: 6, strength: 10, farming: 12, herbal: 6, agility: 7, cooking: 8 }, traits: { diligent: 1.1 }, personality: ['gentle', 'optimist'], situation: { food: 0, bed: 1, safety: 0, autonomy: 0, seek: 'food', where: 'market', reason: '在市集討生活，家裡有住處卻缺糧' } },
 ];
 
 // v0.6 切片：性格特質（RimWorld traits／DF facets 的簡化版）與心情
@@ -383,7 +383,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '5.8'; /* 第 24 輪 #488：入門讀卷、崖上景致、房間觀感與捐修改模擬；異版存檔拒載 */
+export const RULES_VERSION = '5.9'; /* 第 25 輪 #488：煮飯急迫、入門處境與真交易／山賊見聞改模擬；異版存檔拒載 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [

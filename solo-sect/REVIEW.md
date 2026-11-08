@@ -4,7 +4,7 @@
 
 | 類別 | 指令＋門檻＋預期輸出 |
 |---|---|
-| A 固定情境 | Node 22 `bash solo-sect/test/run.sh smoke`：91/91。24a 缺石停工一日顯示缺料和每人理由；24b 所有傳聞種類有真產生處且只列當下可用收徒途徑；24d 平均者讀入門卷、半平均者兩倍時間、進階維持個人中點門檻；24e 崖上與已建木樁場練功基數一致、景致同秒數休閒回復；24f 名望者嫌破屋、自在者不受影響；24g 無傳聞不捐、具名傳聞捐修一次，捐入與移往工地分別記帳而庫存淨額不變。 |
+| A 固定情境 | Node 22 `bash solo-sect/test/run.sh smoke`：91/91（第 24 輪交付時）。24a 缺石停工一日顯示缺料和每人理由；24b 所有傳聞種類有真產生處且只列當下可用收徒途徑；24d 平均者讀入門卷、半平均者兩倍時間；當時將三本崖卷誤加中點門檻，依 #542 review 在第 25 輪撤回，另驗原前卷 XP；24e 崖上與已建木樁場練功基數一致、景致同秒數休閒回復；24f 名望者嫌破屋、自在者不受影響；24g 無傳聞不捐、具名傳聞捐修一次，捐入與移往工地分別記帳而庫存淨額不變。 |
 | A golden | Node 22 `node solo-sect/tools/golden.mjs --write --tier hermitage && node solo-sect/tools/golden.mjs --check --tier all`：四格 × 第 1/3/5 日全部自檢。四格 hash 改變包含 5.7→5.8 版號；純陽／羅漢自然讀譜條件改變亦使成長與活動、RNG 後續改變；白身前五日僅 `/rules` 改變。 |
 | A 盲圖 | `python3 solo-sect/tools/r24-visual.py --seed 17`：零 pageerror；[A](artifacts/r24/blind-A.png)／[B](artifacts/r24/blind-B.png)；[答案](artifacts/r24/blind-answers.json)。真 UI 立匾後果與一日缺石理由各一張。 |
 | B 公式 | 無新隨機機率；同一 smoke 保留 N62 6,000 次出獵選擇公式，期望 .4926757803、99.9% 半寬 .021407701；觀測 .502 在區間。 |
@@ -13,7 +13,7 @@
 
 舊名 → 新名：`CLIFF_TRAIN_MUL`、`yard.trainMul` → 移除，個人練功由 `focusMul` 接心情，木樁場以站位與切磋提供價值；`source` 不再兼作卷等級，新增 `HERMITAGE_VOLUMES.level`。舊 `RUMOR_KINDS.rescue` 沒有產生處，24b 刪除；24g 沿既有 `defend` 守護見聞。24a 列出所有在場成年者的當下選擇；職責是分數偏好而非硬性的工作能力鎖，不重算評分。
 
-最沒把握三處：① 進階崖卷原未逐列寫體魄類別，本輪依功法類別在資料列寫力量或身法並套原中點式；② 住處觀感的 -6…+6 與價值 25 點尺度是 R1 設計旋鈕，只按既有心情基線／低落界設計，待 C／review 觀察；③ 村民石頭的石料取一次採石搬運量，讓具名捐修可追溯但不替代長期採石。
+最沒把握三處：① 進階崖卷原未逐列寫體魄類別，當時依功法類別加力量／身法中點；#542 review 指出這改變原門檻，第 25 輪已撤回；② 住處觀感的 -6…+6 與價值 25 點尺度是 R1 設計旋鈕，只按既有心情基線／低落界設計，待 C／review 觀察；③ 村民石頭的石料取一次採石搬運量，讓具名捐修可追溯但不替代長期採石。
 
 ## 第二十三輪：舊劇情授藝遵守 R10／R11（#488，規則 5.7）
 
@@ -901,3 +901,19 @@ bot12 同尺命令：分別在 Phase 5 與本輪 checkout 根目錄執行 `docke
 舊驗收分類：R11 `r11-recipe.test.mjs` 先前精確斷言 `rareBookStatus()` 在手上無書時會說「黑木崖」；第二十二輪的 A 明文禁止未聽見目擊就得知位置，因此改為精確斷言「書不在手上」。其餘「奇書只能讀實物、自宮需確認、不教整門」及全部固定斷言不動。沒有放寬原測試。`src/rare-arts.mjs` 的原始地點資料列仍保留給實物狀態，只是不直接顯示給玩家。
 
 舊名 → 新名：本輪碰到的 API `rareBookState`／`handRareBook`／`recordRumor`／`market` 沒有輪次編號名稱；新增 `rumorForRareBook`、`rareBookSearchWhy` 與 `rareBookSearchStep` 按用途命名。最沒把握三處：① 市集打聽是玩家明確行動，見證者是 RARE_BOOKS 的具名資料列；沒有為 C 自動造見聞；② 搜尋先只給無主的林家袈裟，有主的葵花只成傳聞，偷或換需獨立交手／交易設計；③ 五日遠行借市集週期而非真實福州路程，符合目前只有抽象山下商路的地圖尺度。
+
+## 第二十五輪：第 30–90 日中期生活（#488，規則 5.9）
+
+| 類別 | 指令、門檻與預期輸出 |
+|---|---|
+| A 固定情境 | Node 22 `bash solo-sect/test/run.sh smoke`，包含每步一個小測試：25a `test/unit/tools/r25-playability-segments.test.mjs`（十五日庫存中位、人秒分母、見聞 id）、25b `test/unit/economy/r25-cook-urgency.test.mjs`（沒飯有菜先煮、有飯先吃）、25c `test/unit/social/r25-admission-situation.test.mjs`（有家有田的牌匾見聞不收、缺糧守山見聞可收）、25d `test/unit/threat/r25-rumor-trade.test.mjs`（沒交貨沒財聞、私人錢不進成交見聞、只房舍空倉不起賊、勝戰見聞降低收益）、25e `test/unit/economy/r25-after-raid-cooking.test.mjs`（賊退後失效守柵指派解除，空飯有菜可改去煮）。25-0 依 #542 review 修正既有 `r24-volume-reach`：平均／半平均入門慢讀不變，三本崖卷前卷 XP 足即可讀，低於 XP 則不可讀，體能低於中點不擋。門檻全部斷言通過；本地 96/96。 |
+| B 公式期望 | 本輪沒有新增隨機抽樣。原 N62 六千次出獵期望測試仍在 smoke：公式期望 0.4926757803、99.9% 半寬 0.021407701；本地觀察 0.502，落在區間。 |
+| C 30 日 | Node 22 `node solo-sect/tools/playability-report.mjs <r24-checkout>/solo-sect --days=30 --admissions`（r24 head `68d2d78`）與 `node solo-sect/tools/playability-report.mjs solo-sect --days=30 --admissions`；[24 頭基準](artifacts/r25/playability-base-30d.json)／[25 頭](artifacts/r25/playability-head-30d.json)。照提示四組（純陽／白身／龍女／黃蓉）拜入人數中位 4→4、4→4、5→5、4→5；期末人口 5→5、5→5、7→7、6→7；低落比例 .142→.105、.154→.097、.130→.059、.185→.047。自然未立匾四組拜入 0→0。黃蓉引導拜入反增 1，列為 C 方向疑點；同局餓昏減輕、來犯 16→7 場（12 種子總和），不得只為 C 調招徒常數。這是受控清警示日程，不能推成玩家自然可達率。 |
+| C bot12 | 在各 checkout 根目錄用 Node 22 `node solo-sect/tools/bot12.mjs solo-sect --json`；[上一輪原始輸出](artifacts/r25/bot12-base.json)／[本輪](artifacts/r25/bot12-head.json)。自然來犯 0→0，獨立有柵探針勝 96/96→96/96、守住 86→89、受傷 3→2；惱羞 285→279、林克時間 104→106。自然與探針分母分開。 |
+| C 90 日 | Node 22 `node solo-sect/tools/playability-report.mjs <r24-checkout>/solo-sect --days=90`（r24 head `68d2d78`）產 [上一輪 base](artifacts/playability/base-90d.json)；`node solo-sect/tools/playability-report.mjs solo-sect --days=90` 產 [本輪 head](artifacts/r25/playability-head-90d.json)，[25b–d 後、25e 前](artifacts/r25/playability-pre25e-90d.json)另存供追因。96 局各六個 15 日段，含菜／熟飯、餓昏、血量、低落與逐次來犯的傳聞。引導純陽／白身／龍女／黃蓉全期低落中位 .716→.029、.700→.022、.726→.030、.725→.028；第 76–90 日原四組均 1.0，現 .006／.005／.021／.026。12 種子總來犯 145→38、120→32、160→35、155→35；124 次一般山賊都有傳聞 ID，16 次復仇首領依原事件而無 ID。追因命令 `node solo-sect/tools/playability-report.mjs <pre25e-checkout>/solo-sect --days=90 --seed=1001 --seeds=1 --diagnose`（pre25e `d0c10f5`），[原殘留局證據](artifacts/r25/mood-diagnosis-pre25e-1001.json)在第 75 日為菜 46、熟飯 0、七人守柵指派未清而無任務；目前以真指派生命週期修復，不用 C 比例調參。 |
+| golden／素材 | Node 22 `node solo-sect/tools/golden.mjs --write` 後 `--check`：隱居四格相符。四組第 1／3／5 日共 12 個狀態在剝除 `/rules` 後前後逐項相同；現有 golden 雜湊僅因 5.8→5.9 改變。`node solo-sect/tools/check-assets.mjs`：168/168 授權素材相符。異版存檔拒載，不加 MIGRATIONS。 |
+| 畫面 A/B | `python3 solo-sect/tools/r25-visual.py --seed 17`，正常 UI 立匾後固定兩次開市庫存；[盲測 A](artifacts/r25/blind-A.png)／[盲測 B](artifacts/r25/blind-B.png)，[答案](artifacts/r25/blind-answers.json)。判準：只有一張顯示山產行商真交菜與付款，另一張只有立匾見聞、沒有假財聞；可改 `--seed` 對換順序，頁面無錯誤。 |
+
+舊驗收更新：`v24.test.mjs` 原「有房舍就固定 +15」被 25d 明文撤回，改精確數量×既有量尺並驗庫存與見聞；`v178.test.mjs` 帳本把舊假收入來源改列真交易的錢入、菜／藥出；`v190.test.mjs`、`n43-rhythm.test.mjs` 原只有 `trade`／`provisions` 種類的假見聞，改放明確成交額，保留原勒索、一期一夥及餘黨斷言。`v190` 舊「八人」標題修成現行四人門檻，未放寬點數、天數及 cap 斷言。
+
+舊名 → 新名：`caravan24` → `mountainProduceSale`、`CARAVAN24` → `MOUNTAIN_MARKET`、`lsStock24` → `marketSpiritStoneStock`。菜價按一畦收成抵一日雇工成本推導，[Claude 已核准](https://github.com/lalagrass/earth-ascension/issues/488#issuecomment-6722504578)。最沒把握三處：① 行商僅賣超出本門當日需求的整畦菜，長期餘菜可能仍無市場；② 山賊只用成交額或明載目擊存貨，不看來當日庫存，但傳聞淡忘前價格可能過時；③ 守方風險以既有一次傷後代價計每則公開武藝見聞，沒有引入勝率或額外機率。

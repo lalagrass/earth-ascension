@@ -26,7 +26,8 @@ export function recordRumor(s, kind, witness, site = 'gate', detail = '', eviden
     heard: site === type.target ? [{ site, day: s.day }] : [], arrived: site === type.target ? s.day : null, expires: s.day + MEMORY_DAYS,
     name: named ? s.sect?.plaque || s.sect?.name || '山門' : null,
     text: `${named ? s.sect?.plaque || s.sect?.name || '山門' : '山上有個怪人'}：${detail || type.text}`,
-    ...(kind === 'rareBook' && evidence?.bookId ? { bookId: evidence.bookId, bookAt: evidence.at, bookHolder: evidence.holder } : {}) };
+    ...(kind === 'rareBook' && evidence?.bookId ? { bookId: evidence.bookId, bookAt: evidence.at, bookHolder: evidence.holder } : {}),
+    ...(evidence?.trade ? { trade: evidence.trade } : {}), ...(evidence?.stock ? { stock: evidence.stock } : {}) };
   rumorsOf(s).push(entry);
   return entry;
 }
@@ -67,10 +68,10 @@ export function rumorForVisitor(s, tags = [], unused = false) {
   const used = unused ? new Set(s.threat?.usedRumors || []) : null;
   return publicRumors(s).find(r => (!used || !used.has(r.id)) && tags.some(tag => RUMOR_KINDS[r.kind]?.tags.includes(tag))) || null;
 }
-export function rumorForBandits(s) {
+export function rumorForBandits(s, worthwhile = () => true) {
   const used = new Set(s.threat?.usedRumors || []);
   // 知道對方能打不足以構成掠奪理由；須有糧或財物線索。
-  return publicRumors(s).filter(r => !used.has(r.id) && RUMOR_KINDS[r.kind]?.tags.some(tag => ['food', 'wealth'].includes(tag))).at(-1) || null;
+  return publicRumors(s).filter(r => !used.has(r.id) && RUMOR_KINDS[r.kind]?.tags.some(tag => ['food', 'wealth'].includes(tag)) && worthwhile(r)).at(-1) || null;
 }
 export function rumorHtml(s) {
   const safe = x => String(x).replace(/[&<>\"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;' })[c]);

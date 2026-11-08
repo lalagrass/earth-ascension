@@ -7,7 +7,7 @@ import { practiceWindow } from './practice.mjs';
 import { foeAction } from './starter-combat.mjs';
 import { log, seedMix, resAdd, recordDeed, tallyAct, chronOf } from './util.mjs';
 import { NODES, EDGES, SOURCES, DAY, FACILITIES, MOVES, ARTS, FENCE_FAC } from './data.mjs';
-import { recordRumor, rumorForBandits, rumorForVisitor } from './rumors.mjs';
+import { recordRumor, rumorForBandits, rumorForVisitor, publicRumors, RUMOR_KINDS } from './rumors.mjs';
 export { FENCE_FAC };
 import { noteFret, interceptOpening, breakWindup, taijiReturn, zjHas, zjMark, zjIntercept, ZJ, partHit, resolveSwing, postureOf, postureRegen, postureHit, handleTake, topTierOf, windFrac, CLASH, perfectDodge, witchK, lightCross, WITCH } from './arts.mjs';
 import { qiInjuryFight28, qiInjuryAdd28, innerDrive28, mainOuterArt, CHAMP28, dpsBonus, guardHurt, SPEC, zhenK, hasPoison, artById, artTier, isSwordArt, bestSpec } from './arts.mjs';
@@ -268,12 +268,13 @@ export function bandWalk(b, dt) {
 
 // ==== （原 threat.mjs）====
 // v1.9 I-6 財富襲擊＋山賊勒索（ROADMAP-NEXT I-6；RimWorld 財富點數、Going Medieval 人數寬限、Songs of Syx／Kenshi 勒索可付錢）
-// 威脅點數＝財富（錢＋存糧＋丹藥＋藥＋建築階數）÷div × 天數係數，封頂；全派（含雜工）<8 人時為 0（不來）。
+// 威脅點數只算可搬走的錢糧丹藥；一般山賊還須聽到可追溯的油水，且預期所得超過所聞守方風險。
+// 全派（含雜工）少於 minPopRules 人時為 0；舊 <8 註解與實際 4 人規則不符。
 // 山賊上門先勒索：付錢了事，或迎戰（勝率＝守方戰力／(戰力＋點數)）。只會重傷（氣血壓到 15），不會死人。
 // 玩家在收支區按鈕選；半日內沒選就由執事比較勒索金與迎戰預期損失自動決定（長跑與無人值守都走這條）。
 
-export const RAID = { minPop: 8, minPopRules: 4, // R8：人數仍影響搶掠收益；來犯日期改由親見傳聞決定。
-  w: { coin: 1, food: 1, pill: 8, herb: 1, stage: 25 }, div: 2, dayK: 30, dayMax: 2, cap: 900,
+export const RAID = { minPopRules: 4, // 25d：保留現行四人來犯規則；由傳聞收益比較再決定是否值得來。
+  w: { coin: 1, food: 1, pill: 8, herb: 1 }, div: 2, dayK: 30, dayMax: 2, cap: 900,
   wealthRatio: 1, combatK: 0.02, /* #431：威脅戰力改讀同源 dpsOf 後，原守柵值約 6–9 而招式 DPS 可達數百；按同一量尺重校戰力權重，不改任何門派勝率 */
   adaptMin: 0.6, adaptMax: 1.2, adaptDropLoss: 0.15, adaptDropHurt: 0.10, adaptRecover: 0.05,
   logAfter: 30, logK: 0.2, hurtCool: 2, // v2.1：第 30 日後天數係數改對數；山門重傷後下次上門再晚 hurtCool 日
@@ -281,8 +282,20 @@ export const RAID = { minPop: 8, minPopRules: 4, // R8：人數仍影響搶掠�
 // R8（#507）：每一則走到聚落的傳聞最多引來一次大威脅；沿既有負傷養護日留出下一次間隔。
 export const RAID_RHYTHM = { minGap: RAID.hurtCool, maxBig: 1 };
 const recordDefenseRumor = s => recordRumor(s, 'defend', '退回村路的山賊', 'gate');
+export function banditLoot(rumor) {
+  if (!rumor) return 0;
+  const stock = rumor.stock || {}, trade = rumor.trade || {}, W = RAID.w;
+  // 行商親見的庫存是傳聞的時間切片；成交的錢至少確定到手。房舍無法搬走。
+  return Math.max(stock.coin || 0, trade.coin || 0) * W.coin + (stock.food || 0) * W.food
+    + (stock.pill || 0) * W.pill + (stock.herb || 0) * W.herb;
+}
+export function banditRisk(s) {
+  // 每則公開勝戰見聞是一次可能受傷的證據；代價沿已有受傷損失的錢尺度。
+  return publicRumors(s).filter(row => RUMOR_KINDS[row.kind]?.tags.includes('martial')).length * RAID.hurtCost;
+}
+export const banditProfit = (s, rumor) => banditLoot(rumor) - banditRisk(s);
 export function raidPhase(s) {
-  const rumor = rumorForBandits(s), due = rumor ? rumor.arrived + RUMOR.lead + peaceDelay(s) : Number.MAX_SAFE_INTEGER;
+  const rumor = rumorForBandits(s, row => banditProfit(s, row) > 0), due = rumor ? rumor.arrived + RUMOR.lead + peaceDelay(s) : Number.MAX_SAFE_INTEGER;
   return { id: rumor && (s.day || 1) >= due ? 'pressure' : 'respite', cycle: rumor?.id ?? -1, start: due, nextPressure: due, rumor };
 }
 function advanceRaidRhythm(s, X, phase) {
@@ -311,7 +324,7 @@ export function reserveMajorThreat(s, kind = 'bandit') {
 }
 const R = (s) => { const X = T(s); X.rng = ((X.rng || seedMix(s.seed || 1, 7477)) * 16807) % 2147483647; return X.rng / 2147483647; };
 export const headcount = (s) => s.ds.filter((d) => !d.removed).length;
-export function wealth(s) { const W = RAID.w, r = s.res; return Math.max(0, r.coin || 0) * W.coin + (r.food || 0) * W.food + (r.pill || 0) * W.pill + (r.herb || 0) * W.herb + FACILITIES.reduce((a, f) => a + (s.fac[f.id]?.stage || 0), 0) * W.stage; }
+export function wealth(s) { const W = RAID.w, r = s.res; return Math.max(0, r.coin || 0) * W.coin + (r.food || 0) * W.food + (r.pill || 0) * W.pill + (r.herb || 0) * W.herb; }
 const linMul = (day) => Math.min(RAID.dayMax, 0.5 + day / RAID.dayK);
 // 第 logAfter 日以前與舊線性相同；之後從當天的值接著以對數成長，不再爬到 dayMax。
 export const dayMul = (s) => { const d = s.day || 0; if (d <= RAID.logAfter) return linMul(d); return Math.min(RAID.dayMax, linMul(RAID.logAfter) + Math.log(1 + (d - RAID.logAfter) / RAID.logAfter) * RAID.logK); };
@@ -321,10 +334,10 @@ export const minPopOf = (s) => (RAID.minPopRules);
 const FAMOUS_IDS = ARTS.filter((a) => a.secret && a.classic && !a.derived).map((a) => a.id);
 export function famousTop(d) { let m = -1; for (const id of FAMOUS_IDS) if (d.arts?.[id]) m = Math.max(m, artTier(d, id)); return m; }
 /* #412 N9：威脅來源解析（家底項與戰力項佔比） */
-export function threatBreakdown(s) {
-  const wTerm = (wealth(s) / RAID.div) * (RAID.wealthRatio ?? 0.6);
+export function threatBreakdown(s, rumor = null) {
+  const wTerm = ((rumor ? banditLoot(rumor) : wealth(s)) / RAID.div) * (RAID.wealthRatio ?? 0.6);
   const defs = s.ds.filter(canDefend);
-  const cTerm = defs.reduce((a, d) => a + (famousTop(d) >= 2 ? defenderDps(d, s) * (famousTop(d) - 1) : 0), 0) * (RAID.combatK ?? 0.85);
+  const cTerm = rumor ? 0 : defs.reduce((a, d) => a + (famousTop(d) >= 2 ? defenderDps(d, s) * (famousTop(d) - 1) : 0), 0) * (RAID.combatK ?? 0.85);
   const tot = wTerm + cTerm;
   if (tot <= 0) return { wPct: 50, cPct: 50, wTerm: 0, cTerm: 0, text: '家底 50％、高手 50％' };
   const wPct = Math.round((wTerm / tot) * 100);
@@ -332,11 +345,11 @@ export function threatBreakdown(s) {
   return { wPct, cPct, wTerm, cTerm, text: `家底 ${wPct}％、高手 ${cPct}％` };
 }
 
-export function points(s) {
+export function points(s, rumor = null) {
   if (headcount(s) < minPopOf(s)) return 0;
   const X = T(s);
   const adapt = Math.max(RAID.adaptMin, Math.min(RAID.adaptMax, X.adapt ?? 1));
-  const bd = threatBreakdown(s);
+  const bd = threatBreakdown(s, rumor);
   const baseTerm = bd.wTerm + bd.cTerm;
   const daysAndValor = dayMul(s) * valorThreatMul(s) * (X.taiping ? BOSS.peaceMul : 1);
   return Math.min(RAID.cap, Math.round(baseTerm * daysAndValor * adapt));
@@ -369,7 +382,7 @@ export const RUMOR = { lead: 2, fenceK: 1.5 };
 export const rumorDays = (s) => { const X = T(s); return !X.pending && X.rumorFor != null && X.rumorFor === X.next ? Math.max(1, X.next - (s.day || 0)) : 0; };
 function rumorDaily(s) {
   const X = T(s); if (X.pending || s.band || s.jh?.visitor || s.jh?.visitorPending || X.rumorFor === X.next) return; const left = X.next - (s.day || 0);
-  if (left > RUMOR.lead || left < 1 || points(s) <= 0) return; X.rumorFor = X.next;
+  if (left > RUMOR.lead || left < 1 || points(s, raidPhase(s).rumor) <= 0) return; X.rumorFor = X.next;
   log(s, `【傳聞】山下茶攤有人說，有夥山賊在打聽本門的家底，怕是${left <= 1 ? '這一兩日' : `約 ${left} 日內`}就會上山。`);
   if (s.exp && s.exp.phase !== 'back' && s.exp.phase !== 'done') log(s, '【傳聞】遠行的弟子若想回山守門，可以下令召回。');
 }
@@ -405,7 +418,7 @@ export function threatDaily(s) {
   else if (X.adapt < 1) X.adapt = Math.min(1, +(X.adapt + (RAID.adaptRecover ?? 0.05)).toFixed(2));
   else if (X.adapt > 1) X.adapt = Math.max(1, +(X.adapt - (RAID.adaptRecover ?? 0.05)).toFixed(2));
   if (X.pending || s.band || s.jh?.visitor || s.jh?.visitorPending || phase.id === 'respite' || (s.day || 0) < X.next) return null;
-  let pts = points(s); if (pts <= 0) return null;
+  let pts = points(s, phase.rumor); if (pts <= 0) return null;
   (X.usedRumors ??= []).push(phase.cycle); X.rhythmStrikes++; X.lastBigDay = s.day;
   X.next = Number.MAX_SAFE_INTEGER;
   const kind = pickKind(R(s)), K = kindOf(kind); if (K) pts = Math.max(1, Math.round(pts * K.pts)); // loop17 類型

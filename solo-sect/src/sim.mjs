@@ -185,7 +185,7 @@ export function canRecruit(s) {
   }
   const candidate=makeBare({id:next.id,adult:next.adult,skills:{...next.skills},situation:next.situation,support:next.support,canWork:next.canWork});
   const heardReason = `在${rumor.where}聽${rumor.witness}說「${rumor.text}」；${next.situation?.reason || '想找合適的師門'}`;
-  return {...admissionStatus(s,candidate),next,heard:true,heardReason,rumor:rumor.id};
+  return {...admissionStatus(s,candidate,rumor),next,heard:true,heardReason,rumor:rumor.id};
 }
 // 三問心印：預設答案取人選天性；答案→前兩個不重複特質為明面，人選天性補為第三（暗，相處 900 秒揭露）
 export function defaultAnswers(p) { return QUESTIONS.map((q) => { const i = q.a.findIndex(([, t]) => (p.personality || []).includes(t)); return i < 0 ? 0 : i; }); }
@@ -365,6 +365,19 @@ export function scoreActs(s, d) {
   for (const R of SCORE) { if (R.gen) { for (const [act, A] of GEN_ACTS) { if (!offered(s, act).length) continue; const g = genOf(s, act, A); if (!g || !GEN_COND[g.cond]?.(s, d) || !dayOk(s, act, g.perDay)) continue; if (g.base > 0) out.push({ act, score: g.base, why: g.why, ...(g.layer ? { layer: g.layer } : {}) }); } continue; }
     if (R.when && !R.when.every((k) => PRED[k](c))) continue; const T = R.tiers ? R.tiers.find((x) => !x.if || PRED[x.if](c)) : R; if (!T) continue;
     const score = valOf(T.v, c); if (score > 0) out.push({ act: R.act, score, why: fillWhy(T.why, c), ...(T.layer || R.layer ? { layer: T.layer || R.layer } : {}) }); }
+  // 25b：沒有熟飯而有菜可下鍋時，煮飯接住同一人的吃飯急迫度。
+  // 取 eat 資料列的分數與 need 層，不另設飢餓常數，也不多抽一次選招雜訊。
+  if (!hasMeal(s)) {
+    const cook = out.find(o => o.act === 'cook');
+    const eatRule = SCORE.find(row => row.act === 'eat');
+    const tier = eatRule?.tiers.find(row => !row.if || PRED[row.if](c));
+    if (cook && tier?.layer === 'need') {
+      cook.score = valOf(tier.v, c);
+      cook.layer = tier.layer;
+      cook.as = 'eat';
+      cook.why = '沒飯了，先煮';
+    }
+  }
   for (const [act, base] of Object.entries({ cliffForage1: 'forage', cliffTrain: 'train', cliffWater: 'water', waterfallTrain: 'train', cliffComprehend: 'meditate' })) {
     const cliffId = CLIFF_ACT_NODE[act], source = out.find(o => o.act === base);
     if (source && canLeapCliff(d, cliffId)) out.push({ act, score: source.score, why: `輕功可到${CLIFFS[cliffId].name}，${ACTIVITIES[act].name}` });
@@ -538,6 +551,8 @@ function breakDeed(s, d, r) {
 }
 function decide(s, d) {
   if (d.carry) { d.task = { act: 'deliver', phase: 'return', node: 'court', walkStart: d.walked }; goto(d, 'court'); d.reason = '先把東西送回院倉'; d.decision = { layer: 'carry', act: 'deliver', why: d.reason }; return true; }
+  // 25e：同伴喊援設的守柵指派只屬那場交手；賊退後不可留下無法執行的指派堵住吃飯做活。
+  if (d.order === 'defend' && !s.band) d.order = null;
   if (d.order) {
     const o = d.order; if (o !== 'hunt' && (d.needs.energy < 15 || (o !== 'eat' && d.needs.hunger < 10 && hasMeal(s)))) { const a = d.needs.energy < 15 ? 'rest' : 'eat'; d.decision = { layer: 'need', act: a, why: '指派中先自理' }; return assign(s, d, a, '指派中先自理'); }
     if (assign(s, d, o, '玩家指派')) { onAssign(s, d, o, true); d.decision = { layer: 'order', act: o, why: '玩家指派' }; return true; }
