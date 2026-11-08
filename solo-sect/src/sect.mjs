@@ -1,5 +1,5 @@
 import { DAY, SECTS, SECT_K, RULE_LIB, HERO_SECT, CUSTOM_BY_VALUE, CUSTOM_RIVALS, WUMING_KIT24, ARTS, SECT_PICK24 } from './data.mjs';
-import { seedArts, learnArt, artTier, artById, artOk, reqMissing, curCap, focusOf, specK, bestSpec, chiefLocked24, mastery, primaryCat, CATS, qiInjuryFight28, temperOf, TEMPER29, yunvOpen24, ponderLuoying, practiceLuoying } from './arts.mjs';
+import { watchMove, seedArts, learnArt, artTier, artById, artOk, reqMissing, curCap, focusOf, specK, bestSpec, chiefLocked24, mastery, primaryCat, CATS, qiInjuryFight28, temperOf, TEMPER29, yunvOpen24, ponderLuoying, practiceLuoying } from './arts.mjs';
 import { HERMITAGE_VOLUMES, volumeLineage } from './hermitage-books.mjs';
 import { recordRumor } from './rumors.mjs';
 import { dpsOf } from './world.mjs';
@@ -356,9 +356,9 @@ export function huiwuResolve(s, ch, i) {
   if (fs.length) { const r = stealCheck28(s, fs, O), u = hh(`${s.seed}:steal:${ch.day}`), W = (s.v28n ??= {}); /* loop182 v2.8 造詣門道偷師 */
     if (r) { W.stealTry = (W.stealTry || 0) + 1; const { a, d: who, need, cat } = r;
       if (!r.p) { W.stealZero = (W.stealZero || 0) + 1; if (u < 0.5) log(s, `【臨陣觀摩】${who.name}見${O.name}使出《${a.name}》精妙非凡，奈何自身${CATS[cat]?.name || '武學'}造詣未至（需 ${need}），未能窺破門道。`); }
-      else if (u < r.p) { learnArt(who, a.id, s.t); who.arts[a.id].xp = Math.max(who.arts[a.id].xp, BISAI24.newXp); N.steal = (N.steal || 0) + 1; log(s, `【臨陣偷師】${who.name}在場邊看出${O.name}招式精要，竟學會了《${a.name}》！`); recordDeed(s, who, 'steal', { chron: `${who.name}在${H.name}上偷師${O.name}《${a.name}》` }); } } }
+      else if (u < r.p) { const mv = watchMove(who, a); if (mv) { N.steal = (N.steal || 0) + 1; log(s, `【臨陣觀摩】${who.name}在場邊看會了${O.name}《${a.name}》的一招「${mv.name}」；整門仍要拜師或讀譜。`); recordDeed(s, who, 'steal', { chron: `${who.name}在${H.name}上看會${O.name}一招「${mv.name}」` }); } } /* R10 #530：看人只得單招 */ } }
   else if (thief && hh(`${s.seed}:steal:${ch.day}`) < HUIWU24.steal) { const C = O.tree.map(artById).filter((a) => a && !thief.arts?.[a.id] && artOk(thief, a) && !a.secret && !a.signature && !a.derived), a = C.find((x) => x.own24) || C[0];
-    if (a) { learnArt(thief, a.id, s.t); thief.arts[a.id].xp = Math.max(thief.arts[a.id].xp, BISAI24.newXp); N.steal = (N.steal || 0) + 1; log(s, `【臨陣偷師】${thief.name}在場邊看出${O.name}招式精要，竟學會了《${a.name}》！`); recordDeed(s, thief, 'steal', { chron: `${thief.name}在${H.name}上偷師${O.name}《${a.name}》` }); } }
+    const mv = a && watchMove(thief, a); if (mv) { N.steal = (N.steal || 0) + 1; log(s, `【臨陣觀摩】${thief.name}在場邊看會了${O.name}《${a.name}》的一招「${mv.name}」；整門仍要拜師或讀譜。`); recordDeed(s, thief, 'steal', { chron: `${thief.name}在${H.name}上看會${O.name}一招「${mv.name}」` }); } }
   return true;
 }
 

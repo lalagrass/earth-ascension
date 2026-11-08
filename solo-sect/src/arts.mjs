@@ -10,6 +10,7 @@ import { SECTS, ARTS, TIERS, ART_GAIN, sectBiasMul, WUXING_MUL, MOVES, VARIANTS,
 import { stampCard, BRANCHES } from './artcard.mjs';
 import { strMul } from './economy.mjs';
 import { pipeline, log, chronOf, affKey } from './util.mjs';
+import { HERMITAGE_VOLUMES, volumeLineage, volumeBodyThreshold } from './hermitage-books.mjs';
 import { recordSocialEvent } from './social-thoughts.mjs';
 // ==== （原 growth.mjs）====
 /* loop78 成長分層（開關 s.grow）：成長門類 metadata、造詣單一結算入口、同類學習加速。
@@ -100,13 +101,22 @@ export const nextLvXp = (xp) => { const p = profOf(xp); if (!p.lv) return null; 
 // v0.9 武學骨架：每門武學各自熟練、五階、前置、悟性門檻、笨功夫倍率
 export const artById = (id) => ARTS.find((a) => a.id === id);
 /* loop160：v2.4 新武學只對 v2.4 新局的人開放（舊局、舊存檔看不到） */
+// R10 #530：傳承寫在卷的資料列上（HERMITAGE_VOLUMES 的 lineage、from、xp、skill），這裡不寫武學名、門派名或數字。
+// 一門屬於某傳承的武學，只有已經會該傳承武學的人（或立派時寫進本門武學表）才能學；前置與體魄門檻與讀卷相同。
+const lineageArt = (id) => { const v = HERMITAGE_VOLUMES.find((x) => x.art === id); if (v) return volumeLineage(v); const a = artById(id); return a?.hermitageLineage || a?.phase6Only ? a.own24 : null; };
+// R10：整門武學只能學來；「師父傳授」要有一個真的會這門、人在山上的人。
+export const artTeacher = (s, d, id) => s.ds.find((o) => o !== d && !o.away && !o.removed && o.adult !== false && o.arts?.[id]) || null;
+export const lineagesOf = (d) => new Set(Object.keys(d?.arts || {}).map(lineageArt).filter(Boolean));
 export const artOk = (d, a) => {
-  if ((a?.v24 && !d) || (a?.hermitageLineage && !(d?.foundedLineage && d?.stree?.includes(a.id)) && (d?.awakeningPath || !['quanzhen', 'zhongnan'].includes(d?.sectId))) || (a?.phase6Only && d?.hermitageStarter !== 'luohanHands' && !(d?.foundedLineage && d?.stree?.includes(a.id)))) return false;
-  if (d?.hermitageStarter && ['quanzhenXinfa', 'shaolinXinfa'].includes(a?.id) && (d.skills?.strength || 0) < 15) return false;
-  if (a?.id === 'shaolinXinfa' && d?.hermitageStarter === 'luohanHands' && (d.arts?.luohanHands?.xp || 0) < 25) return false;
-  if (d?.hermitageStarter && ['jinyanStep', 'shaolinStep'].includes(a?.id) && (d.skills?.agility || 0) < 16) return false;
+  if (a?.v24 && !d) return false;
+  if (!d || !a) return true;
+  const L = lineageArt(a.id), founded = !!(d.foundedLineage && d.stree?.includes(a.id));
+  if (L && !founded && !lineagesOf(d).has(L)) return false;
+  const v = HERMITAGE_VOLUMES.find((x) => x.art === a.id);
+  if (v?.from && (d.arts?.[v.from]?.xp || 0) < v.xp) return false;
+  if (v?.skill && (d.skills?.[v.skill] || 0) < volumeBodyThreshold(d, v.skill)) return false;
   return true;
-}; // 出自 Phase 6 規格：隱居心法／身法需體魄門檻；少林新候選不進舊門派池。
+};
 /* loop164 v2.4 Batch 4.3 本門傳承鎖：他派專屬（名門 classic、非名俠招牌、在某派 tree 而不在本門 d.stree）預設不可自悟／自選；
    【宗師觸類旁通】該武學主門類造詣 ≥ LOCK24.master 時解鎖他派 grade ≤2 武學。 */
 export const LOCK24 = { master: 40, maxGrade: 2 };
@@ -537,8 +547,15 @@ export function learnArt(d, id, now = 0) { d.arts[id] ??= { xp: 0, last: now }; 
 const HERMITAGE_CHAIN = Object.freeze({ chunyangFist: ['quanzhenXinfa', 'jinyanStep'], luohanHands: ['shaolinXinfa', 'shaolinStep'] });
 export const hermitageInnerActive = d => !!(d?.hermitageStarter && d.arts?.[HERMITAGE_CHAIN[d.hermitageStarter]?.[0]]);
 export const hermitageStepActive = d => !!(d?.hermitageStarter && d.arts?.[HERMITAGE_CHAIN[d.hermitageStarter]?.[1]]);
+// R10 #530：看人只得單招。看會的招不帶整門的火候，威力按自己最好的內功火候算（林平之有招無心法，打不贏人）。
+export function watchMove(d, a) {
+  const mv = (a?.techs || []).find((m) => MOVES.find((x) => x.id === m) && !d.moves?.includes(m));
+  if (!mv) return null;
+  (d.moves ??= []).push(mv); (d.watched ??= {})[mv] = a.id; return MOVES.find((x) => x.id === mv);
+}
+const bestInnerXp = (d) => Math.max(0, ...Object.entries(d.arts || {}).filter(([id]) => artById(id)?.school === 'inner').map(([, r]) => r.xp || 0));
 export const moveMul = (d, mvId, now = 0) => strMul(d) * moveMul0(d, mvId, now) * harmonyMul(d) * affixMul(d, mvId, 'dmg') * (d.raging ? CLASH.fret.force : 1) * (hermitageInnerActive(d) ? 1.28 : 1); /* 出自 Phase 6 規格：氣感自生後招式威力×1.28，僅隱居路線；其餘沿原路。 */
-const moveMul0 = (d, mvId, now = 0) => { const raw = artOfMove(mvId), a = raw && d.arts?.[raw.id] ? raw : null, q = qiStrikeMul(d, a) * swordDmgMul(d, mvId), md = modeMul31(d, a, 'dmg'); if (!a) return (d.powMul || 1) * (d.jhMul || 1) * q * styleDamage(d) * md; const r = d.arts[a.id]; return forceTarget(a, r.xp) * (d.powMul || 1) * (d.jhMul || 1) * (variantOf(d, a.id, now)?.dmg || 1) * q * md * styleDamage(d) * innerDrive28(d, a).mul; };
+const moveMul0 = (d, mvId, now = 0) => { const raw = artOfMove(mvId), a = raw && d.arts?.[raw.id] ? raw : null, q = qiStrikeMul(d, a) * swordDmgMul(d, mvId), md = modeMul31(d, a, 'dmg'); if (!a) return (raw && d.watched?.[mvId] ? forceTarget(raw, bestInnerXp(d)) : 1) * (d.powMul || 1) * (d.jhMul || 1) * q * styleDamage(d) * md; const r = d.arts[a.id]; return forceTarget(a, r.xp) * (d.powMul || 1) * (d.jhMul || 1) * (variantOf(d, a.id, now)?.dmg || 1) * q * md * styleDamage(d) * innerDrive28(d, a).mul; };
 export const effectTier = (d, eff) => ARTS.filter((a) => a.effect === eff).reduce((m, a) => Math.max(m, artTier(d, a.id)), -1);
 export const effectMul = (d, eff, now = 0) => ARTS.filter((a) => a.effect === eff && d.arts?.[a.id]).reduce((m, a) => m * (variantOf(d, a.id, now)?.eff || 1), 1);
 // 由舊招式／技能推出武學熟練（新建或舊檔）
