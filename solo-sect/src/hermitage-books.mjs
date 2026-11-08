@@ -6,16 +6,16 @@ import { log } from './util.mjs';
 import { BODY_MECHANICS } from './contact.mjs';
 import { bodyCapOf } from './economy.mjs';
 
-// 前一卷 XP25 與 XP55 沿用既有火候；入門卷按四段讀，進階卷保留先天到上限的中點門檻（24d）。
+// 前一卷 XP25 與 XP55 沿用既有火候；入門卷按四段讀。原有三本崖卷只看前卷火候，沒有另加體能門檻。
 // 入門每段用現有 study 工時的四分之一；低於成年平均體能時按平均／本人能力放慢。
 export const HERMITAGE_VOLUMES = Object.freeze([
   { id: 'quanzhen-heart', art: 'quanzhenXinfa', from: 'chunyangFist', xp: 25, skill: 'strength', level: 'entry', source: 'opening', route: 'chunyangFist', lineage: 'quanzhen' },
   { id: 'quanzhen-step', art: 'jinyanStep', from: 'quanzhenXinfa', xp: 25, skill: 'agility', level: 'entry', source: 'opening', route: 'chunyangFist', lineage: 'quanzhen' },
   { id: 'shaolin-heart', art: 'shaolinXinfa', from: 'luohanHands', xp: 25, skill: 'strength', level: 'entry', source: 'opening', route: 'luohanHands', lineage: 'shaolin' },
   { id: 'shaolin-step', art: 'shaolinStep', from: 'shaolinXinfa', xp: 25, skill: 'agility', level: 'entry', source: 'opening', route: 'luohanHands', lineage: 'shaolin' },
-  { id: 'quanzhen-sword', art: 'quanzhenSword', from: 'jinyanStep', xp: 25, skill: 'agility', level: 'advanced', source: 'cliff', route: 'chunyangFist', lineage: 'quanzhen' },
-  { id: 'xiantian-heart', art: 'xiantianGong', from: 'quanzhenXinfa', xp: 55, skill: 'strength', level: 'advanced', source: 'cliff', route: 'chunyangFist', lineage: 'quanzhen' },
-  { id: 'shaolin-arhat', art: 'shaolinArhat', from: 'shaolinStep', xp: 55, skill: 'strength', level: 'advanced', source: 'cliff', route: 'luohanHands', lineage: 'shaolin' },
+  { id: 'quanzhen-sword', art: 'quanzhenSword', from: 'jinyanStep', xp: 25, level: 'advanced', source: 'cliff', route: 'chunyangFist', lineage: 'quanzhen' },
+  { id: 'xiantian-heart', art: 'xiantianGong', from: 'quanzhenXinfa', xp: 55, level: 'advanced', source: 'cliff', route: 'chunyangFist', lineage: 'quanzhen' },
+  { id: 'shaolin-arhat', art: 'shaolinArhat', from: 'shaolinStep', xp: 55, level: 'advanced', source: 'cliff', route: 'luohanHands', lineage: 'shaolin' },
   { id: 'gumu-palm', art: 'tianluoPalm', level: 'entry', source: 'opening', route: 'gumu', stage: 1, lineage: 'gumu' },
   { id: 'gumu-sword', art: 'yunvJian', from: 'tianluoPalm', xp: 25, level: 'entry', source: 'opening', route: 'gumu', stage: 2, lineage: 'gumu' },
   { id: 'gumu-fist', art: 'meinvFist', from: 'tianluoPalm', xp: 25, level: 'entry', source: 'opening', route: 'gumu', stage: 2, lineage: 'gumu' },
