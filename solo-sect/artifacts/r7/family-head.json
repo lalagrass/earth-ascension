@@ -1,0 +1,667 @@
+{
+ "days": 60,
+ "secondsPerTick": 6,
+ "alertPolicy": "clear after each tick",
+ "scope": "controlled C observation",
+ "summary": {
+  "xiaolongnv": {
+   "sweet": "12/12",
+   "wed": "12/12",
+   "pregnant": "9/12",
+   "born": "5/12"
+  },
+  "huangrong": {
+   "sweet": "12/12",
+   "wed": "12/12",
+   "pregnant": "10/12",
+   "born": "5/12"
+  }
+ },
+ "rows": [
+  {
+   "opening": "xiaolongnv",
+   "seed": 1001,
+   "first": {
+    "sweet": 6,
+    "wed": 21,
+    "pregnant": 52
+   },
+   "food": 8,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": true,
+     "why": [
+      "想要個孩子"
+     ]
+    },
+    {
+     "id": "xiaolongnv",
+     "want": true,
+     "why": [
+      "想要個孩子"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1002,
+   "first": {
+    "sweet": 5,
+    "wed": 20,
+    "pregnant": 30,
+    "born": 51
+   },
+   "food": 0,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": false,
+     "why": [
+      "家裡正在挨餓",
+      "床位不夠（3/4）"
+     ]
+    },
+    {
+     "id": "xiaolongnv",
+     "want": false,
+     "why": [
+      "家裡正在挨餓",
+      "床位不夠（3/4）"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1003,
+   "first": {
+    "sweet": 4,
+    "wed": 19,
+    "pregnant": 49
+   },
+   "food": 9,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": false,
+     "why": [
+      "家裡正在挨餓"
+     ]
+    },
+    {
+     "id": "xiaolongnv",
+     "want": false,
+     "why": [
+      "家裡正在挨餓"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1004,
+   "first": {
+    "sweet": 4,
+    "wed": 23
+   },
+   "food": 7,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": false,
+     "why": [
+      "家裡正在挨餓"
+     ]
+    },
+    {
+     "id": "xiaolongnv",
+     "want": false,
+     "why": [
+      "家裡正在挨餓"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1005,
+   "first": {
+    "sweet": 5,
+    "wed": 18
+   },
+   "food": 4,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": false,
+     "why": [
+      "家裡正在挨餓"
+     ]
+    },
+    {
+     "id": "xiaolongnv",
+     "want": false,
+     "why": [
+      "家裡正在挨餓"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1006,
+   "first": {
+    "sweet": 5,
+    "wed": 21,
+    "pregnant": 35,
+    "born": 56
+   },
+   "food": 4,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": false,
+     "why": [
+      "床位不夠（3/4）"
+     ]
+    },
+    {
+     "id": "xiaolongnv",
+     "want": false,
+     "why": [
+      "床位不夠（3/4）"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1007,
+   "first": {
+    "sweet": 4,
+    "wed": 21
+   },
+   "food": 6,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": true,
+     "why": [
+      "想要個孩子"
+     ]
+    },
+    {
+     "id": "xiaolongnv",
+     "want": true,
+     "why": [
+      "想要個孩子"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1008,
+   "first": {
+    "sweet": 5,
+    "wed": 16,
+    "pregnant": 27,
+    "born": 48
+   },
+   "food": 0,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": false,
+     "why": [
+      "家裡正在挨餓",
+      "床位不夠（3/4）"
+     ]
+    },
+    {
+     "id": "xiaolongnv",
+     "want": false,
+     "why": [
+      "家裡正在挨餓",
+      "床位不夠（3/4）"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1009,
+   "first": {
+    "sweet": 7,
+    "wed": 21,
+    "pregnant": 32,
+    "born": 53
+   },
+   "food": 8,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": false,
+     "why": [
+      "家裡正在挨餓",
+      "床位不夠（3/4）"
+     ]
+    },
+    {
+     "id": "xiaolongnv",
+     "want": false,
+     "why": [
+      "家裡正在挨餓",
+      "床位不夠（3/4）"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1010,
+   "first": {
+    "sweet": 6,
+    "wed": 22,
+    "pregnant": 48
+   },
+   "food": 10,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": true,
+     "why": [
+      "想要個孩子"
+     ]
+    },
+    {
+     "id": "xiaolongnv",
+     "want": true,
+     "why": [
+      "想要個孩子"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1011,
+   "first": {
+    "sweet": 7,
+    "wed": 21,
+    "pregnant": 49
+   },
+   "food": 5,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": false,
+     "why": [
+      "家裡正在挨餓"
+     ]
+    },
+    {
+     "id": "xiaolongnv",
+     "want": false,
+     "why": [
+      "家裡正在挨餓"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "xiaolongnv",
+   "seed": 1012,
+   "first": {
+    "sweet": 6,
+    "wed": 19,
+    "pregnant": 22,
+    "born": 43
+   },
+   "food": 4,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": false,
+     "why": [
+      "家裡正在挨餓",
+      "床位不夠（3/4）"
+     ]
+    },
+    {
+     "id": "xiaolongnv",
+     "want": false,
+     "why": [
+      "家裡正在挨餓",
+      "床位不夠（3/4）"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1001,
+   "first": {
+    "sweet": 1,
+    "wed": 21,
+    "pregnant": 25,
+    "born": 46
+   },
+   "food": 1,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": false,
+     "why": [
+      "床位不夠（3/4）"
+     ]
+    },
+    {
+     "id": "huangrong",
+     "want": false,
+     "why": [
+      "床位不夠（3/4）"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1002,
+   "first": {
+    "sweet": 4,
+    "wed": 21
+   },
+   "food": 13,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": true,
+     "why": [
+      "想要個孩子"
+     ]
+    },
+    {
+     "id": "huangrong",
+     "want": true,
+     "why": [
+      "想要個孩子"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1003,
+   "first": {
+    "sweet": 3,
+    "wed": 21,
+    "pregnant": 45
+   },
+   "food": 13,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": true,
+     "why": [
+      "想要個孩子"
+     ]
+    },
+    {
+     "id": "huangrong",
+     "want": true,
+     "why": [
+      "想要個孩子"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1004,
+   "first": {
+    "sweet": 2,
+    "wed": 21,
+    "pregnant": 59
+   },
+   "food": 13,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": false,
+     "why": [
+      "家裡正在挨餓"
+     ]
+    },
+    {
+     "id": "huangrong",
+     "want": false,
+     "why": [
+      "家裡正在挨餓"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1005,
+   "first": {
+    "sweet": 4,
+    "wed": 18,
+    "pregnant": 36,
+    "born": 57
+   },
+   "food": 0,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": false,
+     "why": [
+      "家裡正在挨餓",
+      "床位不夠（3/4）"
+     ]
+    },
+    {
+     "id": "huangrong",
+     "want": false,
+     "why": [
+      "家裡正在挨餓",
+      "床位不夠（3/4）"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1006,
+   "first": {
+    "sweet": 2,
+    "wed": 21,
+    "pregnant": 25,
+    "born": 46
+   },
+   "food": 0,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": false,
+     "why": [
+      "家裡正在挨餓",
+      "床位不夠（3/4）"
+     ]
+    },
+    {
+     "id": "huangrong",
+     "want": false,
+     "why": [
+      "家裡正在挨餓",
+      "床位不夠（3/4）"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1007,
+   "first": {
+    "sweet": 1,
+    "wed": 21,
+    "pregnant": 41
+   },
+   "food": 10,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": true,
+     "why": [
+      "想要個孩子"
+     ]
+    },
+    {
+     "id": "huangrong",
+     "want": true,
+     "why": [
+      "想要個孩子"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1008,
+   "first": {
+    "sweet": 3,
+    "wed": 15,
+    "pregnant": 50
+   },
+   "food": 8,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": false,
+     "why": [
+      "家裡正在挨餓"
+     ]
+    },
+    {
+     "id": "huangrong",
+     "want": false,
+     "why": [
+      "家裡正在挨餓"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1009,
+   "first": {
+    "sweet": 5,
+    "wed": 21
+   },
+   "food": 12,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": true,
+     "why": [
+      "想要個孩子"
+     ]
+    },
+    {
+     "id": "huangrong",
+     "want": true,
+     "why": [
+      "想要個孩子"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1010,
+   "first": {
+    "sweet": 2,
+    "wed": 21,
+    "pregnant": 22,
+    "born": 43
+   },
+   "food": 0,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": false,
+     "why": [
+      "家裡正在挨餓",
+      "床位不夠（3/4）"
+     ]
+    },
+    {
+     "id": "huangrong",
+     "want": false,
+     "why": [
+      "家裡正在挨餓",
+      "床位不夠（3/4）"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1011,
+   "first": {
+    "sweet": 3,
+    "wed": 21,
+    "pregnant": 61
+   },
+   "food": 8,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": true,
+     "why": [
+      "想要個孩子"
+     ]
+    },
+    {
+     "id": "huangrong",
+     "want": true,
+     "why": [
+      "想要個孩子"
+     ]
+    }
+   ]
+  },
+  {
+   "opening": "huangrong",
+   "seed": 1012,
+   "first": {
+    "sweet": 2,
+    "wed": 16,
+    "pregnant": 31,
+    "born": 52
+   },
+   "food": 0,
+   "wishes": [
+    {
+     "id": "hero",
+     "want": false,
+     "why": [
+      "家裡正在挨餓",
+      "床位不夠（3/4）"
+     ]
+    },
+    {
+     "id": "huangrong",
+     "want": false,
+     "why": [
+      "家裡正在挨餓",
+      "床位不夠（3/4）"
+     ]
+    }
+   ]
+  }
+ ]
+}

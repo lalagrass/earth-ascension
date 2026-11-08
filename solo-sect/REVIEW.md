@@ -1,5 +1,19 @@
 # 可重跑驗收
 
+## 第十九輪 R7：拿掉收養、兩人都想才生（#524，規則 5.1）
+
+Claude 並行實作，疊在 #533（R9）與 #534 上。規則與常數理由見 [family.md](docs/systems/family.md)。
+
+| 類別 | 指令、門檻與預期輸出 |
+|---|---|
+| A 固定情境 | `node --test solo-sect/test/unit/social/r7-family.test.mjs`：6/6，已列入 smoke。① 只有一方想要時，亂數固定 0 跑兩年也不懷孕；② 挨餓、山賊、母親過 40 歲各自寫出理由；③ 兩人都想時，亂數在 0、0.5、0.999 三個分位都在 21 日後出生，根骨與悟性落在父母之間；④ 孩子 27 日仍 0 歲、第 28 日 1 歲，滿 14×28 日成年，同期大人長 13 歲；⑤ 懷孕 9 成時體重倍數約 1.20、腳程低於 1/1.19，且不能守柵；⑥ 嬰兒 400 拍只吃和睡。 |
+| B 隨機公式 | 每日受孕機率由 `1 − (1 − 0.85)^(1/28)` 推得，A ③ 以固定分位驗證「落在機率內就懷上」。本輪不加統計抽樣測試。 |
+| C 觀察 | `node solo-sect/tools/r7-family-report.mjs solo-sect`：小龍女／黃蓉 × 12 種子 × 60 日，6 秒受控步長、每拍清警示。[原始輸出](artifacts/r7/family-head.json)：24/24 成親（中位第 21 日），19/24 有喜，10/24 在 60 日內生產（第 43–57 日）。不擋合併。 |
+| golden | 模擬逐位不變：先把 `genInit` 的 `lastAdopt` 欄位放回去，`node tools/golden.mjs --check` 全部相符；拿掉該欄位後才以 Node 22 `--write --tier hermitage` 重產。 |
+| 其他 | smoke 66/66、quick 369/369、accept 248/248（舊收養兩案改由 A 取代，`loop72-adopt-hints` 隨收養卡退場）；`audit-hermitage-constants.mjs --check` 未標 0。 |
+
+舊名 → 新名：`adopt()` → `bearChild()`（只用在出生）；`GEN.childYearDays`、`adoptAge`、`adoptEvery`、`adoptFood`、`maxKids` 退場；`GEN.yearDays`、`adultAge` → `FAMILY.yearDays`、`adultAge`。
+
 ## 第十五輪 R9：唯一隱居開局（#529，規則 5.0）
 
 實作 grass／Codex Cloud，疊第十四輪 #528。舊道館的起局分支、遷移器、舊存檔回放及三層舊 golden 退場；資料只在版控中刪除，未碰使用者的實際存檔。開局保留隱居三情境，並在同一畫面設定姓名、12 點屬性、九問與 MBTI。跨版存檔明確拒載並開新局。現行規則見 [隱居系統](docs/systems/hermitage.md)。

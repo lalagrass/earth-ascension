@@ -17,6 +17,7 @@ import { mates } from './bonds.mjs';
 import { cancelTask } from './core.mjs';
 import { dpsOf, guardOf } from './world.mjs';
 import { startMapBout, stepMapBout } from './exp-map-combat.mjs';
+import { expecting } from './family.mjs'; // R7：知道有孕後不上陣
 // ==== （原 raidkind.mjs）====
 // loop17 山賊多樣：只在 s.m9（江湖規則「太平與備料」）時抽類型；舊局／golden 無 kind＝原樣。
 // 期望點數 ≈ 原值（0.5×0.8+0.3×1.25+0.2×1.0=0.975），夜襲不能付錢、敗了只偷不傷人 → 不推高重傷。
@@ -254,7 +255,7 @@ function placeMembers(s,b,defs,dt){
  }
 }
 export const defenderDps = (d, s = { t: 0 }) => dpsOf(s, d, 'bandit');
-export const canDefend = (d) => d.adult !== false && !d.away && (d.role !== 'laborer' || !!(d.hidden?.shown)) && /* loop155 隱世高人仍是幫工，但可守柵 */ d.hp >= BAND.hpMin && d.needs.energy >= BAND.energyMin;
+export const canDefend = (d, s) => d.adult !== false && !expecting(s, d) && !d.away && (d.role !== 'laborer' || !!(d.hidden?.shown)) && /* loop155 隱世高人仍是幫工，但可守柵 */ d.hp >= BAND.hpMin && d.needs.energy >= BAND.energyMin;
 // 走一步：回傳是否到達
 export function bandWalk(b, dt) {
   let left = BAND.speed * dt;
@@ -435,7 +436,7 @@ function waveStep(s) {
   X.pending = { n: W.n, pts: W.pts, demand: 0, p: +p.toFixed(2), at: s.t, until: s.t + RAID.wait / 4, day: W.day, kind: W.kind, noPay: true, wave: 2 }; log(s, `【第二波】${kindOf(W.kind).name}重整殺回（威脅 ${W.pts}），不談價錢！迎戰勝算約 ${Math.round(p * 100)}%。`); }
 export function threatStep(s, H) { waveStep(s); const P = T(s).pending; if (P && s.t >= P.until) raidResolve(s, raidAuto(s), H, true); }
 function hurtOne(s, H) {
-  const c = s.ds.filter((d) => d.role !== 'laborer' && d.adult !== false && !d.away && d.hp > RAID.hurtHp && !(d.shelter > s.t)); // 孩子不上陣；loop148 躲進屋的不算
+  const c = s.ds.filter((d) => d.role !== 'laborer' && d.adult !== false && !expecting(s, d) && !d.away && d.hp > RAID.hurtHp && !(d.shelter > s.t)); // 孩子不上陣；loop148 躲進屋的不算
   if (!c.length) return null; // loop32：守門原本被併進註解，無人可傷時會當掉
   const d = c[Math.floor(R(s) * c.length)]; const hh = guardHurt(d, RAID.hurtHp); d.hp = Math.min(d.hp, hh); if (hh > RAID.hurtHp) log(s, `${d.name}護體真氣擋下重擊，傷勢輕了些`); /* loop117 */ d.raidHurt = (d.raidHurt || 0) + 1; const X = T(s); X.homeHurt++; X.next = (X.next || s.day || 0) + RAID.hurtCool;
   X.adapt = Math.max(RAID.adaptMin, +((X.adapt ?? 1) - (RAID.adaptDropHurt ?? 0.10)).toFixed(2));
@@ -517,7 +518,7 @@ export function threatHtml(s) {
 // loop19 遠征剿寨：山賊來過幾次後，執事查出山寨所在；有閒人、糧夠時自主組隊出山剿寨。
 // 剿成→山賊很久不來（下次來犯延後 peaceDays）；剿敗→一人重傷、空手而回。只在 s.m9 生效（golden 不變）。
 export const LAIR = { after: 3, team: 2, supply: 2, dur: DAY / 2, k: 1.0, peaceDays: 10, minHp: 60, cool: 5 };
-const okD = (s, d) => d.role !== 'laborer' && d.adult !== false && !d.away && d.hp > LAIR.minHp && !d.order && !s.hunt?.team?.includes(d.id);
+const okD = (s, d) => d.role !== 'laborer' && d.adult !== false && !expecting(s, d) && !d.away && d.hp > LAIR.minHp && !d.order && !s.hunt?.team?.includes(d.id);
 const sumPow = (s, team) => power({ ...s, ds: team });
 // loop29（選用 s.lairpow）：寨子點數＝門派最強 top 人戰力×k，不再隨財富漲；預估 隊伍≈top3 的 2/3 → p≈.6
 export const LAIRP = { top: 3, k: 0.45 };
@@ -602,7 +603,7 @@ export const SIEGE27 = { days: { 18: { title: '魔教前鋒叩關', E: [900, 130
   win: { coin: 50, lingshi: 1, valor: 12, rep: 12, mood: 10 }, loseRep: 3, fenceK: 0.3 };
 const NUM27 = ['一', '二', '三', '四'];
 export const s27 = (s) => (s.v27n ??= { siege: {}, crusade: [] });
-export function siegeTeam27(s) { return s.ds.filter((d) => !d.removed && canDefend(d)); }
+export function siegeTeam27(s) { return s.ds.filter((d) => !d.removed && canDefend(d, s)); }
 export function mojiaoSiege27(s, day) {
   const C = SIEGE27.days[day], F = foe27(s), team = siegeTeam27(s), N = s27(s); if (!C || N.siege[day]) return null;
   if (!team.length) { N.siege[day] = { n: 0, win: false, won: 0, total: 0 }; log(s, `【${C.title}】${F.name}殺到山門，門內竟無人能戰，只得緊閉山門任其叫罵一番退去。`); return N.siege[day]; }
@@ -627,7 +628,7 @@ export function siegeDaily27(s) {
 /* E 以出發日縮放：E×(1+(日−12)/CRU27.dayK)。auto：執事在 13–14、22–23 日、存糧 ≥14、預估全勝率 ≥ autoP 時自動出兵 */
 export const CRU27 = { day: 12, rep: 15, cool: 8, foodMax: 8, dur: DAY / 2, minHp: 60, minTeam: 2, E: [400, 600, 780, 1000], dayK: 20, autoDays: [13, 14, 22, 23], autoFood: 14, autoSpare: 2, autoP: 0.5,
   waves: ['分舵外哨嘍囉群', '百人堂口', '護法刀陣', '分舵主'], n: [60, 100, 12, 1], win: { coin: 55, lingshi: 1, page2: 1, rep: 15 }, loseRep: 2 };
-const cruOk = (s, d) => d.role !== 'laborer' && d.adult !== false && !d.away && !d.removed && d.hp > CRU27.minHp && !d.order && !s.hunt?.team?.includes(d.id);
+const cruOk = (s, d) => d.role !== 'laborer' && d.adult !== false && !expecting(s, d) && !d.away && !d.removed && d.hp > CRU27.minHp && !d.order && !s.hunt?.team?.includes(d.id);
 export function crusadeTeam27(s) { const c = s.ds.filter((d) => cruOk(s, d)).sort((a, b) => pow27(s, b) - pow27(s, a)); return c.slice(0, Math.max(0, c.length - 1)); /* 最弱的一人留守山門 */ }
 export function canCrusade27(s) {
    const N = s27(s), day = s.day || 0;

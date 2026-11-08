@@ -115,6 +115,24 @@
       "source": "R2 #521 economy.mjs SORE_AT／FITNESS_SCALE／muscleFatigue",
       "reason": "由上面的時間常數與旋鈕算出（穩態公式、顯示百分比、1−e^(−2) 尺度），不是獨立數值。",
       "scope": "r2"
+    },
+    "r7_measured": {
+      "category": "量測",
+      "scope": "r7",
+      "source": "Gnoth 等 2003（一年內受孕約 85%）；足月 40 週；ACOG 第 589 號（40 歲後受孕率）；IOM 2009 孕期增重；WHO 出生性別比 105:100",
+      "reason": "懷孕與生育的時間、機率與體重變化採醫學量測值，不為節奏調整。"
+    },
+    "r7_reference": {
+      "category": "參考",
+      "scope": "r7",
+      "source": "RimWorld Biotech 生命階段（嬰兒期到 3 歲）",
+      "reason": "嬰兒期長度借遊戲的分期概念，只決定何時開始自己找事做。"
+    },
+    "r7_inherited": {
+      "category": "設計旋鈕",
+      "scope": "r7",
+      "source": "既有 GEN（v1.4）與收養範本",
+      "reason": "一年 28 日、14 歲成年，以及新生兒的需求、好感起點沿用舊收養規格；R7 只改由誰生、何時長。"
     }
   },
   "entries": [
@@ -760,7 +778,7 @@
     },
     {
       "file": "src/sim.mjs",
-      "sha256": "252f159de36ac83939a138b84796cfa2f854441177435c7f2fa7caee323e6069",
+      "sha256": "b317d7555a6aa0d8feb3df6b9988f0804b8d37435d2b7fb6287e8ca886f5a100",
       "values": [
         "100",
         "0.7",
@@ -1064,10 +1082,114 @@
         "2"
       ],
       "group": "r2_derived"
+    },
+    {
+      "file": "src/family.mjs",
+      "sha256": "4b876d7ceed0c0d67db591f7039ea9f6c8a2e3b6ae941995c5ad387dce04b9b5",
+      "values": [
+        "28"
+      ],
+      "group": "r7_inherited"
+    },
+    {
+      "file": "src/family.mjs",
+      "sha256": "11708a1f1f39faff26b95c8b55b1afcc800fa5590af60ecceffaefa767b3a2d3",
+      "values": [
+        "14"
+      ],
+      "group": "r7_inherited"
+    },
+    {
+      "file": "src/family.mjs",
+      "sha256": "4b710b95103a871c79d649e143d899226e4c5d8fa9f96500179d01b7f120c3f7",
+      "values": [
+        "0.75"
+      ],
+      "group": "r7_measured"
+    },
+    {
+      "file": "src/family.mjs",
+      "sha256": "6b8b54503a1c7c34b1b51894633c0de0e9cfbb4807902d8dbfc3658f169fb654",
+      "values": [
+        "0.85"
+      ],
+      "group": "r7_measured"
+    },
+    {
+      "file": "src/family.mjs",
+      "sha256": "e078576ad932491852d6230b2cba4c8900bd2f9cec59a39a16b4fb81eb894a5a",
+      "values": [
+        "13"
+      ],
+      "group": "r7_measured"
+    },
+    {
+      "file": "src/family.mjs",
+      "sha256": "e67bf422f7c02065256f05d29041288b8798cc40b90f81778de7bee34b7b1fde",
+      "values": [
+        "40"
+      ],
+      "group": "r7_measured"
+    },
+    {
+      "file": "src/family.mjs",
+      "sha256": "0c6dd114d8f16985f68641426d7d0c0bfa65dc173b69d1b1b90d4e03964ef2bb",
+      "values": [
+        "0.22"
+      ],
+      "group": "r7_measured"
+    },
+    {
+      "file": "src/family.mjs",
+      "sha256": "5d490c275a6ac65660eee7818e580acc921d059d44084fa25b93ce905990b3f2",
+      "values": [
+        "100",
+        "205"
+      ],
+      "group": "r7_measured"
+    },
+    {
+      "file": "src/family.mjs",
+      "sha256": "0c2c21f152da27809afdd1e590172c45347b215de166d12ebb89ce0d81f652a3",
+      "values": [
+        "3"
+      ],
+      "group": "r7_reference"
+    },
+    {
+      "file": "src/family.mjs",
+      "sha256": "f2c7806c3bb9c680352b9fe142cc0d798356932145a7154504228eee64ebb507",
+      "values": [
+        "3"
+      ],
+      "group": "r7_inherited"
+    },
+    {
+      "file": "src/family.mjs",
+      "sha256": "b71f8b31759f1df4fe3e6e68b2e4eae68f0f448473395117e9145e2cb98aba2c",
+      "values": [
+        "80",
+        "70",
+        "50",
+        "70",
+        "100",
+        "60"
+      ],
+      "group": "r7_inherited"
+    },
+    {
+      "file": "src/family.mjs",
+      "sha256": "7041a39ec776959828ac852576cf5e23b7b1d29a1f769ff393ae6d776a1b83a1",
+      "values": [
+        "60",
+        "15"
+      ],
+      "group": "r7_inherited"
     }
   ],
   "scanFiles": [
     "src/hero.mjs",
-    "src/start-ui.mjs"
+    "src/start-ui.mjs",
+    "src/family.mjs"
   ]
 }
