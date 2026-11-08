@@ -1,5 +1,22 @@
 # 可重跑驗收
 
+## 第二十一輪 R11：自創配方、奇書與自宮（#531，規則 5.3）
+
+Claude 並行實作，從 `e55d8f1`（R10 合併後）開分支。規則見 [rare-arts.md](docs/systems/rare-arts.md)。
+
+| 類別 | 指令、門檻與預期輸出 |
+|---|---|
+| A 固定情境 | `node --test solo-sect/test/unit/growth/r11-recipe.test.mjs`：3/3，已列入 smoke。① 什麼都不會時派去閉關也學不會；武學齊了但沒有「與結髮之人分離」仍缺；層級不到仍缺；全齊後閉關學會黯然銷魂掌（來源 `invented`）；② 會葵花的人不是師父、師父不傳辟邪；書在黑木崖時讀不了；看辟邪只得一招；書到手但沒自宮仍讀不了；③ 自宮不帶確認、或確認值不是 `true` 都不做；做過不能再做；之後研讀奇書學會葵花；夫妻亂數固定 0 跑 60 日也不懷孕。 |
+| A 白身 | `node --test solo-sect/test/unit/growth/r10-lineage.test.mjs`：6/6。新增 ⑥ 白身獨居不下指令，15 日內自己找到殘卷並讀會整門。 |
+| B 隨機公式 | 本輪無新機率。 |
+| C 觀察 | `node solo-sect/tools/r10-baishen-report.mjs solo-sect`：白身獨居 × 12 種子 × 60 日。R10 版不下指令 0/12；本版 [12/12，中位第 4 日（3–6 日）](artifacts/r11/baishen-head.json)。玩家指令兩版都是 12/12 第 1 日。不擋合併。 |
+| golden | 第一個 commit（R11）逐位不變。第二個 commit 讓讀譜按練功的作息、性格與心情計分，四格都改：有卷可讀的人早課會去讀，白身會自己去找殘卷。以 Node 22 `--write` 重產。 |
+| 其他 | 見 PR。 |
+
+舊測試歸類：`unit/growth/wuwu.test.mjs`「辟邪要先付代價」原本斷言沒自宮不能傳；現在奇書武學一律不傳，該斷言仍成立。
+
+舊名 → 新名：`costOk()` 的 `a.id === 'bixie'` → `bookOnlyArt()` 讀 `RARE_BOOKS`。
+
 ## 第二十輪 R10：整門只能學來、看人只得單招、白身開局（#530，規則 5.2）
 
 Claude 並行實作，從 `95c751a`（R7 合併後）開分支。規則見 [lineage.md](docs/systems/lineage.md)。
