@@ -140,10 +140,10 @@ const YARD_OPEN_SPOTS = [40, 80, 120].flatMap((y, row) => [-75, -25, 25, 75].map
 const YARD_DUMMY_SPOTS = [-60, 0, 60, -90, 90].map((x, i) => ({ id: `dummy${i}`, offset: [x, -25], acts: ['train'], kind: 'dummy' }));
 export const FACILITIES = [
   { id: 'hall', name: '大廳', node: 'hall', stages: [
-    { name: '破道館', sprite: 'hall_s0', offers: ['rest', 'learn'], restRate: 3, beds: 3, learnDur: 8 },
-    { name: '大廳', sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 4, beds: 2, learnDur: 4, cost: { wood: 12, stone: 6, coin: 6 }, work: 30, rep: 20 },
-    { name: '正殿', sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 5, beds: 2, learnDur: 3, cost: { wood: 16, stone: 10, coin: 60 }, rare: { tiemu: 2 }, work: 40, rep: 40 }, // v1.9 I-2 三階：名聲＋巡山遠段稀有料
-    { name: '大殿', sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 6, beds: 3, learnDur: 2, cost: { wood: 20, stone: 14, coin: 120 }, rare: { tiemu: 3, lingshi: 2 }, work: 50, rep: 70 },
+    { name: '破道館', impression: -4, sprite: 'hall_s0', offers: ['rest', 'learn'], restRate: 3, beds: 3, learnDur: 8 },
+    { name: '大廳', impression: 2, sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 4, beds: 2, learnDur: 4, cost: { wood: 12, stone: 6, coin: 6 }, work: 30, rep: 20 },
+    { name: '正殿', impression: 4, sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 5, beds: 2, learnDur: 3, cost: { wood: 16, stone: 10, coin: 60 }, rare: { tiemu: 2 }, work: 40, rep: 40 }, // v1.9 I-2 三階：名聲＋巡山遠段稀有料
+    { name: '大殿', impression: 6, sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 6, beds: 3, learnDur: 2, cost: { wood: 20, stone: 14, coin: 120 }, rare: { tiemu: 3, lingshi: 2 }, work: 50, rep: 70 },
   ] },
   { id: 'yard', name: '外功場', node: 'yard', stages: [
     { name: '空地', sprite: null, offers: ['train', 'meditate'], trainMul: 1, spots: YARD_OPEN_SPOTS },
@@ -152,10 +152,10 @@ export const FACILITIES = [
     { name: '演武廣場', sprite: null, offers: ['train', 'spar', 'meditate'], trainMul: 2.0, dummies: 5, spots: [...YARD_DUMMY_SPOTS, ...YARD_OPEN_SPOTS], cost: { wood: 14, stone: 12, coin: 90 }, rare: { tiemu: 2, lingshi: 1 }, work: 40, rep: 60 },
   ] },
   { id: 'dorm', name: '宿舍', node: 'dorm', stages: [
-    { name: '破寢舍', sprite: 'dorm_s0', offers: [] },
-    { name: '小寢舍', sprite: 'dorm_s1', offers: ['rest'], restRate: 8, beds: 2, cost: { wood: 6 }, work: 18 },
-    { name: '宿舍', sprite: 'dorm_s1', offers: ['rest'], restRate: 8, beds: 6, cost: { wood: 10, stone: 4 }, work: 24, rep: 12 },
-    { name: '大通鋪', sprite: 'dorm_s1', offers: ['rest'], restRate: 8, beds: 10, cost: { wood: 16, stone: 8, coin: 40 }, work: 30, rep: 10 }, // v1.85 I-5：plain 能收到 10 人以上
+    { name: '破寢舍', impression: -6, sprite: 'dorm_s0', offers: [] },
+    { name: '小寢舍', impression: 2, sprite: 'dorm_s1', offers: ['rest'], restRate: 8, beds: 2, cost: { wood: 6 }, work: 18 },
+    { name: '宿舍', impression: 4, sprite: 'dorm_s1', offers: ['rest'], restRate: 8, beds: 6, cost: { wood: 10, stone: 4 }, work: 24, rep: 12 },
+    { name: '大通鋪', impression: 6, sprite: 'dorm_s1', offers: ['rest'], restRate: 8, beds: 10, cost: { wood: 16, stone: 8, coin: 40 }, work: 30, rep: 10 }, // v1.85 I-5：plain 能收到 10 人以上
   ] },
   { id: 'kitchen', name: '膳房', node: 'kitchen', stages: [
     { name: '露天灶', sprite: 'vat', offers: ['cook', 'eat'], cookDur: 12, cookYield: 3, mealBonus: 0 },
@@ -378,6 +378,7 @@ export const THOUGHTS = {
 };
 export const NEED_MOOD = { hunger: [20, -10, 'food'], energy: [30, -8, 'bad'], social: [25, -6, 'social'], fun: [25, -6, 'bad'] };
 export const MOOD = { base: 50, up: 3, down: 2, low: 30, high: 70 }; // 每秒向目標移動；低／高門檻
+export const ROOM_IMPRESSION = { valueScale: 25, values: { fame: 1, free: -1 } }; // 24f R1 設計旋鈕：25 點價值觀為一份房間感受，名望在意、自在抵消。
 export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落時被壓低的「可延後」工作；種菜煮飯屬求生，不壓，避免餓→低落→不煮的死亡螺旋
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 

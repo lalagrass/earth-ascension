@@ -1,4 +1,4 @@
-import { REL_STAGES, OPPOSE, LIKES, OPPOSE24, LIKES24, TRAITS, THOUGHTS, NEED_MOOD, MOOD, WORK_ACTS, LEISURE_ACTS, REVEAL_AT, NEW_TRAITS } from './data.mjs';
+import { REL_STAGES, OPPOSE, LIKES, OPPOSE24, LIKES24, TRAITS, THOUGHTS, NEED_MOOD, MOOD, WORK_ACTS, LEISURE_ACTS, REVEAL_AT, NEW_TRAITS, FACILITIES, ROOM_IMPRESSION } from './data.mjs';
 import { clamp, log, relKey, affKey } from './util.mjs';
 import { wexinMood } from './hero.mjs';
 import { seasonOf } from './economy.mjs';
@@ -114,6 +114,14 @@ export function moodParts(d, s) {
   if (d.id === 'hero' && s) { parts.push(['一派之主的心氣', 5]); if (s.t < 3 * 600) parts.push(['開山之初，滿懷期待', 6]); } // v0.97 修正前期主角心情偏低
   if (d.wexin) parts.push([`違心×${d.wexin}`, Math.round(wexinMood(d))]);
   if (s) { const se = seasonOf(s); if (se.mood) parts.push([`${se.name}天`, se.mood]); }
+  if (s && !s.hermitage?.active) {
+    const value = Object.entries(ROOM_IMPRESSION.values).reduce((n, [key, weight]) => n + (d.values?.[key] || 0) * weight, 0);
+    const sensitivity = Math.max(0, value / ROOM_IMPRESSION.valueScale + (d.personality || []).reduce((n, key) => n + (TRAITS[key]?.roomImpression || 0), 0));
+    if (sensitivity) for (const id of ['hall', 'dorm']) {
+      const stage = FACILITIES.find(f => f.id === id)?.stages[s.fac?.[id]?.stage || 0];
+      if (stage?.impression) parts.push([`${stage.name}觀感`, stage.impression * sensitivity]);
+    }
+  }
   return parts;
 }
 export const moodTarget = (d, s) => clamp(moodParts(d, s).reduce((a, [, v]) => a + v, 0), 0, 100);
