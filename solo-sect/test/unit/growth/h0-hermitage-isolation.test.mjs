@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createState, tick, foundHermitageSect, canRecruit } from '../../../src/sim.mjs';
 import { save, load } from '../../../src/save.mjs';
 import { DAY } from '../../../src/data.mjs';
+import { recordRumor } from '../../../src/rumors.mjs';
 
 const opening = (seed) => createState(seed, { kind: 'custom', answers: Array(9).fill(0), askMajor: true, hermitage: true, partner: 'xiaolongnv', starterArt: 'chunyangFist' });
 
@@ -19,8 +20,9 @@ test('H0：未立匾三十日只有開局人物；立匾後恢復登門', () => 
   const founded = opening(1001);
   assert.equal(foundHermitageSect(founded).ok, true);
   founded.records.sect = 250;
+  recordRumor(founded, 'rescue', '回村的樵夫', 'village');
   tick(founded);
-  assert.equal(founded.choices.some((choice) => choice.xia), true, '立匾後恢復原名俠登門排程');
+  assert.equal(founded.choices.some((choice) => choice.xia), true, '立匾且有吻合處境的村路見聞後，名俠登門');
   assert.doesNotMatch(canRecruit(founded).why, /荒山隱居/);
 
 

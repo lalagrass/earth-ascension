@@ -15,7 +15,8 @@ const fanArg = +(process.argv.find((x) => x.startsWith('--fan=')) || '').slice(6
 const { createState, tick, dpsOf, startHunt, clone, resolveRaid } = await import(root + '/src/sim.mjs');
 const { DAY, ECO, COMPANIONS } = await import(root + '/src/data.mjs');
 const { ALL_ON, botDaily } = await import(root + '/test/harness/bot.mjs');
-const { sectOfSeed } = await import(root + '/test/golden/scenarios.mjs');
+// R9 後只有隱居開局；舊「依 seed 選門派」已不存在。
+const sectOfSeed = () => null;
 const A = await import(root + '/src/arts.mjs');
 const T = await import(root + '/src/threat.mjs');
 const W=await import(root+'/src/wuxia.mjs');

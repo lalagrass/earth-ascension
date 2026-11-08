@@ -5,6 +5,7 @@ import { appetiteActMul31, learnArt } from '../../src/arts.mjs';
 import { ACTIVITIES, RECRUIT_POOL, DAY, SEASON_DAYS } from '../../src/data.mjs';
 import { compat, relAdd, aff, moodParts } from '../../src/social.mjs';
 import { seasonOf } from '../../src/economy.mjs';
+import { recordRumor } from '../../src/rumors.mjs';
 const run = (s, sec) => { for (let i = 0; i < sec * 4; i++) tick(s); };
 
 test('長山路比院內路遠（保留通勤距離）', () => { assert.ok(routeLength('court', 'guard') > 2 * routeLength('court', 'kitchen')); });
@@ -90,10 +91,11 @@ test('野豬下山拱菜後回山，族群數不變', () => {
 
 // v0.5
 import { recruit, canRecruit, capacity, mapStage } from '../../src/sim.mjs';
-test('招收受名聲、床位、束脩或工作與師父真空檔約束；新人從村路上山', () => {
-  const s = createState(41); s.res.food = 10; assert.equal(canRecruit(s).ok, false); s.rep = 100;
+test('招收受村路傳聞、床位、束脩或工作與師父真空檔約束；新人從村路上山', () => {
+  const s = createState(41); s.res.food = 10; assert.equal(canRecruit(s).ok, false); recordRumor(s, 'school', '村中教塾先生', 'village');
   const cap = capacity(s); assert.equal(cap, 3); assert.match(canRecruit(s).why, /床位/);
   s.fac.dorm.stage = 1; s.res.food = 20; prepareHistoricalMentor(s); const r = recruit(s); assert.ok(r.ok, r.why); assert.equal(s.res.food, 20 + 3 - ACTIVITIES.eat.use.food); assert.equal(r.d.at, 'gate'); assert.equal(s.ds.length, 4);
+  recordRumor(s, 'rescue', '回村樵夫', 'village'); // 阿青已入門；下一位石頭因護人見聞才來。
   s.res.food = 0; s.fac.dorm.stage = 2; assert.equal(canRecruit(s).workAway, true); assert.match(canRecruit(s).why, /付不起束脩/);
 });
 test('大廳擴建需名聲；母版階段隨建設 S0→S1→S2', () => {
@@ -141,7 +143,7 @@ test('樂趣需求：會衰減，閒坐看雲補回', () => {
 test('三問心印：預設答案沿用天性；改答案改變明面性格，天性為暗', () => {
   const p = RECRUIT_POOL[0]; const def = personalityFrom(p); assert.ok(p.personality.every((t) => def.personality.includes(t)));
   const r = personalityFrom(p, [1, 2, 2]); assert.deepEqual(r.known, ['sociable', 'worrier']); assert.equal(r.personality.length, 3); assert.ok(!r.known.includes(r.personality[2]));
-  const s = createState(75); s.rep = 99; s.res.food = 20; s.fac.dorm.stage = 2; prepareHistoricalMentor(s); const o = recruit(s, [1, 2, 2]); assert.ok(o.ok, o.why); assert.deepEqual(o.d.known, ['sociable', 'worrier']);
+  const s = createState(75); recordRumor(s, 'school', '村中教塾先生', 'village'); s.res.food = 20; s.fac.dorm.stage = 2; prepareHistoricalMentor(s); const o = recruit(s, [1, 2, 2]); assert.ok(o.ok, o.why); assert.deepEqual(o.d.known, ['sociable', 'worrier']);
 });
 test('特質揭露：初始三人第二特質相處 300 秒後才看得出來', () => {
   const s = createState(76); s.res.food = 99; assert.equal(s.ds[1].known.length, 1); run(s, 320); assert.ok(s.ds.every((d) => d.known.length === 2));

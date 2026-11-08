@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createState } from '../harness/historical-party.mjs';
-import { tick, save, pairOf, PAIR } from '../../src/sim.mjs';
+import { tick, save, pairOf, PAIR, startBuild } from '../../src/sim.mjs';
 import { bioLine, bioLean, chronHtml, tallyAct, recordDeed } from '../../src/util.mjs';
 import { T, points, threatDaily, BOSS, bossEnd, shelterOnBreak, timid, SHELTER } from '../../src/threat.mjs';
 import { DAY } from '../../src/data.mjs';
@@ -26,7 +26,8 @@ test('M1 傳記帶出事蹟次數；大事紀倒序顯示', () => {
   const h = chronHtml(s); assert.ok(h.indexOf('乙事') < h.indexOf('甲事')); assert.match(h, /第 3 日/);
 });
 test('M1 v22 下跑 3 日：弟子有行為記帳、大事紀有落成或入門', () => {
-  const s = mk(); runDays(s, 3); assert.ok(s.ds.some((d) => d.acts && Object.keys(d.acts).length));
+  const s = mk(); s.res.wood = 12; assert.ok(startBuild(s, 'dorm')); // R8 沒外人見聞就不會有入門，明確安排一件可完成的大事。
+  runDays(s, 3); assert.ok(s.ds.some((d) => d.acts && Object.keys(d.acts).length));
   assert.ok((s.chron || []).length >= 1); assert.ok(s.chron.every((c) => typeof c.text === 'string' && c.day >= 1));
 });
 // #390：舊局已不存在，刪「M1 非 v22（舊局）不記帳、不寫大事紀」

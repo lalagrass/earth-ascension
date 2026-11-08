@@ -1,8 +1,9 @@
 import { seedMix, log, resAdd, resSet } from './util.mjs';
-import { DAY, TIERS, JH, TREES, buildCards, destinyStep, ARTS, MOVES, ENEMIES, FACILITIES, NODES, SOURCES } from './data.mjs';
+import { DAY, TIERS, JH, TREES, buildCards, destinyStep, ARTS, MOVES, ENEMIES, NODES, SOURCES } from './data.mjs';
 import { lockedArt24, growEnsure, learnArt, artTier, powBonus, autoFocus, artById, curCap, reqMissing, fits, qiMax, mitOf } from './arts.mjs';
 import { dpsOf, toWorld, guardOf } from './world.mjs';
 import { points, majorThreatAvailable, reserveMajorThreat } from './threat.mjs';
+import { rumorForVisitor } from './rumors.mjs';
 import { startMapBout, stepMapBout } from './exp-map-combat.mjs';
 import { laborPow } from './economy.mjs';
 import { valorPowMul, valorAdd, VALOR } from './sect.mjs';
@@ -97,7 +98,7 @@ export function villainOk(s, k) { const J = s.jh, last = J[k + 'Day']; if ((J[k 
 export const VISITOR_INCIDENTS = [
   { id: 'dfbb', who: '東方不敗', enemy: 'dfbb', after: 8, reasonAny: [
     { kind: 'art', art: 'kuihua', text: '聽說你們藏有葵花寶典殘頁，特來尋回。' },
-    { kind: 'rep', at: FACILITIES.find(f => f.id === 'hall').stages[2].rep, text: '你們的名聲已傳進日月神教，特來探個虛實。' },
+    { kind: 'rumor', text: '會武的見聞傳進日月神教，特來探個虛實。' },
   ], win: { rep: 8, residue: 'kuihua', card: 'kuihua' }, lose: { mood: -10 }, refuse: { rep: -3 } },
   { id: 'hy', who: '火雲邪神', enemy: 'hy', after: 6, reasonAny: [
     { kind: 'hidden', text: '聽說這裡有個深藏不露的高手，特來會一會。' },
@@ -106,16 +107,18 @@ export const VISITOR_INCIDENTS = [
 ];
 const visitorRow = id => VISITOR_INCIDENTS.find(row => row.id === id);
 export function visitorReason(s, row) {
-  return row.reasonAny.find(r => r.kind === 'art'
+  const reason = row.reasonAny.find(r => r.kind === 'art'
     ? s.ds.some(d => d.arts?.[r.art]) || !!s.jh?.residue?.[r.art]
-    : r.kind === 'rep' ? (s.rep || 0) >= r.at
+    : r.kind === 'rumor' ? !!rumorForVisitor(s, ['martial'], true)
       : r.kind === 'hidden' ? s.ds.some(d => d.hidden?.shown)
-        : r.kind === 'present' ? present(s, r.who) : false)?.text || null;
+        : r.kind === 'present' ? present(s, r.who) : false);
+  const rumor = rumorForVisitor(s, ['martial'], true);
+  return reason && rumor ? `在${rumor.where}聽${rumor.witness}說「${rumor.text}」；${reason.text}` : null;
 }
 export function visitorEligible(s, row) {
   return s.day >= row.after && (s.jh?.[row.id] || 0) < 2 && villainOk(s, row.id)
-    && !!visitorReason(s, row) && !s.exp && !s.lair?.trip
-    && points(s) >= ENEMIES[row.enemy].hp && majorThreatAvailable(s);
+    && !!visitorReason(s, row) && !!rumorForVisitor(s, ['martial'], true) && !s.exp && !s.lair?.trip
+    && points(s) >= ENEMIES[row.enemy].hp && majorThreatAvailable(s, 'visitor');
 }
 function declineVisitor(s, id) {
   const row = visitorRow(id), fx = row.refuse;
@@ -215,8 +218,9 @@ export function jhStep(s, dt, H) {
   // 敵意訪客共用 incident 准入：理由、點數、來犯期及檔期均由資料列與 N43 決定。
   if (J.visitorCheckedDay !== s.day) {
     J.visitorCheckedDay = s.day; // N43 來犯檔期按遊戲日排；只在每日第一次有空卡時檢核。
-    for (const row of VISITOR_INCIDENTS) if (visitorEligible(s, row) && reserveMajorThreat(s)) {
-      const reason = visitorReason(s, row);
+    for (const row of VISITOR_INCIDENTS) if (visitorEligible(s, row)) {
+      const reason = visitorReason(s, row); // 保留聽到的原話；消耗大威脅名額後不能再從未用見聞查回。
+      if (!reserveMajorThreat(s, 'visitor')) continue;
       J[row.id + 'Day'] = s.day; J.visitorPending = { id: row.id, reason };
       card(s, row.id, true, reason); return;
     }

@@ -91,6 +91,9 @@ label.btn { border:1px solid #888; padding:2px 8px; border-radius:4px; cursor:po
 .routine-row b{display:block;margin-bottom:3px}
 .res-icon{display:inline-flex;align-items:center;gap:2px;margin:1px 4px 1px 0;white-space:nowrap}
 .res-icon img{width:17px;height:17px;vertical-align:middle;filter:sepia(.8) saturate(.8)}
+.rumor-map{display:flex;gap:4px;align-items:center;margin:5px 0;padding:6px;background:#e9dabb;border-radius:5px;font-size:12px;color:#8a7a5a}
+.rumor-map span{padding:2px 4px;border:1px solid #baa47d;border-radius:4px;background:#f6f0e2}
+.rumor-map span.on{background:#e9b96f;border-color:#7b5730;color:#3a2f24;font-weight:bold}
 #panel::-webkit-scrollbar{width:10px}#panel::-webkit-scrollbar-track{background:#e6d7b6}#panel::-webkit-scrollbar-thumb{background:#a7834e;border:2px solid #e6d7b6;border-radius:8px}
 #start .box{background:#e1cea6 url('assets/ui/kenney/panel_beige.png') center/100% 100%;color:#372b20;border:8px solid transparent;border-image:url('assets/ui/kenney/panel_beige.png') 16 fill / 8px / 0 stretch}
 #start h1,#start h3{font-family:WenKaiSubset,'Noto Serif TC',serif}

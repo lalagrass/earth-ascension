@@ -1,0 +1,9 @@
+{
+  "seed": 17,
+  "answers": {
+    "A": "before founding: no outside rumor",
+    "B": "named banner witnessed at gate and carried to village"
+  },
+  "method": "real browser UI; fixed founding action via sim API, then one daily rumor-spread step",
+  "pageErrors": []
+}

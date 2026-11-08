@@ -1,6 +1,7 @@
 import { DAY, SECTS, SECT_K, RULE_LIB, HERO_SECT, CUSTOM_BY_VALUE, CUSTOM_RIVALS, WUMING_KIT24, ARTS, SECT_PICK24 } from './data.mjs';
 import { watchMove, seedArts, learnArt, artTier, artById, artOk, reqMissing, curCap, focusOf, specK, bestSpec, chiefLocked24, mastery, primaryCat, CATS, qiInjuryFight28, temperOf, TEMPER29, yunvOpen24, ponderLuoying, practiceLuoying } from './arts.mjs';
 import { HERMITAGE_VOLUMES, volumeLineage } from './hermitage-books.mjs';
+import { recordRumor } from './rumors.mjs';
 import { dpsOf } from './world.mjs';
 import { compat, think } from './social.mjs';
 import { APPR } from './bonds.mjs';
@@ -158,6 +159,7 @@ export function foundHermitageSect(s, doctrine = null, customPlaque = '') {
   const defaultPlaque = doctrine === 'dualHall' ? sectId === 'zhongnan' ? '終南山・雙劍山莊' : sectId === 'longrong' ? '隱龍山莊' : '雙脈山莊' : S.plaque;
   S.plaque = String(opts.plaque || defaultPlaque).replace(/[<>&"'`]/g, ''); S.name = S.plaque; s.sect = S;
   s.hermitage.active = false; s.hermitage.founded = true; s.hermitage.foundedDay = s.day; s.hermitage.doctrine = doctrine;
+  recordRumor(s, 'banner', '過路山民', 'gate', `山路上看見新匾「${S.plaque}」`); // 路過的人看到牌匾，翌日到村路才傳開。
   s.herbalDiet = true; econOf(s).graceUntil = s.day + UPKEEP.graceDay; s.rep = (s.rep || 0) + 10;
   for (const d of s.ds) { applySectLineage(s, d); think(s, d, 'newLook'); }
   hero.hall = 'yang'; if (secondPerson) secondPerson.hall = 'yin';
@@ -346,6 +348,7 @@ export function huiwuResolve(s, ch, i) {
   qiInjuryFight28(s, L.filter((b) => b.d).map((b) => b.d), log); /* loop186 會武實戰累積逆催內傷 */
   const pos = ['先鋒', '中堅', '主將'], txt = L.map((b, k) => `${pos[k]}${b.d ? b.d.name : '（缺陣）'}${res[k] ? '勝' : '負'}`).join('、');
   if (win) { s.rep = (s.rep || 0) + HUIWU24.rep; resAdd(s, 'coin', HUIWU24.coin); resAdd(s, 'lingshi', HUIWU24.lingshi); (s.sect.trophies ??= []).push(`【${H.title}】`);
+    recordRumor(s, 'tournament', `${O.name}觀戰者`, 'market', `${s.sect.name}在${H.name}力挫${O.name}`);
     log(s, `【${H.name}】以「${HUIWU24.opts[i].split('：')[0]}」排陣，${txt}——${w} 勝，力挫${O.name}！名聲 +${HUIWU24.rep}、賞銀 +${HUIWU24.coin}、靈石 +${HUIWU24.lingshi}，得【${H.title}】。`);
     recordDeed(s, null, 'huiwu', { chron: `${H.name}力挫${O.name}，得【${H.title}】` }); }
   else log(s, `【${H.name}】以「${HUIWU24.opts[i].split('：')[0]}」排陣，${txt}——不敵${O.name}。`);

@@ -9,6 +9,7 @@ import { XIA, xiaPool, xiaStep, xiaResolve, pickStudent, onCook, dragonFit, PAIR
 import { pairBonus, applyHero, autoPick } from '../../src/hero.mjs';
 import { aff } from '../../src/social.mjs';
 import { guardOf } from '../../src/world.mjs';
+import { recordRumor } from '../../src/rumors.mjs';
 
 const st = (seed = 3) => { const s = createState(seed); tick(s); return s; };
 test('v1.1 版本與招牌武學各三招、帶地圖特效、不入秘笈池', () => {
@@ -21,8 +22,8 @@ test('名俠池排除已選主角／同門與已在門中者', () => {
   const s = st(); s.encExclude = ['guojing']; assert.ok(!xiaPool(s).includes('guojing'));
   s.encExclude = []; join(s, 'guojing'); assert.ok(!xiaPool(s).includes('guojing'));
 });
-test('名聲觸發郭靖奇遇，一天最多一個；收入門下帶高手底子', () => {
-  const s = st(); s.rep = 20; xiaStep(s); const ch = s.choices.find((c) => c.xia); assert.equal(ch.xia, 'guojing');
+test('村路護人傳聞觸發郭靖奇遇，一天最多一個；收入門下帶高手底子', () => {
+  const s = st(); recordRumor(s, 'rescue', '回村樵夫', 'village'); xiaStep(s); const ch = s.choices.find((c) => c.xia); assert.equal(ch.xia, 'guojing');
   const n = s.choices.length; xiaStep(s); assert.equal(s.choices.length, n);
   prepareHistoricalAdmission(s, 'guojing');
   assert.equal(autoPick(s, ch), 0); xiaResolve(s, ch, 0); const g = s.ds.find((d) => d.xia === 'guojing');
@@ -32,10 +33,10 @@ test('名俠弟子：郭靖、黃蓉、令狐沖（v1.2）；洪七公是師父'
   assert.deepEqual(Object.keys(XIA).filter((k) => XIA[k].role === 'disciple' && !['chengying', 'azi', 'chenglingsu'].includes(k)) /* loop151 v2.3 三人只在 s.v23 新局進池 */.sort(), ['guojing', 'huangrong', 'linghuchong']); assert.equal(XIA.hongqigong.role, 'teacher');
 });
 test('婉拒三天內不再出現', () => {
-  const s = st(); s.rep = 20; xiaStep(s); const ch = s.choices.find((c) => c.xia); xiaResolve(s, ch, 1); s.t += DAY * 1.5; xiaStep(s); assert.ok(!s.choices.some((c) => c.xia === ch.xia));
+  const s = st(); recordRumor(s, 'rescue', '回村樵夫', 'village'); xiaStep(s); const ch = s.choices.find((c) => c.xia); xiaResolve(s, ch, 1); s.t += DAY * 1.5; xiaStep(s); assert.ok(!s.choices.some((c) => c.xia === ch.xia));
 });
 test('黃蓉下廚食誘→洪七公三段傳降龍，打狗棒法給黃蓉，傳完下山不死', () => {
-  const s = st(); join(s, 'guojing'); join(s, 'huangrong'); const hr = s.ds.find((d) => d.xia === 'huangrong'), gj = s.ds.find((d) => d.xia === 'guojing');
+  const s = st(); join(s, 'guojing'); join(s, 'huangrong'); recordRumor(s, 'provisions', '山產行商', 'teahouse'); const hr = s.ds.find((d) => d.xia === 'huangrong'), gj = s.ds.find((d) => d.xia === 'guojing');
   onCook(s, hr); onCook(s, hr); s.fac.kitchen = { stage: 1 }; s.xia.lastT = -1e9; xiaStep(s); const ch = s.choices.find((c) => c.xia === 'hongqigong'); assert.ok(ch);
   xiaResolve(s, ch, 0); assert.ok(s.xia.teacher); assert.equal(pickStudent(s), gj);
   for (let k = 1; k <= 3; k++) { onCook(s, hr); s.t += DAY; xiaStep(s); assert.equal(s.xia.teacher?.stage ?? 3, k); }
@@ -55,6 +56,7 @@ test('名俠心情長期低落就下山（不死）', () => {
 });
 test('郭靖模板主線推進到第 4 步', () => {
   const s = createState(5, { kind: 'template', id: 'guojing', companion: 'huangrong' }); s.hero.flags = { ...(s.hero.flags || {}), hong: true }; tick(s);
+  recordRumor(s, 'provisions', '山產行商', 'teahouse');
   s.xia.cooks = 0; const hr = s.ds.find((d) => xidOf(s, d) === 'huangrong'); assert.ok(hr); onCook(s, hr); s.xia.lastT = -1e9; xiaStep(s);
   const ch = s.choices.find((c) => c.xia === 'hongqigong'); assert.ok(ch); xiaResolve(s, ch, 0); assert.ok(s.hero.arcStep >= 2);
   for (let k = 0; k < 4; k++) { onCook(s, hr); s.t += DAY; xiaStep(s); } s.t += 1; xiaStep(s); assert.equal(s.hero.arcStep, 4);

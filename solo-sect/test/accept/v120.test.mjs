@@ -9,6 +9,7 @@ import { CARDS, card, hsResolve, hsStep, zxGate, zxUp, fengFit, formReady, learn
 import { XIA, xiaPool, join } from '../../src/wuxia.mjs';
 import { autoPick, resolveChoice } from '../../src/hero.mjs';
 import fs from 'node:fs';
+import { recordRumor } from '../../src/rumors.mjs';
 
 const yue = (ask = true) => { const s = createState(7, { kind: 'template', id: 'yuebuqun', companion: 'linghuchong', askMajor: ask }); tick(s); return s; };
 const hero = (s) => s.ds.find((d) => d.id === 'hero');
@@ -69,7 +70,7 @@ test('令狐沖模板：進洞→風清揚→總訣式；也能以名俠身分�
 test('奇遇卡帶立繪；洪七公立繪已補', () => {
   assert.ok(fs.existsSync(new URL('../../assets/portraits/hongqigong.png', import.meta.url)));
   assert.ok(fs.existsSync(new URL('../../assets/portraits/fengqingyang.png', import.meta.url)));
-  const s = createState(3); tick(s); s.rep = 30; s.xia.lastT = -1e9; tick(s); const ch = s.choices.find((c) => c.xia); assert.ok(ch?.portrait?.endsWith(`${ch.xia}.png`));
+  const s = createState(3); tick(s); recordRumor(s, 'rescue', '回村樵夫', 'village'); s.xia.lastT = -1e9; tick(s); const ch = s.choices.find((c) => c.xia); assert.ok(ch?.portrait?.endsWith(`${ch.xia}.png`));
 });
 function party(mode) { const s = createState(11); tick(s); const ids = s.ds.filter((d) => d.role !== 'laborer').slice(0, 4).map((d) => d.id);
   for (const d of s.ds) if (ids.includes(d.id)) { for (const k of Object.keys(d.skills)) d.skills[k] = 100; for (const a of ARTS) { if ((a.classic && mode === 'normal') || a.id === 'rulai' || a.layered || a.forms || a.id === 'bixie' || a.v24) continue; /* loop160：舊局平衡測試不含 v2.4 武學 */ learnArt(d, a.id, 0); Object.assign(d.arts[a.id], { xp: 1e6, bt1: true, bt2: true, bt3: true, last: 1e9 }); learnArt(d, a.id, 0); } d.mood = 95; }

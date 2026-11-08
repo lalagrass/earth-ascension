@@ -1,10 +1,10 @@
 // N58: visitors respond to the sect's reputation and what it has made or defended.
 // A policy limits the number of residents; it never admits anyone without the player's choice.
-import { ACTIVITIES, DAY, FACILITIES, RECRUIT, REP } from './data.mjs';
+import { ACTIVITIES, DAY, FACILITIES, RECRUIT } from './data.mjs';
 
 export const RECRUIT_POLICIES = { closed: '閉門不收', casual: '隨緣', wide: '廣收' };
 export const discipleCount = (s) => s.ds?.filter((d) => d.role !== 'laborer').length || 0;
-export const recruitmentInit = (basePeople = 0) => ({ policy: 'casual', basePeople, cap: null, produced: 0, departures: 0, away: [], returned: {}, workBooked: { day: 0, slots: [] } });
+export const recruitmentInit = (basePeople = 0) => ({ policy: 'casual', basePeople, cap: null, departures: 0, away: [], returned: {}, workBooked: { day: 0, slots: [] } });
 export const recruitmentOf = (s) => (s.recruitment ??= recruitmentInit(discipleCount(s)));
 export const bedCount = (s) => FACILITIES.reduce((n, f) => n + (f.stages[s.fac?.[f.id]?.stage || 0]?.beds || 0), 0);
 
@@ -19,13 +19,6 @@ export function setRecruitPolicy(s, policy, cap = recruitmentOf(s).cap) {
   const r = recruitmentOf(s); r.policy = policy;
   r.cap = cap == null || cap === '' ? null : Math.max(r.basePeople, Math.floor(Number(cap) || 0));
   return { ok: true, cap: policyCap(s) };
-}
-
-// Each work-produced item contributes one item, not a traded coin. The existing
-// RECRUIT.food converts three such items into one reputation-equivalent unit.
-export function attraction(s) {
-  const r = recruitmentOf(s);
-  return (s.rep || 0) + r.produced / RECRUIT.food + (s.threat?.won || 0) * REP.kill - (s.threat?.deaths || 0) * RECRUIT.stepRep;
 }
 
 export function applicantAway(s, id) { return recruitmentOf(s).away.some((x) => x.id === id && x.until > s.t); }

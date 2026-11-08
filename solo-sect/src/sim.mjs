@@ -1,9 +1,10 @@
 import {HUNGER_PER_SECOND,admissionStatus,unfoundedHermitage,mentorFor,guidanceSeconds,clockActor,noteGuidance,guidanceLearning,guidanceDaily} from './admission.mjs';
-import {attraction,applicantAway,bookAdmissionWork,discipleCount,policyCap,recruitmentInit,recruitmentOf,returnFromWork,sendApplicantToWork,setRecruitPolicy} from './recruitment.mjs';
-export {attraction,policyCap,setRecruitPolicy} from './recruitment.mjs';
+import {applicantAway,bookAdmissionWork,discipleCount,policyCap,recruitmentInit,recruitmentOf,returnFromWork,sendApplicantToWork,setRecruitPolicy} from './recruitment.mjs';
+export {policyCap,setRecruitPolicy} from './recruitment.mjs';
 import {transferredDamage,moveStats,hermitageInnerActive,hermitageStepActive,artTeacher} from './arts.mjs';
 import { inventable, inventArt, readableRareBook, readRareBook } from './rare-arts.mjs';
 import { HERMITAGE_VOLUMES, seedHermitageBooks, bookStatus, readHermitageBook, cliffBook, forestFragment, volumeById } from './hermitage-books.mjs';
+import { spreadRumors, rumorForCandidate } from './rumors.mjs';
 import { canLeapCliff, CLIFF_ACT_NODE } from './cliff.mjs';
 import {ringCapacity,attackTokenLimit,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} from './tactics.mjs';
 import {pickupDrop} from './techniques.mjs';
@@ -15,7 +16,7 @@ import { BODY_TIMING, BODY_MOVES, BODY_BASE, makeBare, acquireWorkTool, moveAvai
 import { combatTacticStep, chooseCombatMove, fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive, mastery, mainOuterArt, studyChart24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar, bodyConditionOn, ensureBodyCondition, stepWorkCondition, restBodyCondition, cookMedicatedMeal, applyMedicatedMeal, applyPlainMeal } from './economy.mjs';
 import { SOURCES } from './data.mjs';
-import { RECRUIT_TRAIT_VARIATION, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, ROUTINE_DEFAULT, ROUTINE_MODES, PLOT_GROW, HARVEST, NODES, EDGES, CLIFFS, FACILITIES, FENCE_FAC, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, openingScenario, REL_STAGES, BASE_SPEED, ECON, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST, ROUTE, ENEMIES } from './data.mjs';
+import { RECRUIT_TRAIT_VARIATION, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, ROUTINE_DEFAULT, ROUTINE_MODES, PLOT_GROW, HARVEST, NODES, EDGES, CLIFFS, FACILITIES, FENCE_FAC, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, openingScenario, REL_STAGES, BASE_SPEED, ECON, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST, ROUTE, ENEMIES } from './data.mjs';
 import { chronOf, clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
 import { MENTOR, think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits, relStage, relAdd, compat, aff, initPair, coTrain, askStrong, pairBoost, drawBoost, pickChatMate, admire, archRecruit } from './social.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf, raidMul, popStep, POP, fogStep, unlockStep, chapterStep } from './world.mjs';
@@ -72,7 +73,7 @@ export function createState(seed = 1, heroSpec = null) {
     v: SAVE_VERSION, rules: RULES_VERSION, seed, t: 0, xia: xiaInit(), hs: hsInit(), jh: jhInit(), routine: { ...ROUTINE_DEFAULT }, socialThoughts: [], forayPolicy: 'allow', forayStats: { starts: 0, patrols: 0, hurt: 0, discoveries: 0, targets: [] }, res: { wood: 0, stone: 0, coin: ECON.coinStart, food: 6, herb: 0, veg: 0, water: 0, pill: 0, tiemu: 0, lingshi: 0 }, lots: { n: LOTS.start, bought: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })),  cap: { wood: 12, stone: 12, water: 12, pill: 10 }, day: 1, ledger: { day: 1, in: {}, out: {} }, ledgerPrev: null, laborGone: [],
     fac: Object.fromEntries(FACILITIES.map((f) => [f.id, { stage: 0, site: null }])),
     ds: DISCIPLES.slice(0, openingScenario(heroSpec).initialDisciples).map((d,i)=>mkDisciple(d,i)),
-    rel: {}, aff: {}, families: [], eco: Object.fromEntries(Object.entries(ECO).map(([k, e]) => [k, { n: e.start, timer: 0 }])), wild: [], post: 'guard', raidT: 0, rep: 0, log: [], hunt: null, mons: [], fx: [], rngN: 0,
+    rel: {}, aff: {}, families: [], eco: Object.fromEntries(Object.entries(ECO).map(([k, e]) => [k, { n: e.start, timer: 0 }])), wild: [], post: 'guard', raidT: 0, rep: 0, rumors: [], rumorSerial: 0, log: [], hunt: null, mons: [], fx: [], rngN: 0,
   };
   for (let i = 0; i < s.ds.length; i++) for (let j = i + 1; j < s.ds.length; j++) initPair(s, s.ds[i], s.ds[j], 10);
   initStateFields(s);
@@ -168,14 +169,16 @@ function resolveTrial(s, d) {
 }
 export { book }; // v1.8 移到 util.mjs（各模組共用）
 export function capacity(s) { return FACILITIES.reduce((a, f) => a + (facStage(s, f.id).beds || 0), 0); }
-export function recruitNeed(s) { return RECRUIT.baseRep + RECRUIT.stepRep * (disciples(s).length - 3); }
 export function canRecruit(s) {
   if (unfoundedHermitage(s)) return { ok: false, why: '荒山隱居中，立匾後才收徒' }; // 出自 H0 規格：收徒在開山後解鎖。
-  const next = econOf(s).pool.find((p) => !applicantAway(s,p.id)) || RECRUIT_POOL.find((p) => !s.ds.some((d) => d.id === p.id || (d.id === 'hero' && s.hero?.id === p.id)) && !applicantAway(s,p.id)); // 義學帶回的人先評估食宿與師父
+  const candidates = [...econOf(s).pool.filter(p => !applicantAway(s,p.id)), ...RECRUIT_POOL.filter(p => !s.ds.some(d => d.id === p.id || (d.id === 'hero' && s.hero?.id === p.id)) && !applicantAway(s,p.id))];
+  const next = candidates.find(p => rumorForCandidate(s, p)) || candidates[0]; // R8：義學也要親眼聽過；傳聞對上處境的人才會走到門口。
   if (!next) return { ok: false, why: '暫無人選' };
-  if(!next.school&&attraction(s)<recruitNeed(s))return {ok:false,why:`還未聽說山門（名聲與自產成績 ${attraction(s).toFixed(1)}/${recruitNeed(s)}）`,heard:false};
+  const rumor = rumorForCandidate(s, next);
+  if (!rumor) return { ok: false, why: '尚無符合處境的人聽過山門的傳聞', heard: false, next };
   const candidate=makeBare({id:next.id,adult:next.adult,skills:{...next.skills},situation:next.situation,support:next.support,canWork:next.canWork});
-  return {...admissionStatus(s,candidate),next,heard:true};
+  const heardReason = `在${rumor.where}聽${rumor.witness}說「${rumor.text}」；${next.situation?.reason || '想找合適的師門'}`;
+  return {...admissionStatus(s,candidate),next,heard:true,heardReason,rumor:rumor.id};
 }
 // 三問心印：預設答案取人選天性；答案→前兩個不重複特質為明面，人選天性補為第三（暗，相處 900 秒揭露）
 export function defaultAnswers(p) { return QUESTIONS.map((q) => { const i = q.a.findIndex(([, t]) => (p.personality || []).includes(t)); return i < 0 ? 0 : i; }); }
@@ -193,7 +196,7 @@ export function recruit(s, answers) {
   if(c.offer.kind==='coin')resAdd(s,'coin',c.offer.amount,'tuition');
   if(c.offer.kind==='work')bookAdmissionWork(s,c.offer.slot);
   resAdd(s, 'food', -ACTIVITIES.eat.use.food, 'admission'); { const h = stableTraitHash(`${s.seed}:trait29:${c.next.id}:${s.ds.length}`); if (h < RECRUIT_TRAIT_VARIATION.p) { const x = RECRUIT_TRAIT_VARIATION.pool[Math.floor(stableTraitHash(`${s.seed}:trait29b:${c.next.id}:${s.ds.length}`) * RECRUIT_TRAIT_VARIATION.pool.length)]; if (!personality.includes(x)) { const old = personality[1]; personality[1] = x; const k = known.indexOf(old); if (k >= 0) known[k] = x; (s.v29n ??= {}).recruitTrait = (s.v29n.recruitTrait || 0) + 1; } } } /* loop188 v2.9 經典特質（雜湊，不吃亂數流） */
-  const d = makeBare(mkDisciple(c.next,1,'gate',personality,known)); d.guidanceMentor=c.mentor;d.admissionReason=c.reason; d.together = 0; d.boardByWork=c.offer.kind==='work'; Object.assign(d, { role: 'outer', root: 2 + Math.floor(rand(s) * 4), rootKnown: false }); { const A = archRecruit(() => rand(s)); Object.assign(d, { arch: A.id, root: c.next.root??A.root, wu: c.next.wu??A.wu }); if (!d.personality.includes(A.trait)) d.personality.push(A.trait); } /* loop21 原型 */ for(const art of c.next.starterArts||[])learnArt(d,art,s.t); s.ds.push(d); delete recruitmentOf(s).returned[c.next.id]; if (c.next.school) econOf(s).pool.splice(econOf(s).pool.findIndex((x)=>x.id===c.next.id),1);
+  const d = makeBare(mkDisciple(c.next,1,'gate',personality,known)); d.guidanceMentor=c.mentor;d.admissionReason=`${c.heardReason}；${c.reason}`; d.together = 0; d.boardByWork=c.offer.kind==='work'; Object.assign(d, { role: 'outer', root: 2 + Math.floor(rand(s) * 4), rootKnown: false }); { const A = archRecruit(() => rand(s)); Object.assign(d, { arch: A.id, root: c.next.root??A.root, wu: c.next.wu??A.wu }); if (!d.personality.includes(A.trait)) d.personality.push(A.trait); } /* loop21 原型 */ for(const art of c.next.starterArts||[])learnArt(d,art,s.t); s.ds.push(d); delete recruitmentOf(s).returned[c.next.id]; if (c.next.school) econOf(s).pool.splice(econOf(s).pool.findIndex((x)=>x.id===c.next.id),1);
   for (const o of s.ds) if (o !== d) initPair(s, o, d, 5); sectRecruit(s, d);
   log(s, `${d.name}慕名從村路上山，${c.offer.kind==='work'?'做工抵食宿與教學':`繳${c.offer.kind==='food'?'糧':'錢'}束脩`}，拜入外門。`); recordDeed(s, d, 'join', { chron: `${d.name}慕名上山，拜入門下` }); return { ok: true, d };
 }
@@ -1026,6 +1029,7 @@ export function temperDaily29(s) { const W = (s.v29n ??= {}), B = (W.baseByTrait
     if (d.xiao29 && !d.xiao29c) { d.xiao29c = true; W.xiao = (W.xiao || 0) + 1; } if (d.ling29 && !d.ling29c) { d.ling29c = true; W.ling = (W.ling || 0) + 1; } if (temperOf(d).qing && !d.qing29c) { d.qing29c = true; W.qing = (W.qing || 0) + 1; } } }
 function injuryDaily(s) { for (const d of [...s.ds,...s.mons,...(s.band?.members||[])]) if (d.part||d.wounds?.length) partHeal(s,d,'day'); /* 新層1–4遊戲日；舊部位傷仍可遷移 */ for (const d of s.ds) { if (!d.qiInjury) continue; if (d.qiInjury >= DRIVE28.injHeavy) { d.hp = clamp(d.hp - DRIVE28.hp, 1, 100); d.mood = clamp((d.mood ?? 50) - DRIVE28.mood, 0, 100); } const a = mainOuterArt(d); if (!a || innerDrive28(d, a).tier !== 4) qiInjuryCure28(s, d, DRIVE28.rest); } }
 export function dailyPipeline(s) {
+  spreadRumors(s); // R8：見聞跟著目擊者走到聚落，並按 N46 記憶時限淡去。
   if (bodyConditionOn(s)) for (const d of s.ds) ensureBodyCondition(d, s.day); // 出自 Phase 5 規格：睡眠換日恢復並歸零每日週期。
   {
     const hero = s.ds.find((d) => d.id === 'hero');

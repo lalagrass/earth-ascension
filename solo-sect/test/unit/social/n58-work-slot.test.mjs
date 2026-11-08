@@ -5,10 +5,12 @@ import { RECRUIT_POOL, DAY, RULES_VERSION } from '../../../src/data.mjs';
 import { E } from '../../../src/economy.mjs';
 import { BODY_BASE } from '../../../src/starter-combat.mjs';
 import { availableAdmissionWork, bookAdmissionWork, returnFromWork, supportOffer } from '../../../src/recruitment.mjs';
+import { recordRumor } from '../../../src/rumors.mjs';
 
 test('N58 小修：當日真工作格用完，無束脩者下山做工後帶糧回來', () => {
   const s = createState(17, { kind: 'custom', hermitage: true, opening: 'solo' });
   s.hermitage.active = false; s.hermitage.founded = true; s.fac.dorm.stage = 1; s.res.food = 10; s.rep = 100;
+  recordRumor(s, 'school', '村中教塾先生', 'village');
   s.ds[0].practice.hands = Object.fromEntries(BODY_BASE.map((id) => [id, 500]));
   s.ds[0].skills.palm = 100; s.ds[0].timePrev = { day: 0, elapsed: DAY, free: 400, guided: 0 };
   setRecruitPolicy(s, 'wide');
