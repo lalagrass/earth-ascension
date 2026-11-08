@@ -1,5 +1,23 @@
 # 可重跑驗收
 
+## 第二十輪 R10：整門只能學來、看人只得單招、白身開局（#530，規則 5.2）
+
+Claude 並行實作，從 `95c751a`（R7 合併後）開分支。規則見 [lineage.md](docs/systems/lineage.md)。
+
+| 類別 | 指令、門檻與預期輸出 |
+|---|---|
+| A 固定情境 | `node --test solo-sect/test/unit/growth/r10-lineage.test.mjs`：5/5，已列入 smoke。① 觀摩後多一招、整門數不變，內功 XP100 時那招比沒有內功時有力；② 每列卷都寫明傳承，不會全真武學的小龍女學不了全真心法，前一門差 1 點火候就不行；③ 獨居時沒人會全真劍法就沒有師父，小龍女在時她就是基礎劍法的師父；④ 白身沒有武學、不能立匾，派去林中山洞找到殘卷、讀完後能立匾；⑤ 武學表沒有「王八拳」。 |
+| B 隨機公式 | 本輪無新機率。會武觀摩沿用原 `stealCheck28` 的機率，只改學到的東西。 |
+| C 觀察 | `node solo-sect/tools/r10-baishen-report.mjs solo-sect`：白身獨居 × 12 種子 × 60 日（[原始輸出](artifacts/r10/baishen-head.json)）。不下指令：12 局都沒學會整門，只有 1 局在第 5 日自己找到殘卷，之後也沒去讀。玩家第 1 日派去找殘卷再派去讀：12/12 在第 1 日學會純陽拳。不擋合併。 |
+| golden | 新增 `solo-baishen-42`。原三線改變的原因：基線在第 1 日讓獨居主角「師父傳授」全真劍法，但山上沒人會；本輪要有會的人才學得到，之後的練功位置因此不同。以 Node 22 `--write --tier hermitage` 重產。 |
+| 其他 | smoke 71/71、quick 375/375、accept 249/249；常數稽核刪掉 `artOk()` 退場的三列 15／25／16，未標 0。 |
+
+舊測試歸類（規則本來就改了，斷言不放寬）：
+- `accept/sim.test.mjs` 兩案原本靠「沒人會也能師父傳授」學到掃堂腿。現在先讓主角會掃堂腿，紀錄改比對「傳授林師姐「掃堂腿」」。
+- `unit/threat/v26.test.mjs` 位階鎖一案：桃花弟子先會落英神劍掌，才看得到下一門蘭花拂穴手。
+
+舊名 → 新名：`hermitageLineage`／`phase6Only` 的門派判斷 → `lineagesOf()` 讀卷的 `lineage`；`volumeLineage` 的路線對照表 → 每列 `lineage` 欄位；會武「臨陣偷師」→「臨陣觀摩」（`watchMove()`）。
+
 ## 第十九輪 R7：拿掉收養、兩人都想才生（#524，規則 5.1）
 
 Claude 並行實作，疊在 #533（R9）與 #534 上。規則與常數理由見 [family.md](docs/systems/family.md)。

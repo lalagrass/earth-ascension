@@ -138,30 +138,6 @@
   "entries": [
     {
       "file": "src/arts.mjs",
-      "sha256": "96435a336ffaddc08f6495eb599a8ebaec70e24ebb75f04ce34494d4a2f9225a",
-      "values": [
-        "15"
-      ],
-      "group": "phase6_gate"
-    },
-    {
-      "file": "src/arts.mjs",
-      "sha256": "89f4719aa0bfd92e597a4663d66bd196cfd2845254722dd33af7036325849c65",
-      "values": [
-        "25"
-      ],
-      "group": "phase6_gate"
-    },
-    {
-      "file": "src/arts.mjs",
-      "sha256": "0d42199c922923958c5f158fab673ef41b7907582c5744da40498cead23eaae5",
-      "values": [
-        "16"
-      ],
-      "group": "phase6_gate"
-    },
-    {
-      "file": "src/arts.mjs",
       "sha256": "9c20f7e1c1d3c931ce61e84b77109c144c0bf05ecf9e1ed1af6672e85566ab19",
       "values": [
         "2"
