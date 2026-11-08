@@ -14,6 +14,7 @@ import { laborNote, statusHtml, jhuiHtml, archLine, pickModal, pending, isFolded
 import { sideCards, bioLine, chronHtml } from './util.mjs';
 import { observeAchievementFacts, achievementRecord, restoreAchievementRecord } from './achievement-record.mjs';
 import { timelineHtml } from './milestones.mjs';
+import { achievementHtml } from './achievements.mjs';
 import { memsOf, apprCands, takePupil, pupilsOf, XIA_STYLES, MANUALS, canAssemble, assemble, learnManual, likesOf, menuOf, aspOf, ASPIRATIONS } from './bonds.mjs';
 import { ARC13 } from './jianghu.mjs';
 import { pregnancyOf } from './family.mjs';
@@ -418,7 +419,8 @@ function panel() {
   observeAchievementFacts(S, { canFound: canFoundHermitageSect(S).ok });
   const achievementHistory = achievementRecord(S);
   if ($('timeline')) $('timeline').innerHTML = timelineHtml(achievementHistory);
-  for (const d of S.ds) { const card = document.querySelector(`[data-dcard="${d.id}"]`); if (card) { const bio = card.querySelector('.bio'); if (bio) bio.insertAdjacentHTML('afterend', `<details data-keep="timeline-${d.id}"><summary>個人里程碑</summary>${timelineHtml(achievementHistory, d.name)}</details>`); } }
+  if ($('achievements')) $('achievements').innerHTML = achievementHtml(achievementHistory);
+  for (const d of S.ds) { const card = document.querySelector(`[data-dcard="${d.id}"]`); if (card) { const bio = card.querySelector('.bio'); if (bio) bio.insertAdjacentHTML('afterend', `<details data-keep="timeline-${d.id}"><summary>個人里程碑</summary>${timelineHtml(achievementHistory, d)}</details>`); } }
   if ($('chron')) { $('chron').innerHTML = chronHtml(S); $('chron-wrap').hidden = false; }
   if ($('jhui')) { $('jhui').innerHTML = jhuiHtml(S, keepState()); $('jhui-wrap').hidden = false; }
   restoreKeep(); applyFold();

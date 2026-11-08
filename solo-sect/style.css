@@ -67,7 +67,7 @@ label.btn { border:1px solid #888; padding:2px 8px; border-radius:4px; cursor:po
 .radar-legend{text-align:center;font-size:11px;color:#65563c}.radar-info,.actor-card-more{font-size:12px;color:#6b583d}.radar-info summary,.actor-card-more summary{cursor:pointer}
 .focus-level{font-size:15px;font-weight:bold;color:#4b3926}
 .level-card{margin:5px 0;padding:5px 7px;background:#fff5d5;color:#54713d;border-left:3px solid #698243}
-#rail-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
+#rail-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:2px}
 #rail-tabs button{min-width:0;padding:5px 0}
 #panel [data-rail-tab]{display:none;padding:7px 4px}
 #panel [data-rail-tab].active{display:block}

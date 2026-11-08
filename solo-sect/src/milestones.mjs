@@ -1,9 +1,9 @@
 export const MILESTONES = Object.freeze([
   { id: 'firstArt', name: '第一門整套武學', when: 'state.firstArt' },
   { id: 'firstMove', name: '第一次學會一招', when: 'log.learnedMove' },
-  { id: 'firstDog', name: '第一次打退野狗', when: 'log.defeatedDog' },
-  { id: 'firstBoar', name: '第一次打退野豬', when: 'log.defeatedBoar' },
-  { id: 'firstBandit', name: '第一次打退山賊', when: 'log.defeatedBandit' },
+  { id: 'firstDog', name: '第一次打退野狗', when: 'enemy.dog' },
+  { id: 'firstBoar', name: '第一次打退野豬', when: 'defeat.boar' },
+  { id: 'firstBandit', name: '第一次打退山賊', when: 'defeat.bandit' },
   { id: 'cliff', name: '第一次上崖', when: 'log.cliff' },
   { id: 'firstVolume', name: '第一卷讀懂', when: 'log.readVolume' },
   { id: 'canFound', name: '可以立匾', when: 'state.canFound' },
@@ -22,11 +22,13 @@ export const MILESTONES = Object.freeze([
 ]);
 export const milestoneRows = (record, who = null) => MILESTONES.map(row => {
   const e = record.events[row.when];
-  return { ...row, day: who ? (e?.people?.[who]?.firstDay ?? null) : (e?.firstDay ?? null), who: who || e?.who || null };
+  const name = typeof who === 'object' ? who?.name : who;
+  const key = typeof who === 'object' ? who?.id : who;
+  return { ...row, day: who ? (e?.people?.[key]?.firstDay ?? e?.people?.[name]?.firstDay ?? null) : (e?.firstDay ?? null), who: name || e?.who || null };
 });
 
 const esc = x => String(x).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\"", "&quot;");
 export const timelineHtml = (record, who = null) => {
   const rows = milestoneRows(record, who).filter(row => row.day != null).sort((a, b) => a.day - b.day || a.id.localeCompare(b.id));
-  return rows.length ? `<ol class="chron">${rows.map(row => `<li>第 ${row.day} 日・${esc(row.who || '山門')}：${esc(row.name)}</li>`).join('')}</ol>` : '<div class="k">尚無里程碑。</div>';
+  return (record.incomplete ? '<div class="k">舊存檔沒有歷史旁帳；此處只列導入後的新事件。</div>' : '') + (rows.length ? `<ol class="chron">${rows.map(row => `<li>第 ${row.day} 日・${esc(row.who || '山門')}：${esc(row.name)}</li>`).join('')}</ol>` : '<div class="k">尚無里程碑。</div>');
 };

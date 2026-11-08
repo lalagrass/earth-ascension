@@ -917,3 +917,44 @@ bot12 同尺命令：分別在 Phase 5 與本輪 checkout 根目錄執行 `docke
 舊驗收更新：`v24.test.mjs` 原「有房舍就固定 +15」被 25d 明文撤回，改精確數量×既有量尺並驗庫存與見聞；`v178.test.mjs` 帳本把舊假收入來源改列真交易的錢入、菜／藥出；`v190.test.mjs`、`n43-rhythm.test.mjs` 原只有 `trade`／`provisions` 種類的假見聞，改放明確成交額，保留原勒索、一期一夥及餘黨斷言。`v190` 舊「八人」標題修成現行四人門檻，未放寬點數、天數及 cap 斷言。
 
 舊名 → 新名：`caravan24` → `mountainProduceSale`、`CARAVAN24` → `MOUNTAIN_MARKET`、`lsStock24` → `marketSpiritStoneStock`。菜價按一畦收成抵一日雇工成本推導，[Claude 已核准](https://github.com/lalagrass/earth-ascension/issues/488#issuecomment-6722504578)。最沒把握三處：① 行商僅賣超出本門當日需求的整畦菜，長期餘菜可能仍無市場；② 山賊只用成交額或明載目擊存貨，不看來當日庫存，但傳聞淡忘前價格可能過時；③ 守方風險以既有一次傷後代價計每則公開武藝見聞，沒有引入勝率或額外機率。
+
+
+## 成就一：里程碑與成就表（#488；規則 5.9 不變）
+
+| 類別 | 指令、門檻與預期輸出 |
+|---|---|
+| A 事件與成就 | Node 22 `bash solo-sect/test/run.sh smoke`：99/99。`test/unit/tools/achievement1.test.mjs` 的一a／一b／一c 各一個小測：事件首日／次數／單日最大及 UI 存讀檔；真實 seed 1001 首日野狗試煉由圖鑑擊倒而非日誌推算、門派／個人同源首日；20 項逐項未達／達成、門檻日、隱藏項未達前不露，獨行未立匾可得至少三項。 |
+| A golden | 純紀錄與畫面，`RULES_VERSION` 保持 5.9，`test/golden/hermitage.json` 不改；CI Node 22 `node solo-sect/tools/golden.mjs --check --tier all` 應四格 12 個 hash 全部相同。 |
+| A 畫面 | `python3 solo-sect/tools/achievement1-visual.py --seed 17`：正常 UI 開局、固定第 3 日事蹟／圖鑑擊倒／具名傳聞，門派年表與獨立成就頁皆顯示；[盲圖 A](artifacts/achievement1/blind-A.png)／[B](artifacts/achievement1/blind-B.png)、[答案](artifacts/achievement1/blind-answers.json)；改 seed 奇偶交換圖序，零 pageerror。 |
+| B 公式 | 不加新隨機公式；原 N62 6,000 次出獵檢核仍在 smoke，期望 0.4926757803、觀測 0.502、99.9% 半寬 0.021407701，落在區間。 |
+| C bot12 | Node 22 `node solo-sect/tools/bot12.mjs solo-sect --json`；[上一輪 head](artifacts/achievement1/bot12-base.json)／[本輪 head](artifacts/achievement1/bot12-head.json)逐位元組相同，SHA-256 `d95ea6529f0900cfb03452dec46f3a30f0b827ca064e41c192340dd564fc77f1`；自然山賊 0、獨立有柵探針 96/96 勝、守住 89、傷 2。 |
+| C 成就率 | Node 22 `node solo-sect/tools/playability-report.mjs solo-sect --days=30 --seeds=12 --step=1` 及 `--days=90`；純陽／白身／小龍女／黃蓉 × 自然／引導 × 12 種子各 96 局。每拍清 alert，是受控 1 秒節拍；[30 日原始輸出](artifacts/achievement1/playability-head-30d.json)／[90 日原始輸出](artifacts/achievement1/playability-head-90d.json)。以下逐項列全 96 局達成率，不為 C 調規則。 |
+
+| 成就 | 類型 | 30 日 | 90 日 |
+|---|---|---:|---:|
+| 初試拳腳 (`first-step`) | progress | 96/96 | 96/96 |
+| 一門在身 (`own-art`) | progress | 96/96 | 96/96 |
+| 卷中有路 (`first-scroll`) | progress | 96/96 | 96/96 |
+| 登高望遠 (`high-place`) | progress | 32/96 | 53/96 |
+| 破關初成 (`breakthrough`) | progress | 96/96 | 96/96 |
+| 兩路相參 (`two-arts`) | progress | 80/96 | 84/96 |
+| 守住山犬 (`dog-watch`) | challenge | 11/96 | 11/96 |
+| 止住野豬 (`boar-watch`) | challenge | 3/96 | 10/96 |
+| 退了山賊 (`bandit-watch`) | challenge | 18/96 | 49/96 |
+| 再守山門 (`defend-twice`) | challenge | 0/96 | 0/96 |
+| 剿寨歸來 (`lair-run`) | challenge | 0/96 | 17/96 |
+| 山門有名 (`stand-banner`) | life | 48/96 | 48/96 |
+| 有人願學 (`first-student`) | life | 48/96 | 48/96 |
+| 有人傳話 (`rumor-found`) | life | 48/96 | 48/96 |
+| 一磚一木 (`hall-repaired`) | life | 48/96 | 48/96 |
+| 徒弟出師 (`first-graduate`) | life | 0/96 | 0/96 |
+| 兩人同心 (`family-day`) | life | 16/96 | 67/96 |
+| 兩度衝關 (`quiet-cultivator`) | hidden | 96/96 | 96/96 |
+| 野路識招 (`wild-observer`) | hidden | 0/96 | 0/96 |
+| 書山有徑 (`many-scrolls`) | hidden | 59/96 | 71/96 |
+
+90 日仍未達成的條件與原因：`defend-twice`：同一人在兩次守柵地圖交手中勝利才會累積兩筆 `deed.defend`；受控日程未達兩次；`first-graduate`：外門須有貢獻並通過正式升內門考核；受控日程沒有啟動該考核；`wild-observer`：要在有足夠壓力的真交手中觸發 N35 悟招；這批受控日程沒有該事件。
+
+舊名 → 新名：`playability-report.mjs` 自行 `mark('firstArt' / 'cliff' / …)` → `MILESTONES` 與 `milestoneRows`；野狗勝利字串推測 → 圖鑑 `seeEnemy` 的 `enemy.dog`；本輪碰到的原函式無輪次編號名稱。`TAGS` 只保留每日熱鬧度診斷，不再決定里程碑首日。
+
+最沒把握三處：① 舊 UI 存檔先前沒有完整歷史旁帳，既有短清單外的首日不能重建；畫面標明只記導入後新事件，不將讀檔現況冒充首次。② 日誌型里程碑沿用現行文案，將來改文案須同步改解析；同名人物在原日誌無法辨識當事人，旁帳只記門派事件、不猜個人。③ 受控工具腳本不主動下狩獵、剿寨或升內門指令，AI 仍可自行行動；稀有成就的 C 比例不是自然玩家可達率。

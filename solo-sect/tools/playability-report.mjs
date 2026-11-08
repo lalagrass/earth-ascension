@@ -22,6 +22,7 @@ const ADMISSIONS = process.argv.includes('--admissions');
 const { moodParts } = DIAGNOSE ? await imp('social.mjs') : { moodParts: null };
 const { observeAchievementFacts, achievementRecord } = await imp('achievement-record.mjs');
 const { milestoneRows, MILESTONES } = await imp('milestones.mjs');
+const { achievementRows, ACHIEVEMENTS } = await imp('achievements.mjs');
 
 // 行動分類：玩家看得出「在做事」的類別。
 const CAT = {
@@ -94,6 +95,7 @@ function play(opening, starterArt, seed, mode) {
     }
   }
   for (const row of milestoneRows(achievementRecord(s))) if (row.day != null) first[row.id] = row.day;
+  const achievement = achievementRows(achievementRecord(s), { showHidden: true }).map(a => ({ id: a.id, kind: a.kind, done: a.done, day: a.day }));
   if (cur) cur.hpMedian = median(lastHpSnapshot);
   const h = s.ds.find((d) => d.id === 'hero');
   // 「沒事的日子」：這一天沒有任何一則有標記的事件，且主角超過一半時間在閒晃或沒事。
@@ -102,7 +104,7 @@ function play(opening, starterArt, seed, mode) {
   const stall = days.filter((d, i) => i > 0 && d.siteHave != null && d.siteHave === days[i - 1].siteHave).length;
   const frac = (k) => +(days.reduce((a, d) => a + d[k], 0) / Math.max(1, days.reduce((a, d) => a + d.samples, 0))).toFixed(3);
   const share = (k) => +(days.reduce((a, d) => a + (d.hero[k] || 0), 0) / days.reduce((a, d) => a + Object.values(d.hero).reduce((x, y) => x + y, 0), 0)).toFixed(3);
-  return { opening, starterArt, seed, mode, first, dull, dullDays: dull.length, siteStallDays: stall, famishedShare: frac('famished'), lowMoodShare: frac('lowMood'),
+  return { opening, starterArt, seed, mode, first, achievement, dull, dullDays: dull.length, siteStallDays: stall, famishedShare: frac('famished'), lowMoodShare: frac('lowMood'),
     ...(ADMISSIONS ? { admissions } : {}),
     ...(DIAGNOSE ? { moodSnapshots } : {}),
     ...(DAYS >= 15 ? { segments: segmentReport(days) } : {}),
@@ -124,6 +126,7 @@ const summary = CASES.flatMap(([o, st]) => ['natural', 'guided'].map((m) => {
   return { case: `${o}/${st}/${m}`, dullDaysMedian: med(g.map((r) => r.dullDays)), siteStallDaysMedian: med(g.map((r) => r.siteStallDays)), famishedShareMedian: med(g.map((r) => r.famishedShare)), lowMoodShareMedian: med(g.map((r) => r.lowMoodShare)), heroShareMedian: Object.fromEntries(['grow', 'work', 'out', 'care', 'social', 'idle', 'none'].map((k) => [k, med(g.map((r) => r.heroShare[k]))])),
     ...(ADMISSIONS ? { admissionsMedian: med(g.map(r => r.admissions)) } : {}),
     reached: Object.fromEntries(keys.map((k) => [k, `${reached(g, k)}（中位第 ${med(g.map((r) => r.first[k])) ?? '—'} 日）`])),
+    achievementRate: Object.fromEntries(ACHIEVEMENTS.map(a => [a.id, `${g.filter(r => r.achievement.find(x => x.id === a.id)?.done).length}/${g.length}`])),
     endPeopleMedian: med(g.map((r) => r.end.people)), endArtsMedian: med(g.map((r) => r.end.heroArts.length)), choicesWaitingMax: Math.max(...g.map((r) => r.end.choicesWaiting)),
     ...(DAYS >= 15 ? { segments: aggregateSegments(g) } : {}) };
 }));
