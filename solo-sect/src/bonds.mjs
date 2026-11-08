@@ -5,6 +5,7 @@ import { aff, relAdd } from './social.mjs';
 import { log, resAdd } from './util.mjs';
 import { recordSocialEvent } from './social-thoughts.mjs';
 import { HERMITAGE_VOLUMES, teachableHermitageBook } from './hermitage-books.mjs';
+import { bookOnlyArt } from './rare-arts.mjs';
 // ==== （原 bonds.mjs）====
 // v1.65 人物與門派運作：共同記憶帳本、名俠池畫風濾鏡、傳功、收徒（資料表＋小解讀器）
 
@@ -84,7 +85,7 @@ export function isFamousArt(a) {
 /* #417 N13：每局都有 s.hs，不能拿來當條件。華山劇情確實走過＝令狐沖上過思過崖或風清揚現身過。 */
 export const hsWalked = (s) => !!(s?.hs && (s.hs.siguo || s.hs.feng || s.hs.fengLeft));
 function costOk(s, d, a, m) {
-  if (a.id === 'bixie') return d.duanqing != null;
+  if (bookOnlyArt(a.id)) return false; // R11 #531：奇書武學只能讀實物，會的人不傳。
   if (a.id === 'dugu') return hsWalked(s) || (m?.sectId === 'huashan' && d?.sectId === 'huashan');
   return true;
 }

@@ -7,442 +7,466 @@ TAP version 13
 # Subtest: 世界 6400×4800、門派在左下、山徑往右上
 ok 1 - 世界 6400×4800、門派在左下、山徑往右上
   ---
-  duration_ms: 1.915519
+  duration_ms: 2.046412
   type: 'test'
   ...
 # Subtest: 區塊：256px、視窗內塊數合理、同座標同畫
 ok 2 - 區塊：256px、視窗內塊數合理、同座標同畫
   ---
-  duration_ms: 1.322944
+  duration_ms: 1.323965
   type: 'test'
   ...
 # Subtest: 鏡頭邊界：沒巡過只看門派＋第一環；走到深谷可捲到斷崖
 ok 3 - 鏡頭邊界：沒巡過只看門派＋第一環；走到深谷可捲到斷崖
   ---
-  duration_ms: 3.829645
+  duration_ms: 3.994138
   type: 'test'
   ...
 # Subtest: 合併敵人表：MONSTERS 由 ENEMIES 產生，數值與舊表一致；每種敵人有所屬環
 ok 4 - 合併敵人表：MONSTERS 由 ENEMIES 產生，數值與舊表一致；每種敵人有所屬環
   ---
-  duration_ms: 0.360863
+  duration_ms: 0.330258
   type: 'test'
   ...
 # Subtest: 各環族群：無亂數回補、巡山擊倒會扣、存檔增量 < 1KB、舊檔讀入自動補
 ok 5 - 各環族群：無亂數回補、巡山擊倒會扣、存檔增量 < 1KB、舊檔讀入自動補
   ---
-  duration_ms: 19.695093
+  duration_ms: 17.020191
   type: 'test'
   ...
 # Subtest: 巡山實跑：擊倒數從所屬環族群扣掉
 ok 6 - 巡山實跑：擊倒數從所屬環族群扣掉
   ---
-  duration_ms: 49.320699
+  duration_ms: 55.833467
   type: 'test'
   ...
 # Subtest: 獸襲下山演出：到點前 20 秒從山腳巢點沿山徑走到 den；不寫狀態
 ok 7 - 獸襲下山演出：到點前 20 秒從山腳巢點沿山徑走到 den；不寫狀態
   ---
-  duration_ms: 4.201033
+  duration_ms: 3.426618
   type: 'test'
   ...
 # Subtest: 巡山隊世界座標沿山徑往外、回程往回
 ok 8 - 巡山隊世界座標沿山徑往外、回程往回
   ---
-  duration_ms: 1.064352
+  duration_ms: 0.935311
   type: 'test'
   ...
 # Subtest: 山徑：半徑＝dist×PX，所以每一步所在的環＝模擬的段
 ok 9 - 山徑：半徑＝dist×PX，所以每一步所在的環＝模擬的段
   ---
-  duration_ms: 2.064608
+  duration_ms: 2.688179
   type: 'test'
   ...
 # Subtest: 山徑是連續的（相鄰取樣點距離有上限，不跳）
 ok 10 - 山徑是連續的（相鄰取樣點距離有上限，不跳）
   ---
-  duration_ms: 0.243269
+  duration_ms: 0.42027
   type: 'test'
   ...
 # Subtest: 固定怪點＝模擬遭遇點（與 nextAt 同一串：段界前用前一段的 every），都在山腳／林地、不壓到門派
 ok 11 - 固定怪點＝模擬遭遇點（與 nextAt 同一串：段界前用前一段的 every），都在山腳／林地、不壓到門派
   ---
-  duration_ms: 0.243319
+  duration_ms: 0.353061
   type: 'test'
   ...
 # Subtest: 實跑巡山：遭遇真的發生在怪點的 dist 上（同一串 nextAt）
 ok 12 - 實跑巡山：遭遇真的發生在怪點的 dist 上（同一串 nextAt）
   ---
-  duration_ms: 500.91272
+  duration_ms: 593.154166
   type: 'test'
   ...
 # Subtest: 召回：回程沿同一條山徑往 den 走，位置單調變近、最後回到 den
 ok 13 - 召回：回程沿同一條山徑往 den 走，位置單調變近、最後回到 den
   ---
-  duration_ms: 36.160667
+  duration_ms: 58.587488
   type: 'test'
   ...
 # Subtest: 山腳／林地區塊用素材：有給圖就貼地面＋草叢／松竹；沒給圖退回色塊；同座標同畫
 ok 14 - 山腳／林地區塊用素材：有給圖就貼地面＋草叢／松竹；沒給圖退回色塊；同座標同畫
   ---
-  duration_ms: 2.298534
+  duration_ms: 1.517761
   type: 'test'
   ...
 # Subtest: H0：未立匾三十日只有開局人物；立匾後恢復登門
 ok 15 - H0：未立匾三十日只有開局人物；立匾後恢復登門
   ---
-  duration_ms: 8874.98533
+  duration_ms: 11235.586862
   type: 'test'
   ...
 # Subtest: N40 同一本譜：打過架者對照土招較快，二十二段讀完才學會
 ok 16 - N40 同一本譜：打過架者對照土招較快，二十二段讀完才學會
   ---
-  duration_ms: 4.175095
+  duration_ms: 4.059113
   type: 'test'
   ...
 # Subtest: N41 一門較五門不易荒疏；六階要套路與實戰同時累積
 ok 17 - N41 一門較五門不易荒疏；六階要套路與實戰同時累積
   ---
-  duration_ms: 15.647416
+  duration_ms: 3.707695
   type: 'test'
   ...
 # Subtest: N42 人物面板的一句話讀同一套前搖、反應和勁
 ok 18 - N42 人物面板的一句話讀同一套前搖、反應和勁
   ---
-  duration_ms: 6.5827
+  duration_ms: 11.28343
   type: 'test'
   ...
 # Subtest: N61 six independent axes share one adapter; 30-day layer survives save and load
 ok 19 - N61 six independent axes share one adapter; 30-day layer survives save and load
   ---
-  duration_ms: 12.168609
+  duration_ms: 14.654447
   type: 'test'
   ...
 # Subtest: Phase 4：終南隱居只生成主角與帶入門功夫的小龍女，無月俸
 ok 20 - Phase 4：終南隱居只生成主角與帶入門功夫的小龍女，無月俸
   ---
-  duration_ms: 6.538695
+  duration_ms: 6.756596
   type: 'test'
   ...
 # Subtest: Phase 4：羅漢拳與黃蓉的另一雙人組合
 ok 21 - Phase 4：羅漢拳與黃蓉的另一雙人組合
   ---
-  duration_ms: 1.122137
+  duration_ms: 1.126303
   type: 'test'
   ...
 # Subtest: R3 承接 Phase 4：同住本身不送整門，會的人讀卷後才能傳第一式
 ok 22 - R3 承接 Phase 4：同住本身不送整門，會的人讀卷後才能傳第一式
   ---
-  duration_ms: 2.325714
+  duration_ms: 2.567101
   type: 'test'
   ...
 # Subtest: R2：同一份活對變強的人刺激較小；白飯長得比藥膳慢；休息日疲勞下降；上限由根骨推導
 ok 23 - R2：同一份活對變強的人刺激較小；白飯長得比藥膳慢；休息日疲勞下降；上限由根骨推導
   ---
-  duration_ms: 12.929572
+  duration_ms: 14.75847
   type: 'test'
   ...
 # Subtest: Phase 5：黃蓉煮飯和用飯走真任務；R2 起藥膳只給足營養，不消疲勞、不破上限
 ok 24 - Phase 5：黃蓉煮飯和用飯走真任務；R2 起藥膳只給足營養，不消疲勞、不破上限
   ---
-  duration_ms: 73.222664
+  duration_ms: 117.115669
   type: 'test'
   ...
 # Subtest: Phase 5：10／18／26 體魄的流暢度、濺水與藥氣繪製不同，渲染不改狀態
 ok 25 - Phase 5：10／18／26 體魄的流暢度、濺水與藥氣繪製不同，渲染不改狀態
   ---
-  duration_ms: 6.748995
+  duration_ms: 9.97751
   type: 'test'
   ...
 # Subtest: R3 承接 Phase 6：純陽與羅漢分卷須讀才學會
 ok 26 - R3 承接 Phase 6：純陽與羅漢分卷須讀才學會
   ---
-  duration_ms: 8.784602
+  duration_ms: 14.801654
   type: 'test'
   ...
 # Subtest: Phase 6：三級山崖依火候／身法逐一開放，真任務帶回草藥、玉蜂漿與寒潭水
 ok 27 - Phase 6：三級山崖依火候／身法逐一開放，真任務帶回草藥、玉蜂漿與寒潭水
   ---
-  duration_ms: 133.123728
+  duration_ms: 93.65605
   type: 'test'
   ...
 # Subtest: Phase 6：身法縱躍與崖景只讀狀態，Canvas 有淡青軌跡、絕壁與三段式
 ok 28 - Phase 6：身法縱躍與崖景只讀狀態，Canvas 有淡青軌跡、絕壁與三段式
   ---
-  duration_ms: 7.790244
+  duration_ms: 9.308014
   type: 'test'
   ...
 # Subtest: R3 承接 Phase 7：第 1 日玩家可主動立匾，雙堂仍保留雙脈與十日俸期
 ok 29 - R3 承接 Phase 7：第 1 日玩家可主動立匾，雙堂仍保留雙脈與十日俸期
   ---
-  duration_ms: 24.446559
+  duration_ms: 21.669355
   type: 'test'
   ...
 # Subtest: Phase 7：正宗立匾只讓掌門、伴侶、首徒使用秘傳；無名派可自訂匾
 ok 30 - Phase 7：正宗立匾只讓掌門、伴侶、首徒使用秘傳；無名派可自訂匾
   ---
-  duration_ms: 19.77437
+  duration_ms: 32.034648
   type: 'test'
   ...
 # Subtest: A：看人只增加單招，不增加整門；招的威力按自己的內功火候
 ok 31 - A：看人只增加單招，不增加整門；招的威力按自己的內功火候
   ---
-  duration_ms: 23.229883
+  duration_ms: 20.974258
   type: 'test'
   ...
 # Subtest: A：武學的傳承與前置全從卷的資料讀
 ok 32 - A：武學的傳承與前置全從卷的資料讀
   ---
-  duration_ms: 6.021117
+  duration_ms: 7.509297
   type: 'test'
   ...
 # Subtest: A：「師父傳授」要有真的會這門的人在山上
 ok 33 - A：「師父傳授」要有真的會這門的人在山上
   ---
-  duration_ms: 21.786612
+  duration_ms: 5.306085
   type: 'test'
   ...
 # Subtest: A：白身開局沒有武學，找到殘卷讀完後就能立匾
 ok 34 - A：白身開局沒有武學，找到殘卷讀完後就能立匾
   ---
-  duration_ms: 59.551541
+  duration_ms: 69.091733
   type: 'test'
   ...
 # Subtest: 白身沒有寫死的「王八拳」武學
 ok 35 - 白身沒有寫死的「王八拳」武學
   ---
-  duration_ms: 0.248677
+  duration_ms: 0.311239
+  type: 'test'
+  ...
+# Subtest: A：白身沒有指令，也會自己去找殘卷、讀會第一門（擁有人 2026-11-08：沒有武學的人更想找師父、找譜）
+ok 36 - A：白身沒有指令，也會自己去找殘卷、讀會第一門（擁有人 2026-11-08：沒有武學的人更想找師父、找譜）
+  ---
+  duration_ms: 847.850392
+  type: 'test'
+  ...
+# Subtest: A：配方不齊學不會自創武學；齊了閉關自創
+ok 37 - A：配方不齊學不會自創武學；齊了閉關自創
+  ---
+  duration_ms: 294.458084
+  type: 'test'
+  ...
+# Subtest: A：奇書只能讀實物，持有人與會的人都不教；看人只得單招
+ok 38 - A：奇書只能讀實物，持有人與會的人都不教；看人只得單招
+  ---
+  duration_ms: 3.654135
+  type: 'test'
+  ...
+# Subtest: A：自宮要明確確認、不可逆；之後讀得了奇書，也不會懷孕或讓人懷孕
+ok 39 - A：自宮要明確確認、不可逆；之後讀得了奇書，也不會懷孕或讓人懷孕
+  ---
+  duration_ms: 17.467931
   type: 'test'
   ...
 # Subtest: R3：隱居卷有前置與真研讀時鐘，山洞得第二路，傳授者必須會，首日可自行立匾
-ok 36 - R3：隱居卷有前置與真研讀時鐘，山洞得第二路，傳授者必須會，首日可自行立匾
+ok 40 - R3：隱居卷有前置與真研讀時鐘，山洞得第二路，傳授者必須會，首日可自行立匾
   ---
-  duration_ms: 42.018988
+  duration_ms: 52.953125
   type: 'test'
   ...
 # Subtest: R4：獨行只立單脈；情境新增任意人物由已會武學與好感決定道統及師承
-ok 37 - R4：獨行只立單脈；情境新增任意人物由已會武學與好感決定道統及師承
+ok 41 - R4：獨行只立單脈；情境新增任意人物由已會武學與好感決定道統及師承
   ---
-  duration_ms: 2166.821895
+  duration_ms: 2601.469907
   type: 'test'
   ...
 # Subtest: N32 白身無武學、起手秒數與野狗從邊緣走來
-ok 38 - N32 白身無武學、起手秒數與野狗從邊緣走來
+ok 42 - N32 白身無武學、起手秒數與野狗從邊緣走來
   ---
-  duration_ms: 210.154795
+  duration_ms: 234.31046
   type: 'test'
   ...
 # Subtest: N33 同一底層累積w，手熟縮前搖、眼熟縮反應，人獸都有紀錄
-ok 39 - N33 同一底層累積w，手熟縮前搖、眼熟縮反應，人獸都有紀錄
+ok 43 - N33 同一底層累積w，手熟縮前搖、眼熟縮反應，人獸都有紀錄
   ---
-  duration_ms: 22.050281
+  duration_ms: 21.420418
   type: 'test'
   ...
 # Subtest: N55 只有播放參數變、沒有第二份熟練pose且繪製不回寫模擬
-ok 40 - N55 只有播放參數變、沒有第二份熟練pose且繪製不回寫模擬
+ok 44 - N55 只有播放參數變、沒有第二份熟練pose且繪製不回寫模擬
   ---
-  duration_ms: 7.077832
+  duration_ms: 9.582014
   type: 'test'
   ...
 # Subtest: N34 情境識別穩定後零決策時間，選招/心願所有人共用
-ok 41 - N34 情境識別穩定後零決策時間，選招/心願所有人共用
+ok 45 - N34 情境識別穩定後零決策時間，選招/心願所有人共用
   ---
-  duration_ms: 69.438547
+  duration_ms: 83.859064
   type: 'test'
   ...
 # Subtest: N35 母招/條件/效果全資料化，只有真失手加w，弱敵期望慢逾10倍
-ok 42 - N35 母招/條件/效果全資料化，只有真失手加w，弱敵期望慢逾10倍
+ok 46 - N35 母招/條件/效果全資料化，只有真失手加w，弱敵期望慢逾10倍
   ---
-  duration_ms: 6.300624
+  duration_ms: 6.311587
   type: 'test'
   ...
 # Subtest: N36 同一主角四狗空地超載、靠可見樹降負荷；超載零反擊、倖存者留眼熟
-ok 43 - N36 同一主角四狗空地超載、靠可見樹降負荷；超載零反擊、倖存者留眼熟
+ok 47 - N36 同一主角四狗空地超載、靠可見樹降負荷；超載零反擊、倖存者留眼熟
   ---
-  duration_ms: 26.992008
+  duration_ms: 55.909083
   type: 'test'
   ...
 # Subtest: N37 共用受力/分層/手側/長破綻，局部hitstop不改模擬
-ok 44 - N37 共用受力/分層/手側/長破綻，局部hitstop不改模擬
+ok 48 - N37 共用受力/分層/手側/長破綻，局部hitstop不改模擬
   ---
-  duration_ms: 2.460764
+  duration_ms: 2.621087
   type: 'test'
   ...
 # Subtest: N50 兩個普通出身同伴與真床位剩一時第二名俠不入門
-ok 45 - N50 兩個普通出身同伴與真床位剩一時第二名俠不入門
+ok 49 - N50 兩個普通出身同伴與真床位剩一時第二名俠不入門
   ---
-  duration_ms: 3.402374
+  duration_ms: 3.815334
   type: 'test'
   ...
 # Subtest: N38 接法機率改變即改名稱，不存level/XP且不消耗逃敵
-ok 46 - N38 接法機率改變即改名稱，不存level/XP且不消耗逃敵
+ok 50 - N38 接法機率改變即改名稱，不存level/XP且不消耗逃敵
   ---
-  duration_ms: 5.565429
+  duration_ms: 6.974297
   type: 'test'
   ...
 # Subtest: loop191 normalizeArts：isInner／kind／isPublic／cats 補在原物件上
-ok 47 - loop191 normalizeArts：isInner／kind／isPublic／cats 補在原物件上
+ok 51 - loop191 normalizeArts：isInner／kind／isPublic／cats 補在原物件上
   ---
-  duration_ms: 4.098902
+  duration_ms: 5.917454
   type: 'test'
   ...
 # Subtest: loop191 每派（無名除外）都有普通弟子學得會的內功
-ok 48 - loop191 每派（無名除外）都有普通弟子學得會的內功
+ok 52 - loop191 每派（無名除外）都有普通弟子學得會的內功
   ---
-  duration_ms: 0.611043
+  duration_ms: 0.748818
   type: 'test'
   ...
 # Subtest: loop191 練滿本門樹可成三才（無名派無本門專屬，除外）
-ok 49 - loop191 練滿本門樹可成三才（無名派無本門專屬，除外）
+ok 53 - loop191 練滿本門樹可成三才（無名派無本門專屬，除外）
   ---
-  duration_ms: 0.911887
+  duration_ms: 1.185263
   type: 'test'
   ...
 # Subtest: loop191 非魁首武學的前置不可是魁首限定或秘密，且前置都存在
-ok 50 - loop191 非魁首武學的前置不可是魁首限定或秘密，且前置都存在
+ok 54 - loop191 非魁首武學的前置不可是魁首限定或秘密，且前置都存在
   ---
-  duration_ms: 0.274595
+  duration_ms: 0.40588
   type: 'test'
   ...
 # Subtest: loop201 外功與身法的 mode、qiScale 合法；純內功不設 mode
-ok 51 - loop201 外功與身法的 mode、qiScale 合法；純內功不設 mode
+ok 55 - loop201 外功與身法的 mode、qiScale 合法；純內功不設 mode
   ---
-  duration_ms: 0.455874
+  duration_ms: 0.5748
   type: 'test'
   ...
 # Subtest: loop209 缺 cats、外功缺 mode、純內功帶 mode 時丟出，不改既有表
-ok 52 - loop209 缺 cats、外功缺 mode、純內功帶 mode 時丟出，不改既有表
+ok 56 - loop209 缺 cats、外功缺 mode、純內功帶 mode 時丟出，不改既有表
   ---
-  duration_ms: 0.430656
+  duration_ms: 0.820013
   type: 'test'
   ...
 # Subtest: loop198 每門武學的 cats 與 ART_CAT 同一份，權重落在已知門類
-ok 53 - loop198 每門武學的 cats 與 ART_CAT 同一份，權重落在已知門類
+ok 57 - loop198 每門武學的 cats 與 ART_CAT 同一份，權重落在已知門類
   ---
-  duration_ms: 0.457415
+  duration_ms: 0.602371
   type: 'test'
   ...
 # Subtest: loop191 每門武學都有 ART_CAT、合法屬性，招式不是懸空 id
-ok 54 - loop191 每門武學都有 ART_CAT、合法屬性，招式不是懸空 id
+ok 58 - loop191 每門武學都有 ART_CAT、合法屬性，招式不是懸空 id
   ---
-  duration_ms: 0.675958
+  duration_ms: 0.626667
   type: 'test'
   ...
 # Subtest: loop191 特質引用都在 TRAITS；價值門檻落在 [-30, 40]
-ok 55 - loop191 特質引用都在 TRAITS；價值門檻落在 [-30, 40]
+ok 59 - loop191 特質引用都在 TRAITS；價值門檻落在 [-30, 40]
   ---
-  duration_ms: 0.523132
+  duration_ms: 0.529102
   type: 'test'
   ...
 # Subtest: loop191 古墓弟子可排上玉女心經，不必是小龍女
-ok 56 - loop191 古墓弟子可排上玉女心經，不必是小龍女
+ok 60 - loop191 古墓弟子可排上玉女心經，不必是小龍女
   ---
-  duration_ms: 2.172178
+  duration_ms: 2.306181
   type: 'test'
   ...
 # Subtest: 被掩護的人記得原因，好感上升且大事不淡去
-ok 57 - 被掩護的人記得原因，好感上升且大事不淡去
+ok 61 - 被掩護的人記得原因，好感上升且大事不淡去
   ---
-  duration_ms: 1.654793
+  duration_ms: 1.654117
   type: 'test'
   ...
 # Subtest: N58 收徒方針、束脩／做工、少年名俠共用入門與師父熟識
-ok 58 - N58 收徒方針、束脩／做工、少年名俠共用入門與師父熟識
+ok 62 - N58 收徒方針、束脩／做工、少年名俠共用入門與師父熟識
   ---
-  duration_ms: 4696.404006
+  duration_ms: 4608.012974
   type: 'test'
   ...
 # Subtest: N58 小修：當日真工作格用完，無束脩者下山做工後帶糧回來
-ok 59 - N58 小修：當日真工作格用完，無束脩者下山做工後帶糧回來
+ok 63 - N58 小修：當日真工作格用完，無束脩者下山做工後帶糧回來
   ---
-  duration_ms: 7.098312
+  duration_ms: 5.771754
   type: 'test'
   ...
 # Subtest: A：只有一方想要時不會懷孕，即使亂數落在最容易懷上的一端
-ok 60 - A：只有一方想要時不會懷孕，即使亂數落在最容易懷上的一端
+ok 64 - A：只有一方想要時不會懷孕，即使亂數落在最容易懷上的一端
   ---
-  duration_ms: 37.460991
+  duration_ms: 21.178299
   type: 'test'
   ...
 # Subtest: A：處境不夠（挨餓、不太平、年紀）時不想要
-ok 61 - A：處境不夠（挨餓、不太平、年紀）時不想要
+ok 65 - A：處境不夠（挨餓、不太平、年紀）時不想要
   ---
-  duration_ms: 3.377298
+  duration_ms: 3.276769
   type: 'test'
   ...
 # Subtest: A：兩人都想才懷孕；懷孕足月出生，根骨與悟性落在父母之間
-ok 62 - A：兩人都想才懷孕；懷孕足月出生，根骨與悟性落在父母之間
+ok 66 - A：兩人都想才懷孕；懷孕足月出生，根骨與悟性落在父母之間
   ---
-  duration_ms: 11.498018
+  duration_ms: 12.123005
   type: 'test'
   ...
 # Subtest: A：孩子按大人的年曆長大，14 歲成年
-ok 63 - A：孩子按大人的年曆長大，14 歲成年
+ok 67 - A：孩子按大人的年曆長大，14 歲成年
   ---
-  duration_ms: 4.355571
+  duration_ms: 5.39613
   type: 'test'
   ...
 # Subtest: A：懷孕讓母親走得慢、做活慢；知道有孕後不上陣
-ok 64 - A：懷孕讓母親走得慢、做活慢；知道有孕後不上陣
+ok 68 - A：懷孕讓母親走得慢、做活慢；知道有孕後不上陣
   ---
-  duration_ms: 2.291594
+  duration_ms: 2.330361
   type: 'test'
   ...
 # Subtest: A：嬰兒只吃和睡
-ok 65 - A：嬰兒只吃和睡
+ok 69 - A：嬰兒只吃和睡
   ---
-  duration_ms: 150.936561
+  duration_ms: 127.337568
   type: 'test'
   ...
 # Subtest: R8：外人親見、沿路傳播、處境相符、立匾與淡忘共同決定上門
-ok 66 - R8：外人親見、沿路傳播、處境相符、立匾與淡忘共同決定上門
+ok 70 - R8：外人親見、沿路傳播、處境相符、立匾與淡忘共同決定上門
   ---
-  duration_ms: 6.337829
+  duration_ms: 5.725595
   type: 'test'
   ...
 # Subtest: N43／R8：未傳聞不來犯；每則傳聞只引一夥，餘黨與第二波沿原事件延續
-ok 67 - N43／R8：未傳聞不來犯；每則傳聞只引一夥，餘黨與第二波沿原事件延續
+ok 71 - N43／R8：未傳聞不來犯；每則傳聞只引一夥，餘黨與第二波沿原事件延續
   ---
-  duration_ms: 44.419693
+  duration_ms: 22.243081
   type: 'test'
   ...
 # Subtest: N44 背靠背減少四狗同刻命中；來源組織與站位共同限制攻擊權杖
-ok 68 - N44 背靠背減少四狗同刻命中；來源組織與站位共同限制攻擊權杖
+ok 72 - N44 背靠背減少四狗同刻命中；來源組織與站位共同限制攻擊權杖
   ---
-  duration_ms: 114.077132
+  duration_ms: 108.252506
   type: 'test'
   ...
 # Subtest: N45 巡山山腳從既有邊緣獸穴走來，逐招交手後才結算
-ok 69 - N45 巡山山腳從既有邊緣獸穴走來，逐招交手後才結算
+ok 73 - N45 巡山山腳從既有邊緣獸穴走來，逐招交手後才結算
   ---
-  duration_ms: 219.896952
+  duration_ms: 236.937123
   type: 'test'
   ...
 # Subtest: N47 外功場升至 Lv1 後，額外實體站位可同時讓更多人練功
-ok 70 - N47 外功場升至 Lv1 後，額外實體站位可同時讓更多人練功
+ok 74 - N47 外功場升至 Lv1 後，額外實體站位可同時讓更多人練功
   ---
-  duration_ms: 7.565111
+  duration_ms: 6.257522
   type: 'test'
   ...
 # Subtest: N51 登門須有狀態理由與來犯點數，應戰後才在地圖逐招分勝負
-ok 71 - N51 登門須有狀態理由與來犯點數，應戰後才在地圖逐招分勝負
+ok 75 - N51 登門須有狀態理由與來犯點數，應戰後才在地圖逐招分勝負
   ---
-  duration_ms: 289.043412
+  duration_ms: 219.390409
   type: 'test'
   ...
 # Subtest: N62 缺糧獸跡出獵、門規指定及效用雜訊期望
-ok 72 - N62 缺糧獸跡出獵、門規指定及效用雜訊期望
+ok 76 - N62 缺糧獸跡出獵、門規指定及效用雜訊期望
   ---
-  duration_ms: 762.745626
+  duration_ms: 701.243085
   type: 'test'
   ...
 # {"expected":0.4926757803186774,"observed":0.502,"n":6000,"margin":0.021407701037462305}
-1..72
-# tests 72
+1..76
+# tests 76
 # suites 0
-# pass 72
+# pass 76
 # fail 0
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 9018.4512
+# duration_ms 11373.447899

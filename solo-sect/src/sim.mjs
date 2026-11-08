@@ -2,6 +2,7 @@ import {HUNGER_PER_SECOND,admissionStatus,unfoundedHermitage,mentorFor,guidanceS
 import {applicantAway,bookAdmissionWork,discipleCount,policyCap,recruitmentInit,recruitmentOf,returnFromWork,sendApplicantToWork,setRecruitPolicy} from './recruitment.mjs';
 export {policyCap,setRecruitPolicy} from './recruitment.mjs';
 import {transferredDamage,moveStats,hermitageInnerActive,hermitageStepActive,artTeacher} from './arts.mjs';
+import { inventable, inventArt, readableRareBook, readRareBook } from './rare-arts.mjs';
 import { HERMITAGE_VOLUMES, seedHermitageBooks, bookStatus, readHermitageBook, cliffBook, forestFragment, volumeById } from './hermitage-books.mjs';
 import { spreadRumors, rumorForCandidate } from './rumors.mjs';
 import { canLeapCliff, CLIFF_ACT_NODE } from './cliff.mjs';
@@ -363,10 +364,19 @@ export function scoreActs(s, d) {
   } // 出自 Phase 6 規格：解鎖後 AI 借原活動分數選崖上同類工作，不另立任意偏好常數。
   {
     const next = HERMITAGE_VOLUMES.find(v => bookStatus(s, d, v.id).ok);
+    // 擁有人 2026-11-08：沒有武學的人更想去找師父、找譜。練功的心思沒有東西可練，就整份轉到找武學上：
+    // 找譜、讀譜承接當下最想做的自我進修（練功、讀書）的分數，而不只是採集或讀書那一份。
+    const bare = !Object.keys(d.arts || {}).length;
+    const improve = bare ? out.filter(o => o.act === 'train' || o.act === 'study').sort((a, b) => b.score - a.score)[0] : null;
     const study = out.find(o => o.act === 'study' || o.act === 'train');
-    if (next && study) out.push({ act: 'readBook', score: study.score, why: `讀《${artById(next.art).name}》的實物卷` });
-    const forage = out.find(o => o.act === 'forage');
-    if (s.hermitage.active && forage && d.id === 'hero' && s.ds.length === 1 && !s.hermitage.books?.some(id => volumeById(id)?.source === 'fragment')) out.push({ act: 'searchFragment', score: forage.score, why: '到林中山洞找另一脈拳譜殘卷' });
+    if (next && study) out.push({ act: 'readBook', as: 'train', score: Math.max(study.score, improve?.score || 0), why: `讀《${artById(next.art).name}》的實物卷${bare ? '（還沒有武學可練）' : ''}` });
+    const forage = out.find(o => o.act === 'forage') || improve;
+    if (s.hermitage.active && forage && d.id === 'hero' && s.ds.length === 1 && !s.hermitage.books?.some(id => volumeById(id)?.source === 'fragment')) out.push({ act: 'searchFragment', ...(bare ? { as: 'train' } : {}), score: Math.max(forage.score, improve?.score || 0), why: `到林中山洞找另一脈拳譜殘卷${bare ? '（還沒有武學可練）' : ''}` });
+    // R11 #531：配方齊了才有「自創」可選，工時借打坐；奇書在自己手上、代價付過才讀得了。
+    const inv = inventable(s, d), still = out.find(o => o.act === 'meditate') || study;
+    if (inv && still) out.push({ act: 'invent', as: 'meditate', score: still.score, why: `把會的幾門融成《${artById(inv.art).name}》` });
+    const rare = readableRareBook(s, d);
+    if (rare && study) out.push({ act: 'readRare', as: 'train', score: study.score, why: `讀手上的《${rare.name}》` });
   }
   if (s.band && BAND.defendScore > 0 && canDefend(d, s)) out.push({ act: 'defend', score: BAND.defendScore, why: s.band.state === 'go' ? '山賊往菜園來了，去柵邊守著' : '山賊在撞柵，去打退他們' }); // loop3
   if (d.ng && qiMax(d) > 0 && qiOf(d) < qiMax(d) * NG23.medLow) for (const o of out) if (o.act === 'meditate') { o.score *= NG23.medBoost; o.why += '（內力不足，先打坐回氣）'; } /* loop153 */
@@ -383,7 +393,7 @@ export function scoreActs(s, d) {
   const plotWork = s.plots.some((p) => p.st === 'empty' || p.st === 'ripe');
   // v0.95 統一倍率管線：作息是時段閘門（管線外），性格→天賦組、心情→狀態組、職責/首徒/雇工→外部組
   const tparts = (act) => { const r = (d.personality || []).map((p) => [TRAITS[p]?.name || p, (TRAITS[p]?.mods24?.[act]) || TRAITS[p]?.mods?.[act] || 1]).filter(([, v]) => v !== 1); const vm = valueMul(d, act); if (vm !== 1) r.push(['價值觀', vm]); return r; };
-  for (const o of out) { const f = { base: o.score, sched: sch[o.act] || 1, trait: traitMul(d, o.act), mood: moodMul(d, o.act), noise: rand(s) * 8, P: { talent: tparts(o.act), state: o.act && moodMul(d, o.act) !== 1 ? [['心情', moodMul(d, o.act)]] : [], ext: [] } }; o.f = f; }
+  for (const o of out) { const k = o.as || o.act; /* 找譜、讀譜、自創按它所代替的練功／靜坐算作息、性格與心情 */ const f = { base: o.score, sched: sch[k] || 1, trait: traitMul(d, k), mood: moodMul(d, k), noise: rand(s) * 8, P: { talent: tparts(k), state: k && moodMul(d, k) !== 1 ? [['心情', moodMul(d, k)]] : [], ext: [] } }; o.f = f; }
   postRows(s, d, out, plotWork);
   for (const o of out) { const f = o.f, p = pipeline(f.P); f.talent = p.talent; f.state = p.state; f.ext = p.ext; f.total = p.total; f.text = mulText(p); f.bored = boredMul(s, d, o.act); o.score = f.base * f.sched * p.total * f.bored + f.noise; delete f.P;
     o.layer ??= f.duty || f.labor ? 'duty' : f.sched >= 1.3 ? 'sched' : 'trait'; }
@@ -391,7 +401,7 @@ export function scoreActs(s, d) {
   liftBoost(s, d, out); // loop28
   for (const o of out) { const m = appetiteActMul31(d, o.act); if (m !== 1) o.score *= m; } /* loop203：偏好帶日程，不另抽 rand。遠征不在評分動作裡 */
   if(d.trainingWish)for(const o of out)if(d.trainingWish.acts.includes(o.act)&&o.layer!=='need'){const evidence=d.selection?.failures?.[d.trainingWish.kind]||1;o.score*=1+evidence/(1+evidence);o.why+='；想練：'+d.trainingWish.name;}
-  const wanted = (o) => chosen === 'work' ? CHORE_ACTS.includes(o.act) : o.act === chosen;
+  const wanted = (o) => chosen === 'work' ? CHORE_ACTS.includes(o.act) : o.act === chosen || o.as === chosen; // 讀譜、自創算在練功／靜坐的作息裡
   for (const o of out) if (chosen !== 'free' && wanted(o) && o.layer !== 'need') { o.why = `門規作息：${ROUTINE_MODES[routine]}${chosen !== routine ? '，心情低落先靜坐' : ''}`; o.layer = 'sched'; }
   return out.sort((a, b) => (b.layer === 'need') - (a.layer === 'need') || (chosen !== 'free' ? Number(wanted(b)) - Number(wanted(a)) : 0) || b.score - a.score);
 }
@@ -401,6 +411,14 @@ function assign(s, d, act, why) {
     const volume = d.manualChoice && bookStatus(s, d, d.manualChoice).ok ? d.manualChoice : HERMITAGE_VOLUMES.find(v => bookStatus(s, d, v.id).ok)?.id;
     if (!volume) return false;
     d.task = { act, node: 'hall', phase: 'go', volume }; goto(d, 'hall'); d.reason = why || '讀拳譜'; return true;
+  }
+  if (act === 'invent') {
+    const r = inventable(s, d); if (!r) return false;
+    d.task = { act, node: 'hall', phase: 'go', art: r.art }; goto(d, 'hall'); d.reason = why || `閉關自創《${artById(r.art).name}》`; return true;
+  }
+  if (act === 'readRare') {
+    const b = readableRareBook(s, d); if (!b) return false;
+    d.task = { act, node: 'hall', phase: 'go', book: b.id }; goto(d, 'hall'); d.reason = why || `研讀《${b.name}》`; return true;
   }
   if (act === 'searchFragment') {
     if (!s.hermitage?.active || d.id !== 'hero' || s.ds.length !== 1 || s.hermitage.books?.some(id => volumeById(id)?.source === 'fragment')) return false;
@@ -631,6 +649,8 @@ function doTask(s,d,dt){
       if (t.act === 'study' && t.fac === 'library') { const page = readLuohanBook(d, effDur, s.t); if (page.learned) { log(s, `【拳譜】${d.name}對照身體起手，把《少林羅漢十八手》的二十二段讀完，開始依譜練掌。`); think(s, d, 'learned'); } else if (page.form) log(s, `${d.name}讀《羅漢十八手》到「${page.form}」，照著圖譜試擺。`, 'low'); }
       if (t.act === 'readBook') { const result = readHermitageBook(s, d, t.volume, effDur); if (result.learned) { d.manualChoice = null; think(s, d, 'learned'); } }
       if (t.act === 'searchFragment') forestFragment(s, d);
+      if (t.act === 'invent' && inventArt(s, d, t.art).ok) think(s, d, 'learned'); // R11：完成時配方仍要齊
+      if (t.act === 'readRare' && readRareBook(s, d, t.book).learned) think(s, d, 'learned');
       if (t.act === 'cliffComprehend') {
         cliffBook(s, d); // R3：拓錄成實物卷，回山讀完才學會。
       }

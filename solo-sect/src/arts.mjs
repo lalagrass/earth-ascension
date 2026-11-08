@@ -12,6 +12,7 @@ import { strMul } from './economy.mjs';
 import { pipeline, log, chronOf, affKey } from './util.mjs';
 import { HERMITAGE_VOLUMES, volumeLineage, volumeBodyThreshold } from './hermitage-books.mjs';
 import { recordSocialEvent } from './social-thoughts.mjs';
+import { bookOnlyArt } from './rare-arts.mjs';
 // ==== （原 growth.mjs）====
 /* loop78 成長分層（開關 s.grow）：成長門類 metadata、造詣單一結算入口、同類學習加速。
    造詣不另存門類值：造詣＝Σ 各武學紀錄 r.gm 的有界貢獻 × 門類權重（衍生值，不會與 skills.palm 漂移）。
@@ -105,7 +106,8 @@ export const artById = (id) => ARTS.find((a) => a.id === id);
 // 一門屬於某傳承的武學，只有已經會該傳承武學的人（或立派時寫進本門武學表）才能學；前置與體魄門檻與讀卷相同。
 const lineageArt = (id) => { const v = HERMITAGE_VOLUMES.find((x) => x.art === id); if (v) return volumeLineage(v); const a = artById(id); return a?.hermitageLineage || a?.phase6Only ? a.own24 : null; };
 // R10：整門武學只能學來；「師父傳授」要有一個真的會這門、人在山上的人。
-export const artTeacher = (s, d, id) => s.ds.find((o) => o !== d && !o.away && !o.removed && o.adult !== false && o.arts?.[id]) || null;
+// R11：只能讀實物的奇書武學，會的人也不教。
+export const artTeacher = (s, d, id) => bookOnlyArt(id) ? null : s.ds.find((o) => o !== d && !o.away && !o.removed && o.adult !== false && o.arts?.[id]) || null;
 export const lineagesOf = (d) => new Set(Object.keys(d?.arts || {}).map(lineageArt).filter(Boolean));
 export const artOk = (d, a) => {
   if (a?.v24 && !d) return false;
