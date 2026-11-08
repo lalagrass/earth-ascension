@@ -1,4 +1,5 @@
 import {bodyAssessment} from './body-level.mjs';
+import { stalledSiteHtml } from './build-status.mjs';
 import { socialThoughtHtml } from './social-thoughts.mjs';
 import {xiaAdmission} from './wuxia.mjs';
 import {guidanceSeconds} from './admission.mjs';
@@ -78,6 +79,7 @@ await Promise.all(names.map((n) => new Promise((r) => { const i = new Image(); i
   c.beginPath(); c.moveTo(40, 13); c.quadraticCurveTo(49, 28, 46, 43); c.lineTo(42, 42); c.quadraticCurveTo(43, 26, 35, 17); c.fill();
   c.fillStyle = '#2b2524'; c.beginPath(); c.arc(39, 6, 5, 0, Math.PI * 2); c.fill(); IMG.sister = canvas; }
 let S = createState(Date.now() % 100000 | 0), speed = 1, starting = true;
+const buildProgressSeen = new WeakMap(); // UI observation only; no game state or RNG changes.
 const newGame = () => { starting = true; openStart((spec) => { S = createState(Date.now() % 100000 | 0, spec); freshGame(); starting = false; panel(); /* loop65：新局重設每局介面狀態（自動存檔計時等） */ }); };
 const incompatibleSave = (err) => { toast(err, true); document.getElementById('start')?.remove(); S = createState(Date.now() % 100000 | 0); freshGame(); newGame(); };
 window.__sect = { get S() { return S; }, set speed(v) { speed = v; }, freeze: false, hitstop: true, panel: () => panel(), get starting() { return starting; } };
@@ -336,7 +338,7 @@ function panel() {
   const availableBlueprints = blueprints.filter((f) => S.fac[f.id].site || !buildWhy(S, f.id));
   $('build').innerHTML = availableBlueprints.map((f) => { const st = S.fac[f.id], nx0 = f.stages[st.stage + 1], nx = nx0; /* loop155 村舍大院只在 v23 */
     const cost = nx ? Object.entries({ ...nx.cost, ...(nx.rare || {}) }).map(([k, v]) => `${RES_NAMES[k]}${v}`).join('・') : ''; const why = nx ? buildWhy(S, f.id) : null;
-    const bundle = st.site ? `<div class="k">收集包：${MATS.filter((k) => st.site.need[k]).map((k) => `${RES_NAMES[k]} ${st.site.delivered[k]}/${st.site.need[k]}${st.site.reserved[k] ? `（在途${st.site.reserved[k]}）` : ''}`).join('　')}｜工時 ${st.site.work.toFixed(0)}/${st.site.workNeed}s</div>${bar(100 * MATS.reduce((a, k) => a + st.site.delivered[k], 0) / Math.max(1, MATS.reduce((a, k) => a + st.site.need[k], 0)), '#a0461e')}` : '';
+    const bundle = st.site ? `<div class="k">收集包：${MATS.filter((k) => st.site.need[k]).map((k) => `${RES_NAMES[k]} ${st.site.delivered[k]}/${st.site.need[k]}${st.site.reserved[k] ? `（在途${st.site.reserved[k]}）` : ''}`).join('　')}｜工時 ${st.site.work.toFixed(0)}/${st.site.workNeed}s</div>${bar(100 * MATS.reduce((a, k) => a + st.site.delivered[k], 0) / Math.max(1, MATS.reduce((a, k) => a + st.site.need[k], 0)), '#a0461e')}${stalledSiteHtml(S, st.site, buildProgressSeen)}` : '';
     return `<div>${f.name}：${f.stages[st.stage].name} ${nx ? (st.site ? `<button data-pause="${f.id}">${st.site.paused ? '復工' : '暫停'}</button>` : `<button data-build="${f.id}" ${why ? `disabled title="${why}"` : ''}>藍圖：${nx.name}（${cost}${nx.rep ? '・名聲' + nx.rep : ''}）</button>${why && why !== '施工中' ? `<span class="k why">${why}</span>` : ''}`) : '✓'}${nx?.proposal ? `<div class="k">${disciples(S)[0]?.name || '弟子'}：「${nx.proposal}」</div>` : ''}${bundle}</div>`; }).join('') + `<details class="k"><summary>還有 ${blueprints.length - availableBlueprints.length} 項，條件未到</summary>${blueprints.filter((f) => !availableBlueprints.includes(f)).map((f) => `<div>${f.name}：${buildWhy(S, f.id)}</div>`).join('')}</details><div class="lots" data-lots>地塊 ${lotsUsed(S)}/${lotsOf(S).n} <button data-lot ${lotWhy(S) ? 'disabled' : ''}>擴地（${lotCost(S)} 錢）</button> <span class="k">${lotWhy(S) || ''}</span></div>`;
   { const c = canHire(S);
     $('labor').innerHTML = `<button id="hire-go" ${c.ok ? '' : 'disabled'}>雇工（香火錢 ${ECON.hireCoin}、糧 ${ECON.hireFood}；日薪 ${ECON.wage}）</button> <span class="k">${c.ok ? `應徵：${c.next.name}` : c.why}</span>` +
