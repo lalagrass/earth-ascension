@@ -382,7 +382,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '4.9'; /* R3 #522：隱居武學從拳譜卷／會的人傳授，立匾由玩家選時 */
+export const RULES_VERSION = '4.95'; /* R3 #522：在 R2 4.9 後，拳譜卷／傳藝與立匾玩家抉擇 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [

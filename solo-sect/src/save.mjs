@@ -154,7 +154,15 @@ export const MIGRATIONS = [
       delete o.sect.partnerDiscipleId;
     }
   } },
-  { to: '4.9', note: 'R3（#522）：隱居已學武學原樣保留，未讀的入門分卷依起手與同住者武學路線補入；舊門派局不變', up(o) {
+  { to: '4.9', note: 'R2（#521）：隱居局身體改由負重比、體能疲勞、營養推導；拿掉成長週期欄位；舊門派局不加欄位', up(o) {
+    if (!o.hermitage?.active && !o.herbalDiet) return;
+    for (const d of o.ds || []) {
+      delete d.recoveryCyclesToday; delete d.maxCyclesToday; delete d.bodyGainToday;
+      d.bodyBase ??= { strength: d.skills?.strength || 0, agility: d.skills?.agility || 0 }; // 舊檔不知起始值，以載入時為起點
+      d.fitness ??= { strength: 0, agility: 0 }; d.bodyFatigue ??= 0; d.nutrition ??= 0.7;
+    }
+  } },
+  { to: '4.95', note: 'R3（#522）：隱居已學武學原樣保留，未讀的入門分卷依起手與同住者武學路線補入；舊門派局不變', up(o) {
     if (!o.hermitage) return;
     const hero = o.ds?.find(d => d.id === 'hero');
     seedHermitageBooks(o, { people: (o.ds || []).filter(d => d !== hero).map(d => ({ awakeningPath: d.awakeningPath })) }, hero?.hermitageStarter || 'chunyangFist');

@@ -13,7 +13,7 @@ import { ensurePractice, rehearse, practiceWork, practiceWindow } from './practi
 import { BODY_TIMING, BODY_MOVES, BODY_BASE, makeBare, acquireWorkTool, moveAvailable, foeAction, FOE_ACTIONS } from './starter-combat.mjs';
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
 import { combatTacticStep, chooseCombatMove, fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive, mastery, mainOuterArt, studyChart24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
-import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar, BODY_CONDITION, bodyConditionOn, ensureBodyCondition, stepWorkCondition, restBodyCondition, cookMedicatedMeal, applyMedicatedMeal } from './economy.mjs';
+import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar, bodyConditionOn, ensureBodyCondition, stepWorkCondition, restBodyCondition, cookMedicatedMeal, applyMedicatedMeal, applyPlainMeal } from './economy.mjs';
 import { SOURCES } from './data.mjs';
 import { RECRUIT_TRAIT_VARIATION, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, ROUTINE_DEFAULT, ROUTINE_MODES, PLOT_GROW, HARVEST, NODES, EDGES, CLIFFS, FACILITIES, FENCE_FAC, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, openingScenario, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST, ROUTE, ENEMIES } from './data.mjs';
 import { chronOf, clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
@@ -587,10 +587,10 @@ function doTask(s,d,dt){
     const dur = effDur;
     if (t.timer >= dur) {
       if (t.act === 'cook') { const st = facStage(s, t.fac); resAdd(s, 'veg', -2); t.phase = 'done'; const wat = s.res.water >= 1 ? 1 : 0; if (wat) { s.res.water -= 1; book(s, 'out', 'water', 1); } const yld = st.cookYield + cookBonus(d) + wat; /* v1.6 有井水多煮一份 */ onCook(s, d); resAdd(s, 'food', yld, 'kitchen'); log(s, `${d.name}在${st.name}煮好 ${yld} 份飯`); const meal = cookMedicatedMeal(s, d); if (meal) log(s, `${d.name}採藥入鍋，把其中一份升作${meal}。`); grow(s, d, 'cooking', 6); finish(s, d); return; }
-      if (t.act === 'farm') { const p = s.plots[t.plot]; t.resv = []; grow(s, d, 'farming', 6); stepWorkCondition(d, s, 'farm'); if (p.st === 'ripe') { p.st = 'empty'; p.g = 0; d.carry = { veg: HARVEST }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; } p.st = 'grow'; p.g = 0; finish(s, d); return; }
+      if (t.act === 'farm') { const p = s.plots[t.plot]; t.resv = []; grow(s, d, 'farming', 6); stepWorkCondition(d, s, 'farm', 1, effDur); if (p.st === 'ripe') { p.st = 'empty'; p.g = 0; d.carry = { veg: HARVEST }; t.phase = 'return'; d.anim = null; goto(d, 'court'); t.walkStart = d.walked; return; } p.st = 'grow'; p.g = 0; finish(s, d); return; }
       if (A.use) {
-        if (t.act === 'eat' && bodyConditionOn(s) && s.res.medFood > 0) { const meal = applyMedicatedMeal(d, s); if (meal) { if (meal.cold) { addQi(d, restQi(d)); d.mood = clamp(d.mood + PAIR.mealSocial, 0, 100); } log(s, `${d.name}吃下${meal.name}，肌肉痠痛漸消，今日可完成 ${meal.cycles} 輪恢復${meal.cold ? '；寒潭靈泉也回了內息與心情' : ''}。`); } }
-        else { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } resAdd(s, 'food', -1, 'meal'); }
+        if (t.act === 'eat' && bodyConditionOn(s) && s.res.medFood > 0) { const meal = applyMedicatedMeal(d, s); if (meal) { if (meal.cold) { addQi(d, restQi(d)); d.mood = clamp(d.mood + PAIR.mealSocial, 0, 100); } log(s, `${d.name}吃下${meal.name}，有肉有藥，做活長得比只吃白飯快${meal.cold ? '；寒潭靈泉也回了內息與心情' : ''}。`); } }
+        else { if (s.res.food < 1) { d.task = null; d.anim = null; d.reason = '沒糧了'; return; } resAdd(s, 'food', -1, 'meal'); if (t.act === 'eat') applyPlainMeal(d, s); }
       }
       if (A.need?.hunger) { const b = facStage(s, t.fac).mealBonus || 0; d.needs.hunger = clamp(d.needs.hunger + A.need.hunger + b, 0, 100); if (b) { d.needs.social = clamp(d.needs.social + b / 2, 0, 100); think(s, d, 'hallMeal'); } likeMeal(s, d, think); }
       let trainedArt = null;
@@ -598,11 +598,11 @@ function doTask(s,d,dt){
       finishTrainingWish(d,t.act);
       if (['train', 'spar', 'cliffTrain', 'waterfallTrain'].includes(t.act)) { const moves = d.moves.map((id) => MOVES.find((m) => m.id === id)).filter((m) => m && moveAvailable(d,m)); rehearse(s,d,moves,effDur*guidanceLearning(d)*(CLIFF_TRAIN_MUL[t.act] || 1),{partner:t.act === 'spar' ? byId(s,t.partner) : null}); }
       else if (['chop','quarry','water','farm','forage', 'cliffForage1', 'cliffWater'].includes(t.act)) practiceWork(s,d,CLIFF_ACT_NODE[t.act] ? t.act === 'cliffWater' ? 'water' : 'forage' : t.act,effDur);
-      if (['chop', 'quarry', 'water', 'forage', 'train'].includes(t.act)) stepWorkCondition(d, s, t.act);
-      if (t.act === 'cliffForage1') stepWorkCondition(d, s, 'forage');
-      if (t.act === 'cliffWater') stepWorkCondition(d, s, 'water');
-      if (t.act === 'cliffTrain') stepWorkCondition(d, s, 'train');
-      if (t.act === 'waterfallTrain') stepWorkCondition(d, s, 'train', BODY_CONDITION.workGain * CLIFF_TRAIN_MUL.waterfallTrain); // 出自 Phase 6 規格：沿 Phase 5 一次練體同尺乘 1.4。
+      if (['chop', 'quarry', 'water', 'forage', 'train'].includes(t.act)) stepWorkCondition(d, s, t.act, 1, effDur);
+      if (t.act === 'cliffForage1') stepWorkCondition(d, s, 'forage', 1, effDur);
+      if (t.act === 'cliffWater') stepWorkCondition(d, s, 'water', 1, effDur);
+      if (t.act === 'cliffTrain') stepWorkCondition(d, s, 'train', 1, effDur);
+      if (t.act === 'waterfallTrain') stepWorkCondition(d, s, 'train', CLIFF_TRAIN_MUL.waterfallTrain, effDur); // 出自 Phase 6 規格：瀑下練體的負荷是一般練功的 1.4 倍（R2 起乘在負重上）。
       if (A.skill) for (const [k, v] of Object.entries(A.skill)) { if (t.act === 'cliffWater' && k === 'strength') continue; const o = grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? (facStage(s, 'yard').trainMul || 1)*guidanceLearning(d) : 1) * (CLIFF_TRAIN_MUL[t.act] || 1), isWorkAct(t.act) ? 'labor' : 'train'); if (['train', 'cliffTrain', 'waterfallTrain'].includes(t.act) && o?.trained) trainedArt = o.trained; }
       if (A.skill) cliqueTrain(s, d, t.act, A.skill, grow); // loop20 小派同修
       if (t.act === 'train') coTrain(s, d, A.skill?.style || 0, grow, relAdd, log); // loop8 同修
