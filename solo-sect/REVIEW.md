@@ -1,5 +1,35 @@
 # 可重跑驗收
 
+## 第十三輪 R4 情境列與單脈（#520，規則 4.8）
+
+實作 grass／Codex Cloud；從已合併 Phase 7 的 `50b4b89` 接 H0、R1、R4。舊局情境列仍建立同一位初始弟子與兩位出身同行；隱居有小龍女、黃蓉、獨行三列，無新局伴侶／同行者身分欄位。開山查人物真武學；單脈只有兩選，師承查已會武學和好感，熟廚額外週期看 `cooking ≥16`。4.8 遷移保留舊隱居人物 id、段數、好感；舊局只多空遷移步，golden 正規化時去掉。
+
+| 級 | 指令／證據 | 結果 |
+|---|---|---|
+| A | Node 22 `bash solo-sect/test/run.sh smoke` | 61／61；新增 R4 固定情境驗任意人情境列、獨行兩選與單脈、所學與好感授師、受控 30 日無收養入山，以及 4.7 舊檔遷移。Phase 4／7 原行為斷言只把舊人物 id 換為一般人物 id、以實際已會武學建立雙脈。 |
+| A golden | Node 22 `node solo-sect/tools/golden.mjs --write --tier hermitage` | 只重產 `test/golden/hermitage.json`；原 quick／full／saves JSON 檔逐位元組未改。完整 `--check --tier all` 與 CI 另核。 |
+| A 常數 | `node solo-sect/tools/audit-hermitage-constants.mjs --check --strict --list` | 現行來源 97／97、未標 0；[現行旋鈕清單](artifacts/r13/r4-knobs.txt)及 R1 原始 100 列清單保留。 |
+| C 舊局 bot12 | Node 22 `node solo-sect/tools/bot12.mjs <base 或 head>/solo-sect --json` | [base](artifacts/r13/bot12-base.json)／[head](artifacts/r13/bot12-head.json) SHA-256 均 `d8e5b46fb4b07edb3cb89d40519ee44d5acc457abb000b317b77ab88cc9bf68b`；自然山賊 53／62，柵欄探針 84／96、守住 48／96，winP 中位 .985，惱羞 1052。自然與探針分母不混用。 |
+| C 隱居 | Node 22 `node solo-sect/tools/r13-hermitage-report.mjs solo-sect` | [36 列原始輸出](artifacts/r13/hermitage-30d.json)：各情境 12 種子、30 日；獨行主角武學數中位 10、心情 40、住民 1；小龍女雙人主角 10／40、同住者 10／49、住民 2；黃蓉雙人主角 10／35、同住者 8／47、住民 2。6 秒步長且每拍清警示是受控 C 觀察，不宣稱自然 .25 秒可達性，不據此調參。 |
+| 畫面 | `python3 solo-sect/tools/r13-visual.py` | [獨行選項](artifacts/r13/solo-opening.png)、[單脈立匾兩選卡](artifacts/r13/solo-founding.png)，正常 UI 開局、點選並確認立宗結果。 |
+
+舊名 → 新名：`PARTNER_AWAKENING` → `SHARED_AWAKENING`、`checkPartnerAwakening` → `checkSharedAwakening`、`partnerStage` → `awakeningStage`、`rongCycles` → `skilledCookCycles`、`hermitPartner` → `hermitOpening`；舊存檔欄位只在遷移器讀取。最沒把握三處：① 黃蓉起手《逍遙遊》在她學會桃花武學前按真所學辨為丐幫，經典合宗要等她學會《落英》；② 正式拜師沿既有雙向 `APPR.aff=30`；新徒可能要先相處才有合格師父；③ 舊版 `partner` spec 與 `banner: partner` 只為既有外部呼叫相容，新局不寫該欄位。R3 才處理拳譜分卷與第二路來源。
+
+## R1 常數來由（#519）
+
+R1 commit `eb27191` 時 `node solo-sect/tools/audit-hermitage-constants.mjs --check --strict --list`：100／100 來源列吻合，未標 0，設計旋鈕 78 列／178 個數值；[旋鈕原始清單](artifacts/r13/r1-knobs.txt)。該 commit 不更改值、模擬、版號或 golden。R4 將退場的 11 列替換為開局資料與共通規則；[現行逐列來源與理由](docs/systems/hermitage-constant-audit.json)經同一工具查核為 97／97、未標 0、旋鈕 74 列／179 值。`bash solo-sect/test/run.sh smoke` 包含盤點檢查。
+
+## H0 隱居期隔離（#518，規則 4.7）
+
+世界理由與來源見 [隱居規則](docs/systems/hermitage.md)：茅廬有人同住，不代表山門已立。立匾前的名俠登門與 N58 收徒讀同一個未開山條件；開山後回到原規則，舊局不變。
+
+| 類 | 指令（repo 根目錄） | 門檻與預期輸出 |
+|---|---|---|
+| A | Node 22 `bash solo-sect/test/run.sh smoke` | exit 0；1001、1002 各跑 30 日，人物名冊等於開局名冊，無名俠卡、無舊破道館開場；立匾後重新有登門卡，N58 不再被隱居條件拒絕；4.6 舊隱居候選卡在 4.7 遷移後清除。 |
+| A golden | Node 22 `node solo-sect/tools/golden.mjs --check --tier all` | quick 4、full 32、舊檔 6 原雜湊不變；隱居 2 格依 H0 重產並全部相符。 |
+| B | `bash solo-sect/test/run.sh smoke` | H0 不加隨機公式；N62 6,000 次公式期望測試保留。 |
+| C | `node solo-sect/tools/bot12.mjs solo-sect --json` | 舊局 base／head 逐位元組相同；隱居 30 日人數由固定情境另列，不以 C 調參。 |
+
 ## Phase 7：雙人異派開山立宗（#512，規則 4.6）
 
 實作 grass／Codex Cloud。全真純陽＋小龍女可選終南雙堂，少林羅漢＋黃蓉可選剛巧合宗；正宗立匾讓另一脈只由掌門、伴侶與首徒親傳，無名派可自訂牌匾。自然武道小成、首崖或守山勝場會排出三選一卡；手動按鈕在固定頁首可直接立匾。決定一定由玩家點選，其他事件即使設為自動抉擇也不替玩家定道統。立宗後秘傳、雙堂、俸期、招募和山崖使用同一狀態；雙劍 ×1.35 僅作用於真同隊且都能戰鬥時的全真劍／玉女劍招，舊局不受影響。規則理由與規格常數見 [隱居與開山](docs/systems/hermitage.md)、[戰鬥](docs/systems/combat.md)。

@@ -432,8 +432,8 @@ export function crowdSynergyFrame(d, s = {}, view = {}) {
   }
 
   let synergyMode;
-  const isCoupleSynergy = s?.hermitage?.founded ? Boolean(
-    s.sect?.doctrine === 'dualHall' && partner && !!d?.fem !== !!partner.fem &&
+  const isCoupleSynergy = s?.hermitage ? Boolean(
+    s.hermitage.founded && s.sect?.doctrine === 'dualHall' && partner && !!d?.fem !== !!partner.fem &&
     ((d?.arts?.quanzhenSword && partner.arts?.yunvSword) || (d?.arts?.yunvSword && partner.arts?.quanzhenSword))
   ) : Boolean(
     view.isCouple ||

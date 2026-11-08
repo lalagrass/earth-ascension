@@ -248,6 +248,16 @@ export const WAVES = [
   [{ t: 0, k: 'rat' }, { t: 2, k: 'rat' }, { t: 4, k: 'rat' }, { t: 7, k: 'boar' }],
 ];
 
+// R4（#520）：開局是人物與物資資料，不替人物建立「伴侶」身分。
+// 出自 R4 規格：既有雙人起手原值保留；獨行沒有第二人或額外物資。
+export const OPENING_SCENARIOS = Object.freeze({
+  legacy: { initialDisciples: 1, origins: true, log: '一行人來到山腳一間破道館。', people: [], supplies: {} },
+  xiaolongnv: { initialDisciples: 1, origins: false, people: [{ id: 'xiaolongnv', name: '小龍女', originSect: 'gumu', style: 'palm', adult: true, fem: true, sprite: 'senior', personality: ['gentle', 'diligent'], skills: { herbal: 14, agility: 16 }, traits: { bees: true }, arts: { stepFeather: 10, basicSword: 15 }, portrait: 'assets/portraits/xiaolongnv.png', mealName: '百花玉蜂藥膳', affinity: 55, awakeningPath: 'gumu' }], supplies: {} },
+  huangrong: { initialDisciples: 1, origins: false, people: [{ id: 'huangrong', template: COMPANIONS.huangrong, name: '黃蓉', originSect: 'taohua', style: 'palm', adult: true, fem: true, sprite: 'senior', personality: ['clever', 'nimble', 'picky'], root: 2, wu: 5, skills: { herbal: 12, cooking: 16 }, arts: { basicFist: 10, xiaoyaoStep: 10 }, portrait: 'assets/portraits/huangrong.png', mealName: '桃花歸元藥膳', affinity: 55, awakeningPath: 'taohua' }], supplies: {} },
+  solo: { initialDisciples: 1, origins: false, people: [], supplies: {} },
+});
+export const openingScenario = (spec) => spec?.hermitage && typeof spec.opening === 'object' ? spec.opening : OPENING_SCENARIOS[spec?.hermitage ? (spec.opening || spec.partner || 'xiaolongnv') : 'legacy'] || OPENING_SCENARIOS.xiaolongnv;
+
 export const DISCIPLES = [
   { id: 'hero', name: '主角', root: 3, adult: true, sprite: 'hero', style: 'palm', skills: { leg: 2, palm: 10, strength: 10, farming: 5, herbal: 5, agility: 10, cooking: 3 }, traits: { diligent: 1.2 }, personality: ['diligent', 'worrier'] },
   { id: 'senior', name: '林師姐', root: 4, adult: true, fem: true, sprite: 'senior', style: 'leg', skills: { leg: 10, palm: 5, strength: 5, farming: 15, herbal: 10, agility: 12, cooking: 10 }, traits: { social: 1.3 }, personality: ['gentle', 'optimist'] },
@@ -372,7 +382,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '4.6'; /* 出自 Phase 7 規格：隱居開山與雙堂傳承 */
+export const RULES_VERSION = '4.8'; /* R4 #520：隱居起手資料列，立匾道統依實際武學 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [

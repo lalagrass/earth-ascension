@@ -101,7 +101,7 @@ export const nextLvXp = (xp) => { const p = profOf(xp); if (!p.lv) return null; 
 export const artById = (id) => ARTS.find((a) => a.id === id);
 /* loop160：v2.4 新武學只對 v2.4 新局的人開放（舊局、舊存檔看不到） */
 export const artOk = (d, a) => {
-  if ((a?.v24 && !d) || (a?.hermitageLineage && !(d?.foundedLineage && d?.stree?.includes(a.id)) && (d?.hermitagePartner || !['quanzhen', 'zhongnan'].includes(d?.sectId))) || (a?.phase6Only && d?.hermitageStarter !== 'luohanHands' && !(d?.foundedLineage && d?.stree?.includes(a.id)))) return false;
+  if ((a?.v24 && !d) || (a?.hermitageLineage && !(d?.foundedLineage && d?.stree?.includes(a.id)) && (d?.awakeningPath || !['quanzhen', 'zhongnan'].includes(d?.sectId))) || (a?.phase6Only && d?.hermitageStarter !== 'luohanHands' && !(d?.foundedLineage && d?.stree?.includes(a.id)))) return false;
   if (d?.hermitageStarter && ['quanzhenXinfa', 'shaolinXinfa'].includes(a?.id) && (d.skills?.strength || 0) < 15) return false;
   if (a?.id === 'shaolinXinfa' && d?.hermitageStarter === 'luohanHands' && (d.arts?.luohanHands?.xp || 0) < 25) return false;
   if (d?.hermitageStarter && ['jinyanStep', 'shaolinStep'].includes(a?.id) && (d.skills?.agility || 0) < 16) return false;
@@ -534,30 +534,30 @@ export const visTier = (d, mvId) => { const a = artOfMove(mvId); return a && d.a
 export const topTier = (d) => ARTS.reduce((m, a) => (artTier(d, a.id) > m.t ? { t: artTier(d, a.id), a } : m), { t: -1, a: null });
 export function learnArt(d, id, now = 0) { d.arts[id] ??= { xp: 0, last: now }; const a = artById(id); if (d.arts[id].source === 'book') d.arts[id].source = 'teacher'; if (id === 'zixia' && !d.zixia) d.zixia = 1; /* loop172 氣宗本門領悟紫霞＝第一層 */ unlockTechs(d, a); if (d.pendingArt === id) d.pendingArt = null; return a; }
 // 出自 Phase 4 規格：伴侶各四階頓悟。只在隱居雙人開局啟動；階段是存檔狀態，不抽亂數。
-const PARTNER_AWAKENING = {
-  xiaolongnv: [
+const SHARED_AWAKENING = {
+  gumu: [
     { arts: ['tianluoPalm'], ready: (d, h, s, shared) => s.hermitage.livedDays >= 2 || shared('spar') }, // 同住滿兩日或切磋一次，出自 Phase 4 規格。
     { arts: ['yunvJian', 'meinvFist'], ready: (d) => artTier(d, 'tianluoPalm') >= 1 },
     { arts: ['yunvSword'], ready: (d, h, s, shared) => artTier(d, 'yunvJian') >= 1 && ((s.aff?.[affKey(d.id, h.id)] ?? 0) >= 60 || shared('patrol', 'surrounded')) }, // 好感 60 出自 Phase 4 規格。
     { arts: ['yunv'], ready: (d, h) => artTier(h, 'quanzhenXinfa') >= 1 && artTier(d, 'yunvSword') >= 1 },
   ],
-  huangrong: [
+  taohua: [
     { arts: ['luoyingPalm'], ready: (d, h, s, shared) => s.hermitage.livedDays >= 2 || shared('spar') },
     { arts: ['lanhuaHand'], ready: (d) => artTier(d, 'luoyingPalm') >= 1 },
     { arts: ['yuxiaoSword'], ready: (d, h, s, shared) => artTier(d, 'lanhuaHand') >= 1 && ((s.aff?.[affKey(d.id, h.id)] ?? 0) >= 60 || shared('patrol', 'surrounded')) },
     { arts: ['biboXinfa'], ready: (d) => artTier(d, 'yuxiaoSword') >= 1 },
   ],
 };
-export function checkPartnerAwakening(d, hero, s) {
-  if (!s?.hermitage || !d || !hero || d.xia !== s.hermitage.partnerId) return null; // 出自 Phase 7 規格：開山後原有雙人共修鏈繼續。
-  const stage = d.partnerStage || 0, row = PARTNER_AWAKENING[d.xia]?.[stage];
+export function checkSharedAwakening(d, hero, s) {
+  if (!s?.hermitage || !d || !hero || d === hero || !d.awakeningPath) return null; // R4：暫存四階資料；R3 再改為會的人傳授。
+  const stage = d.awakeningStage || 0, row = SHARED_AWAKENING[d.awakeningPath]?.[stage];
   if (!row) return null;
   const shared = (...kinds) => (s.mem || []).some((m) => m.p === [d.id, hero.id].sort().join('|') && kinds.includes(m.k)) || (kinds.includes('surrounded') && (s.socialThoughts || []).some((e) => e.kind === 'surrounded' && [d.id, hero.id].includes(e.actor) && [d.id, hero.id].includes(e.target)));
   if (!row.ready(d, hero, s, shared)) return null;
   for (const id of row.arts) if (!d.arts?.[id]) learnArt(d, id, s.t);
-  d.partnerStage = stage + 1; s.hermitage.stage = d.partnerStage;
-  if (d.xia === 'xiaolongnv' && d.partnerStage === 4) s.hermitage.contemplateUntil = s.t + ACTIVITIES.meditate.dur; // Phase 4：合參只改畫面，沿用既有打坐時長。
-  log(s, `【雙人領悟・${d.partnerStage}/4】${d.name}與${hero.name}共修，領悟${row.arts.map((id) => `《${artById(id).name}》`).join('與')}。`);
+  d.awakeningStage = stage + 1; s.hermitage.stage = d.awakeningStage;
+  if (d.awakeningPath === 'gumu' && d.awakeningStage === 4) { s.hermitage.contemplateUntil = s.t + ACTIVITIES.meditate.dur; s.hermitage.contemplateActors = [hero.id, d.id]; } // 只改畫面，沿用打坐時長。
+  log(s, `【雙人領悟・${d.awakeningStage}/4】${d.name}與${hero.name}共修，領悟${row.arts.map((id) => `《${artById(id).name}》`).join('與')}。`);
   return row.arts;
 }
 // 出自 Phase 6 規格：入門外功 XP25＋臂力15 悟心法，心法 XP25＋身法16 悟輕功；無抽籤。

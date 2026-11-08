@@ -11,9 +11,11 @@ export const dailyRations=s=>DAY*HUNGER_PER_SECOND*seasonOf(s).hunger/ACTIVITIES
 export const bodyExperience=d=>BODY_BASE.reduce((n,id)=>n+handUses(d,id),0)/BODY_BASE.length;
 export const guidanceSeconds=d=>PRACTICE.halfUses*BODY_TIMING.reaction*practiceResidual(bodyExperience(d));
 export const competence=d=>Math.max(0,...['palm','leg','sword','staff','blade','fist'].map(k=>d.skills?.[k]||0),PRACTICE.bodyScale*(1/practiceResidual(bodyExperience(d))-1));
+export const unfoundedHermitage=s=>!!s.hermitage?.active; // 出自 H0 規格：同一狀態隔離隱居期的所有收徒入口。
 const available=d=>{const c=d.timePrev||d.timeToday;if(!c?.elapsed)return 0;return Math.min(DAY*PHASES.find(p=>p[1]==='night')[0],c.free*DAY/c.elapsed);};
 export function mentorFor(s,pupil){return s.ds.filter(m=>m!==pupil&&m.role!=='laborer'&&!m.away&&m.hp>30&&!(m.downUntil>s.t)&&bodyExperience(m)>bodyExperience(pupil)).map(m=>({m,free:available(m)-s.ds.filter(p=>p.guidanceMentor===m.id&&p!==pupil).reduce((n,p)=>n+guidanceSeconds(p),0)})).sort((a,b)=>b.free-a.free||a.m.id.localeCompare(b.m.id))[0]||null;}
 export function admissionStatus(s,candidate){
+ if(unfoundedHermitage(s))return {ok:false,why:'荒山隱居中，立匾後才收徒'};
  const beds=bedCount(s),mouths=s.ds.length+1,rations=dailyRations(s),foodNeed=mouths*rations,mentor=mentorFor(s,candidate),need=guidanceSeconds(candidate),offer=supportOffer(s,candidate);
  const outside={food:0,bed:0,status:competence(candidate),safety:0,autonomy:1,reason:'在村路討生活',...candidate.situation};
  const opinion=Math.max(0,...s.ds.map(d=>s.aff?.[`${candidate.id}>${d.id}`]||0))/100;

@@ -1,8 +1,8 @@
 import {originPeople,ORIGIN_RELATIONS} from './origins.mjs';
-import {HUNGER_PER_SECOND,admissionStatus,mentorFor,guidanceSeconds,clockActor,noteGuidance,guidanceLearning,guidanceDaily} from './admission.mjs';
+import {HUNGER_PER_SECOND,admissionStatus,unfoundedHermitage,mentorFor,guidanceSeconds,clockActor,noteGuidance,guidanceLearning,guidanceDaily} from './admission.mjs';
 import {attraction,applicantAway,bookAdmissionWork,discipleCount,policyCap,recruitmentInit,recruitmentOf,returnFromWork,sendApplicantToWork,setRecruitPolicy} from './recruitment.mjs';
 export {attraction,policyCap,setRecruitPolicy} from './recruitment.mjs';
-import {transferredDamage,moveStats,checkPartnerAwakening,checkExteriorToInteriorAwakening,hermitageInnerActive,hermitageStepActive} from './arts.mjs';
+import {transferredDamage,moveStats,checkSharedAwakening,checkExteriorToInteriorAwakening,hermitageInnerActive,hermitageStepActive} from './arts.mjs';
 import { canLeapCliff, CLIFF_ACT_NODE } from './cliff.mjs';
 import {ringCapacity,attackTokenLimit,pursueFleeing,rememberEscape,restoreSurvivor,moveToward} from './tactics.mjs';
 import {pickupDrop} from './techniques.mjs';
@@ -14,7 +14,7 @@ import { BODY_TIMING, BODY_MOVES, BODY_BASE, makeBare, acquireWorkTool, moveAvai
 import { combatTacticStep, chooseCombatMove, fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive, mastery, mainOuterArt, studyChart24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
 import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar, BODY_CONDITION, bodyConditionOn, ensureBodyCondition, stepWorkCondition, restBodyCondition, cookMedicatedMeal, applyMedicatedMeal } from './economy.mjs';
 import { SOURCES } from './data.mjs';
-import { RECRUIT_TRAIT_VARIATION, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, ROUTINE_DEFAULT, ROUTINE_MODES, PLOT_GROW, HARVEST, NODES, EDGES, CLIFFS, FACILITIES, FENCE_FAC, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, COMPANIONS, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST, ROUTE, ENEMIES } from './data.mjs';
+import { RECRUIT_TRAIT_VARIATION, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, ROUTINE_DEFAULT, ROUTINE_MODES, PLOT_GROW, HARVEST, NODES, EDGES, CLIFFS, FACILITIES, FENCE_FAC, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, openingScenario, REL_STAGES, BASE_SPEED, ECON, PLAIN, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST, ROUTE, ENEMIES } from './data.mjs';
 import { chronOf, clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
 import { MENTOR, think, moodStep, moodTarget, moodParts, traitMul, moodMul, focusMul, moodLabel, revealStep, knownTraits, relStage, relAdd, compat, aff, initPair, coTrain, askStrong, pairBoost, drawBoost, pickChatMate, admire, archRecruit } from './social.mjs';
 import { expStep, startExpedition as startExp0, canExpedition, seeEnemy, codexRows, reportText, segAt, ROUTE_END, dpsOf, raidMul, popStep, POP, fogStep, unlockStep, chapterStep } from './world.mjs';
@@ -68,44 +68,38 @@ export function createState(seed = 1, heroSpec = null) {
   const s = {
     v: SAVE_VERSION, rules: RULES_VERSION, seed, t: 0, xia: xiaInit(), hs: hsInit(), jh: jhInit(), routine: { ...ROUTINE_DEFAULT }, socialThoughts: [], forayPolicy: 'allow', forayStats: { starts: 0, patrols: 0, hurt: 0, discoveries: 0, targets: [] }, res: { wood: 0, stone: 0, coin: ECON.coinStart, food: 6, herb: 0, veg: 0, water: 0, pill: 0, tiemu: 0, lingshi: 0 }, lots: { n: LOTS.start, bought: 0 }, plots: Array.from({ length: 4 }, () => ({ st: 'empty', g: 0 })),  cap: { wood: 12, stone: 12, water: 12, pill: 10 }, day: 1, ledger: { day: 1, in: {}, out: {} }, ledgerPrev: null, laborGone: [],
     fac: Object.fromEntries(FACILITIES.map((f) => [f.id, { stage: 0, site: null }])),
-    ds: DISCIPLES.slice(0,1).map((d,i)=>mkDisciple(d,i)),
+    ds: DISCIPLES.slice(0, openingScenario(heroSpec).initialDisciples).map((d,i)=>mkDisciple(d,i)),
     rel: {}, aff: {}, families: [], eco: Object.fromEntries(Object.entries(ECO).map(([k, e]) => [k, { n: e.start, timer: 0 }])), wild: [], post: 'guard', raidT: 0, rep: 0, log: [], hunt: null, mons: [], fx: [], rngN: 0,
   };
   for (let i = 0; i < s.ds.length; i++) for (let j = i + 1; j < s.ds.length; j++) initPair(s, s.ds[i], s.ds[j], 10);
   freshV095(s);
-  log(s, '一行人來到山腳一間破道館。');
+  const opening = openingScenario(heroSpec), hermitage = !!heroSpec?.hermitage;
+  if (opening.log) log(s, opening.log);
   s.hero = null; s.choices = []; s.encExclude = []; s.unlock = []; s.chapter = { done: false }; for (const d of s.ds) d.wu ??= d.root;
   if (withHero) applyHero(s, heroSpec, initPair);
-  const hermitage = !!heroSpec?.hermitage;
   if (hermitage) {
-    const partnerId = heroSpec.partner === 'huangrong' ? 'huangrong' : 'xiaolongnv';
-    s.hermitage = { active: true, partnerId, stage: 0, founded: false, livedDays: 0 }; // 出自 Phase 4 規格。
-    s.res.medFood = 0; s.medFoodBatches = []; // 出自 Phase 5 規格：新模式才有藥膳存糧。
-    s.res.beeJelly = 0; s.res.coldWater = 0; s.hermitage.exploredCliffs = []; // 出自 Phase 6 規格：只在隱居路線新增山崖採集與探索帳。
+    s.hermitage = { active: true, stage: 0, founded: false, livedDays: 0, opening: typeof heroSpec?.opening === 'string' ? heroSpec.opening : heroSpec?.partner || 'custom' }; // R4：情境來源，不記人物關係身分。
+    s.res.medFood = 0; s.medFoodBatches = [];
+    s.res.beeJelly = 0; s.res.coldWater = 0; s.hermitage.exploredCliffs = [];
+    Object.assign(s.res, opening.supplies);
     if (s.hero) s.hero.sect24 = 'quanzhen';
-    const hero = byId(s, 'hero'), base = partnerId === 'huangrong' ? COMPANIONS.huangrong : {
-      name: '小龍女', style: 'palm', adult: true, fem: true, sprite: 'senior', personality: ['gentle', 'diligent'], skills: { ...DISCIPLES[0].skills, herbal: 14, agility: 16 },
-    };
-    const partner = mkDisciple({ ...base, id: partnerId === 'xiaolongnv' ? 'partner-xln' : 'partner-hr', adult: true }, 1);
-    partner.wu = base.wu ?? partner.root; partner.xia = partnerId; partner.portrait = `assets/portraits/${partnerId}.png`;
-    partner.companion = true; partner.hermitagePartner = true; partner.best = 0; partner.insight = {}; partner.away = false; partner.traits ??= {};
-    partner.arts = {}; partner.moves = []; partner.pendingArt = null;
-    if (partnerId === 'xiaolongnv') {
-      // 出自 Phase 4 詳細規格：捕雀功 XP 10、基礎劍 XP 15、採藥 14、身法 16。
-      Object.assign(partner.skills, { herbal: 14, agility: 16 }); partner.traits.bees = true;
-      for (const [id, xp] of [['stepFeather', 10], ['basicSword', 15]]) { partner.arts[id] = { xp }; learnArt(partner, id, s.t); }
-    } else {
-      // 出自 Phase 4 規格：廚藝 16、採藥 12、逍遙遊 XP 10；基礎拳同以入門 XP 10 起步。
-      Object.assign(partner.skills, { cooking: 16, herbal: 12 });
-      for (const [id, xp] of [['basicFist', 10], ['xiaoyaoStep', 10]]) { partner.arts[id] = { xp }; learnArt(partner, id, s.t); }
-    }
+    const hero = byId(s, 'hero');
     const starter = heroSpec.starterArt === 'luohanHands' ? 'luohanHands' : 'chunyangFist';
-    learnArt(hero, starter, s.t); hero.focus = starter; hero.hermitageStarter = starter; // 出自 Phase 6 規格：兩條外入內路線依實際起手拳譜。
-    s.ds.push(partner); initPair(s, hero, partner, 55); // 出自 Phase 4 規格：雙人初始好感 55。
-    s.hero.companion = partner.id; s.hero.companions = [partner.id]; s.encExclude.push(partnerId);
-    log(s, `【荒山隱居】${hero.name}與${partner.name}在終南茅廬安頓，先一起生活練功。`);
+    learnArt(hero, starter, s.t); hero.focus = starter; hero.hermitageStarter = starter;
+    for (const row of opening.people) {
+      const base = row.template || DISCIPLES[0];
+      const person = mkDisciple({ ...base, ...row, skills: { ...DISCIPLES[0].skills, ...base.skills, ...row.skills } }, s.ds.length);
+      person.wu = row.wu ?? person.root; person.xia = row.id; person.originSect = row.originSect;
+      person.portrait = row.portrait; person.mealName = row.mealName; person.best = 0; person.insight = {}; person.away = false;
+      person.traits = { ...(row.traits || {}) }; person.arts = {}; person.moves = []; person.pendingArt = null;
+      person.awakeningPath = row.awakeningPath;
+      for (const [id, xp] of Object.entries(row.arts || {})) { person.arts[id] = { xp }; learnArt(person, id, s.t); }
+      s.ds.push(person); initPair(s, hero, person, row.affinity);
+      s.encExclude.push(person.xia);
+    }
+    log(s, `【荒山隱居】${[hero, ...s.ds.filter((d) => d !== hero)].map((d) => d.name).join('與')}在終南茅廬安頓，先做活練功。`);
   }
-  const originRows=hermitage ? [] : originPeople(heroSpec?.kind==='template'?heroSpec.id:null,heroSpec?.answers?.[0]||0);
+  const originRows = opening.origins ? originPeople(heroSpec?.kind === 'template' ? heroSpec.id : null, heroSpec?.answers?.[0] || 0) : [];
   for(const row of originRows){const d=makeBare(mkDisciple(row,s.ds.length));Object.assign(d,{wu:row.wu,originRelation:row.originRelation,originRelationKind:row.relation,originInvented:row.invented,portrait:null,companion:true,best:0,insight:{},away:false});s.ds.push(d);for(const o of s.ds)if(o!==d)initPair(s,d,o,o.id==='hero'?ORIGIN_RELATIONS[row.relation].aff:10);}
   if(s.hero && !hermitage){s.hero.companion=originRows[0].id;s.hero.companions=originRows.map(r=>r.id);}
   // #390 part 2（擁有人 2026-11-02）：30 個規則開關已刪，所有局都是現行規則；spec 只剩主角與玩家選項（執事三項）。
@@ -176,7 +170,7 @@ export { book }; // v1.8 移到 util.mjs（各模組共用）
 export function capacity(s) { return FACILITIES.reduce((a, f) => a + (facStage(s, f.id).beds || 0), 0); }
 export function recruitNeed(s) { return RECRUIT.baseRep + RECRUIT.stepRep * (disciples(s).length - 3); }
 export function canRecruit(s) {
-  if (s.hermitage?.active) return { ok: false, why: '荒山隱居中，立匾後才收徒' }; // 出自 Phase 7 規格：收徒在開山後解鎖。
+  if (unfoundedHermitage(s)) return { ok: false, why: '荒山隱居中，立匾後才收徒' }; // 出自 H0 規格：收徒在開山後解鎖。
   const next = econOf(s).pool.find((p) => !applicantAway(s,p.id)) || RECRUIT_POOL.find((p) => !s.ds.some((d) => d.id === p.id || (d.id === 'hero' && s.hero?.id === p.id)) && !applicantAway(s,p.id)); // 義學帶回的人先評估食宿與師父
   if (!next) return { ok: false, why: '暫無人選' };
   if(!next.school&&attraction(s)<recruitNeed(s))return {ok:false,why:`還未聽說山門（名聲與自產成績 ${attraction(s).toFixed(1)}/${recruitNeed(s)}）`,heard:false};
@@ -592,7 +586,7 @@ function doTask(s,d,dt){
       if ((t.act === 'chat' || t.act === 'spar') && t.partner && d.id < t.partner) askStrong(s, d, byId(s, t.partner), grow, think, log); // loop8 請教
       // N42：平常練習只累積 N33 的手眼熟；整門功夫須有師父或譜。
       if (t.act === 'spar' && t.partner) { const p = byId(s, t.partner); if (d.id < p.id) { relAdd(s, d, p, 2); log(s, `${d.name}與${p.name}在${facStage(s, 'yard').offers.includes('spar') ? '木樁場' : '空地上徒手'}切磋`); addMem(s, d, p, 'spar'); const strength = (x) => (x.skills?.palm || 0) + (x.skills?.leg || 0) + (x.skills?.agility || 0); if (strength(d) !== strength(p)) recordSocialEvent(s, 'sparLoss', strength(d) > strength(p) ? d : p, strength(d) > strength(p) ? p : d); } }
-      if (s.hermitage && (t.act === 'train' || t.act === 'spar')) checkPartnerAwakening(byId(s, s.hermitage.partnerId === 'huangrong' ? 'partner-hr' : 'partner-xln'), byId(s, 'hero'), s);
+      if (s.hermitage && (t.act === 'train' || t.act === 'spar')) for (const person of s.ds) checkSharedAwakening(person, byId(s, 'hero'), s);
       if (A.fun) d.needs.fun = clamp((d.needs.fun ?? 60) + A.fun, 0, 100);
       if (t.act === 'leisure') think(s, d, 'idled');
       if (t.act === 'forage') d.needs.fun = clamp((d.needs.fun ?? 60) + (d.personality.includes('playful') ? 20 : 8), 0, 100);
@@ -998,10 +992,9 @@ function injuryDaily(s) { for (const d of [...s.ds,...s.mons,...(s.band?.members
 export function dailyPipeline(s) {
   if (bodyConditionOn(s)) for (const d of s.ds) ensureBodyCondition(d, s.day); // 出自 Phase 5 規格：睡眠換日恢復並歸零每日週期。
   if (s.hermitage) {
-    const partner = s.ds.find((d) => d.id === (s.hermitage.partnerId === 'huangrong' ? 'partner-hr' : 'partner-xln'));
     const hero = s.ds.find((d) => d.id === 'hero');
-    if (hero && partner && !hero.away && !partner.away) s.hermitage.livedDays = (s.hermitage.livedDays || 0) + 1;
-    checkPartnerAwakening(partner, hero, s);
+    if (hero && !hero.away && s.ds.some((d) => d !== hero && !d.away)) s.hermitage.livedDays = (s.hermitage.livedDays || 0) + 1;
+    for (const person of s.ds) checkSharedAwakening(person, hero, s);
     checkExteriorToInteriorAwakening(hero, s);
     if (s.hermitage.active) queueHermitageFounding(s);
   }

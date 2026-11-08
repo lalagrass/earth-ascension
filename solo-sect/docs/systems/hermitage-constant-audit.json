@@ -1,0 +1,1013 @@
+{
+  "about": "Phase 4–7 numerical source lines, plus inherited lines touched by integration; line hashes let the auditor detect changed values without duplicating code.",
+  "baseline": "535dacd",
+  "groups": {
+    "phase4_people": {
+      "category": "設計旋鈕",
+      "source": "Phase 4 #509／詳細起手契約",
+      "reason": "起手技能、武學 XP、好感與同住時間決定雙人初始差距；本項只分類已獲授權的既存數值，不改驗收值。"
+    },
+    "phase4_arts": {
+      "category": "設計旋鈕",
+      "source": "Phase 4 #509 與既有 TIERS／武學品級",
+      "reason": "武學品級、前置級數與效果倍率是 Phase 4 已批准的設計值，不是從真實世界量測或公式唯一算出。"
+    },
+    "phase5_body": {
+      "category": "設計旋鈕",
+      "source": "Phase 5 #510 規格／BODY_CONDITION",
+      "reason": "疲勞、日增長和藥膳恢復數值調整做活節奏；這些是已授權的原規格值。"
+    },
+    "phase5_visual": {
+      "category": "設計旋鈕",
+      "source": "Phase 5 #510 微距畫面契約",
+      "reason": "畫面級距、晃動及光暈尺寸只控制可見的勞作姿態與特效，不寫回模擬。"
+    },
+    "phase6_gate": {
+      "category": "設計旋鈕",
+      "source": "Phase 6 #511 山崖與入內前置規格",
+      "reason": "外功 XP、體魄及崖段身法門檻界定可穩定完成的動作；保持規格指定值。"
+    },
+    "phase6_activity": {
+      "category": "設計旋鈕",
+      "source": "Phase 6 #511 活動表與既有採藥／練功工時",
+      "reason": "崖段工時、耗力與收集量參照舊活動，但具體數值仍是 Phase 6 已批准的節奏設計值。"
+    },
+    "phase6_effect": {
+      "category": "設計旋鈕",
+      "source": "Phase 6 #511 由外而內效果契約",
+      "reason": "心法、輕功與崖段練體倍率直接取已批准規格，連到原傷害、耗力和移動公式。"
+    },
+    "phase6_visual": {
+      "category": "設計旋鈕",
+      "source": "Phase 6 #511 微距與地圖畫面契約",
+      "reason": "節點座標、上躍弧線及岩壁幾何用既有 Canvas 尺度排出可辨三段動作，不影響模擬位置。"
+    },
+    "phase7_founding": {
+      "category": "設計旋鈕",
+      "source": "Phase 7 #512 開山規格",
+      "reason": "開山階段與初始名聲沿已批准的立宗收益；未提前給舊開局。"
+    },
+    "phase7_twin": {
+      "category": "設計旋鈕",
+      "source": "Phase 7 #512 雙劍規格",
+      "reason": "合璧倍率及近身畫面沿已批准規格，只在真同場交手判定。"
+    },
+    "inherited": {
+      "category": "推導",
+      "source": "Phase 4 前既有規則／535dacd 基線",
+      "reason": "此行因 Phase 4–7 接線而出現在 diff；數值原本已在通用規則，並非本期新旋鈕。",
+      "scope": "inherited"
+    },
+    "h0": {
+      "category": "推導",
+      "source": "H0 #518／原奇遇排程",
+      "reason": "遷移後允許原奇遇重新排程，沿用既有未觸發時間哨兵。",
+      "scope": "later"
+    },
+    "phase4_visual": {
+      "category": "設計旋鈕",
+      "source": "Phase 4 #509 合參畫面契約",
+      "reason": "雙人同坐的 Canvas 座標及縮放只呈現關係階段，不改時間、相性或戰鬥。"
+    },
+    "phase6_arts": {
+      "category": "設計旋鈕",
+      "source": "Phase 6 #511 與既有武學品級／內功 schema",
+      "reason": "羅漢路新武學的品級與效果值是 Phase 6 已批准的設計值；既有武學 schema 決定欄位形式，沒有唯一決定數值。"
+    },
+    "r4_reused": {
+      "category": "設計旋鈕",
+      "source": "R4 #520 將 Phase 4／7 已批准的起手、共修與開山數值改放資料列",
+      "reason": "搬移原值，不增加新門檻或調整 A／B；之後若要調手感值須另取擁有人同意。",
+      "scope": "r4"
+    },
+    "r4_relationship": {
+      "category": "推導",
+      "source": "R4 #520 與原 initPair／pairBest 好感模型",
+      "reason": "0.1 與 60 是原同門默契比例及好感刻度；正式師徒另沿既有 APPR.aff，無新好感常數。",
+      "scope": "r4"
+    },
+    "r4_visual": {
+      "category": "設計旋鈕",
+      "source": "Phase 4 合參 Canvas 既有位置與 R4 #520 人物泛化",
+      "reason": "畫布座標及共修分段從原畫面搬來，不改模擬。",
+      "scope": "r4"
+    }
+  },
+  "entries": [
+    {
+      "file": "src/arts.mjs",
+      "sha256": "96435a336ffaddc08f6495eb599a8ebaec70e24ebb75f04ce34494d4a2f9225a",
+      "values": [
+        "15"
+      ],
+      "group": "phase6_gate"
+    },
+    {
+      "file": "src/arts.mjs",
+      "sha256": "89f4719aa0bfd92e597a4663d66bd196cfd2845254722dd33af7036325849c65",
+      "values": [
+        "25"
+      ],
+      "group": "phase6_gate"
+    },
+    {
+      "file": "src/arts.mjs",
+      "sha256": "0d42199c922923958c5f158fab673ef41b7907582c5744da40498cead23eaae5",
+      "values": [
+        "16"
+      ],
+      "group": "phase6_gate"
+    },
+    {
+      "file": "src/arts.mjs",
+      "sha256": "9c20f7e1c1d3c931ce61e84b77109c144c0bf05ecf9e1ed1af6672e85566ab19",
+      "values": [
+        "2"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/arts.mjs",
+      "sha256": "46ef1200a9cffb816052acd4874c39d35ab30ba0b1a104adb0fd1993aa447ea7",
+      "values": [
+        "1.35"
+      ],
+      "group": "phase5_body"
+    },
+    {
+      "file": "src/arts.mjs",
+      "sha256": "1c134422ec473603fa15d862bfde07417727845dc2404bc2574ae60670ba5656",
+      "values": [
+        "2"
+      ],
+      "group": "phase4_people"
+    },
+    {
+      "file": "src/arts.mjs",
+      "sha256": "e96d9c893f10e24da038f3dcec16e19cdd6b749af3079b71dd9c2d9f1e271cf3",
+      "values": [
+        "60"
+      ],
+      "group": "phase4_people"
+    },
+    {
+      "file": "src/arts.mjs",
+      "sha256": "220abf248947a301df1b48b4c66e994d104ba3856b959d3185a0aecdfe285966",
+      "values": [
+        "2"
+      ],
+      "group": "phase4_people"
+    },
+    {
+      "file": "src/arts.mjs",
+      "sha256": "229bf29f7a97799e6052504065f5e4bc95e0dbdc96669457035f8755510e5b27",
+      "values": [
+        "60"
+      ],
+      "group": "phase4_people"
+    },
+    {
+      "file": "src/arts.mjs",
+      "sha256": "0fab3e56b4150553e9e2cf668f3846b975b3da38f34d185553a7bcb0d5d2537d",
+      "values": [
+        "25",
+        "15"
+      ],
+      "group": "phase6_gate"
+    },
+    {
+      "file": "src/arts.mjs",
+      "sha256": "d5585f7c2011b21c311ab466fd1d6b5da3f416e62bef0955e9d1953af17d5f8b",
+      "values": [
+        "25",
+        "16"
+      ],
+      "group": "phase6_gate"
+    },
+    {
+      "file": "src/arts.mjs",
+      "sha256": "e6412984d5a514b828e4c1e3d18e17b5f42f223dcc2a18ad10b3585a0429df57",
+      "values": [
+        "1.28"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/arts.mjs",
+      "sha256": "8b9aa9c125b75e5da40ce1d67f0ae87d05d247986ede78963b0ad0dbb4897c49",
+      "values": [
+        "2",
+        "4"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/arts.mjs",
+      "sha256": "067d70022cff5cb4ce18162fd98a86eb97372d32e442330507c6ed9b730a2f56",
+      "values": [
+        "4",
+        "2",
+        "4"
+      ],
+      "group": "phase4_arts"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "3aeb09232635e35e17e601fe006a2f61d65df3d2f5faf69f512ca0e66d3333e0",
+      "values": [
+        "335",
+        "595",
+        "800",
+        "455",
+        "900",
+        "145"
+      ],
+      "group": "phase6_visual"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "bc44794bc818093acd072d8896e54df5a844d97c1c4f61ec13e38ae6d1a8a2c2",
+      "values": [
+        "8",
+        "6",
+        "6",
+        "2"
+      ],
+      "group": "phase6_activity"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "57304b663c99dfa8912e79954b655fcbde3547de4af7b08de1590c659f9fabb6",
+      "values": [
+        "10",
+        "10",
+        "5"
+      ],
+      "group": "phase6_activity"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "93359aa1f1df847bba250543ed20fb9053d4baf97180754cb9fb950f91829aea",
+      "values": [
+        "8",
+        "7",
+        "4"
+      ],
+      "group": "phase6_activity"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "ed6a2aa7ea148eb893f27ef2f517682caf3b52d64046dea26fcedad35a3eb96b",
+      "values": [
+        "10",
+        "10",
+        "5"
+      ],
+      "group": "phase6_activity"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "b720ac72d50954674ab829f05f0c224bad7000e351b6e58b62f4a910e6eb342d",
+      "values": [
+        "12",
+        "8"
+      ],
+      "group": "phase6_activity"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "aebaad3c33b3fa8ceaca8074ad212199179eab07bfb0bc96db8b43851cb95c32",
+      "values": [
+        "16"
+      ],
+      "group": "phase6_gate"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "5a6531fd3f3ac70ba74d7f37be3d0faa948913b1558388ebea1a388c5ca1c598",
+      "values": [
+        "24"
+      ],
+      "group": "phase6_gate"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "32fb29f632436e667515323a7bb1f707c356e6b252e8046d82ff9cdde57dd737",
+      "values": [
+        "32",
+        "2"
+      ],
+      "group": "phase6_gate"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "e3125fbba20e6de06c630bf1bdd855495ce3c010b0eefd00a3ef7f51d07838e2",
+      "values": [
+        "0.15"
+      ],
+      "group": "phase4_arts"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "16c22affe4a41352a80110709fbd6676be383d1a6802600e9899172a775b838c",
+      "values": [
+        "2"
+      ],
+      "group": "phase4_arts"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "aa2cc7457162dcd8df39cbefebd63a0fa7ebc570ae6043ebb14d14e7f9363855",
+      "values": [
+        "2",
+        "0.4"
+      ],
+      "group": "phase4_arts"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "863f4f929c4c7a1883a3c953600ea1bc4ec865ef23230f253c3b7e91cbe0473c",
+      "values": [
+        "2",
+        "0.4"
+      ],
+      "group": "phase4_arts"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "64e32cb33a233504ec93c1ed27459ac5c51f7bcb9b2f4d4f603459202b594858",
+      "values": [
+        "3",
+        "0.4"
+      ],
+      "group": "phase4_arts"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "24f46b8c08faa697d1e0ea32795805f633ad68c11621a853d6a80d99c0b9dfe5",
+      "values": [
+        "3",
+        "2"
+      ],
+      "group": "phase4_arts"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "cbeb70802cd81d3bc1b73078a47a8bd4173c8a9edbc22192951c10ebb377972b",
+      "values": [
+        "2"
+      ],
+      "group": "phase6_arts"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "c2875a370fb0c314e6c1e090543a00139c854f1fbaa4f268f81f81ebf5016bcb",
+      "values": [
+        "2",
+        "0.4"
+      ],
+      "group": "phase6_arts"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "afe92e66e6608710f50f37918b3687394aeeaf25aad7c87e52515b74f9cbc7c1",
+      "values": [
+        "3"
+      ],
+      "group": "phase6_arts"
+    },
+    {
+      "file": "src/economy.mjs",
+      "sha256": "1b4076c13a47c73af0e458f1afa6f152204b22b85c2c6a95b4ea785ce01e8ae4",
+      "values": [
+        "18",
+        "36",
+        "100",
+        "1.2",
+        "0.3"
+      ],
+      "group": "phase5_body"
+    },
+    {
+      "file": "src/economy.mjs",
+      "sha256": "98b814c90512ffdc65343f6ae2fb858176191749e19569025c3ee8d25359f243",
+      "values": [
+        "30",
+        "30",
+        "35",
+        "25",
+        "25",
+        "35"
+      ],
+      "group": "phase5_body"
+    },
+    {
+      "file": "src/economy.mjs",
+      "sha256": "dbb57b1cafe1634909eb1ff1bdb779c93247926821633d2d691a8da0aef44617",
+      "values": [
+        "65",
+        "3",
+        "4"
+      ],
+      "group": "phase5_body"
+    },
+    {
+      "file": "src/exp-map-combat.mjs",
+      "sha256": "a5596e851abd59d8bf94d63fed3e9430514132d1c63e44c7e951eb3c926cab46",
+      "values": [
+        "1.3"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/growth-playback.mjs",
+      "sha256": "76a5319809917837e0d1158368e5ee978c9309fa8ab58b61cd4fd1a3812da16a",
+      "values": [
+        "12",
+        "16",
+        "18",
+        "2",
+        "3"
+      ],
+      "group": "phase5_visual"
+    },
+    {
+      "file": "src/growth-playback.mjs",
+      "sha256": "57abc4deeb6c980e9c917b86788fcde4983ef0b807ae90fb32a32d8e39f8d5e3",
+      "values": [
+        "3",
+        "3",
+        "3",
+        "2",
+        "2",
+        "2"
+      ],
+      "group": "phase6_visual"
+    },
+    {
+      "file": "src/growth-playback.mjs",
+      "sha256": "db7c8fa75efefa392f7c46f64d733bc57ae703bab75303ab8c9ecb68fc54d40b",
+      "values": [
+        "24",
+        "3",
+        "2"
+      ],
+      "group": "phase6_visual"
+    },
+    {
+      "file": "src/growth-playback.mjs",
+      "sha256": "fe1ebe4a055740ed72a2ded921619b66664cbb0287493f99dd7b304de2202e89",
+      "values": [
+        "3",
+        "3",
+        "3"
+      ],
+      "group": "phase6_visual"
+    },
+    {
+      "file": "src/growth-playback.mjs",
+      "sha256": "6880283aff64f3329712980de901c0f86a8868ace6fabbedf16fc505c1b4a6b3",
+      "values": [
+        "2"
+      ],
+      "group": "phase5_visual"
+    },
+    {
+      "file": "src/growth-playback.mjs",
+      "sha256": "fada7f81f5ccb87438a55eef05301cc36622353d13fff0fdb74f56cdee38adc4",
+      "values": [
+        "0.25",
+        "3.5",
+        "3.5"
+      ],
+      "group": "phase5_visual"
+    },
+    {
+      "file": "src/growth-playback.mjs",
+      "sha256": "cebf311e10b8f8d884973648d6eaf127835f319af0a4a963dcf9f9d07ed8ab00",
+      "values": [
+        "18"
+      ],
+      "group": "phase5_visual"
+    },
+    {
+      "file": "src/growth-playback.mjs",
+      "sha256": "dddff2733f3dde3611a0c031dbb6a333eabe9c3c9318d33e4c1e9cb92b8ba747",
+      "values": [
+        "0.7"
+      ],
+      "group": "phase5_visual"
+    },
+    {
+      "file": "src/growth-playback.mjs",
+      "sha256": "59c81441524278a4be683341bf9e5f5abb18963142706034735148e54326e371",
+      "values": [
+        "2",
+        "0.7"
+      ],
+      "group": "phase5_visual"
+    },
+    {
+      "file": "src/main.mjs",
+      "sha256": "bb8a408a9599481135d577b2b35f7bc83d1333ef297a93f455c496d14be089ef",
+      "values": [
+        "18",
+        "14",
+        "36",
+        "12"
+      ],
+      "group": "phase6_visual"
+    },
+    {
+      "file": "src/main.mjs",
+      "sha256": "7dc9dc0b695b7b12386a929544f25f9d453ff34b9f46fdf512cb966070e1d5f9",
+      "values": [
+        "22"
+      ],
+      "group": "phase6_visual"
+    },
+    {
+      "file": "src/paper-doll.mjs",
+      "sha256": "7c5b8f6c3dbdd46b6ddd706d41dc7982024d315100744240051eae6f451827d1",
+      "values": [
+        "8",
+        "35"
+      ],
+      "group": "phase5_visual"
+    },
+    {
+      "file": "src/paper-doll.mjs",
+      "sha256": "93b38d774410edf66d273a1e4d67b31e5c41416f04d2b757be32b687f6daa2ee",
+      "values": [
+        "24",
+        "43",
+        "10",
+        "25"
+      ],
+      "group": "phase5_visual"
+    },
+    {
+      "file": "src/pose-render.mjs",
+      "sha256": "60010d2e5b39755df20630180b97420dcf449b260b6e64ea26449a736b5758aa",
+      "values": [
+        "190",
+        "175"
+      ],
+      "group": "phase6_visual"
+    },
+    {
+      "file": "src/pose-render.mjs",
+      "sha256": "17b37ea7fe8ff86808576206380d94989ecf1077ef400a4ab2646d3ecadb3e13",
+      "values": [
+        "42",
+        "76",
+        "42"
+      ],
+      "group": "phase6_visual"
+    },
+    {
+      "file": "src/pose-render.mjs",
+      "sha256": "bb19017e7532d978f689ade17ac2c9e18fd348f8f3738307bfa3c2ca4191bd32",
+      "values": [
+        "56",
+        "32",
+        "38",
+        "32"
+      ],
+      "group": "phase6_visual"
+    },
+    {
+      "file": "src/pose-render.mjs",
+      "sha256": "68f31562e758e735fdf7ab70534ace48ef4021725178fce174a077f419a1086f",
+      "values": [
+        "284",
+        "58",
+        "76",
+        "58"
+      ],
+      "group": "phase6_visual"
+    },
+    {
+      "file": "src/pose-render.mjs",
+      "sha256": "07890acc9df8a07c603f3e59163fffb5bc67d6b1a67e1fc6aaace947adb3b848",
+      "values": [
+        "306",
+        "64",
+        "14",
+        "64"
+      ],
+      "group": "phase6_visual"
+    },
+    {
+      "file": "src/pose-render.mjs",
+      "sha256": "7562c1d6bf51a8803bd16eae4d0ca05d50781cb4b61e506283759e0a770d1595",
+      "values": [
+        "94",
+        "79",
+        "84",
+        "12",
+        "168",
+        "53",
+        "116",
+        "10"
+      ],
+      "group": "phase6_visual"
+    },
+    {
+      "file": "src/pose-render.mjs",
+      "sha256": "13ad371ef09bc740902e2d9500eb4276c9b6637df54222f40474b434c878f690",
+      "values": [
+        "232",
+        "109",
+        "67",
+        "6"
+      ],
+      "group": "phase6_visual"
+    },
+    {
+      "file": "src/pose-render.mjs",
+      "sha256": "b40f48fbe9b5a51fc86baf35179a9060aa87941fd9c9b361b9606eca0c7d1fa5",
+      "values": [
+        "0.8",
+        "0.8"
+      ],
+      "group": "phase4_visual"
+    },
+    {
+      "file": "src/pose-render.mjs",
+      "sha256": "e2378579251d8b929fb2928f578d862bc6f86312bb753619bc467e99c41e3512",
+      "values": [
+        "180",
+        "34"
+      ],
+      "group": "phase4_visual"
+    },
+    {
+      "file": "src/pose-render.mjs",
+      "sha256": "179c35dbedc88bc580cfb13a2279c733fc4bbe426bb91078c25a5458765b6f38",
+      "values": [
+        "64",
+        "7"
+      ],
+      "group": "phase6_visual"
+    },
+    {
+      "file": "src/pose-render.mjs",
+      "sha256": "edf55f16a2fe579ed52ad02741754ef0d01c947bb323fcbdedfc97d291ca80c3",
+      "values": [
+        "8",
+        "8"
+      ],
+      "group": "phase6_visual"
+    },
+    {
+      "file": "src/pose-render.mjs",
+      "sha256": "7616e2c8867453473513de2bd9bee2f7fc04e4efa0177ad3d5a351014545629a",
+      "values": [
+        "0.25"
+      ],
+      "group": "phase5_visual"
+    },
+    {
+      "file": "src/pose-render.mjs",
+      "sha256": "0edf4a09595df908aeb072bba26d755777ac7e4a1bc0a534f88b15ca2a1185e7",
+      "values": [
+        "70",
+        "45",
+        "80",
+        "2"
+      ],
+      "group": "phase5_visual"
+    },
+    {
+      "file": "src/pose-render.mjs",
+      "sha256": "39d9c6e14fabf0351fdaadf8f9f0dea24739f2da8cd4a0459a801a62dcf2b36b",
+      "values": [
+        "2"
+      ],
+      "group": "phase6_visual"
+    },
+    {
+      "file": "src/pose-render.mjs",
+      "sha256": "2bf1a93d2d043c1dcb26aba688b5677bd7a8278a45acb14fd29f1f196afaa3ad",
+      "values": [
+        "28",
+        "9"
+      ],
+      "group": "phase6_visual"
+    },
+    {
+      "file": "src/pose-render.mjs",
+      "sha256": "0759b41d7a3c97a8e107d21c0e7940126ce8dafc5ba55c72468d092c3c18c9d0",
+      "values": [
+        "35",
+        "32",
+        "11",
+        "22"
+      ],
+      "group": "phase6_visual"
+    },
+    {
+      "file": "src/pose-render.mjs",
+      "sha256": "530f5c6a7752ad09ca1b40a1a6db8ab3c36977fd13ac89050e6ba675c8bbc15a",
+      "values": [
+        "100"
+      ],
+      "group": "phase5_visual"
+    },
+    {
+      "file": "src/save.mjs",
+      "sha256": "103385365cc77f81a866a347210b51c3b7a49f0ca7e07ba156ecf4d745a112b1",
+      "values": [
+        "1e9"
+      ],
+      "group": "h0"
+    },
+    {
+      "file": "src/sim.mjs",
+      "sha256": "0e05a456d15ca81e3481d8deaaf80043320a6b29873d9eb74233ba989a29a738",
+      "values": [
+        "60"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/sim.mjs",
+      "sha256": "fe49d64148a272d959619ca84db4cd86c2b25e9b2d2d48578660c16f32015c61",
+      "values": [
+        "40",
+        "15",
+        "30"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/sim.mjs",
+      "sha256": "8ae6ef33d429c5f9a8af92b3756f73f536489ebfc263e0d870bde2a44f740c09",
+      "values": [
+        "95",
+        "2",
+        "10"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/sim.mjs",
+      "sha256": "d40a1f9e459405cd1563b8f41ad052c02673006a260d797d9a938aa68045ba1c",
+      "values": [
+        "2"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/sim.mjs",
+      "sha256": "ee32847740cdfa2cf4df5966cb2ee6e323f144648f3cad7716adb8f35e8f840e",
+      "values": [
+        "15",
+        "10",
+        "15"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/sim.mjs",
+      "sha256": "252f159de36ac83939a138b84796cfa2f854441177435c7f2fa7caee323e6069",
+      "values": [
+        "100",
+        "0.7",
+        "30",
+        "0.8",
+        "0.002",
+        "1.35"
+      ],
+      "group": "inherited",
+      "valueGroups": [
+        "inherited",
+        "inherited",
+        "inherited",
+        "inherited",
+        "inherited",
+        "phase6_effect"
+      ]
+    },
+    {
+      "file": "src/sim.mjs",
+      "sha256": "af6396cdd523b891c40356793278311cf188c0b6efd7d414a700e1b35d3d2fa5",
+      "values": [
+        "1.25",
+        "1.4"
+      ],
+      "group": "phase6_effect"
+    },
+    {
+      "file": "src/sim.mjs",
+      "sha256": "f217742721089508e508d3ad7f6e7b6e99c094870a3073ced5e6b54216efdc93",
+      "values": [
+        "0.75",
+        "100"
+      ],
+      "group": "phase6_effect"
+    },
+    {
+      "file": "src/sim.mjs",
+      "sha256": "fc1aacff7400e525612916703c1175df10aa00b414df7f1c5755e468d72b87e8",
+      "values": [
+        "3",
+        "0.6",
+        "1.5",
+        "100",
+        "3",
+        "100",
+        "100",
+        "4"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/sim.mjs",
+      "sha256": "8cec05c2c31f7c25a5964de35d278bb39540221f08b59c934bf3fec39ecc3a31",
+      "values": [
+        "2",
+        "6"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/sim.mjs",
+      "sha256": "28230b0a749ee1121202a87b02f7ca5585bee901d04d07929a6c71860edc8419",
+      "values": [
+        "6"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/sim.mjs",
+      "sha256": "6de6fba8e020b7a3fb86ff0a87d944370597614bd2c57e214afaee5e898c50c6",
+      "values": [
+        "100"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/sim.mjs",
+      "sha256": "47baec0b6f2bcea942aca431d291d7611275452478d00d04788632cab6d99cfc",
+      "values": [
+        "8"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/sim.mjs",
+      "sha256": "866a9248671431bccaa32346b4531fa99147bd39c5910049de63f8bd5351492a",
+      "values": [
+        "55"
+      ],
+      "group": "phase6_gate"
+    },
+    {
+      "file": "src/sim.mjs",
+      "sha256": "a02b473fa257ba4fdf2d6eea335855c27d07f70cd91d4842a444e05585f1ccc3",
+      "values": [
+        "100",
+        "400"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/sim.mjs",
+      "sha256": "ccef69190f56538fef4bf46e94dac14afddd8236b066daf2c230e0092649fc32",
+      "values": [
+        "25"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/sim.mjs",
+      "sha256": "77fd19014c0fa4db912e6499760caf381cd6af1aabd42b3f59f768b82d872b11",
+      "values": [
+        "50"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/start-ui.mjs",
+      "sha256": "90988abfe98a2b54e1af4beb5a1083dd96bc4e96b9dc7e49cebba5609d17eaec",
+      "values": [
+        "9"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/threat.mjs",
+      "sha256": "4fa209dfa7b265681ab444759c24cc1a4dfef492ec695a2402a401b2c5956475",
+      "values": [
+        "0.6"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/twin-swords.mjs",
+      "sha256": "d83d55c6b87618641aa20c50f29bf42a1ba815767eb9b3d67cf1ccab48f9a0d4",
+      "values": [
+        "1.35"
+      ],
+      "group": "phase7_twin"
+    },
+    {
+      "file": "src/twin-swords.mjs",
+      "sha256": "0018eb2d81acd03327413f202ca2fdafc3eda78a62687db62dc62657d67cfa80",
+      "values": [
+        "25"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/twin-swords.mjs",
+      "sha256": "c1ae525ef117386592da682098870c00e4e577f2d56105b9ece7b553e87a3d3c",
+      "values": [
+        "25"
+      ],
+      "group": "inherited"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "70aa3266e93bb650ffb54d56db5f2505e19c065857b784f2fb9f3c1d7b943dc8",
+      "values": [
+        "14",
+        "16",
+        "10",
+        "15",
+        "55"
+      ],
+      "group": "r4_reused"
+    },
+    {
+      "file": "src/data.mjs",
+      "sha256": "c7c10c573dd7b352f3cea81a8f0fa400bd0699445a6f82ea8c1177610604b472",
+      "values": [
+        "2",
+        "5",
+        "12",
+        "16",
+        "10",
+        "10",
+        "55"
+      ],
+      "group": "r4_reused"
+    },
+    {
+      "file": "src/economy.mjs",
+      "sha256": "92bf27b520d765c6758c00eed62cb960146c69078728b072f0475e6feb1d1467",
+      "values": [
+        "16"
+      ],
+      "group": "r4_reused"
+    },
+    {
+      "file": "src/hero.mjs",
+      "sha256": "b0cbd5249d47a99f3c4c7740ee2f74930a1ea24e2b49037db0f063f35b1dc84b",
+      "values": [
+        "0.1",
+        "60"
+      ],
+      "group": "r4_relationship"
+    },
+    {
+      "file": "src/sect.mjs",
+      "sha256": "d205d23982cbc6444e1f329eabdb5114efe7eddb5488f04e79f2014d7cafac66",
+      "values": [
+        "10"
+      ],
+      "group": "r4_reused"
+    },
+    {
+      "file": "src/arts.mjs",
+      "sha256": "043682f02a494f86a9a64b6c30bb0d6379968c658af0e93c89dc22f76a378deb",
+      "values": [
+        "4"
+      ],
+      "group": "r4_reused"
+    },
+    {
+      "file": "src/pose-render.mjs",
+      "sha256": "17f49be7092c0bf98ee588d147313530cf602a13251d475aa32f5840c310d4b6",
+      "values": [
+        "110",
+        "250"
+      ],
+      "group": "r4_visual"
+    },
+    {
+      "file": "src/sect.mjs",
+      "sha256": "9e73322d88e247415b41004712bd1150aa32677417381df0a5232ae81050331a",
+      "values": [
+        "2"
+      ],
+      "group": "r4_reused"
+    }
+  ],
+  "scanFiles": [
+    "src/hero.mjs",
+    "src/start-ui.mjs"
+  ]
+}

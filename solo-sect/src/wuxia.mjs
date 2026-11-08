@@ -1,4 +1,4 @@
-import {admissionStatus,prepareAdmission} from './admission.mjs';
+import {admissionStatus,prepareAdmission,unfoundedHermitage} from './admission.mjs';
 import {BODY_BASE} from './starter-combat.mjs';
 import { styleOk } from './bonds.mjs';
 import { favSort } from './sect.mjs';
@@ -76,6 +76,7 @@ export function xiaPool(s) {
 export function xiaStep(s, H) {
   s.xia ??= xiaInit(); const X = s.xia;
   teachStep(s, H); leaveStep(s);
+  if (unfoundedHermitage(s)) return; // 出自 H0 規格：未立匾沒有名俠登門卡；立匾後按原排程恢復。
   if (X.pending || s.t - X.lastT < DAY || !s.choices) return;
   for (const k of xiaPool(s)) {
     if ((X.declined[k] || -1e9) > s.t - 3 * DAY || !XIA[k].need(s)) continue;

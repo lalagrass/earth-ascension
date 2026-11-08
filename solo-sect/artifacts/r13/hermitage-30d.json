@@ -1,0 +1,1211 @@
+{
+  "days": 30,
+  "secondsPerTick": 6,
+  "alertPolicy": "clear after each tick",
+  "scope": "controlled C observation; not a natural 0.25-second reachability claim",
+  "summary": {
+    "solo": {
+      "heroMoodMedian": 40,
+      "heroArtCountMedian": 10,
+      "residentCountMedian": 1,
+      "residentMoodMedian": null,
+      "residentArtCountMedian": null
+    },
+    "xiaolongnv": {
+      "heroMoodMedian": 40,
+      "heroArtCountMedian": 10,
+      "residentCountMedian": 2,
+      "residentMoodMedian": 49,
+      "residentArtCountMedian": 10
+    },
+    "huangrong": {
+      "heroMoodMedian": 35,
+      "heroArtCountMedian": 10,
+      "residentCountMedian": 2,
+      "residentMoodMedian": 47,
+      "residentArtCountMedian": 8
+    }
+  },
+  "rows": [
+    {
+      "opening": "solo",
+      "seed": 1001,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 40,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "breath": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 8,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 54.11
+          }
+        }
+      ]
+    },
+    {
+      "opening": "solo",
+      "seed": 1002,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 30,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "breath": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 16,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 55,
+            "jinyanStep": 0
+          }
+        }
+      ]
+    },
+    {
+      "opening": "solo",
+      "seed": 1003,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 30,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "breath": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 8,
+            "pushPalm": 16,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 8
+          }
+        }
+      ]
+    },
+    {
+      "opening": "solo",
+      "seed": 1004,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 41,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "breath": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "pushPalm": 16,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 39.03
+          }
+        }
+      ]
+    },
+    {
+      "opening": "solo",
+      "seed": 1005,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 36,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "breath": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 46.33
+          }
+        }
+      ]
+    },
+    {
+      "opening": "solo",
+      "seed": 1006,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 40,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "breath": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 47.93,
+            "jinyanStep": 0
+          }
+        }
+      ]
+    },
+    {
+      "opening": "solo",
+      "seed": 1007,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 40,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "breath": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 21,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 100
+          }
+        }
+      ]
+    },
+    {
+      "opening": "solo",
+      "seed": 1008,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 40,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "breath": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 33.38
+          }
+        }
+      ]
+    },
+    {
+      "opening": "solo",
+      "seed": 1009,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 37,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "breath": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 8
+          }
+        }
+      ]
+    },
+    {
+      "opening": "solo",
+      "seed": 1010,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 30,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "breath": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "pushPalm": 16,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 19.5
+          }
+        }
+      ]
+    },
+    {
+      "opening": "solo",
+      "seed": 1011,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 51,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "breath": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 8,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 28.76
+          }
+        }
+      ]
+    },
+    {
+      "opening": "solo",
+      "seed": 1012,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 40,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "breath": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "pushPalm": 16,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 21
+          }
+        }
+      ]
+    },
+    {
+      "opening": "xiaolongnv",
+      "seed": 1001,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 30,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 8,
+            "breath": 0,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 27.12
+          }
+        },
+        {
+          "id": "xiaolongnv",
+          "mood": 41,
+          "arts": {
+            "stepFeather": 30.51,
+            "basicSword": 29.72,
+            "basicFist": 4.85,
+            "huashanSword": 54.57,
+            "breath": 0,
+            "tianluoPalm": 25.01,
+            "yunvJian": 71.88,
+            "meinvFist": 0,
+            "yunvSword": 62.71,
+            "yunv": 32.86
+          }
+        }
+      ]
+    },
+    {
+      "opening": "xiaolongnv",
+      "seed": 1002,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 68,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "breath": 0,
+            "pushPalm": 16,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 16.25
+          }
+        },
+        {
+          "id": "xiaolongnv",
+          "mood": 49,
+          "arts": {
+            "stepFeather": 20.9,
+            "basicSword": 29.72,
+            "basicFist": 4.85,
+            "huashanSword": 33.6,
+            "breath": 0,
+            "tianluoPalm": 25.42,
+            "quanzhenSword": 100,
+            "yunvJian": 39.29,
+            "meinvFist": 0,
+            "yunvSword": 33.13
+          }
+        }
+      ]
+    },
+    {
+      "opening": "xiaolongnv",
+      "seed": 1003,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 40,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "breath": 0,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 40
+          }
+        },
+        {
+          "id": "xiaolongnv",
+          "mood": 73,
+          "arts": {
+            "stepFeather": 22.44,
+            "basicSword": 29.72,
+            "basicFist": 4.85,
+            "huashanSword": 33.91,
+            "breath": 0,
+            "tianluoPalm": 25.06,
+            "yunvJian": 63.45,
+            "meinvFist": 0,
+            "yunvSword": 55,
+            "yunv": 55,
+            "quanzhenSword": 55
+          }
+        }
+      ]
+    },
+    {
+      "opening": "xiaolongnv",
+      "seed": 1004,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 40,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "breath": 0,
+            "pushPalm": 16,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 48.89
+          }
+        },
+        {
+          "id": "xiaolongnv",
+          "mood": 30,
+          "arts": {
+            "stepFeather": 26.27,
+            "basicSword": 29.72,
+            "basicFist": 4.85,
+            "huashanSword": 32.03,
+            "breath": 0,
+            "tianluoPalm": 25.18,
+            "yunvJian": 72.4,
+            "meinvFist": 0,
+            "yunvSword": 71,
+            "yunv": 71.11
+          }
+        }
+      ]
+    },
+    {
+      "opening": "xiaolongnv",
+      "seed": 1005,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 35,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "breath": 0,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 18.79
+          }
+        },
+        {
+          "id": "xiaolongnv",
+          "mood": 50,
+          "arts": {
+            "stepFeather": 26.67,
+            "basicSword": 29.72,
+            "basicFist": 4.85,
+            "huashanSword": 30.3,
+            "breath": 0,
+            "tianluoPalm": 25.69,
+            "yunvJian": 82.13,
+            "meinvFist": 0,
+            "yunvSword": 81.82
+          }
+        }
+      ]
+    },
+    {
+      "opening": "xiaolongnv",
+      "seed": 1006,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 35,
+          "arts": {
+            "basicFist": 10,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "breath": 0,
+            "quanzhenXinfa": 20.41
+          }
+        },
+        {
+          "id": "xiaolongnv",
+          "mood": 36,
+          "arts": {
+            "stepFeather": 31.33,
+            "basicSword": 29.72,
+            "basicFist": 4.85,
+            "huashanSword": 33.75,
+            "breath": 0,
+            "tianluoPalm": 25.95,
+            "yunvJian": 50.4,
+            "meinvFist": 0,
+            "yunvSword": 38.18,
+            "quanzhenSword": 95.76
+          }
+        }
+      ]
+    },
+    {
+      "opening": "xiaolongnv",
+      "seed": 1007,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 25,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 8,
+            "breath": 0,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 35.61
+          }
+        },
+        {
+          "id": "xiaolongnv",
+          "mood": 36,
+          "arts": {
+            "stepFeather": 29.35,
+            "basicSword": 29.72,
+            "basicFist": 4.85,
+            "huashanSword": 32.03,
+            "breath": 0,
+            "tianluoPalm": 25.83,
+            "yunvJian": 67.06,
+            "meinvFist": 0,
+            "yunvSword": 59.41,
+            "yunv": 59.9
+          }
+        }
+      ]
+    },
+    {
+      "opening": "xiaolongnv",
+      "seed": 1008,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 35,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "breath": 0,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 35
+          }
+        },
+        {
+          "id": "xiaolongnv",
+          "mood": 36,
+          "arts": {
+            "stepFeather": 27.11,
+            "basicSword": 29.72,
+            "basicFist": 4.85,
+            "huashanSword": 32.18,
+            "breath": 0,
+            "tianluoPalm": 25.74,
+            "yunvJian": 83.03,
+            "meinvFist": 0,
+            "yunvSword": 73.91,
+            "yunv": 40.65
+          }
+        }
+      ]
+    },
+    {
+      "opening": "xiaolongnv",
+      "seed": 1009,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 45,
+          "arts": {
+            "basicFist": 10,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "breath": 0,
+            "quanzhenXinfa": 30.83
+          }
+        },
+        {
+          "id": "xiaolongnv",
+          "mood": 55,
+          "arts": {
+            "stepFeather": 25.67,
+            "basicSword": 29.72,
+            "basicFist": 4.85,
+            "huashanSword": 26.82,
+            "breath": 0,
+            "tianluoPalm": 25.98,
+            "yunvJian": 75.07,
+            "meinvFist": 0,
+            "yunvSword": 55,
+            "yunv": 39.42
+          }
+        }
+      ]
+    },
+    {
+      "opening": "xiaolongnv",
+      "seed": 1010,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 35,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "breath": 0,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 26.39
+          }
+        },
+        {
+          "id": "xiaolongnv",
+          "mood": 36,
+          "arts": {
+            "stepFeather": 32.12,
+            "basicSword": 29.72,
+            "basicFist": 4.85,
+            "huashanSword": 33.87,
+            "breath": 0,
+            "tianluoPalm": 25.17,
+            "yunvJian": 74.28,
+            "meinvFist": 0,
+            "yunvSword": 67.64,
+            "yunv": 47.25,
+            "quanzhenSword": 47.81
+          }
+        }
+      ]
+    },
+    {
+      "opening": "xiaolongnv",
+      "seed": 1011,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 40,
+          "arts": {
+            "basicFist": 10,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "breath": 0,
+            "quanzhenXinfa": 32.84
+          }
+        },
+        {
+          "id": "xiaolongnv",
+          "mood": 51,
+          "arts": {
+            "stepFeather": 35.04,
+            "basicSword": 29.72,
+            "basicFist": 4.85,
+            "huashanSword": 34.72,
+            "breath": 0,
+            "tianluoPalm": 25.01,
+            "yunvJian": 74.14,
+            "meinvFist": 0,
+            "yunvSword": 68.56,
+            "yunv": 68.94
+          }
+        }
+      ]
+    },
+    {
+      "opening": "xiaolongnv",
+      "seed": 1012,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 40,
+          "arts": {
+            "basicFist": 10,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "breath": 0,
+            "quanzhenXinfa": 39.02
+          }
+        },
+        {
+          "id": "xiaolongnv",
+          "mood": 55,
+          "arts": {
+            "stepFeather": 28.96,
+            "basicSword": 29.72,
+            "basicFist": 4.85,
+            "huashanSword": 53.84,
+            "breath": 0,
+            "tianluoPalm": 25.01,
+            "yunvJian": 43.9,
+            "meinvFist": 0,
+            "yunvSword": 29.82,
+            "quanzhenSword": 100,
+            "yunv": 30.61
+          }
+        }
+      ]
+    },
+    {
+      "opening": "huangrong",
+      "seed": 1001,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 36,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 8,
+            "breath": 0,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 16
+          }
+        },
+        {
+          "id": "huangrong",
+          "mood": 49,
+          "arts": {
+            "basicFist": 10,
+            "xiaoyaoStep": 54.7,
+            "basicSword": 0,
+            "breath": 0,
+            "luoyingPalm": 26.15,
+            "lanhuaHand": 100,
+            "yuxiaoSword": 66.15,
+            "biboXinfa": 0
+          }
+        }
+      ]
+    },
+    {
+      "opening": "huangrong",
+      "seed": 1002,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 30,
+          "arts": {
+            "basicFist": 10,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "breath": 0,
+            "quanzhenXinfa": 33.88,
+            "jinyanStep": 0
+          }
+        },
+        {
+          "id": "huangrong",
+          "mood": 33,
+          "arts": {
+            "basicFist": 10,
+            "xiaoyaoStep": 55,
+            "basicSword": 0,
+            "luoyingPalm": 26.34,
+            "breath": 0,
+            "chunyangFist": 0,
+            "lanhuaHand": 100,
+            "yuxiaoSword": 54.9,
+            "biboXinfa": 0
+          }
+        }
+      ]
+    },
+    {
+      "opening": "huangrong",
+      "seed": 1003,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 30,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "breath": 0,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 40.39
+          }
+        },
+        {
+          "id": "huangrong",
+          "mood": 33,
+          "arts": {
+            "basicFist": 10,
+            "xiaoyaoStep": 60.64,
+            "basicSword": 0,
+            "breath": 0,
+            "luoyingPalm": 25.17,
+            "lanhuaHand": 100,
+            "yuxiaoSword": 83.08,
+            "biboXinfa": 0,
+            "chunyangFist": 0
+          }
+        }
+      ]
+    },
+    {
+      "opening": "huangrong",
+      "seed": 1004,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 34,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "breath": 0,
+            "pushPalm": 16,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 29.7
+          }
+        },
+        {
+          "id": "huangrong",
+          "mood": 39,
+          "arts": {
+            "basicFist": 10,
+            "xiaoyaoStep": 56.46,
+            "basicSword": 0,
+            "breath": 0,
+            "luoyingPalm": 25.22,
+            "lanhuaHand": 100,
+            "yuxiaoSword": 96.46,
+            "biboXinfa": 0
+          }
+        }
+      ]
+    },
+    {
+      "opening": "huangrong",
+      "seed": 1005,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 52,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "breath": 0,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 31.42
+          }
+        },
+        {
+          "id": "huangrong",
+          "mood": 33,
+          "arts": {
+            "basicFist": 10,
+            "xiaoyaoStep": 48.39,
+            "basicSword": 0,
+            "luoyingPalm": 25.55,
+            "breath": 0,
+            "lanhuaHand": 100,
+            "yuxiaoSword": 54.9,
+            "biboXinfa": 0
+          }
+        }
+      ]
+    },
+    {
+      "opening": "huangrong",
+      "seed": 1006,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 49,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "breath": 0,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 12.7
+          }
+        },
+        {
+          "id": "huangrong",
+          "mood": 47,
+          "arts": {
+            "basicFist": 10,
+            "xiaoyaoStep": 51.46,
+            "basicSword": 0,
+            "breath": 0,
+            "luoyingPalm": 25.52,
+            "lanhuaHand": 100,
+            "yuxiaoSword": 97.33,
+            "chunyangFist": 0,
+            "biboXinfa": 0
+          }
+        }
+      ]
+    },
+    {
+      "opening": "huangrong",
+      "seed": 1007,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 35,
+          "arts": {
+            "basicFist": 10,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 8,
+            "breath": 0,
+            "quanzhenXinfa": 31.87
+          }
+        },
+        {
+          "id": "huangrong",
+          "mood": 47,
+          "arts": {
+            "basicFist": 10,
+            "xiaoyaoStep": 55,
+            "basicSword": 0,
+            "luoyingPalm": 25.63,
+            "breath": 0,
+            "lanhuaHand": 100,
+            "yuxiaoSword": 99.9,
+            "biboXinfa": 0
+          }
+        }
+      ]
+    },
+    {
+      "opening": "huangrong",
+      "seed": 1008,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 25,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "breath": 0,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 30.14
+          }
+        },
+        {
+          "id": "huangrong",
+          "mood": 28,
+          "arts": {
+            "basicFist": 10,
+            "xiaoyaoStep": 75.79,
+            "basicSword": 0,
+            "breath": 0,
+            "luoyingPalm": 38.51,
+            "lanhuaHand": 100,
+            "yuxiaoSword": 100,
+            "biboXinfa": 0
+          }
+        }
+      ]
+    },
+    {
+      "opening": "huangrong",
+      "seed": 1009,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 30,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "breath": 0,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 19.98
+          }
+        },
+        {
+          "id": "huangrong",
+          "mood": 48,
+          "arts": {
+            "basicFist": 10,
+            "xiaoyaoStep": 55,
+            "basicSword": 0,
+            "breath": 0,
+            "luoyingPalm": 26.15,
+            "lanhuaHand": 100,
+            "yuxiaoSword": 97.31,
+            "biboXinfa": 0
+          }
+        }
+      ]
+    },
+    {
+      "opening": "huangrong",
+      "seed": 1010,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 25,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "breath": 0,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 30.34
+          }
+        },
+        {
+          "id": "huangrong",
+          "mood": 43,
+          "arts": {
+            "basicFist": 10,
+            "xiaoyaoStep": 54.11,
+            "basicSword": 0,
+            "breath": 0,
+            "luoyingPalm": 26.44,
+            "lanhuaHand": 100,
+            "yuxiaoSword": 95.12,
+            "biboXinfa": 0,
+            "chunyangFist": 0
+          }
+        }
+      ]
+    },
+    {
+      "opening": "huangrong",
+      "seed": 1011,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 56,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "breath": 0,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 45.2
+          }
+        },
+        {
+          "id": "huangrong",
+          "mood": 56,
+          "arts": {
+            "basicFist": 10,
+            "xiaoyaoStep": 59.07,
+            "basicSword": 0,
+            "breath": 0,
+            "luoyingPalm": 26.42,
+            "lanhuaHand": 100,
+            "yuxiaoSword": 100,
+            "biboXinfa": 0
+          }
+        }
+      ]
+    },
+    {
+      "opening": "huangrong",
+      "seed": 1012,
+      "day": 31,
+      "people": [
+        {
+          "id": "hero",
+          "mood": 35,
+          "arts": {
+            "basicFist": 25.5,
+            "chunyangFist": 100,
+            "basicSword": 0,
+            "haotianPalm": 0,
+            "quanzhenSword": 0,
+            "breath": 0,
+            "pushPalm": 0,
+            "wuhuBlade": 0,
+            "tuinaHand": 0,
+            "quanzhenXinfa": 68.28
+          }
+        },
+        {
+          "id": "huangrong",
+          "mood": 53,
+          "arts": {
+            "basicFist": 10,
+            "xiaoyaoStep": 65.06,
+            "basicSword": 0,
+            "breath": 0,
+            "luoyingPalm": 28.66,
+            "lanhuaHand": 100,
+            "yuxiaoSword": 100,
+            "chunyangFist": 0,
+            "biboXinfa": 0
+          }
+        }
+      ]
+    }
+  ]
+}
