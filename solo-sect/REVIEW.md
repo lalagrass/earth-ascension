@@ -11,7 +11,7 @@
 | C bot12 | Node 22 `node solo-sect/tools/bot12.mjs solo-sect --json`；[上一版](artifacts/r24/bot12-base.json)／[本輪](artifacts/r24/bot12-head.json)。自然山賊 0→0（未立匾）；獨立有柵探針勝 96/96→96/96、守住 84→86、傷 5→3；惱羞 254→285。早期研讀改變活動選擇，故後續 RNG 與訓練變動；這是 C，不為比例調參。 |
 | C 可玩性 | Node 22 `node solo-sect/tools/playability-report.mjs solo-sect`（30 日）與 `--days=60`；各為 4 開局 × 自然／引導 × 12 種子，1 秒 tick、每拍清 alert；與 [上一版 30 日](artifacts/playability/base-30d.json) 對照。[本輪 30 日](artifacts/r24/playability-head-30d.json)／[本輪 60 日](artifacts/r24/playability-head-60d.json)。這是受控 C 觀察。 |
 
-舊名 → 新名：`CLIFF_TRAIN_MUL` → 移除，崖上成長由 `focusMul` 接心情；`source` 不再兼作卷等級，新增 `HERMITAGE_VOLUMES.level`。舊 `RUMOR_KINDS.rescue` 沒有產生處，24b 刪除；24g 沿既有 `defend` 守護見聞。24a 列出所有在場成年者的當下選擇；職責是分數偏好而非硬性的工作能力鎖，不重算評分。
+舊名 → 新名：`CLIFF_TRAIN_MUL`、`yard.trainMul` → 移除，個人練功由 `focusMul` 接心情，木樁場以站位與切磋提供價值；`source` 不再兼作卷等級，新增 `HERMITAGE_VOLUMES.level`。舊 `RUMOR_KINDS.rescue` 沒有產生處，24b 刪除；24g 沿既有 `defend` 守護見聞。24a 列出所有在場成年者的當下選擇；職責是分數偏好而非硬性的工作能力鎖，不重算評分。
 
 最沒把握三處：① 進階崖卷原未逐列寫體魄類別，本輪依功法類別在資料列寫力量或身法並套原中點式；② 住處觀感的 -6…+6 與價值 25 點尺度是 R1 設計旋鈕，只按既有心情基線／低落界設計，待 C／review 觀察；③ 村民石頭的石料取一次採石搬運量，讓具名捐修可追溯但不替代長期採石。
 

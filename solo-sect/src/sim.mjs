@@ -631,7 +631,7 @@ function doTask(s,d,dt){
       if (t.act === 'cliffWater') stepWorkCondition(d, s, 'water', 1, effDur);
       if (t.act === 'cliffTrain') stepWorkCondition(d, s, 'train', 1, effDur);
       if (t.act === 'waterfallTrain') stepWorkCondition(d, s, 'train', 1, effDur); // 24e：比例與衝擊力有量尺前，不另加瀑下負荷。
-      if (A.skill) for (const [k, v] of Object.entries(A.skill)) { if (t.act === 'cliffWater' && k === 'strength') continue; const o = grow(s, d, k, v * (t.act === 'train' || t.act === 'spar' ? (facStage(s, 'yard').trainMul || 1)*guidanceLearning(d) : 1), isWorkAct(t.act) ? 'labor' : 'train'); if (['train', 'cliffTrain', 'waterfallTrain'].includes(t.act) && o?.trained) trainedArt = o.trained; }
+      if (A.skill) for (const [k, v] of Object.entries(A.skill)) { if (t.act === 'cliffWater' && k === 'strength') continue; const o = grow(s, d, k, v * (['train', 'spar', 'cliffTrain', 'waterfallTrain'].includes(t.act) ? guidanceLearning(d) : 1), isWorkAct(t.act) ? 'labor' : 'train'); if (['train', 'cliffTrain', 'waterfallTrain'].includes(t.act) && o?.trained) trainedArt = o.trained; } // 24e：木樁場多站位與切磋，不給地點 XP 倍率；同人同心情崖／場每次成長相等。
       if (A.skill) cliqueTrain(s, d, t.act, A.skill, grow); // loop20 小派同修
       if (t.act === 'train') coTrain(s, d, A.skill?.style || 0, grow, relAdd, log); // loop8 同修
       if (trainedArt) noteTrain31(d, artById(trainedArt)); /* 一次練功只記一次，同修再長的熟練不另計 */

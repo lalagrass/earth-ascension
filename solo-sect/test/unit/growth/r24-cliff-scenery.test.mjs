@@ -16,6 +16,7 @@ test('24e 崖與空地同一練功基數；景致按休閒同秒數解悶並提�
   assert.ok(focusMul(d) > before);
   const practice = (act, node) => {
     const s = createState(17, { kind: 'custom', hermitage: true, opening: 'solo', starterArt: 'chunyangFist' });
+    s.fac.yard.stage = 1; // A：比較已建木樁場，不把空地冒充木樁場。
     const hero = s.ds[0]; hero.at = node; hero.pos = [...NODES[node]]; hero.path = [];
     hero.task = { act, node, ...(act === 'train' ? { fac: 'yard' } : {}), phase: 'do', timer: 0 };
     for (let n = 0; n < ACTIVITIES.train.dur / 0.25; n++) {

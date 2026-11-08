@@ -15,7 +15,7 @@ test('24g 無相符見聞不捐；村民循守護傳聞具名捐修，一則只�
   assert.equal(gift.donor, 'shitou');
   assert.equal(gift.facility, 'dorm');
   assert.equal(s.fac.dorm.site.delivered.stone, gift.amount);
-  assert.ok(s.log.some(row => row.msg.includes('石頭') && row.msg.includes(`第 ${rumor.id} 則見聞`)));
+  assert.ok(s.log.some(row => row.msg.includes('石頭') && row.msg.includes('宿舍') && row.msg.includes(`第 ${rumor.id} 則見聞`)));
   assert.equal(donateRepairs(s), null);
   assert.equal(s.repairDonations.gifts.length, 1);
 });

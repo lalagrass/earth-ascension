@@ -146,10 +146,10 @@ export const FACILITIES = [
     { name: '大殿', impression: 6, sprite: 'hall_s1', offers: ['rest', 'learn'], restRate: 6, beds: 3, learnDur: 2, cost: { wood: 20, stone: 14, coin: 120 }, rare: { tiemu: 3, lingshi: 2 }, work: 50, rep: 70 },
   ] },
   { id: 'yard', name: '外功場', node: 'yard', stages: [
-    { name: '空地', sprite: null, offers: ['train', 'meditate'], trainMul: 1, spots: YARD_OPEN_SPOTS },
-    { name: '木樁場', sprite: null, offers: ['train', 'spar', 'meditate'], trainMul: 1.6, dummies: 3, spots: [...YARD_DUMMY_SPOTS.slice(0, 3), ...YARD_OPEN_SPOTS], cost: { wood: 6 }, work: 15 },
-    { name: '演武場', sprite: null, offers: ['train', 'spar', 'meditate'], trainMul: 1.8, dummies: 4, spots: [...YARD_DUMMY_SPOTS.slice(0, 4), ...YARD_OPEN_SPOTS], cost: { wood: 12, stone: 8, coin: 40 }, rare: { tiemu: 2 }, work: 30, rep: 30 },
-    { name: '演武廣場', sprite: null, offers: ['train', 'spar', 'meditate'], trainMul: 2.0, dummies: 5, spots: [...YARD_DUMMY_SPOTS, ...YARD_OPEN_SPOTS], cost: { wood: 14, stone: 12, coin: 90 }, rare: { tiemu: 2, lingshi: 1 }, work: 40, rep: 60 },
+    { name: '空地', sprite: null, offers: ['train', 'meditate'], spots: YARD_OPEN_SPOTS },
+    { name: '木樁場', sprite: null, offers: ['train', 'spar', 'meditate'], dummies: 3, spots: [...YARD_DUMMY_SPOTS.slice(0, 3), ...YARD_OPEN_SPOTS], cost: { wood: 6 }, work: 15 },
+    { name: '演武場', sprite: null, offers: ['train', 'spar', 'meditate'], dummies: 4, spots: [...YARD_DUMMY_SPOTS.slice(0, 4), ...YARD_OPEN_SPOTS], cost: { wood: 12, stone: 8, coin: 40 }, rare: { tiemu: 2 }, work: 30, rep: 30 },
+    { name: '演武廣場', sprite: null, offers: ['train', 'spar', 'meditate'], dummies: 5, spots: [...YARD_DUMMY_SPOTS, ...YARD_OPEN_SPOTS], cost: { wood: 14, stone: 12, coin: 90 }, rare: { tiemu: 2, lingshi: 1 }, work: 40, rep: 60 },
   ] },
   { id: 'dorm', name: '宿舍', node: 'dorm', stages: [
     { name: '破寢舍', impression: -6, sprite: 'dorm_s0', offers: [] },

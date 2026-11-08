@@ -1,5 +1,5 @@
 // 24g：具名村民依自己聽過的守護／善行傳聞，一次捐給正在修的設施。
-import { RECRUIT_POOL } from './data.mjs';
+import { FACILITIES, RECRUIT_POOL } from './data.mjs';
 import { publicRumors, RUMOR_KINDS } from './rumors.mjs';
 import { book, log, resAdd } from './util.mjs';
 
@@ -26,7 +26,7 @@ export function donateRepairs(s) {
     (s.repairDonations ??= { usedRumors: [], gifts: [] }).usedRumors.push(rumor.id);
     const record = { rumor: rumor.id, donor: donor.id, facility, kind, amount };
     s.repairDonations.gifts.push(record);
-    log(s, `【修繕捐助】${donor.name}聽${rumor.witness}傳來第 ${rumor.id} 則見聞，帶 ${amount} ${kind === 'coin' ? '香火錢' : kind === 'wood' ? '木' : '石'}指定修${facility}。`);
+    log(s, `【修繕捐助】${donor.name}聽${rumor.witness}傳來第 ${rumor.id} 則見聞，帶 ${amount} ${kind === 'coin' ? '香火錢' : kind === 'wood' ? '木' : '石'}指定修${FACILITIES.find(f => f.id === facility)?.name || facility}。`);
     return record;
   }
   return null;
