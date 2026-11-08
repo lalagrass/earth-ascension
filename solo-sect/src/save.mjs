@@ -120,6 +120,11 @@ export const MIGRATIONS = [
     o.hermitage.doctrine ??= null;
     if (o.hermitage.founded) { o.herbalDiet ??= true; o.sect.doctrine ??= o.hermitage.doctrine || 'dualHall'; }
   } },
+  { to: '4.7', note: 'H0（#518）：隱居未立匾時撤掉舊版已排的名俠登門卡，保留已在山上的人；舊開局無變更', up(o) {
+    if (!o.hermitage?.active) return;
+    if (o.xia?.pending) { o.xia.pending = null; o.xia.lastT = -1e9; }
+    o.choices = (o.choices || []).filter((c) => !c.xia);
+  } },
 ];
 // 1.45→1.5 一步遷移：菜畦 busy 旗標、進行中的歇息/煮飯/切磋聊天 → s.resv；補 tired/bored
 export function v150Up(o) {

@@ -1,5 +1,5 @@
 import {originPeople,ORIGIN_RELATIONS} from './origins.mjs';
-import {HUNGER_PER_SECOND,admissionStatus,mentorFor,guidanceSeconds,clockActor,noteGuidance,guidanceLearning,guidanceDaily} from './admission.mjs';
+import {HUNGER_PER_SECOND,admissionStatus,unfoundedHermitage,mentorFor,guidanceSeconds,clockActor,noteGuidance,guidanceLearning,guidanceDaily} from './admission.mjs';
 import {attraction,applicantAway,bookAdmissionWork,discipleCount,policyCap,recruitmentInit,recruitmentOf,returnFromWork,sendApplicantToWork,setRecruitPolicy} from './recruitment.mjs';
 export {attraction,policyCap,setRecruitPolicy} from './recruitment.mjs';
 import {transferredDamage,moveStats,checkPartnerAwakening,checkExteriorToInteriorAwakening,hermitageInnerActive,hermitageStepActive} from './arts.mjs';
@@ -73,10 +73,10 @@ export function createState(seed = 1, heroSpec = null) {
   };
   for (let i = 0; i < s.ds.length; i++) for (let j = i + 1; j < s.ds.length; j++) initPair(s, s.ds[i], s.ds[j], 10);
   freshV095(s);
-  log(s, '一行人來到山腳一間破道館。');
+  const hermitage = !!heroSpec?.hermitage;
+  if (!hermitage) log(s, '一行人來到山腳一間破道館。');
   s.hero = null; s.choices = []; s.encExclude = []; s.unlock = []; s.chapter = { done: false }; for (const d of s.ds) d.wu ??= d.root;
   if (withHero) applyHero(s, heroSpec, initPair);
-  const hermitage = !!heroSpec?.hermitage;
   if (hermitage) {
     const partnerId = heroSpec.partner === 'huangrong' ? 'huangrong' : 'xiaolongnv';
     s.hermitage = { active: true, partnerId, stage: 0, founded: false, livedDays: 0 }; // 出自 Phase 4 規格。
@@ -176,7 +176,7 @@ export { book }; // v1.8 移到 util.mjs（各模組共用）
 export function capacity(s) { return FACILITIES.reduce((a, f) => a + (facStage(s, f.id).beds || 0), 0); }
 export function recruitNeed(s) { return RECRUIT.baseRep + RECRUIT.stepRep * (disciples(s).length - 3); }
 export function canRecruit(s) {
-  if (s.hermitage?.active) return { ok: false, why: '荒山隱居中，立匾後才收徒' }; // 出自 Phase 7 規格：收徒在開山後解鎖。
+  if (unfoundedHermitage(s)) return { ok: false, why: '荒山隱居中，立匾後才收徒' }; // 出自 H0 規格：收徒在開山後解鎖。
   const next = econOf(s).pool.find((p) => !applicantAway(s,p.id)) || RECRUIT_POOL.find((p) => !s.ds.some((d) => d.id === p.id || (d.id === 'hero' && s.hero?.id === p.id)) && !applicantAway(s,p.id)); // 義學帶回的人先評估食宿與師父
   if (!next) return { ok: false, why: '暫無人選' };
   if(!next.school&&attraction(s)<recruitNeed(s))return {ok:false,why:`還未聽說山門（名聲與自產成績 ${attraction(s).toFixed(1)}/${recruitNeed(s)}）`,heard:false};

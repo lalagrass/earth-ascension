@@ -372,7 +372,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '4.6'; /* 出自 Phase 7 規格：隱居開山與雙堂傳承 */
+export const RULES_VERSION = '4.7'; /* 出自 H0 規格：未立匾的隱居局隔離登門與收徒 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [
