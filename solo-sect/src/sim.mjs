@@ -15,7 +15,7 @@ import { ensurePractice, rehearse, practiceWork, practiceWindow } from './practi
 import { BODY_TIMING, BODY_MOVES, BODY_BASE, makeBare, acquireWorkTool, moveAvailable, foeAction, FOE_ACTIONS } from './starter-combat.mjs';
 // 單一權威模擬核心：純 JS、無 DOM，可在 Node 測試。
 import { combatTacticStep, chooseCombatMove, fretStep, noteFret, interceptOpening, breakWindup, taijiReturn, partHit, partHeal, ZJ, zjHas, zjMark, zjWindK, zjIntercept, zjRegen, perfectDodge, witchK, WITCH, lightCross, FLAIR, RING, handleTake, CLASH, windOf, windFrac, resolveSwing, depthOf, postureRegen, postureOf, focusOf, CATS, temperOf, TEMPER29, qiInjuryAdd28, qiInjuryCure28, DRIVE28, innerDrive28, stepDrive, mastery, mainOuterArt, studyChart24, qiOf, NG23, yuqiOn, yuqiMul, qiStrikeMul, qiAoeAdd, swordCdMul, swordDmgMul, medQi, restQi, hasSpec, SPEC, specM, specK, bestSpec, zhenK, specGrow, readStudy, NG, addQi, spendQi, qiMax, shieldHit, breakChance, growInit, growEnsure, settleGrowth, seedArts, gainArt, learnArt, moveMul, effectTier, effectMul, artById, btReady, resolveBreak, cdMul, visTier, variantOf, artOfMove, btBoost, noteTrain31, appetiteActMul31, applyArtOn, innerOnHit, innerOnGetHit, jiuyangEase, boutWhy } from './arts.mjs';
-import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, E as econOf, liftBoost, stewardDaily, stewBoar, bodyConditionOn, ensureBodyCondition, stepWorkCondition, restBodyCondition, cookMedicatedMeal, applyMedicatedMeal, applyPlainMeal } from './economy.mjs';
+import { workStrCap, isWorkAct, seasonOf, demandBoost, repairDamp, econDaily, schoolStep, startSchool, schoolWhy, E as econOf, liftBoost, stewardDaily, stewBoar, bodyConditionOn, ensureBodyCondition, stepWorkCondition, restBodyCondition, cookMedicatedMeal, applyMedicatedMeal, applyPlainMeal } from './economy.mjs';
 import { SOURCES } from './data.mjs';
 import { RECRUIT_TRAIT_VARIATION, LABOR_ACTS23, LABOR_POOL23, LABOR23, ART_GAIN, BREAK, EXP, RULES_VERSION, QUESTIONS, REVEAL_AT, TRAITS, MOOD, REP, RECRUIT_POOL, ECO, HABITAT, POSTS, RAID_EVERY, HUNT_WAVES, WAVE_GAP, DAY, PHASES, SCHEDULE, ROUTINE_DEFAULT, ROUTINE_MODES, PLOT_GROW, HARVEST, NODES, EDGES, CLIFFS, FACILITIES, FENCE_FAC, ACTIVITIES, MOVES, MONSTERS, WAVES, DISCIPLES, openingScenario, REL_STAGES, BASE_SPEED, ECON, LABOR_ACTS, LABOR_WORK_MUL, ROOT, LABOR_POOL, CHORE_ACTS, QUOTA, PRIO, PROMOTE, PACE, TRIAL_BOAR, SIG_ACTS, RES_NAMES, FOOD_SEC, RARE, LOTS, SCORE, SCORE_POST, ROUTE, ENEMIES } from './data.mjs';
 import { chronOf, clone, dist, clamp, relKey, affKey, log, book, resAdd, pillNote, pipeline, mulText, recordDeed, tallyAct } from './util.mjs';
@@ -176,7 +176,12 @@ export function canRecruit(s) {
   const next = candidates.find(p => rumorForCandidate(s, p)) || candidates[0]; // R8：義學也要親眼聽過；傳聞對上處境的人才會走到門口。
   if (!next) return { ok: false, why: '暫無人選' };
   const rumor = rumorForCandidate(s, next);
-  if (!rumor) return { ok: false, why: '尚無符合處境的人聽過山門的傳聞', heard: false, next };
+  if (!rumor) {
+    const levers = [];
+    if (!schoolWhy(s)) levers.push({ id: 'school', text: '派弟子下山義學，讓想拜師的人親眼看見授課' });
+    if (s.choices?.some(ch => ch.sect === 'huiwu')) levers.push({ id: 'tournament', text: '應戰當前會武；勝出後觀眾會傳授藝見聞' });
+    return { ok: false, why: '尚無符合處境的人聽過山門的傳聞', heard: false, next, levers };
+  }
   const candidate=makeBare({id:next.id,adult:next.adult,skills:{...next.skills},situation:next.situation,support:next.support,canWork:next.canWork});
   const heardReason = `在${rumor.where}聽${rumor.witness}說「${rumor.text}」；${next.situation?.reason || '想找合適的師門'}`;
   return {...admissionStatus(s,candidate),next,heard:true,heardReason,rumor:rumor.id};

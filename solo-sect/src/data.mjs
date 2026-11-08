@@ -382,7 +382,7 @@ export const WORK_ACTS = ['train', 'chop', 'quarry', 'build', 'spar']; // 低落
 export const LEISURE_ACTS = ['rest', 'chat', 'forage', 'eat', 'leisure'];
 
 // ---- v0.7 ----
-export const RULES_VERSION = '5.7'; /* 第二十三輪 #488：舊劇情不再直接授整門；異版存檔拒載 */
+export const RULES_VERSION = '5.8'; /* 24b #488：會武見聞可讓求師者聽見授藝；異版存檔拒載 */
 // 季節：沿用一日 600 秒，每季 7 日
 export const SEASON_DAYS = 7;
 export const SEASONS = [

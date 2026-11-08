@@ -7,13 +7,12 @@ export const RUMOR_SITES = Object.freeze({ gate: '山門', village: '村路', ma
 // 山門接村路、村路接市集、市集接茶攤；沿現有日節拍每次只走一段。
 const ROUTES = { gate: ['village'], village: ['gate', 'market'], market: ['village', 'teahouse'], teahouse: ['market'] };
 export const RUMOR_KINDS = Object.freeze({
-  rescue: { text: '山上有人救了受傷的樵夫', tags: ['safety', 'kindness'], target: 'village' },
   defend: { text: '山上有人打退了搶糧山賊', tags: ['safety', 'martial'], target: 'village' },
   trade: { text: '山門拿療傷丹到市集交易', tags: ['healing', 'wealth'], target: 'market' },
   banner: { text: '山上立起了門派牌匾', tags: ['teaching'], target: 'village' },
   school: { text: '門派弟子在村中教人，說明師門可收徒', tags: ['teaching'], target: 'village' },
   provisions: { text: '山門拿出菜蔬藥材與行商交易', tags: ['food', 'wealth'], target: 'teahouse' },
-  tournament: { text: '門派在會武中勝出', tags: ['martial'], target: 'market' },
+  tournament: { text: '門派在會武中勝出', tags: ['martial', 'teaching'], target: 'market' }, // 24b：公開交手也讓求師者看見師門有本領。
   rareBook: { text: '有人親見一冊奇書', tags: ['book'], target: 'market' }, // 第二十二輪：具體書與所在只附於當次目擊。
 });
 export const rumorsOf = s => (s.rumors ??= []);
