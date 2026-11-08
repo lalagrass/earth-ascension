@@ -149,7 +149,7 @@ const dayDecay = (tau) => Math.exp(-1 / tau);
 export const SORE_AT = 1 / (1 - dayDecay(BODY_CONDITION.fatigueTau));
 // 推導：同樣作息下體能穩態 F*；令 F* 時已長到可長空間的 1 − e^(−2)（約 86%），所以體能尺度 = F* / 2。
 export const FITNESS_SCALE = 1 / (1 - dayDecay(BODY_CONDITION.fitnessTau)) / 2;
-const bodyWork = { water: ['strength', 'agility'], chop: ['strength'], quarry: ['strength'], farm: ['agility'], forage: ['agility'], train: ['strength'] };
+const bodyWork = { water: ['strength', 'agility'], chop: ['strength'], quarry: ['strength'], farm: ['agility'], forage: ['agility'], train: ['strength', 'agility'] }; // R2：練拳出拳也走步，臂力與身法都練
 export const bodyConditionOn = (s) => !!(s?.hermitage?.active || s?.herbalDiet);
 export const bodyCapOf = (d, skill) => (d.bodyBase?.[skill] ?? d.skills?.[skill] ?? 0) * (1 + BODY_CONDITION.bestGain * Math.max(1, Math.min(BODY_CONDITION.rootMax, d.root || 1)) / BODY_CONDITION.rootMax);
 export function ensureBodyCondition(d, day) {
