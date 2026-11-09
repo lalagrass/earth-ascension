@@ -1,5 +1,5 @@
 <!-- 暫存快照：原文照錄，未改寫 -->
-> 來源：https://claude.ai/artifact/SdVs2coS4e8qdpAwJfBJd9  
+> 來源：https://claude.ai/artifact/SdVs2coS4e8qdpAwJfBJd9
 > 原始日期：2026-11-07　快照時間：2026-11-09
 
 # 山門紀常數現實性盤點

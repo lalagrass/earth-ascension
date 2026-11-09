@@ -1,5 +1,5 @@
 <!-- 暫存快照：原文照錄，未改寫 -->
-> 來源：https://claude.ai/artifact/RRnNwMjQgkXmzzgy6oaXYq  
+> 來源：https://claude.ai/artifact/RRnNwMjQgkXmzzgy6oaXYq
 > 原始日期：2026-11-08　快照時間：2026-11-09
 
 # 山門紀成就表與一生評分

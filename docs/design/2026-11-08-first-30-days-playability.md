@@ -1,5 +1,5 @@
 <!-- 暫存快照：原文照錄，未改寫 -->
-> 來源：https://claude.ai/artifact/MjqT2AdHioFpiWmaxiBjky  
+> 來源：https://claude.ai/artifact/MjqT2AdHioFpiWmaxiBjky
 > 原始日期：2026-11-08　快照時間：2026-11-09
 
 # 山門紀前 30 日可玩性檢查

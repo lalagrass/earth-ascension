@@ -1,5 +1,5 @@
 <!-- 暫存快照：原文照錄，未改寫 -->
-> 來源：https://claude.ai/artifact/GgL66nV1JVEsDf9yEDgirQ  
+> 來源：https://claude.ai/artifact/GgL66nV1JVEsDf9yEDgirQ
 > 原始日期：2026-11-08　快照時間：2026-11-09
 
 # 山門紀 milestones 與 backlog 整理

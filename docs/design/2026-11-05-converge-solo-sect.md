@@ -1,5 +1,5 @@
 <!-- 暫存快照：原文照錄，未改寫 -->
-> 來源：https://claude.ai/artifact/F4CUdbWMYiFWfzNB5RCkeF  
+> 來源：https://claude.ai/artifact/F4CUdbWMYiFWfzNB5RCkeF
 > 原始日期：2026-11-05　快照時間：2026-11-09
 
 # 收斂提案：只做山門紀

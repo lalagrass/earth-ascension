@@ -1,5 +1,5 @@
 <!-- 暫存快照：原文照錄，未改寫 -->
-> 來源：https://claude.ai/artifact/9WuHW2nApdnQPsgUdxmfkE  
+> 來源：https://claude.ai/artifact/9WuHW2nApdnQPsgUdxmfkE
 > 原始日期：2026-11-07　快照時間：2026-11-09
 
 # 硬核武學設計衝突的解法

@@ -1,5 +1,5 @@
 <!-- 暫存快照：原文照錄，未改寫 -->
-> 來源：https://claude.ai/artifact/7RpNcKVr3bF5FcLgq1RHBQ  
+> 來源：https://claude.ai/artifact/7RpNcKVr3bF5FcLgq1RHBQ
 > 原始日期：2026-11-06　快照時間：2026-11-09
 > 匯出時內嵌圖表／元件無法轉成 Markdown，以「[embedded content: …]」佔位；完整呈現請看來源連結。
 

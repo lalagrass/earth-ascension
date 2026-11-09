@@ -1,5 +1,5 @@
 <!-- 暫存快照：原文照錄，未改寫 -->
-> 來源：https://claude.ai/artifact/2NDWu9o7YvHo3iNxe2pnsx  
+> 來源：https://claude.ai/artifact/2NDWu9o7YvHo3iNxe2pnsx
 > 原始日期：2026-11-08　快照時間：2026-11-09
 
 # 武學從哪裡來：悟、傳承與開局
