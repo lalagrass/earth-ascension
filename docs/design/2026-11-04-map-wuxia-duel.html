@@ -1,0 +1,1135 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>地圖上的武俠交手</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: one reading column; the live map demo sits on top as the thesis, the proposal reads below it. */
+:root{
+  --bg:#eef0ea; --surface:#f8f9f5; --fg:#1f2421; --muted:#5b625d; --line:#cfd4cc;
+  --accent:#2f5d7c; --gold:#9a6b06; --threat:#a3243b;
+  --display:"LXGW WenKai TC","Kaiti TC","STKaiti",serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#151a18; --surface:#1d2320; --fg:#e4e6df; --muted:#a2a99f; --line:#333b36;
+  --accent:#86b6d4; --gold:#e0b04a; --threat:#ec7086; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#151a18; --surface:#1d2320; --fg:#e4e6df; --muted:#a2a99f; --line:#333b36;
+  --accent:#86b6d4; --gold:#e0b04a; --threat:#ec7086; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.75;font-size:15px}
+.wrap{max-width:1000px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:28px}
+h1,h2,h3{font-family:var(--display);font-weight:700;text-wrap:balance;line-height:1.3;margin:0}
+h1{font-size:clamp(28px,5vw,40px)}
+h2{font-size:24px;padding-top:8px}
+h3{font-size:18px}
+p{margin:0}
+.lede{color:var(--muted);max-width:65ch}
+.stage{display:grid;gap:12px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bar button{font:500 14px var(--body);padding:7px 12px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.bar button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.bar button:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.grp{font-family:var(--display);font-size:15px;color:var(--muted);min-width:7.5em}
+.bar .sp{margin-left:auto;display:flex;gap:8px;align-items:center;color:var(--muted);font-size:13px}
+select{font:14px var(--body);padding:5px 8px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+canvas{width:100%;max-width:100%;aspect-ratio:16/9;display:block;border-radius:6px;border:1px solid var(--line);background:#ece4d2}
+.cap{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.chip{border-left:3px solid var(--line);padding:4px 10px;color:var(--muted);font-size:13.5px;min-width:0}
+.chip b{display:block;font-family:var(--display);font-size:16px;color:var(--fg)}
+.chip.on{border-color:var(--gold);color:var(--fg)}
+.rule{font-size:13.5px;color:var(--muted)}
+.rule b{color:var(--fg)}
+section{display:grid;gap:12px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:640px}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font-weight:700;color:var(--muted);font-size:12.5px;letter-spacing:.04em}
+td:first-child{font-family:var(--display);font-size:16px;white-space:nowrap}
+ol,ul{margin:0;padding-left:1.4em;display:grid;gap:6px}
+.k{font-variant-numeric:tabular-nums}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.c-threat{color:var(--threat);font-weight:700}.c-gold{color:var(--gold);font-weight:700}.c-acc{color:var(--accent);font-weight:700}
+@media (max-width:560px){.bar .sp{margin-left:0}}
+</style>
+
+<div class="wrap">
+<header style="display:grid;gap:10px">
+  <h1>地圖上的武俠交手</h1>
+  <p class="lede">山門紀戰鬥系統的設計提案（整理版）。把前幾輪的想法、Gemini 的回饋和其他遊戲的做法放在一起取捨，收斂成一套系統，叫它「見招拆招」。下面的動畫是手寫的示意，不是遊戲程式。</p>
+</header>
+
+<div class="stage">
+  <div class="bar" role="group" aria-label="周旋與群戰">
+    <span class="grp">周旋與群戰</span>
+    <button data-demo="wave">迎戰魔教（一波波）</button>
+    <button data-demo="ninja">輕功交錯與林克時間</button>
+    <button data-demo="duo">結伴打上門</button>
+    <button data-demo="group">一招破眾</button>
+    <button data-demo="zhen">真武七截陣</button>
+  </div>
+  <div class="bar" role="group" aria-label="接法">
+    <span class="grp">四種接法</span>
+    <button data-demo="see">看破</button>
+    <button data-demo="parry">招架反震</button>
+    <button data-demo="kui">葵花：來去無蹤</button>
+    <button data-demo="kui2">葵花：被看破</button>
+    <button data-demo="bell">金鐘罩與罩門</button>
+  </div>
+  <div class="bar" role="group" aria-label="成長">
+    <span class="grp">一招一式變強</span>
+    <button data-demo="train">練功場</button>
+    <button data-demo="real">寫實過招</button>
+    <button data-demo="jin">拳拳到肉</button>
+    <button data-demo="tiers">武學五境</button>
+    <button data-demo="fast">變強變快</button>
+    <button data-demo="neili">內力三境</button>
+    <button data-demo="qing">輕功</button>
+    <button data-demo="lane">闖木人巷</button>
+    <button data-demo="chick">菜雞互啄</button>
+    <button data-demo="masters">高手久戰一擊</button>
+    <button data-demo="walk">高手穿行</button>
+    <span class="sp"><label for="spd">速度</label>
+      <select id="spd"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option></select>
+      <button id="replay" type="button">重播</button></span>
+  </div>
+  <canvas id="cv" width="960" height="540" aria-label="武俠交手示意動畫"></canvas>
+  <div class="cap" id="cap"></div>
+  <p class="rule" id="rule"></p>
+</div>
+
+<section>
+  <h2>你的思路，整理成五句話</h2>
+  <ol>
+    <li><b>同一張地圖。</b>村民挑水、種田、打獵，和打架是同一個世界，不切戰鬥畫面。打起來旁邊的人照常過日子。</li>
+    <li><b>先寫實，後浪漫。</b>入門到小成像真的練武：羅漢拳、太極劍、八卦掌一招一式，招對招、腳步進退、拳拳到肉，沒有光。大成以後才開始有內力的痕跡，絕學才有特效、字章和林克時間。</li>
+    <li><b>一招一式慢慢學會。</b>每一招有「形、用、戰」三層熟練，從站樁、套路、喂招、對練、切磋到實戰，在門派生活裡一層層練上去。「有鳳來儀」「力劈華山」是一招一招解鎖、第一次在實戰用出來時記入紀事。</li>
+    <li><b>戲劇來自差距，不來自特別規則。</b>同一套判定（前搖、四種接法、架勢）：兩邊都弱就是菜雞互啄、拖很久沒人受傷；兩邊都強就是久戰，等一個破綻一擊定勝負；差距很大就是高手錯身、隨手一掌，一路走過去倒一地。三種場面都不用另外寫。</li>
+    <li><b>成長看得見。</b>一次應付得了幾個人（應接 1、2、3、5、10），一波波魔教殺上來時闖得過幾人；和小龍女並肩、背靠背、合擊、陣法，把一個人的成長變成一群人的打法。</li>
+  </ol>
+  <p class="note">新加兩段示意：「拳拳到肉」（整勁的發力鏈、八卦掌走圈換掌）和「高手穿行」（差距大時的碾壓）。下面的章節是每一句話的細節。</p>
+</section>
+
+<section>
+  <h2>拳拳到肉：力學感怎麼做</h2>
+  <ul>
+    <li><b>勁是一條鏈。</b>蹬地、擰腰、送肩、出拳，每一節是一個熟練度。入門只動手臂，打中了對方也幾乎不動；練熟了四節連成一條，同一拳能把人推退半步。這是傳統武術講「整勁」「力從地起」的意思，正好能變成數值。</li>
+    <li><b>打中的那一下要有重量。</b>畫面停一兩格（打擊停頓）、被打的人退步、腳下起塵、兵器相碰有火花。勁越整，停得越久、退得越遠。這些都不用光效。</li>
+    <li><b>不同拳種打法不同。</b>羅漢拳、長拳正面直進；太極以柔帶開再反擊；八卦掌繞著對方走圈，從側面換掌；腿法要距離；擒拿要貼身。差異寫在每一招的「法、盤、距離、步法」裡。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>先回答你這次的兩個問題</h2>
+  <p><b>閃避太遠、走過去才打，確實不合理。</b>已經改了：離得遠就用輕功直接縱過去；比對方強的人只錯開一步就立刻反擊（後發先至）；只有比對方弱的人才往後退，被纏上就往同伴身邊逃。示意「迎戰魔教」裡加了一個入門弟子，可以看到強弱兩種閃法的差別。</p>
+  <p><b>前面的設計確實偏電玩。</b>林克時間、應接小圈、字章都是為了讓小人看得懂而加的「遊戲層」。這次把順序反過來：<b>寫實的武術是底子，遊戲層只留給高手和絕學。</b>入門、小成的人打起來應該像真的練武的人：腳步進退、一招一式、多半落空或被擋，不放特效、不放慢。到大成以後才開始有光，絕學才有字章和林克時間。下面兩節是新加的寫實部分。</p>
+</section>
+
+<section>
+  <h2>練武是日常：站樁、套路、喂招、對練、切磋、實戰</h2>
+  <p>傳統的練法大致是先練基本功（站樁、馬步、壓腿），再練套路，然後由師父或師兄喂招、學每一招怎麼用，再練兩人固定的對練，最後才自由切磋和實戰。老話說「練拳不練功，到老一場空」。這個次序本身就是門派生活，可以直接搬上地圖：</p>
+  <div class="tbl"><table>
+    <thead><tr><th>階段</th><th>地圖上看到</th><th>漲的是</th></tr></thead>
+    <tbody>
+      <tr><td>站樁</td><td>清晨外功場，孩子蹲馬步，旁邊燒一炷香；腿酸站起來會被叫回去</td><td>根基（內力、架勢上限）</td></tr>
+      <tr><td>走套路</td><td>一招一式走，招名浮在頭上；師父在旁糾正「馬步再低一點」</td><td>每一招的「形」</td></tr>
+      <tr><td>喂招</td><td>師兄慢慢餵一招，師弟練怎麼拆、怎麼反擊</td><td>每一招的「用」</td></tr>
+      <tr><td>對練</td><td>兩人照固定順序你來我往</td><td>「用」，以及兩人的默契（關係）</td></tr>
+      <tr><td>切磋</td><td>弟子之間自由過招，點到為止，會影響關係</td><td>「用」轉成「戰」</td></tr>
+      <tr><td>實戰</td><td>獸襲、山賊、魔教</td><td>「戰」</td></tr>
+    </tbody>
+  </table></div>
+  <p><b>每一招有三層熟練：形、用、戰。</b>只練套路的人「形」很熟，打起來卻只用得出一兩招，因為其他招的「用」還沒練；被圍、架勢低的時候，更是只剩「戰」熟的招用得出來。這就是菜雞互啄最真實的樣子，也讓「慢慢學會一招一式」變成看得見的事：某一天，弟子第一次在實戰裡用出「獨立反刺」，記進紀事。</p>
+  <p>入門套路可以用真實的套路，例如五步拳（弓步衝拳、彈踢衝拳、馬步架打、歇步蓋打、提膝仆步穿掌、虛步挑掌）；少林一系從<a href="https://en.wikipedia.org/wiki/Luohanquan">羅漢拳</a>起步，動作簡樸直接、多用掌，攻防藏在姿勢裡；太極劍可以用常見的三十二式（起勢、並步點劍、獨立反刺、仆步橫掃、向右平帶、向左平帶、獨立掄劈、退步回抽……，各派名稱和順序略有不同，正式採用前要再對一次）。示意「練功場」。</p>
+</section>
+
+<section>
+  <h2>寫實過招：招對招，而不是互扣血</h2>
+  <ul>
+    <li><b>每一招是一筆資料</b>：什麼「法」（劍有刺、劈、點、撩、掛、截、抹、帶、抽；刀有劈、砍、掃、撩；拳有衝、劈、架、蓋），打哪一盤（上、中、下），要多遠，怎麼走步（進、退、側、轉）。</li>
+    <li><b>拆招就是找對的招</b>：被攻擊的人從自己「用」得出來的招裡，找能拆這一招的那一招。上盤劈可以用「平帶」帶開、用「架」頂住，或側身讓過；橫掃可以退步回抽讓過，或提膝；直刺可以截、可以帶。拆完順勢接一招反擊，就是見招拆招。</li>
+    <li><b>距離是真的</b>：腿和長兵要遠一點，拳掌刀劍在中間，貼身才用肘、膝、摔、拿。兩個人一直在調距離，進一步、退半步，這比任何特效都更有武術的味道。</li>
+    <li><b>戰報寫成小說</b>：每一回合寫成一句話，「山賊一招『力劈華山』當頭劈下，主角側身『向右平帶』把刀帶開，順勢『獨立反刺』」。中文 MUD 就是靠這個讓人覺得自己在練武。</li>
+    <li><b>低段沒有特效</b>：只有腳步、兵器相碰的火花和招名。示意「寫實過招」。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>一段話說完整套設計</h2>
+  <p>戰鬥就發生在門派生活的同一張地圖上，不切畫面。真正分勝負的不是血量，而是<b>架勢</b>。每一招都有<b>前搖、出手、收招</b>三段，被攻擊的人在前搖時有四種接法：<b>看破、閃、招架、中招</b>。接住了，雙方掉架勢；架勢先空的人露出破綻，下一招就是重傷（打瞎、傷手、內傷）甚至一擊致命。敵人三三五五一波波來，角色不站樁，用<b>輕功</b>周旋、拉開、繞側面，被圍時最多四人貼身，外圈的人繞著游走等空位；貼身的人超過自己應付得來的人數（應接），多出來的招就接不住。練功變強就是招式變多、前搖變短、能應付的人變多，最後學會改寫規則的絕學。</p>
+  <p class="note">四個目標：<b>好看</b>（輕功、殘影、字章、局部慢動作）、<b>看得懂</b>（先預兆、後結果，顏色固定意思）、<b>好玩</b>（以少打多要靠走位和看破，不是數值碾壓）、<b>看得見成長</b>（每個弟子都有「一次應付幾人、闖過幾人」的紀錄）。</p>
+</section>
+
+<section>
+  <h2>一、核心：三條資源、三段出招、四種接法</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>資源</th><th>意思</th><th>什麼時候會動</th></tr></thead>
+    <tbody>
+      <tr><td>架勢</td><td>還撐不撐得住。真正的勝負條</td><td>每次招被接住，雙方都掉一點；不打時慢慢回</td></tr>
+      <tr><td>氣血</td><td>真實傷勢，打完會帶回生活（養傷、內傷）</td><td>只有「中招」和「破綻重擊」才掉</td></tr>
+      <tr><td>內力</td><td>本錢。閃避、輕功、反震、絕招都要花</td><td>打坐、休息回；內力見底就只能硬接</td></tr>
+    </tbody>
+  </table></div>
+  <p>每一招分<b>前搖 → 出手 → 收招</b>。前搖是預兆（地上的紅色扇形），長短看熟練度；收招是空檔，對方可以趁這時反擊。用遊戲的固定時間步長來跑，不用計時器，結果可以重播。</p>
+  <div class="tbl"><table>
+    <thead><tr><th>接法</th><th>大致比的是</th><th>結果</th><th>畫面</th></tr></thead>
+    <tbody>
+      <tr><td>看破</td><td>悟性、眼界 對上 招式深淺</td><td>在前搖時截招，攻方架勢大掉，下一招必中</td><td><span class="c-gold">金眼</span>、破綻點、局部放慢，蓋「破」</td></tr>
+      <tr><td>閃</td><td>身法 對上 出手速度，花內力</td><td>落空；剛好在最後一刻閃開就觸發林克時間</td><td>側縱、原地留殘影</td></tr>
+      <tr><td>招架</td><td>內力 對上 勁力</td><td>雙方掉架勢；內力高很多就反震</td><td>火花、停格；<span class="c-acc">衝擊圈</span>，蓋「震」</td></tr>
+      <tr><td>中招</td><td>都沒成，或來自背後、超出應接</td><td>掉氣血；架勢空時是重擊</td><td><span class="c-threat">紅色</span>傷痕、後仰</td></tr>
+    </tbody>
+  </table></div>
+  <p><b>部位傷（輕量版，只有三處）</b>：只有破綻重擊和精準的武學才會打到部位。<b>目</b>（失明，看破失效、亂揮）、<b>手</b>（繳械或出手變慢）、<b>身</b>（內傷，內力回不來）。令狐沖刺瞎一圈人、葵花挑斷手筋、反震震飛兵器，都是打在這三處。傷勢打完帶回生活，要養傷、找大夫。</p>
+  <p><b>菜雞互啄和高手久戰都從這裡自然長出來</b>：兩邊都弱，招常常揮空、互擋，架勢慢慢掉又慢慢回，打半天沒人受傷；兩邊都強，招招被拆、架勢一點點見底，誰先空誰就被一擊定勝負。不用為這兩種情況另寫規則。</p>
+</section>
+
+<section>
+  <h2>二、周旋：一波波來，邊走邊打</h2>
+  <p>塔防只借「一波一波來」的節奏，角色不站樁。魔教三五成群從不同方向來，角色要決定先打哪一股、怎麼不被包夾。</p>
+  <ul>
+    <li><b>交戰圈：最多四人貼身。</b>被圍時只有內圈四個位置能出手，外圈的人握著兵器繞圈游走、叫陣、等空位補上，畫面不會疊成一團（Kenshi 的 attack slots 就是這樣，玩家討論常把它調在 3 到 5）。</li>
+    <li><b>應接：一次應付得來的人數。</b>入門 1 人、小成 2、大成 3、化境 5、絕學再往上。貼身的人超過這個數，多出來的招就沒機會看破或閃，直接中。頭上一排小圈顯示：金色是正在應付，冒紅圈就是被圍太多。交戰圈固定四個位置，所以應接到 4 以後內圈怎麼圍都不怕，剩下的是靠群攻招把外圈也一起清掉。</li>
+    <li><b>輕功是周旋的工具。</b>快被包夾時縱躍到人少的一側，挑落單的、繞到側面打。這是角色自己判斷的（不用玩家操作），玩家看到的是一個人在敵群裡穿梭。</li>
+    <li><b>林克時間。</b>在敵人前搖的最後一刻閃開（完美閃避），身邊一圈敵人放慢約一秒，自己照常出手連打幾下。身法和看破夠高才觸發得到，是高手才有的爽感。只放慢那一圈，圈外的生活照常。預設全自動；以後可以讓玩家在林克時間裡點一下，選要打哪個破綻或放哪招絕學，這是唯一需要操作的地方。</li>
+    <li><b>輕功交錯。</b>兩個身法都高的人對上，會變成來回突進、互相穿過、半空交擊的打法，像忍者對決。兩人同時突進撞在一起就是「交擊」，火花一閃、雙方架勢都掉。</li>
+    <li><b>成長看人數。</b>每個弟子有兩個紀錄：一次最多應付過幾人、在木人巷或魔教來犯時闖過幾人。練出新招、身法變高，這兩個數字就往上爬，從「只能闖過兩人」到「一人迎戰一整波」。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>三、一招一式變強</h2>
+  <p>每門武學是一串<b>有名字的招</b>，熟練度到了才會下一招，地圖上只用已學會的招，招名浮在頭上（入門的「力劈華山」、小成的「有鳳來儀」），第一次使出新招記進門派紀事（中文 MUD 的老做法，換成畫面）。每升一境多一種能力，而不是只加傷害：</p>
+  <div class="tbl"><table>
+    <thead><tr><th>境界</th><th>多了什麼能力</th><th>畫面</th><th>應接</th></tr></thead>
+    <tbody>
+      <tr><td>入門</td><td>一招單點攻擊，前搖長、容易被看破</td><td>只有招式連線</td><td class="k">1</td></tr>
+      <tr><td>小成</td><td>兩三招連段</td><td>招名浮出</td><td class="k">2</td></tr>
+      <tr><td>大成</td><td>帶位移的招（滑步出劍、突進），能繞側面</td><td>這一類武學的光（劍弧、掌風、棍影）</td><td class="k">3</td></tr>
+      <tr><td>化境</td><td>氣勁外溢：扇形或穿透，一招打到好幾人；前搖短到難以看破；能觸發林克時間</td><td>殘影、劍氣</td><td class="k">5</td></tr>
+      <tr><td>絕學</td><td>改寫規則的絕活（見下一節）</td><td>專屬特效，第一次使出蓋字章</td><td class="k">依武學</td></tr>
+    </tbody>
+  </table></div>
+  <p>低段武學看起來都差不多，大成以後才分岔，和 #408 名功曲線的方向一致。</p>
+</section>
+
+<section>
+  <h2>四、絕學：每一門改寫一條規則</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>絕學</th><th>改寫的規則</th><th>畫面</th></tr></thead>
+    <tbody>
+      <tr><td>獨孤九劍</td><td>看破變成被動：對手一進前搖就自動截招；破箭式把射來的暗器彈回，一招打中整圈人</td><td>極小的一點劍光、金線串過所有破綻</td></tr>
+      <tr><td>太極劍、乾坤大挪移</td><td>借力：腳下一圈陰陽氣場，進圈的人出手變慢；被攻擊時把對方的勁轉向，打在攻擊者自己或他身後的同夥身上；累積滿了一記把周圍的人一起甩開</td><td>陰陽氣旋，對方被拐了一個彎</td></tr>
+      <tr><td>葵花寶典</td><td>出招沒有前搖、人不顯形；穿過敵群後，被刺的人隔一瞬間才一起倒</td><td>紅色殘影、針光，延遲倒地</td></tr>
+      <tr><td>九陽神功</td><td>圓滿後被打會自動反震，內力生生不息；平時身上一層熱氣</td><td>熱浪、金色氣浪把人震開</td></tr>
+      <tr><td>金鐘罩、鐵布衫</td><td>霸體：打不夠重就「鏘」一聲傷害 0，攻擊者兵刃受挫；但有罩門，被看破就破功</td><td>金鐘虛影、裂開</td></tr>
+      <tr><td>降龍十八掌</td><td>招架不住：勁力極大，接住也要掉很多架勢</td><td>金龍</td></tr>
+      <tr><td>玄鐵劍法</td><td>破招架：對方招架等於沒招架</td><td>黑色重弧</td></tr>
+    </tbody>
+  </table></div>
+  <h3>各類兵器的分工</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>類別</th><th>擅長</th><th>大成起的畫面</th></tr></thead>
+    <tbody>
+      <tr><td>劍</td><td>精妙：容易繞過招架，打部位（目、腕）</td><td>細亮的一線一點</td></tr>
+      <tr><td>刀</td><td>破勢：每一刀都大掉架勢</td><td>厚重的黑弧、地上刀痕</td></tr>
+      <tr><td>拳掌</td><td>內勁：隔山打牛穿過護體打內傷、點穴</td><td>往前推的掌風</td></tr>
+      <tr><td>腿</td><td>下盤：打斷對方輕功、掃倒</td><td>貼地一掃、塵土</td></tr>
+      <tr><td>棍、鞭</td><td>長兵控場：一掃一片、推開人，鞭能纏兵器</td><td>一大圈棍影、軟弧</td></tr>
+      <tr><td>暗器</td><td>在交戰圈外出手，打斷蓄力，幾乎沒有前搖</td><td>點狀彈道</td></tr>
+      <tr><td>毒功</td><td>烈毒：動得越多、運功越多掉得越快；奇毒：封住內力或致幻。碰到就算，招架擋不掉，只能閃</td><td>頭上冒綠紫毒泡</td></tr>
+      <tr><td>內功</td><td>底子：決定招架、反震、輕功的本錢</td><td>平時不發光，運功、出手、被打時才看出深淺</td></tr>
+    </tbody>
+  </table></div>
+  <p>這樣弟子之間有分工：劍客挑破綻、刀客破架勢、棍手守路口、暗器手在圈外補、毒手讓弱的弟子也能越級。</p>
+</section>
+
+<section>
+  <h2>五、群戰：結伴、合擊、陣法</h2>
+  <ul>
+    <li><b>結伴背靠背</b>：兩人靠近時，背後來的招改由同伴接，兩人的應接互補。和小龍女一起打上門時，一人一邊，就不怕被包夾。</li>
+    <li><b>合擊招</b>：兩人都學會、站得近、關係夠深才打得出來（程式裡已有楊過與小龍女、郭靖與黃蓉等配對加成，可直接當門檻），例如玉女素心劍的雙劍合璧，蓋「合」。</li>
+    <li><b>陣法</b>：陣中的人共用一條陣勢，打任何一人，力道沿連線分給全部人；要先看破陣眼才破得了。我方弟子學了陣法，守山門時也能用。</li>
+    <li><b>一招破眾</b>：一次出手對範圍內每人各判定一次看破，看破幾個就打中幾個，所以同一招在高手手上才變成令狐沖一劍刺瞎一圈人。</li>
+    <li><b>打上門</b>：現在的討伐是在面板上算結果，改成隊伍上地圖、走到敵寨，門口一波波出人，換我方闖關。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>六、讓小人物也看得懂</h2>
+  <ol>
+    <li><b>先預兆，後結果</b>：紅色扇形是對方要出的招，越滿越近。</li>
+    <li><b>顏色固定意思</b>：紅是威脅、金是你看穿了什麼、白藍是內力相撞。</li>
+    <li><b>局部慢動作</b>：看破、反震、林克時間只放慢那一圈，加 0.1 到 0.2 秒停格；圈外照常。</li>
+    <li><b>字章代替細節</b>：破、震、現、合、勝。人只有四十像素高，字比手勢清楚。</li>
+    <li><b>強度跟著境界</b>：低段只有連線，大成才有光，絕學才有字章；平時不掛光環。</li>
+    <li><b>長戰快轉</b>：高手對拆幾百招用快轉加招數計數，只有決勝那一下放慢。</li>
+  </ol>
+</section>
+
+<section>
+  <h2>七、Gemini、Argon 與 Gemini Flash 的建議，我怎麼取捨</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>建議</th><th>判斷</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td>架勢與破綻、前搖／出手／收招</td><td>採用</td><td>和我的架勢條同一個想法，前搖三段讓看破有了明確的時機。我把「破綻值」併進架勢，少一條數值</td></tr>
+      <tr><td>局部時滯、林克時間</td><td>採用</td><td>和交手圈同一個做法，加上完美閃避觸發</td></tr>
+      <tr><td>太極借力、獨孤自動截招、葵花延遲倒地</td><td>採用</td><td>這三個比我原本寫的更有畫面，已併進第四節</td></tr>
+      <tr><td>四階成長（入門到絕學）</td><td>合併</td><td>和我的五境合在一起，每境多一種能力</td></tr>
+      <tr><td>九陽常態熱浪</td><td>改</td><td>只在圓滿才有，不然一院子人都在冒氣，看不出誰強</td></tr>
+      <tr><td>陣法攻擊力「指數疊加」</td><td>不採用</td><td>七人等於幾十位高手會把平衡打爆，改成共用陣勢、分擔傷害</td></tr>
+      <tr><td>虛擬碼裡用 setTimeout 出招</td><td>不採用</td><td>遊戲是固定步長、可重播的模擬，計時器會讓結果每次不同。改成每一步扣前搖時間</td></tr>
+      <tr><td>Matter.js 物理</td><td>不採用</td><td>擊退、縱躍只要幾行位移就夠，物理引擎會讓重播不穩定</td></tr>
+      <tr><td>pixi-spine 骨骼動畫</td><td>先不要</td><td>Spine 執行庫的授權要求使用者持有付費的 Spine 編輯器授權（依我所知的條款，網頁全文這次沒抓到）；我們的人物是程式畫的，先用分格動作就夠</td></tr>
+      <tr><td>Yuka.js（行為與轉向）</td><td>借概念</td><td>MIT、不綁 three.js，追逐、躲避、保持隊形都有。但我們的人數少，自己寫幾十行轉向就夠，不必加相依套件</td></tr>
+      <tr><td>RBush、四叉樹</td><td>以後再說</td><td>畫面上同時幾十人時，逐一比對距離完全夠快；上百人時再加</td></tr>
+      <tr><td>部落與彎刀</td><td>參考一部分</td><td>主角帶兵、技能清場的爽感值得學，但它進戰鬥會切到戰場，和我們同一張圖的做法不同</td></tr>
+      <tr><td>交戰圈：內圈有限位置、外圈游走等位（Argon）</td><td>採用</td><td>畫面不再疊成一團，也讓「被圍」有清楚的樣子。Kenshi 確實有這個機制（玩家討論的 attack slots）。我設四個位置，配合應接</td></tr>
+      <tr><td>部位傷（Argon 列了頭、胸、腹、四肢、雙目）</td><td>簡化採用</td><td>只留目、手、身三處，只在破綻重擊和精準武學時發生。六處以上在四十像素的小人身上看不出來</td></tr>
+      <tr><td>兵器分工、烈毒與奇毒、暗器在圈外</td><td>採用</td><td>讓不同弟子有不同用處，併進第四節</td></tr>
+      <tr><td>太極氣場減速、累積後甩開</td><td>採用</td><td>比單純借力更有畫面</td></tr>
+      <tr><td>全局慢動作 0.5 秒</td><td>改成局部</td><td>全局會打斷村民的生活，和同一張地圖的初衷衝突</td></tr>
+      <tr><td>玩家在林克時間點破綻介入</td><td>以後可選</td><td>是個好的操作點，但先讓全自動好看，再決定要不要加</td></tr>
+      <tr><td>Your Only Move Is HUSTLE 的關鍵幀預覽</td><td>不採用</td><td>它是雙方同時下指令的回合制，和我們全自動的即時模擬不合</td></tr>
+      <tr><td>GAS 標籤式狀態（金鐘罩、失明、劍意）</td><td>借概念</td><td>用標籤管狀態是對的，我們用一個簡單的標籤集合就夠</td></tr>
+      <tr><td>Flexi、Gamesmiths.Forge、godot-open-rts</td><td>用不上</td><td>查過都存在、都是 MIT，但 Flexi 是 Unity、Forge 是 C#／.NET、open-rts 是 Godot 4。我們是瀏覽器 JavaScript，接不進來</td></tr>
+      <tr><td>「Stillwater（雨歇）」</td><td>無法查證</td><td>給的連結是 GitHub 的 wuxia 主題列表頁，不是某個專案</td></tr>
+      <tr><td>七人陣「宛若六十四位一流高手」、九陽內力回覆「指數級」</td><td>不採用</td><td>倍數失控會讓平衡爆掉；陣法改成共用陣勢，九陽改成回得快但有上限</td></tr>
+      <tr><td>後期雜兵破不了護體</td><td>採用</td><td>就是護體門檻：低段武學打不進，給「一人挑翻分舵」的爽感；但有罩門、毒、暗器可以破</td></tr>
+          <tr><td colspan="3"><b>第二份（Gemini Flash）</b></td></tr>
+      <tr><td>架勢歸零才致命、新手互啄、宗師繞步試探</td><td>採用</td><td>和現有設計一致，已經有示意</td></tr>
+      <tr><td>高手自動側身、走位中順勢出掌</td><td>採用</td><td>這是這次新加的「高手穿行」：腳步不停、錯身、隨手一掌</td></tr>
+      <tr><td>打擊停頓、剛體位移的重量感</td><td>採用</td><td>併進「拳拳到肉」，停頓長短和退步距離跟著整勁走</td></tr>
+      <tr><td>內力高一個境界就震飛、繳械</td><td>改</td><td>改成內力差越大反震越強，不是跨境界一刀切，避免同境界之間完全沒變化</td></tr>
+      <tr><td>九陽「抵消前 N 點傷害」、金鐘罩「完全免疫硬直」</td><td>改</td><td>九陽維持自動反震；金鐘罩維持傷害門檻加罩門，完全免疫會沒有剋法</td></tr>
+      <tr><td>令狐沖一瞬刺盲十五人</td><td>合併</td><td>就是「一招破眾」：對每個人各判定一次看破，看破幾個就打中幾個</td></tr>
+      <tr><td>小龍女「情網護體」互補後搖</td><td>合併</td><td>併進合擊：兩人都學會、站得近、關係夠深才觸發</td></tr>
+      <tr><td>《絕世好武功》招式部位克制（拳破掌、腿破拳）</td><td>不採用這個說法</td><td>查了 Steam 頁面：它是自創武功、組招式牌組的回合戰鬥，頁面沒有提到拳破掌這類克制，這點我查不到依據。我們用「法、盤、距離」決定能不能拆，不用兵種相剋表</td></tr>
+      <tr><td>RimWorld Combat Extended</td><td>只參考概念</td><td>它是改射擊彈道與護甲的大型模組，主要價值在遠程；近戰拆招這部分它幫不上</td></tr>
+      <tr><td>ECS 架構</td><td>不採用</td><td>山門紀的模擬是純 JS 物件加固定步長，人數幾十；改 ECS 是大重構，沒有好處</td></tr>
+      <tr><td>RBush</td><td>以後再說</td><td>確認是 MIT 的 JS 空間索引，但同時幾十人逐一比距離就夠快</td></tr>
+      <tr><td>Yuka.js 轉向行為</td><td>借概念</td><td>同上一份的判斷：繞步、側翼、隊形的公式可以抄，不必加套件</td></tr>
+      <tr><td>Shader 熱浪、全屏殘影</td><td>先不要</td><td>我們用 Canvas 或 PixiJS 畫小人，局部殘影已夠；全屏效果會蓋掉門派生活</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>八、參考</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>遊戲</th><th>借什麼</th></tr></thead>
+    <tbody>
+      <tr><td>世紀帝國、魔獸爭霸三</td><td>生產與戰鬥同一張圖；只有英雄有技能和特效</td></tr>
+      <tr><td>全軍破敵：三國</td><td>單挑圈，圈外大軍照打</td></tr>
+      <tr><td>隻狼、Sifu</td><td>架勢（結構）才是勝負條；進階招一招一招學</td></tr>
+      <tr><td>魔兵驚天錄（Bayonetta）</td><td>「林克時間」這類完美閃避放慢敵人的做法，最早最出名的是它的魔女時間</td></tr>
+      <tr><td>Hades</td><td>出手前一定有預警、命中停格，畫面再亂也讀得懂</td></tr>
+      <tr><td>太吾繪卷</td><td>架勢、提氣、見招拆招寫成可比較的數值</td></tr>
+      <tr><td>中文 MUD（俠客行一類）</td><td>一招一式有名字、有描述，熟練了才會下一招</td></tr>
+      <tr><td>部落與彎刀</td><td>主角在大軍裡技能清場的爽感</td></tr>
+      <tr><td>Kenshi</td><td>同一張大地圖上生活與戰鬥；交戰圈（attack slots）；斷手斷腳的部位傷；從被雜兵打趴到一人屠城的成長</td></tr>
+      <tr><td>RimWorld</td><td>傷勢、心情回到生活</td></tr>
+      <tr><td>了不起的修仙模擬器</td><td>門派經營和弟子修煉放在同一張圖</td></tr>
+      <tr><td>絕世好武功</td><td>招式連線觸發絕學、經脈內功</td></tr>
+    </tbody>
+  </table></div>
+  <h3>開源與社群</h3>
+  <ul>
+    <li><a href="https://github.com/MUDV587/jynew">jynew</a>：金庸群俠傳開源 Unity 重製（MIT，素材另有授權）。回合制，只能參考它的武功資料表。</li>
+    <li><a href="https://steamcommunity.com/app/233860/discussions/0/1675812484342742857">Kenshi 玩家討論 attack slots</a>：同時能打一人的近戰人數上限，大家偏好 3 到 5。</li>
+    <li><a href="https://cdn.jsdelivr.net/npm/yuka@0.7.8/README.md">Yuka</a>：MIT 的 JavaScript 遊戲 AI 庫，轉向行為的寫法可以參考。</li>
+    <li><a href="https://steventus.substack.com/p/deep-design-dive-sifu">Sifu 設計拆解</a>：結構條、閃與招架的取捨、招式逐一解鎖。</li>
+    <li><a href="https://ospreypublishing.com/ca/osprey-blog/2020/designer-blog-martial-arts-in-righteous-blood-ruthless-blades">Righteous Blood, Ruthless Blades 設計者部落格</a>：外功、內功、輕功三分，絕招建立在三者之上。</li>
+  </ul>
+  <p class="rule">沒有找到可以直接拿來用、又能在瀏覽器跑地圖即時武俠戰鬥的開源專案。Argon 推薦的幾個框架都是 Unity、C# 或 Godot。比較實際的是借設計，用我們自己的程式畫。</p>
+  <p class="rule">Argon 最後問到引擎和視角：山門紀是瀏覽器裡的 JavaScript，地圖用 Canvas 2D 畫，人物是 2.5D 水彩、水墨風的小人，不需要換引擎。</p>
+</section>
+
+<section>
+  <h2>九、怎麼做起來</h2>
+  <ol>
+    <li><b>核心判定</b>：前搖／出手／收招、四種接法、架勢條，先接在現有的狩獵與獸襲上。這一步做完就有見招拆招的味道。</li>
+    <li><b>周旋</b>：敵人改成三五成群從不同方向來；角色會移動、用輕功拉開、計算應接，被圍會冒紅圈。山賊也拆成一個個人。</li>
+    <li><b>招式表與五境</b>：每門武學改成有名字的招，依熟練解鎖；加上「應付過幾人、闖過幾人」的紀錄。</li>
+    <li><b>林克時間與絕學</b>：完美閃避、輕功交錯，再把名功絕活一門一門接上。</li>
+    <li><b>群戰</b>：結伴、合擊、陣法，最後把討伐搬上地圖打上門。</li>
+  </ol>
+  <p class="note">每一步的驗收就是開遊戲看一場戰鬥：看得懂、好看、想再看一場就過。只留一個確保重播結果不變的測試。</p>
+</section>
+</div>
+
+<script>
+(()=>{
+const cv=document.getElementById('cv'),g=cv.getContext('2d');
+const W=960,H=540;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function fit(){const d=Math.min(2,window.devicePixelRatio||1);cv.width=W*d;cv.height=H*d;g.setTransform(d,0,0,d,0,0);}
+fit();
+const INK='#2a2118',PAPER='#ece4d2',GOLD='#d9a521',RED='#b3263e',WHITE='#f6f8ff',BLUEQI='#7fb3e6';
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),lerp=(a,b,k)=>a+(b-a)*k;
+const seg=(t,a,b)=>clamp((t-a)/(b-a),0,1);
+const eio=k=>k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2, eo=k=>1-Math.pow(1-k,3);
+const P=(a,b,k)=>[lerp(a[0],b[0],k),lerp(a[1],b[1],k)];
+
+/* ---------- paper texture ---------- */
+const tex=document.createElement('canvas');tex.width=W;tex.height=H;
+{const t=tex.getContext('2d');t.fillStyle=PAPER;t.fillRect(0,0,W,H);
+ let s=7;const r=()=>(s=(s*16807)%2147483647)/2147483647;
+ for(let i=0;i<5000;i++){t.fillStyle=`rgba(90,70,40,${r()*.05})`;t.fillRect(r()*W,r()*H,1+r()*2,1);}
+ // far mountains
+ t.fillStyle='rgba(70,90,90,.16)';t.beginPath();t.moveTo(0,120);for(let x=0;x<=W;x+=40)t.lineTo(x,95+Math.sin(x*.011)*30+Math.sin(x*.03)*10);t.lineTo(W,0);t.lineTo(0,0);t.fill();
+ t.fillStyle='rgba(70,90,90,.10)';t.beginPath();t.moveTo(0,150);for(let x=0;x<=W;x+=30)t.lineTo(x,140+Math.sin(x*.017+2)*22);t.lineTo(W,0);t.lineTo(0,0);t.fill();
+ // ground wash
+ t.fillStyle='rgba(110,140,80,.13)';[[200,420,260,90],[700,420,300,110],[480,250,380,60]].forEach(([x,y,a,b])=>{t.beginPath();t.ellipse(x,y,a,b,0,0,7);t.fill();});
+ // path
+ t.strokeStyle='rgba(140,110,70,.25)';t.lineWidth=26;t.lineCap='round';t.beginPath();t.moveTo(120,230);t.quadraticCurveTo(330,300,420,390);t.lineTo(880,380);t.stroke();
+ // stream
+ t.fillStyle='rgba(90,140,170,.30)';t.beginPath();t.moveTo(590,160);t.bezierCurveTo(640,260,580,360,630,540);t.lineTo(690,540);t.bezierCurveTo(640,360,700,260,650,160);t.fill();
+ t.strokeStyle='rgba(255,255,255,.35)';t.lineWidth=1.5;for(let i=0;i<9;i++){const y=190+i*40;t.beginPath();t.moveTo(612+Math.sin(i)*14,y);t.lineTo(632+Math.sin(i)*14,y+6);t.stroke();}
+ // dojo
+ t.fillStyle='#8a6a44';t.fillRect(70,150,150,70);t.fillStyle='#3d3f46';t.beginPath();t.moveTo(50,156);t.lineTo(145,112);t.lineTo(240,156);t.fill();
+ t.fillStyle='#5a4130';t.fillRect(130,185,30,35);
+ // field rows
+ for(let i=0;i<6;i++){t.fillStyle=i%2?'rgba(100,140,60,.45)':'rgba(130,100,60,.4)';t.fillRect(70,440+i*14,220,9);}
+ // well
+ t.fillStyle='#8c8c8c';t.beginPath();t.ellipse(330,300,18,8,0,0,7);t.fill();t.strokeStyle=INK;t.lineWidth=2;t.stroke();
+ t.strokeStyle='#5a4130';t.lineWidth=3;t.beginPath();t.moveTo(314,300);t.lineTo(314,272);t.lineTo(346,272);t.lineTo(346,300);t.stroke();
+ // trees
+ [[800,170],[860,200],[910,160],[760,240],[40,300],[900,470]].forEach(([x,y],i)=>{t.fillStyle='#5a4130';t.fillRect(x-2,y,4,22);t.fillStyle=`rgba(${50+i*6},${85+i*4},60,.75)`;t.beginPath();t.arc(x,y-4,18,0,7);t.arc(x-12,y+4,13,0,7);t.arc(x+12,y+4,13,0,7);t.fill();});
+ // wood pile
+ for(let i=0;i<6;i++){t.fillStyle='#8b5a2b';t.fillRect(400+(i%3)*14,200-Math.floor(i/3)*6,13,5);}
+ t.font='14px "LXGW WenKai TC",serif';t.fillStyle='rgba(42,33,24,.55)';t.fillText('大廳',122,140);t.fillText('菜園',160,432);t.fillText('井',352,296);t.fillText('柴堆',404,186);t.fillText('溪',648,180);
+}
+
+/* ---------- drawing helpers ---------- */
+function figure(p){
+  const x=p.x,y=p.y,L=p.lift||0,f=p.face||1,s=p.scale||1,a=p.alpha??1,pose=p.pose||'stand';
+  if(!p.noShadow){g.save();g.globalAlpha=a*.3*Math.max(.35,1-L/110);g.fillStyle=INK;const k=Math.max(.4,1-L/160);g.beginPath();g.ellipse(x,y,11*s*k,4*s*k,0,0,7);g.fill();g.restore();}
+  g.save();g.globalAlpha=a;g.translate(x,y-L);g.scale(f*s,s);
+  if(pose==='crouch')g.translate(0,4);
+  if(p.rot)g.rotate(p.rot);
+  const lean={hit:-.28,strike:.16,chop:.2,wind:-.08,guard:.05}[pose]||0;g.rotate(lean);
+  const w=p.walk||0,sw=pose==='stand'||pose==='guard'?Math.sin(w)*5:0;
+  g.strokeStyle=INK;g.lineCap='round';g.lineWidth=3;g.beginPath();
+  if(pose==='crouch'){g.moveTo(-3,-10);g.lineTo(-7,-4);g.lineTo(-4,0);g.moveTo(3,-10);g.lineTo(7,-4);g.lineTo(4,0);}
+  else if(L>4){g.moveTo(-3,-12);g.lineTo(-8,-6);g.moveTo(3,-12);g.lineTo(6,-3);}
+  else{g.moveTo(-3,-12);g.lineTo(-3+sw,0);g.moveTo(3,-12);g.lineTo(3-sw,0);}
+  g.stroke();
+  g.fillStyle=p.robe;g.beginPath();g.moveTo(-6,-34);g.lineTo(6,-34);g.lineTo(10+(L>4?3:0),-10);g.lineTo(-10-(L>4?5:0),-10);g.closePath();g.fill();
+  g.fillStyle=p.sash||INK;g.fillRect(-7,-22,14,3);
+  const arms={stand:[[-5,-18],[5,-18]],strike:[[-6,-22],[19,-31]],wind:[[-8,-24],[-6,-50]],chop:[[-6,-22],[16,-18]],guard:[[11,-34],[11,-26]],hit:[[-11,-36],[-9,-24]],crouch:[[-7,-22],[8,-24]]}[pose];
+  g.lineWidth=3;g.beginPath();for(const [ax,ay] of arms){g.moveTo(0,-30);g.lineTo(ax,ay);}g.stroke();
+  if(pose==='guard'){g.lineWidth=2;g.beginPath();g.moveTo(8,-36);g.lineTo(14,-24);g.moveTo(14,-36);g.lineTo(8,-24);g.stroke();}
+  if(p.blade){const h=arms[1];const tip={stand:[h[0]+4,h[1]+14],strike:[h[0]+16,h[1]-4],wind:[h[0]-10,h[1]-14],chop:[h[0]+14,h[1]+12],guard:[h[0]+14,h[1]-10],hit:[h[0]-8,h[1]-14],crouch:[h[0]+14,h[1]]}[pose];g.strokeStyle='#9aa0a6';g.lineWidth=3;g.beginPath();g.moveTo(h[0],h[1]);g.lineTo(tip[0],tip[1]);g.stroke();}
+  g.fillStyle=p.skin||'#f0d9bc';g.beginPath();g.arc(0,-40,6.5,0,7);g.fill();g.strokeStyle=INK;g.lineWidth=1.2;g.stroke();
+  g.fillStyle=p.hair||INK;g.beginPath();g.arc(-1,-44,5.5,Math.PI,0);g.fill();g.beginPath();g.arc(-4,-48,2.6,0,7);g.fill();
+  if(p.band){g.fillStyle=p.band;g.fillRect(-6,-45,12,2.2);}
+  g.restore();
+}
+function label(t,x,y,col=INK,size=14){g.save();g.font=`700 ${size}px "LXGW WenKai TC","Noto Sans TC",serif`;g.textAlign='center';g.lineWidth=4;g.strokeStyle='rgba(236,228,210,.95)';g.strokeText(t,x,y);g.fillStyle=col;g.fillText(t,x,y);g.restore();}
+function seal(ch,x,y,k,col=RED){if(k<=0)return;const sc=k<.25?2.2-k*4.8:1;g.save();g.translate(x,y);g.scale(sc,sc);g.globalAlpha=Math.min(1,k*4);g.rotate(-.08);g.fillStyle=col;const sw=ch.length>1?30*ch.length:38;g.beginPath();g.roundRect(-sw/2,-19,sw,38,5);g.fill();g.fillStyle='#fff8ee';g.font=`700 ${ch.length>1?22:27}px "LXGW WenKai TC",serif`;g.textAlign='center';g.textBaseline='middle';g.fillText(ch,0,2);g.restore();}
+function ring(x,y,r,col,a,w=3,ry=.55){if(a<=0)return;g.save();g.globalAlpha=a;g.strokeStyle=col;g.lineWidth=w;g.beginPath();g.ellipse(x,y,r,r*ry,0,0,7);g.stroke();g.restore();}
+function spark(x,y,size,a,col=WHITE){if(a<=0)return;g.save();g.globalAlpha=a;g.strokeStyle=col;g.shadowColor='#fff';g.shadowBlur=12;g.lineWidth=2.5;for(let i=0;i<10;i++){const an=i*Math.PI/5+.2,r1=size*.25,r2=size*(i%2?.7:1);g.beginPath();g.moveTo(x+Math.cos(an)*r1,y+Math.sin(an)*r1);g.lineTo(x+Math.cos(an)*r2,y+Math.sin(an)*r2);g.stroke();}g.restore();}
+function dust(x,y,k,spread=26,a=.5){if(k<=0||k>=1)return;g.save();g.fillStyle=`rgba(140,115,80,${a*(1-k)})`;for(let i=0;i<7;i++){const an=Math.PI+i*Math.PI/6,r=spread*eo(k);g.beginPath();g.ellipse(x+Math.cos(an)*r*1.3,y+Math.sin(an)*r*.3-k*6,5+k*7,3+k*4,0,0,7);g.fill();}g.restore();}
+function slash(x1,y1,x2,y2,w,col,a){if(a<=0)return;const mx=(x1+x2)/2,my=(y1+y2)/2,dx=x2-x1,dy=y2-y1,l=Math.hypot(dx,dy),nx=-dy/l,ny=dx/l;g.save();g.globalAlpha=a;g.fillStyle=col;g.beginPath();g.moveTo(x1,y1);g.quadraticCurveTo(mx+nx*w,my+ny*w,x2,y2);g.quadraticCurveTo(mx+nx*w*.2,my+ny*w*.2,x1,y1);g.fill();g.restore();}
+function wedge(x,y,dir,half,len,fill,notch){g.save();g.fillStyle='rgba(179,38,62,.10)';g.beginPath();g.moveTo(x,y);g.ellipse(x,y,len,len*.55,0,dir-half,dir+half);g.closePath();g.fill();
+  g.fillStyle='rgba(179,38,62,.38)';g.beginPath();g.moveTo(x,y);g.ellipse(x,y,len*fill,len*fill*.55,0,dir-half,dir+half);g.closePath();g.fill();
+  g.strokeStyle='rgba(179,38,62,.8)';g.lineWidth=1.5;g.setLineDash([5,4]);g.beginPath();g.moveTo(x,y);g.ellipse(x,y,len,len*.55,0,dir-half,dir+half);g.closePath();g.stroke();g.setLineDash([]);
+  if(notch){g.globalAlpha=notch.a;g.fillStyle='rgba(217,165,33,.55)';g.beginPath();g.moveTo(x,y);g.ellipse(x,y,len*1.1,len*1.1*.55,0,notch.from,notch.to);g.closePath();g.fill();}
+  g.restore();}
+function eye(x,y,k){if(k<=0||k>=1)return;g.save();g.globalAlpha=1-k;g.strokeStyle=GOLD;g.lineWidth=2.5;g.shadowColor=GOLD;g.shadowBlur=10;const r=6+k*16;g.beginPath();g.ellipse(x,y,r,r*.5,0,0,7);g.stroke();g.fillStyle=GOLD;g.beginPath();g.arc(x,y,2.5,0,7);g.fill();g.restore();}
+function bar(x,y,v,col,name){g.save();g.fillStyle='rgba(42,33,24,.25)';g.fillRect(x-22,y,44,5);g.fillStyle=col;g.fillRect(x-22,y,44*clamp(v,0,1),5);g.font='11px "Noto Sans TC",sans-serif';g.fillStyle='rgba(42,33,24,.75)';g.textAlign='center';g.fillText(name,x,y+16);g.restore();}
+function stars(x,y,t,a){if(a<=0)return;g.save();g.globalAlpha=a;g.fillStyle=GOLD;for(let i=0;i<3;i++){const an=t*4+i*2.1;g.beginPath();g.arc(x+Math.cos(an)*12,y+Math.sin(an)*4,2.6,0,7);g.fill();}g.restore();}
+function bubble(b){if(!b||b.a<=0)return;g.save();g.globalAlpha=b.a;g.fillStyle='rgba(236,228,210,.55)';g.beginPath();g.ellipse(b.x,b.y,b.r,b.r*.6,0,0,7);g.fill();g.strokeStyle='rgba(42,33,24,.45)';g.lineWidth=1.5;g.setLineDash([2,5]);g.stroke();g.setLineDash([]);g.font='700 13px "LXGW WenKai TC",serif';g.fillStyle='rgba(42,33,24,.6)';g.fillText('交手圈・圈內放慢',b.x-b.r+20,b.y-b.r*.6+20);g.restore();}
+
+/* ---------- life layer: villagers ---------- */
+const villagers=[
+  {path:[[330,318],[180,445]],sp:42,robe:'#9a8460',k:0,carry:true},
+  {path:[[340,322],[250,450]],sp:36,robe:'#7d8a72',k:.5,carry:true},
+  {path:[[150,225],[400,215]],sp:30,robe:'#8a7aa0',k:.2},
+  {path:[[120,470],[280,470]],sp:22,robe:'#a07a62',k:.7,hoe:true},
+];
+let vt=0;
+function drawVillagers(){for(const v of villagers){const [a,b]=v.path,L=Math.hypot(b[0]-a[0],b[1]-a[1]),per=2*L/v.sp,ph=((vt/per+v.k)%1),go=ph<.5,k=go?ph*2:2-ph*2,pos=P(a,b,eio(k));
+  figure({x:pos[0],y:pos[1],robe:v.robe,face:(go?b[0]-a[0]:a[0]-b[0])>=0?1:-1,walk:vt*9+v.k*5,scale:.9});
+  if(v.carry&&go){g.fillStyle='#6f8fa8';g.fillRect(pos[0]+8,pos[1]-22,6,7);} }}
+
+/* ---------- demos ---------- */
+const HERO={robe:'#3b5f8a',band:'#c0392b'};
+const BAND={robe:'#5a4636',band:'#1b1b1b',blade:true,skin:'#e3c4a0'};
+const KUI={robe:'#a3243b',skin:'#f6e6e0',hair:'#3a1f2a'};
+
+const D={};
+D.qing={dur:7.4,rule:'<b>背後數值：</b>身法、輕功等級決定每一縱的距離與間隔。生活中趕路、挑水、去守點都用同一套。',
+ chips:[[0,'起','蹲身，腳下炸開一圈塵土。'],[0.4,'縱','人在半空，影子留在地上、變小；身後拖兩三道淡墨殘影，溪流擋不住。'],[1.15,'落','落地再起一圈塵，微蹲緩衝。身法越高，縱得越遠、停得越短。'],[3.0,'對照','同一段路，普通弟子還在走。']],
+ markers:[],
+ heroAt(t){const legs=[[.35,1.15,420,555],[1.25,2.05,555,690],[2.15,2.95,690,830]];let x=420,L=0,air=false;
+   for(const [a,b,x0,x1] of legs){if(t>=b)x=x1;else if(t>=a){const k=(t-a)/(b-a);x=lerp(x0,x1,k);L=Math.sin(Math.PI*k)*58;air=true;break;}else break;}
+   const crouch=!air&&(t<.35||legs.some(([,b])=>t>=b&&t<b+.1));
+   return{x,y:372-(x-420)*.02,L,pose:air?'leap':crouch?'crouch':'stand'};},
+ draw(t){
+  // walker
+  const wx=420+Math.min(410,60*t);figure({x:wx,y:452,robe:'#7d8a72',walk:t*9,face:1});label('普通弟子（走路）',wx,404,'#55604f',12);
+  // dust
+  for(const a of [0.35,1.25,2.15]){const x=[420,555,690][[0.35,1.25,2.15].indexOf(a)];dust(x,372-(x-420)*.02,seg(t,a,a+.5),24);}
+  for(const a of [1.15,2.05,2.95]){const x=[555,690,830][[1.15,2.05,2.95].indexOf(a)];dust(x,372-(x-420)*.02,seg(t,a,a+.5),20,.4);}
+  // afterimages
+  for(let k=4;k>=1;k--){const h=this.heroAt(t-k*.055);if(h.L>4)figure({x:h.x,y:h.y,lift:h.L,...HERO,alpha:.22/k,noShadow:true});}
+  const h=this.heroAt(t);
+  if(h.L>4){g.save();g.strokeStyle='rgba(42,33,24,.25)';g.lineWidth=2;for(let i=0;i<3;i++){g.beginPath();g.moveTo(h.x-18-i*10,h.y-h.L-30+i*8);g.lineTo(h.x-40-i*14,h.y-h.L-26+i*8);g.stroke();}g.restore();}
+  figure({x:h.x,y:h.y,lift:h.L,...HERO,pose:h.pose==='leap'?'stand':h.pose});
+  label(t>3?'主角（梯雲縱）先到':'主角（梯雲縱）',h.x,h.y-h.L-58,'#2f5d7c',13);
+ }};
+
+D.fast={dur:7.2,rule:'<b>背後數值：</b>出手間隔來自武學熟練與身法，木人晃幅來自威力。突破時才放一次大特效。',
+ chips:[[0,'同一招','兩人練同一套拳。初學者蓄勢久、木人晃得小。'],[1.2,'快','高手蓄勢短、出手密、木人晃得大，手臂帶速度線。'],[3.3,'突破','突破只放一次大金圈；之後身上留淡淡的氣，出手再快一截。'],[4.6,'平常','平時不掛光環，避免一院子人都在發光。']],
+ markers:[],
+ init(){const A=[],B=[];for(let t=.6;t<8;t+=1.2)A.push(t);let t=.35;while(t<3.3){B.push(t);t+=.55;}t=3.9;while(t<8){B.push(t);t+=.4;}this.A=A;this.B=B;},
+ draw(t){
+  const one=(x,times,wind,amp,robe,name,sub,brk)=>{
+    let last=-9,n=0,next=99;for(const s of times){if(s<=t){last=s;n++;}else{next=s;break;}}
+    let pose='stand';if(next-t<wind)pose='wind';if(t-last<.12)pose='strike';
+    if(brk&&t>3.3&&t<3.9)pose='crouch';
+    const dt=t-last,wob=amp*Math.exp(-5*dt)*Math.sin(28*dt);
+    g.save();g.translate(x+52,398);g.rotate(wob);g.fillStyle='#6b4a2a';g.fillRect(-3,-46,6,46);g.fillRect(-11,-38,22,4);g.fillRect(-9,-26,18,4);g.beginPath();g.arc(0,-50,6,0,7);g.fill();g.restore();
+    if(dt<.15)spark(x+42,370,14,1-dt/.15,'#fff4d0');
+    if(brk&&pose==='strike'){g.save();g.strokeStyle='rgba(47,93,124,.5)';g.lineWidth=2;for(let i=0;i<3;i++){g.beginPath();g.moveTo(x-4,366+i*5);g.lineTo(x-26,366+i*5);g.stroke();}g.restore();}
+    if(brk&&t>3.9){g.save();g.strokeStyle='rgba(217,165,33,.45)';g.lineWidth=1.5;for(let i=0;i<3;i++){const ph=(t*.8+i/3)%1;g.globalAlpha=.6*(1-ph);g.beginPath();g.moveTo(x-8+i*8,392-ph*50);g.quadraticCurveTo(x-4+i*8+Math.sin(t*3+i)*5,382-ph*50,x-8+i*8,372-ph*50);g.stroke();}g.restore();}
+    figure({x,y:398,robe,pose,face:1});
+    label(name,x+20,300,INK,15);label(sub,x+20,320,'#55604f',12);label(`出手 ${n} 次`,x+20,440,INK,13);
+  };
+  one(450,this.A,.45,.1,'#7d8a72','初窺門徑','出手間隔 1.2 秒',false);
+  one(680,this.B,.12,.26,'#6a5a8a','爐火純青',t<3.9?'出手間隔 0.55 秒':'突破後 0.4 秒',true);
+  ring(680,398,10+seg(t,3.85,4.5)*110,GOLD,(1-seg(t,3.85,4.5))*(t>3.85?1:0),5);
+  if(t>3.85&&t<4.9)label('突破',700,282-seg(t,3.85,4.3)*10,'#9a6b06',20);
+  g.save();g.globalAlpha=t>3.3&&t<3.9?.7:0;g.fillStyle=GOLD;for(let i=0;i<8;i++){const an=i*.785+t*2,r=40*(1-seg(t,3.3,3.9));g.beginPath();g.arc(680+Math.cos(an)*r,378+Math.sin(an)*r*.6,2.5,0,7);g.fill();}g.restore();
+ }};
+
+D.see={dur:5.6,rule:'<b>背後數值：</b>悟性與眼界 對上 對方招式深淺。名功的招更難看破；獨孤九劍專門看破。',
+ chips:[[0,'預兆','紅色扇形是對方即將落下的刀，越滿越快到。'],[1.0,'看破','主角金眼一閃：對方身上出現金色破綻點、地上出現金色缺口。交手圈內放慢，圈外村民照常走。'],[1.95,'反擊','沿金色虛線切到側面，刀劈在空地上；主角一擊打在破綻，停格、蓋「破」。'],[2.8,'結果','對方踉蹌。戰報記一筆「看破」。']],
+ markers:[{at:2.2,stop:.05,shake:2},{at:2.36,stop:.16,shake:6}],
+ speed(t){return t>1.3&&t<2.5?.3:1;},
+ bub(t){const a=Math.min(seg(t,1.15,1.35),1-seg(t,2.5,2.8));return{x:640,y:395,r:165,a};},
+ draw(t){
+  const B0=[690,392],HS=[560,392],HF=[648,424];
+  const fill=seg(t,.6,2.0),dashK=eio(seg(t,1.95,2.22));
+  if(t<2.25)wedge(B0[0]-6,B0[1]-4,Math.PI,.42,118,fill,{from:Math.PI-.78,to:Math.PI-.5,a:seg(t,1.5,1.7)});
+  // ground crack
+  if(t>2.2){const a=1-seg(t,3.6,4.4);g.save();g.globalAlpha=a;g.strokeStyle=INK;g.lineWidth=1.5;g.beginPath();g.moveTo(586,394);g.lineTo(574,388);g.moveTo(586,394);g.lineTo(578,402);g.moveTo(586,394);g.lineTo(598,404);g.stroke();g.restore();dust(586,394,seg(t,2.2,2.7),20,.5);}
+  // gold path
+  if(t>1.6&&t<2.3){g.save();g.globalAlpha=seg(t,1.6,1.75)*(1-seg(t,2.15,2.3));g.strokeStyle=GOLD;g.lineWidth=2.5;g.setLineDash([6,5]);g.beginPath();g.moveTo(HS[0],HS[1]);g.quadraticCurveTo(600,430,HF[0],HF[1]);g.stroke();g.setLineDash([]);g.restore();}
+  // hero
+  const hp=t<1.95?HS:t<2.22?[lerp(HS[0],HF[0],dashK),lerp(HS[1],HF[1],dashK)+Math.sin(Math.PI*dashK)*8]:HF;
+  if(t>1.95&&t<2.4)for(let k=1;k<=3;k++){const kk=eio(seg(t-k*.03,1.95,2.22));figure({x:lerp(HS[0],HF[0],kk),y:lerp(HS[1],HF[1],kk),...HERO,alpha:.2/k,noShadow:true});}
+  const bx=t<2.4?B0[0]:lerp(B0[0],728,eo(seg(t,2.36,2.9)));
+  const bpose=t<.6?'stand':t<2.0?'wind':t<2.36?'chop':t<3.6?'hit':'stand';
+  figure({x:bx,y:B0[1],...BAND,face:-1,pose:bpose});
+  const hpose=t>2.28&&t<2.6?'strike':'stand';
+  figure({x:hp[0],y:hp[1],...HERO,face:1,pose:hpose});
+  eye(HS[0],HS[1]-62,seg(t,1.0,1.6));
+  // weakness mark
+  const M=[bx+8,B0[1]-24];
+  if(t>1.3&&t<2.6){const a=seg(t,1.3,1.45)*(1-seg(t,2.4,2.6));g.save();g.globalAlpha=a;g.strokeStyle=GOLD;g.shadowColor=GOLD;g.shadowBlur=12;g.lineWidth=2.5;g.beginPath();g.arc(M[0],M[1],7+Math.sin(t*14)*1.5,0,7);g.stroke();g.fillStyle=GOLD;g.beginPath();g.arc(M[0],M[1],2.5,0,7);g.fill();
+    g.setLineDash([2,4]);g.lineWidth=1.2;g.beginPath();g.moveTo(HS[0]+6,HS[1]-60);g.lineTo(M[0],M[1]);g.stroke();g.restore();if(t<2.0)label('破綻',M[0]+24,M[1]-12,'#9a6b06',13);}
+  slash(636,404,716,344,9,INK,(t>2.33?1:0)*(1-seg(t,2.5,2.9)));
+  slash(640,402,712,348,4,GOLD,(t>2.33?1:0)*(1-seg(t,2.4,2.7)));
+  seal('破',712,316,t>2.36?Math.min(1,(t-2.36)/0.6):0);
+  stars(bx,B0[1]-58,t,t>2.6&&t<4.2?1:0);
+  label('主角',hp[0],hp[1]+22,'#2f5d7c',12);label('山賊頭目',bx,B0[1]+22,'#6b4a3a',12);
+ }};
+
+D.parry={dur:5.4,rule:'<b>背後數值：</b>內力 對上 勁力。相近只擋住；內力高出很多才反震。乾坤大挪移、蛤蟆功是加強版；玄鐵劍法專破招架。',
+ chips:[[0,'預兆','對方衝來、舉刀；主角雙臂交叉擺守勢。'],[0.9,'擋','勁力相近：只有火花，雙方各退半步，對方架勢條少一點。'],[2.2,'再來','這次換一個內力遠高於對方勁力的主角。'],[2.9,'反震','接觸瞬間停格，白藍衝擊圈從主角擴散；對方被震退、架勢條見底，傷害數字反飛回去，蓋「震」。']],
+ markers:[{at:.9,stop:.07,shake:2},{at:2.9,stop:.18,shake:7}],
+ draw(t){
+  let bx,bpose='stand',hx=560;
+  if(t<.3)bx=720;else if(t<.9){bx=lerp(720,604,eio(seg(t,.3,.9)));bpose='wind';}
+  else if(t<1.25){const k=eo(seg(t,.9,1.25));bx=lerp(604,620,k);hx=lerp(560,552,k);bpose='chop';}
+  else if(t<2.3){bx=lerp(620,700,eio(seg(t,1.4,2.1)));hx=lerp(552,560,seg(t,1.4,1.8));}
+  else if(t<2.9){bx=lerp(700,602,eio(seg(t,2.3,2.9)));bpose='wind';}
+  else{const k=eo(seg(t,2.9,3.5));bx=lerp(602,750,k);hx=lerp(560,557,seg(t,2.9,3.0));bpose=t<3.9?'hit':'stand';
+    if(t<3.6)for(let i=0;i<5;i++){const tt=2.9+i*.12;if(t>tt)dust(lerp(602,750,eo(seg(tt,2.9,3.5))),392,seg(t,tt,tt+.5),12,.45);}}
+  if(t>.4&&t<.9||t>2.4&&t<2.9){g.save();g.strokeStyle='rgba(179,38,62,.75)';g.lineWidth=2;g.setLineDash([5,4]);g.beginPath();g.moveTo(bx-10,370);g.lineTo(hx+14,370);g.stroke();g.setLineDash([]);g.restore();}
+  figure({x:hx,y:392,...HERO,face:1,pose:'guard',robe:t<2.2?'#3b5f8a':'#2c4a6e'});
+  figure({x:bx,y:392,...BAND,face:-1,pose:bpose});
+  spark(584,360,22,t>.9?1-seg(t,.9,1.2):0);
+  if(t>.9&&t<1.6)label('擋',584,330-seg(t,.9,1.4)*8,'#55604f',18);
+  spark(584,360,40,t>2.9?1-seg(t,2.9,3.3):0);
+  for(let i=0;i<2;i++){const k=seg(t,2.9+i*.1,3.5+i*.1);ring(560,380,20+k*110,i?BLUEQI:WHITE,(1-k)*(t>2.9?1:0),4-i);}
+  if(t>2.95&&t<4){const k=eo(seg(t,2.95,3.6));label('反震 −18',lerp(590,742,k),340-Math.sin(Math.PI*k)*30,'#2f6fae',16);}
+  seal('震',780,300,t>2.95?Math.min(1,(t-2.95)/.6):0);
+  stars(bx,334,t,t>3.3&&t<4.6?1:0);
+  const post=t<.9?1:t<2.9?.8:.12;bar(bx,404,post,'#b3263e','架勢');
+  bar(hx,404,t<.9?1:t<2.9?.9:.82,'#3a78b8','內力');
+  label(t<2.2?'主角（內力≈對方）':'主角（內力遠高於對方）',hx-10,300,'#2f5d7c',13);
+ }};
+
+const kuiPts=(()=>{const H=[600,395],at=a=>[H[0]+44*Math.cos(a),H[1]+26*Math.sin(a)];return{H,A1:at(-2.4),A2:at(.35),A3:at(2.6),E:[860,300],S:[790,360]};})();
+function kuiShadow(t,pts,keys){for(let i=0;i<keys.length-1;i++){const [t0,p0]=keys[i],[t1,p1]=keys[i+1];if(t>=t0&&t<=t1)return P(p0,p1,eio((t-t0)/(t1-t0)));}return null;}
+function drawKuiHit(t,at,from,H){const a=1-seg(t,at,at+.45);if(t<at||a<=0)return;
+  figure({x:from[0],y:from[1],...KUI,face:H[0]>=from[0]?1:-1,pose:'strike',alpha:.55*a,noShadow:true});
+  g.save();g.globalAlpha=1-seg(t,at,at+.18);g.strokeStyle=RED;g.lineWidth=1.4;g.shadowColor=RED;g.shadowBlur=6;for(let i=0;i<3;i++){g.beginPath();g.moveTo(from[0],from[1]-26+i*3);g.lineTo(H[0]+(i-1)*4,H[1]-26+i*4);g.stroke();}g.restore();
+  g.save();g.globalAlpha=1-seg(t,at,at+.6);g.strokeStyle=RED;g.lineWidth=2.5;const hx=H[0]+(from[0]>H[0]?5:-5),hy=H[1]-30+(from[1]-H[1])*.3;g.beginPath();g.moveTo(hx-5,hy-5);g.lineTo(hx+5,hy+5);g.moveTo(hx+5,hy-5);g.lineTo(hx-5,hy+5);g.stroke();g.restore();}
+function drawVanish(t,S){const a=t<.6?.9:1-seg(t,.6,.9);if(a>0)figure({x:S[0],y:S[1],...KUI,face:-1,alpha:a});
+  if(t>.6&&t<1.2){const k=seg(t,.6,1.2);g.save();g.globalAlpha=1-k;g.strokeStyle=RED;g.lineWidth=1.3;for(let i=0;i<9;i++){const an=i*.7+.3;g.beginPath();g.moveTo(S[0]+Math.cos(an)*k*10,S[1]-26+Math.sin(an)*k*10);g.lineTo(S[0]+Math.cos(an)*(10+k*60),S[1]-26+Math.sin(an)*(10+k*40));g.stroke();}g.restore();}}
+function drawTrueShadow(p,a,gold,t){if(!p)return;g.save();g.globalAlpha=a;g.fillStyle=INK;g.beginPath();g.ellipse(p[0],p[1],7,2.6,0,0,7);g.fill();g.restore();if(gold){ring(p[0],p[1],14+Math.sin(t*12)*2,GOLD,gold,2.5,.45);label('真身的影子',p[0],p[1]+24,'#9a6b06',12);}}
+
+D.kui={dur:4.8,rule:'<b>背後數值：</b>葵花的特性是出手不給預兆、人不顯形。對眼界不夠的人等於必中；唯一的剋法是看破。',
+ chips:[[0,'現身','只有開頭看得到他。'],[0.6,'消失','人化成幾道紅針光散開，地上只剩一個很淡、移動很快的影子。'],[1.4,'出手','每一擊只看到三樣東西：一閃即逝的殘影、紅色針光、主角身上的傷。主角轉頭總慢半拍。'],[3.1,'再現','打完才在遠處現身。玩家的感受就是「看不見人」。']],
+ markers:[{at:1.4,stop:.05,shake:3},{at:2.0,stop:.05,shake:3},{at:2.55,stop:.05,shake:3}],
+ draw(t){const {H,A1,A2,A3,E,S}=kuiPts;
+  drawVanish(t,S);
+  const sh=kuiShadow(t,null,[[.9,S],[1.38,A1],[1.42,A1],[1.98,A2],[2.02,A2],[2.53,A3],[2.6,A3],[3.0,E]]);drawTrueShadow(sh,.28,0,t);
+  const hits=[[1.4,A1],[2.0,A2],[2.55,A3]];let face=-1,pose='stand';
+  for(const [at,p] of hits){if(t>at+.15)face=p[0]>=H[0]?1:-1;if(t>at&&t<at+.22)pose='hit';}
+  figure({x:H[0],y:H[1],...HERO,face,pose});
+  for(const [at,p] of hits)drawKuiHit(t,at,p,H);
+  if(t>2.1&&t<3.4)label('？',H[0]+2,H[1]-64,RED,22);
+  const ra=seg(t,3.1,3.4);if(ra>0){figure({x:E[0],y:E[1],...KUI,face:-1,alpha:ra});label('葵花傳人',E[0],E[1]+22,'#8a2034',12);}
+  label('主角（眼界不足）',H[0],H[1]+22,'#2f5d7c',12);
+ }};
+
+D.kui2={dur:5.4,rule:'<b>背後數值：</b>同一個對手，主角眼界夠高。看破成功時，殘影騙不了人，真身被逼現形。',
+ chips:[[0,'現身','同一個葵花傳人。'],[0.6,'消失','照樣化成紅針光，地上只剩影子。'],[1.6,'看破','第一擊後主角金眼一閃，地上真身的影子被金圈鎖住；冒出來的兩個灰色殘影是假的。'],[2.05,'截住','主角轉身招架，對方被逼現形、震退，蓋「現」。']],
+ markers:[{at:1.4,stop:.05,shake:3},{at:2.05,stop:.17,shake:5}],
+ speed(t){return t>1.6&&t<2.1?.4:1;},
+ bub(t){return{x:600,y:398,r:120,a:Math.min(seg(t,1.55,1.7),1-seg(t,2.3,2.6))};},
+ draw(t){const {H,A1,S}=kuiPts;const back=[H[0]-46,H[1]+4];
+  drawVanish(t,S);
+  const sh=kuiShadow(t,null,[[.9,S],[1.38,A1],[1.5,A1],[2.02,back]]);
+  if(t<2.05)drawTrueShadow(sh,.28,t>1.7?seg(t,1.7,1.8):0,t);
+  for(const [a,p] of [[1.85,[H[0]+44,H[1]+8]],[1.9,[H[0]+20,H[1]-24]]]){const al=t>a?.45*(1-seg(t,a+.2,a+.5)):0;if(al>0){g.save();g.filter='grayscale(1)';figure({x:p[0],y:p[1],...KUI,face:-1,alpha:al,noShadow:true});g.restore();if(t<a+.4)label('假',p[0],p[1]-54,'#55604f',12);}}
+  drawKuiHit(t,1.4,A1,H);
+  const face=t>1.98?-1:t>1.55?-1:1,pose=t>1.4&&t<1.62?'hit':t>1.98?'guard':'stand';
+  figure({x:H[0],y:H[1],...HERO,face,pose});
+  eye(H[0],H[1]-62,seg(t,1.6,2.0));
+  spark(H[0]-26,H[1]-26,30,t>2.05?1-seg(t,2.05,2.4):0);
+  if(t>2.05){const k=eo(seg(t,2.05,2.5));figure({x:lerp(back[0],500,k),y:back[1],...KUI,face:1,pose:t<3.3?'hit':'stand',alpha:Math.min(1,seg(t,2.05,2.15)+.2)});stars(lerp(back[0],500,k),back[1]-58,t,t>2.4&&t<4?1:0);}
+  for(let i=0;i<2;i++){const k=seg(t,2.05+i*.08,2.55+i*.08);ring(H[0]-20,H[1]-6,16+k*70,i?BLUEQI:WHITE,(1-k)*(t>2.05?1:0),3);}
+  seal('現',520,322,t>2.1?Math.min(1,(t-2.1)/.6):0);
+  label('主角（眼界夠）',H[0],H[1]+22,'#2f5d7c',12);
+ }};
+/* ---------- round 2 helpers ---------- */
+function dummyAt(x,y,wob){g.save();g.translate(x,y);g.rotate(wob);g.fillStyle='#6b4a2a';g.fillRect(-3,-46,6,46);g.fillRect(-11,-38,22,4);g.fillRect(-9,-26,18,4);g.beginPath();g.arc(0,-50,6,0,7);g.fill();g.restore();}
+function sched(times,t,wind){let last=-9,n=0,next=99;for(const s of times){if(s<=t){last=s;n++;}else{next=s;break;}}let pose='stand';if(next-t<wind)pose='wind';if(t-last<.12)pose='strike';return{last,n,next,pose};}
+function every(start,step,end){const a=[];for(let t=start;t<end;t+=step)a.push(+t.toFixed(3));return a;}
+function dragon(x1,y1,x2,y2,a,w=7){if(a<=0)return;g.save();g.globalAlpha=a;g.strokeStyle='#f2c23a';g.shadowColor='#ffdc60';g.shadowBlur=16;g.lineWidth=w;g.lineCap='round';g.beginPath();g.moveTo(x1,y1);const mx=(x1+x2)/2,my=Math.min(y1,y2)-50;g.bezierCurveTo(mx-30,my,mx+30,my+60,x2,y2);g.stroke();g.restore();}
+function arrowAt(x1,y1,x2,y2,k,col='#5a4636'){const p=P([x1,y1],[x2,y2],k),dx=x2-x1,dy=y2-y1,l=Math.hypot(dx,dy),ux=dx/l,uy=dy/l;g.save();g.strokeStyle=col;g.lineWidth=2;g.beginPath();g.moveTo(p[0]-ux*18,p[1]-uy*18);g.lineTo(p[0],p[1]);g.stroke();g.fillStyle=col;g.beginPath();g.moveTo(p[0]+ux*4,p[1]+uy*4);g.lineTo(p[0]-uy*3-ux*3,p[1]+ux*3-uy*3);g.lineTo(p[0]+uy*3-ux*3,p[1]-ux*3-uy*3);g.fill();g.restore();}
+function wideBar(x,y,w,v,col,name){g.save();g.fillStyle='rgba(42,33,24,.25)';g.fillRect(x,y,w,7);g.fillStyle=col;g.fillRect(x,y,w*clamp(v,0,1),7);g.font='700 12px "Noto Sans TC",sans-serif';g.fillStyle='rgba(42,33,24,.8)';g.textAlign='right';g.fillText(name,x-6,y+7);g.restore();}
+function drawBell(x,y,a,crack){if(a<=0)return;g.save();g.globalAlpha=a;g.fillStyle='rgba(230,180,60,.18)';g.strokeStyle='#d9a521';g.lineWidth=2.5;g.shadowColor='#ffd060';g.shadowBlur=10;g.beginPath();g.moveTo(x-24,y+2);g.bezierCurveTo(x-27,y-30,x-18,y-64,x,y-66);g.bezierCurveTo(x+18,y-64,x+27,y-30,x+24,y+2);g.closePath();g.fill();g.stroke();
+  if(crack){g.strokeStyle='#5a3a10';g.lineWidth=2;g.shadowBlur=0;g.beginPath();g.moveTo(x-14,y-52);g.lineTo(x-8,y-42);g.lineTo(x-15,y-34);g.lineTo(x-6,y-22);g.moveTo(x-8,y-42);g.lineTo(x+2,y-38);g.stroke();}g.restore();}
+const WUDANG={robe:'#e6e4dc',sash:'#2a2118',blade:true};
+const MASTER={robe:'#d8d8d0',sash:'#7a7a70',blade:true,hair:'#9a9a9a'};
+
+D.tiers={dur:7,rule:'<b>背後數值：</b>每門武學是一串有名字的招式，熟練度到了才解鎖下一招。地圖上的人只會用已學會的招，招名浮在頭上，第一次用出新招記入門派紀事。',
+ chips:[[0,'入門','只會一招起手式，蓄勢長、木人晃得小。蓄勢長也代表容易被人看破。'],[1.0,'小成・大成','招式變多、輪流用出，招名浮在頭上；大成起才帶這一類武學的光（劍是一道弧光）。'],[2.0,'化境','蓄勢短到幾乎看不見，帶兩道殘影，木人晃得最大。'],[3.0,'絕學','出手反而慢，但每一下都是專屬絕招：太極劍是一圈一圈的圓，第一次用出蓋一個字。']],
+ markers:[],
+ init(){const T=[[.9,1.4,.5,['起手式']],[.6,1.05,.35,['白鶴亮翅','蒼松迎客']],[.5,.8,.22,['蒼松迎客','有鳳來儀','金雁橫空']],[.4,.6,.12,['有鳳來儀','金雁橫空','蒼松迎客','鍾鼓齊鳴']],[1.0,1.5,.3,['太極劍意']]];
+   this.T=T.map(([s,st,w,mv])=>({times:every(s,st,8),w,mv}));},
+ draw(t){const names=['入門','小成','大成','化境','絕學'],subs=['只會一招','兩招輪換','三招＋劍光','四招＋殘影','專屬絕招'],gap=[1.4,1.05,.8,.6,1.5],robes=['#7d8a72','#6f8a80','#4f7a8a','#3b5f8a','#2c4a6e'];
+  this.T.forEach((r,i)=>{const x=425+i*102,y=405,s=sched(r.times,t,r.w),dt=t-s.last;
+   dummyAt(x+40,y,[.06,.1,.16,.22,.3][i]*Math.exp(-5*dt)*Math.sin(28*dt));
+   if(i===4&&s.n>0&&dt<.9)for(let k=0;k<3;k++)ring(x+22,y-8,12+(dt/.9)*46+k*13,'#5fa0d8',(1-dt/.9)*.85,2,.45);
+   if(i>=3&&dt<.3)for(let k=1;k<=2;k++)figure({x:x-k*8,y,robe:robes[i],blade:true,pose:'strike',alpha:.22/k,noShadow:true});
+   figure({x,y,robe:robes[i],blade:true,pose:s.pose});
+   if(s.n>0&&dt<.15)spark(x+34,y-30,8+i*3,1-dt/.15,'#fff4d0');
+   if(i>=2&&i<4&&s.n>0&&dt<.35){g.save();g.globalAlpha=1-dt/.35;g.strokeStyle=i===3?'#9fd0ff':'#c8d8e6';g.lineWidth=i===3?3:2;g.beginPath();g.arc(x+8,y-30,28+i*3,-1.2,.9);g.stroke();g.restore();}
+   if(s.n>0&&dt<.6){const mv=r.mv[(s.n-1)%r.mv.length];label(mv,x+12,y-64-dt*14,i===4?'#2f5d7c':i===0?'#8a8a7a':'#55604f',i===4?15:12);}
+   label(names[i],x+15,y-100,INK,16);label(subs[i],x+15,y+24,'#55604f',11);label(`間隔 ${gap[i]} 秒`,x+15,y+40,'#55604f',11);
+  });
+  seal('意',852,262,t>1.0?Math.min(1,(t-1.0)/.6):0,'#2f5d7c');
+ }};
+
+D.neili={dur:5.6,rule:'<b>背後數值：</b>內力分初階、大成、圓滿。內力平常不發光，只在運功、出手、被打時看得出深淺；到了圓滿才在平常留一點痕跡（九陽是身上的熱氣）。',
+ chips:[[0,'平常','三人站著時幾乎一樣。'],[1.0,'運功','蹲身聚氣：氣點越多、收得越遠，表示內力越深。'],[1.6,'放出','初階只有一圈小波；大成吹動落葉；圓滿的波紋推得很遠，地上的葉子全被掃開，之後身上一直冒熱氣。'],[3.2,'受箭','同樣一支箭：初階中箭；大成護體真氣擋掉大半；圓滿自動反震，把箭彈回去。']],
+ markers:[{at:3.7,stop:.08,shake:3}],
+ draw(t){const xs=[470,640,810],y=405,names=['初階','大成','圓滿（九陽）'],cols=['#9fb8c8',BLUEQI,'#f0a040'],R=[22,55,100],robes=['#7d8a72','#4f7a8a','#8a5a2a'];
+  xs.forEach((x,i)=>{
+   if(i===2&&t>1.6){g.save();g.strokeStyle='rgba(240,150,50,.6)';g.lineWidth=1.5;for(let k=0;k<3;k++){const ph=(t*.7+k/3)%1;g.globalAlpha=.7*(1-ph);g.beginPath();g.moveTo(x-10+k*10,y-50-ph*40);g.quadraticCurveTo(x-6+k*10+Math.sin(t*4+k)*4,y-60-ph*40,x-10+k*10,y-70-ph*40);g.stroke();}g.restore();}
+   if(t>1&&t<1.6){const k=seg(t,1,1.6);g.save();g.fillStyle=cols[i];g.globalAlpha=.85;for(let j=0;j<4+i*4;j++){const an=j*2.4,r=(1-k)*(20+i*25);g.beginPath();g.arc(x+Math.cos(an)*r,y-26+Math.sin(an)*r*.6,2.2,0,7);g.fill();}g.restore();}
+   const k=seg(t,1.6,2.4);if(t>1.6&&k<1)for(let j=0;j<=i;j++)ring(x,y-4,10+k*R[i]+j*12,cols[i],(1-k)*.9,3-j*.6,.45);
+   if(i>=1){const kk=eo(seg(t,1.6,2.6)),n=i===1?6:12;g.save();g.fillStyle='#7a9a4a';g.globalAlpha=t<3?1:1-seg(t,3,3.4);for(let j=0;j<n;j++){const an=j*(6.28/n)+.3,r=26+kk*(i===1?30:80);g.beginPath();g.ellipse(x+Math.cos(an)*r,y+Math.sin(an)*r*.4,3.5,1.6,an,0,7);g.fill();}g.restore();}
+   let pose=t>1&&t<1.6?'crouch':'stand';if(i===0&&t>3.7&&t<4)pose='hit';
+   figure({x,y,robe:robes[i],pose});
+   const tip=[x+6,y-30],from=[x+100,y-120];
+   if(t>3.2&&t<3.7)arrowAt(from[0],from[1],tip[0],tip[1],seg(t,3.2,3.7));
+   if(t>=3.7){if(i===0){const a=1-seg(t,3.7,4.6);g.save();g.globalAlpha=a;g.strokeStyle=RED;g.lineWidth=2.5;g.beginPath();g.moveTo(tip[0]-5,tip[1]-5);g.lineTo(tip[0]+5,tip[1]+5);g.moveTo(tip[0]+5,tip[1]-5);g.lineTo(tip[0]-5,tip[1]+5);g.stroke();g.restore();if(t<5)label('−8',x+24,y-58,RED,14);}
+     if(i===1){spark(tip[0]+6,tip[1]-4,14,1-seg(t,3.7,4),BLUEQI);if(t<5)label('護體 −3',x+30,y-58,'#2f6fae',13);if(t<4.2)arrowAt(tip[0]+6,tip[1]-4,tip[0]+14,y-2,seg(t,3.7,4.2));}
+     if(i===2){ring(x,y-20,10+seg(t,3.7,4.2)*40,'#f0a040',1-seg(t,3.7,4.2),3,.6);if(t<4.4)arrowAt(tip[0],tip[1],from[0]+20,from[1]-20,eo(seg(t,3.7,4.4)));if(t<5.2)label('反震 0',x+34,y-58,'#b0601a',13);}}
+   label(names[i],x,y+26,INK,14);
+  });
+ }};
+
+D.bell={dur:6.4,rule:'<b>背後數值：</b>金鐘罩、鐵布衫是「傷害門檻」：低於門檻的打擊一律無傷。但每人有一個罩門，被看破的人專打罩門就破功。看破在這裡是敵人的能力。',
+ chips:[[0,'罩上','練成的人身上平時有一層很淡的金鐘。'],[0.9,'鏘','刀砍上去，金鐘一亮、刀被彈開，傷害 0。連砍三刀都一樣。'],[3.5,'被看破','對方看出罩門（後頸），繞到背後。'],[4.6,'破罩','專打罩門：金鐘裂開、碎片四散，一刀見血，蓋「破罩」。']],
+ markers:[{at:.9,stop:.06,shake:2},{at:1.9,stop:.06,shake:2},{at:2.9,stop:.06,shake:2},{at:4.6,stop:.22,shake:8}],
+ draw(t){const H=[600,392],ST=[.9,1.9,2.9];let bx=700,by=392,bpose='stand',bf=-1;
+  for(const s of ST){if(t>s-.45&&t<s){bpose='wind';bx=lerp(700,636,seg(t,s-.45,s));}else if(t>=s&&t<s+.5){bpose=t<s+.12?'chop':'hit';bx=lerp(636,700,eo(seg(t,s,s+.5)));}}
+  if(t>=3.9){const k=eio(seg(t,3.9,4.4));bx=lerp(700,560,k);by=392-Math.sin(Math.PI*k)*40;bf=k>.5?1:-1;bpose=t>4.4&&t<4.6?'wind':t>=4.6&&t<4.9?'chop':'stand';if(t>4.4)bf=1;}
+  const flash=Math.max(...ST.map(s=>t>=s?1-seg(t,s,s+.5):0));
+  const broke=t>=4.6;
+  drawBell(H[0],H[1],broke?1-seg(t,4.6,5.4):.22+flash*.78,broke);
+  if(broke){g.save();g.fillStyle='#d9a521';for(let i=0;i<8;i++){const an=i*.8,r=eo(seg(t,4.6,5.3))*60;g.globalAlpha=1-seg(t,4.6,5.4);g.fillRect(H[0]+Math.cos(an)*r,H[1]-36+Math.sin(an)*r*.7,5,3);}g.restore();}
+  figure({x:bx,y:by,...BAND,face:bf,pose:bpose,lift:0});
+  figure({x:H[0],y:H[1],robe:'#b07a2a',sash:'#5a3a10',hair:'#3a2a1a',face:1,pose:broke&&t<5.2?'hit':'stand'});
+  for(const s of ST){if(t>=s&&t<s+.7){spark(H[0]+22,H[1]-34,16,1-seg(t,s,s+.3),'#ffe6a0');label('鏘 0',H[0]+30,H[1]-74-seg(t,s,s+.7)*10,'#9a6b06',15);}}
+  if(t>3.5&&t<4.7){const a=seg(t,3.5,3.7);g.save();g.globalAlpha=a;g.strokeStyle=GOLD;g.shadowColor=GOLD;g.shadowBlur=10;g.lineWidth=2.5;g.beginPath();g.arc(H[0]-7,H[1]-36,6+Math.sin(t*14),0,7);g.stroke();g.restore();if(t<4.4)label('罩門',H[0]-34,H[1]-40,'#9a6b06',13);}
+  if(broke&&t<5.6)label('−40',H[0]+24,H[1]-70-seg(t,4.6,5.4)*12,RED,18);
+  seal('破罩',H[0],300,broke?Math.min(1,(t-4.6)/.6):0);
+  label('金鐘罩弟子',H[0],H[1]+22,'#8a5a1a',12);
+ }};
+
+D.chick={dur:7.4,rule:'<b>背後數值：</b>同一套判定。兩邊看破、招架都低，可是出手也不準，所以大多是落空和互擋。不用特別寫「互啄」的規則，數值接近又都很低，自然就拖很久。',
+ chips:[[0,'你來我往','兩個剛入門的弟子對練：蓄勢長、動作大。'],[1.2,'落空','大部分招都揮空，只揚起塵土；偶爾兵器碰在一起「叮」一聲。'],[3.6,'偶爾中','十幾招裡才中一下，掉 1 點血。'],[6.2,'結果','拆了 12 招，總共掉 1 點血。這是新手對練的喜感，也讓高手出場時的反差更大。']],
+ markers:[],
+ draw(t){const out=['miss','miss','block','miss','block','miss','hit','miss','block','miss','miss','block'];const A0=600,B0=690,y=394;let ax=A0,bx=B0,ap='stand',bp='stand',n=0,hpA=1,hpB=1;
+  out.forEach((o,i)=>{const s=.6+i*.5,atkA=i%2===0;if(t>=s)n=i+1;
+   if(t>s-.32&&t<s+.2){const k=t<s?seg(t,s-.32,s):1-seg(t,s,s+.2);if(atkA){ax=A0+k*22;ap=t<s?'wind':'chop';}else{bx=B0-k*22;bp=t<s?'wind':'chop';}}
+   if(t>=s&&t<s+.6){const tx=atkA?B0:A0,dir=atkA?1:-1;
+     if(o==='miss'){dust(tx-dir*18+(i%3-1)*8,y,seg(t,s,s+.5),14,.5);if(t<s+.45)label('空',tx-dir*20,y-56-seg(t,s,s+.45)*8,'#8a8a7a',12);if(atkA)bp='hit';else ap='hit';}
+     if(o==='block'){spark((A0+B0)/2,y-34,12,1-seg(t,s,s+.25),'#e8eef5');if(t<s+.45)label('叮',(A0+B0)/2,y-60,'#6a7a8a',14);}
+     if(o==='hit'){if(t<s+.6)label('−1',tx,y-62,RED,13);if(atkA)bp='hit';else ap='hit';}}
+   if(o==='hit'&&t>=s){if(atkA)hpB-=.02;else hpA-=.02;}
+  });
+  const wob=Math.sin(t*2.5)*3;
+  figure({x:ax,y:y+wob,robe:'#7d8a72',blade:true,face:1,pose:ap});
+  figure({x:bx,y:y-wob,robe:'#a07a62',blade:true,face:-1,pose:bp});
+  bar(A0,y+30,hpA,'#b3263e','氣血');bar(B0,y+30,hpB,'#b3263e','氣血');
+  label(`第 ${n} 招`,(A0+B0)/2,300,INK,18);
+  if(t>6.2)label('拆了 12 招，總共掉 1 點血',(A0+B0)/2,276,'#55604f',14);
+ }};
+
+D.masters={dur:8,rule:'<b>背後數值：</b>每次被擋下的招都會削一點架勢（或心神）。兩個高手看破、招架都高，招招被拆掉，架勢慢慢見底。誰的架勢先空，對方的看破就必中，一擊定勝負。長時間對拆用快轉加招數計數表現，只有最後一擊放慢。',
+ chips:[[0,'對拆','兩人一來一往全被拆掉，兵器火花不斷，招名閃過。畫面快轉，招數計數直接跳。'],[2.5,'消耗','兩條架勢條都在掉，右邊的掉得快一點。'],[4.6,'露出破綻','右邊架勢見底，出招過了頭。畫面放慢，金色破綻點出現。'],[5.1,'一擊','主角一劍定勝負，停格、蓋「勝」。拆了三百多招，只有這一下見血。']],
+ markers:[{at:5.1,stop:.26,shake:8}],
+ speed(t){return t>4.6&&t<5.6?.3:1;},
+ bub(t){return{x:640,y:392,r:165,a:Math.min(seg(t,0,.3),1-seg(t,7,7.6))};},
+ draw(t){const y=394,ph1=t<4.6,ex=Math.floor(t/.16),atkA=ex%2===0,et=t-ex*.16;
+  let ax=598+(ph1?Math.sin(t*9)*10:0),bx=682+(ph1?Math.sin(t*9+1)*10:0),ap='stand',bp='stand';
+  if(ph1){ap=atkA?(et<.08?'strike':'wind'):'guard';bp=atkA?'guard':(et<.08?'strike':'wind');spark(640,y-34+(ex%3-1)*8,14,1-et/.16,'#f0f4ff');
+    if(ex%5===0&&et<.16){const mvA=['攬雀尾','雲手','白鶴亮翅','玉女穿梭'],mvB=['破劍式','破刀式','破掌式','總訣式'];label(atkA?mvA[(ex/5)%4|0]:mvB[(ex/5)%4|0],atkA?ax-6:bx+6,y-66,atkA?'#2f5d7c':'#55604f',12);}}
+  else{bp=t<5.1?'wind':t<5.6?'hit':'crouch';ap=t>5.0&&t<5.5?'strike':'stand';if(t>5.1)bx=lerp(682,708,eo(seg(t,5.1,5.6)));}
+  figure({x:ax,y,...HERO,blade:true,face:1,pose:ap});
+  figure({x:bx,y,...MASTER,face:-1,pose:bp});
+  const pa=ph1?1-.5*seg(t,0,4.6)+.03*Math.sin(t*5):.5,pb=ph1?1-seg(t,0,4.6)+.03*Math.sin(t*6):0;
+  bar(ax,y+30,pa,'#3a78b8','架勢');bar(bx,y+30,Math.max(0,pb),'#3a78b8','架勢');
+  const N=ph1?Math.floor(t/.16)*7+1:Math.floor(4.6/.16)*7+1;
+  label(`拆到第 ${N} 招`,640,282,INK,18);if(ph1)label('▶▶ 快轉',640,302,'#8a8a7a',12);
+  eye(ax,y-62,seg(t,4.65,5.0));
+  if(t>4.7&&t<5.3){const M=[bx+6,y-28];g.save();g.globalAlpha=seg(t,4.7,4.8);g.strokeStyle=GOLD;g.shadowColor=GOLD;g.shadowBlur=12;g.lineWidth=2.5;g.beginPath();g.arc(M[0],M[1],7,0,7);g.stroke();g.restore();}
+  slash(560,420,740,320,10,INK,(t>5.08?1:0)*(1-seg(t,5.4,6.2)));slash(566,416,734,324,4,GOLD,(t>5.08?1:0)*(1-seg(t,5.3,5.8)));
+  seal('勝',760,300,t>5.1?Math.min(1,(t-5.1)/.6):0);
+  label('主角・太極劍',ax,y+58,'#2f5d7c',12);label('名家・獨孤九劍',bx,y+58,'#55604f',12);
+ }};
+
+const GC=[650,402],GN=8;
+D.group={dur:6,rule:'<b>背後數值：</b>群攻就是「一次出手，對多個目標各判定一次看破」。看破幾個就打中幾個，所以同一招在悟性高的人手上才會變成一招破眾。',
+ chips:[[0,'被圍','八個人同時舉刀圍上來，每人一道紅色預兆。'],[1.1,'看破','圈內放慢。主角金眼一閃，八個人身上依序亮起金色破綻點。'],[2.0,'一劍','主角化成一道金線，依序穿過每個破綻。'],[2.35,'同時倒','主角回到原地收劍，八個人同時中招，蓋「破」。']],
+ markers:[{at:2.35,stop:.22,shake:6}],
+ speed(t){return t>1.1&&t<2.6?.35:1;},
+ bub(t){return{x:GC[0],y:GC[1]-10,r:200,a:Math.min(seg(t,1.0,1.2),1-seg(t,2.8,3.2))};},
+ draw(t){const app=eo(seg(t,0,1)),rx=lerp(160,105,app),E=[];for(let i=0;i<GN;i++){const a=i*Math.PI*2/GN+.2;E.push([GC[0]+Math.cos(a)*rx,GC[1]+Math.sin(a)*rx*.55]);}
+  const hit=t>=2.35;
+  if(t>.6&&t<2.1)E.forEach(p=>{g.save();g.globalAlpha=.6;g.strokeStyle=RED;g.lineWidth=1.5;g.setLineDash([4,4]);g.beginPath();g.moveTo(p[0],p[1]-20);g.lineTo(lerp(p[0],GC[0],.6),lerp(p[1],GC[1],.6)-20);g.stroke();g.restore();});
+  const order=E.map((p,i)=>i).sort((a,b)=>E[a][1]-E[b][1]);
+  for(const i of order){const p=E[i];figure({x:p[0],y:p[1],...BAND,face:p[0]<GC[0]?1:-1,pose:hit?(t<3.6?'hit':'stand'):t>.8?'wind':'stand'});
+    if(t>1.3+i*.06&&t<2.5){g.save();g.globalAlpha=seg(t,1.3+i*.06,1.4+i*.06)*(1-seg(t,2.3,2.5));g.strokeStyle=GOLD;g.shadowColor=GOLD;g.shadowBlur=8;g.lineWidth=2;g.beginPath();g.arc(p[0],p[1]-40,6,0,7);g.stroke();g.restore();}
+    if(hit&&t<4.4){g.save();g.globalAlpha=1-seg(t,3.6,4.4);g.strokeStyle=RED;g.lineWidth=2.5;g.beginPath();g.moveTo(p[0]-6,p[1]-41);g.lineTo(p[0]+6,p[1]-39);g.stroke();g.restore();stars(p[0],p[1]-58,t+i,1);}}
+  if(t>2.0&&t<2.9){const k=seg(t,2.0,2.3),m=k*GN;g.save();g.globalAlpha=1-seg(t,2.5,2.9);g.strokeStyle=GOLD;g.shadowColor=GOLD;g.shadowBlur=14;g.lineWidth=3;const pts=[[GC[0],GC[1]+10]].concat(Array.from({length:GN},(_,j)=>E[(j*3)%GN]));g.beginPath();g.moveTo(pts[0][0],pts[0][1]-40);for(let j=1;j<=GN;j++){if(j<=Math.floor(m))g.lineTo(pts[j][0],pts[j][1]-40);else{const f=m-Math.floor(m);g.lineTo(lerp(pts[j-1][0],pts[j][0],f),lerp(pts[j-1][1],pts[j][1],f)-40);break;}}g.stroke();g.restore();}
+  const heroA=t>2.0&&t<2.33?0:1;
+  figure({x:GC[0],y:GC[1],...HERO,blade:true,face:1,pose:t>2.33&&t<2.7?'strike':'stand',alpha:heroA});
+  eye(GC[0],GC[1]-62,seg(t,1.1,1.6));
+  seal('破',GC[0],268,hit?Math.min(1,(t-2.35)/.6):0);
+  label('獨孤九劍・破箭式（示意）',GC[0],GC[1]+86,'#2f5d7c',13);
+ }};
+
+const ZN=[[520,352],[566,318],[634,304],[702,320],[754,362],[728,432],[812,452]];
+D.zhen={dur:7.6,rule:'<b>背後數值：</b>陣法讓七個人共用一條「陣勢」：打任何一人，力道沿連線分給七人，所以誰都打不倒。要破陣得先看破陣眼，打斷連線，陣勢才會整條崩掉。我方弟子學了陣法，也能用同一套規則守山門。',
+ chips:[[0,'結陣','七名武當弟子按北斗站位，藍色的氣沿連線流動。'],[1.3,'卸力','郭靖一掌打在其中一人身上，藍光沿線傳給全部七人，每人只受一點，郭靖反被推開。'],[2.7,'再試','換一個人打，結果一樣。上方的「陣勢」條只掉一點點。'],[3.6,'看破陣眼','郭靖金眼一閃，看出第四人是陣眼，兩條連線亮金。'],[4.75,'破陣','全力打陣眼：兩條連線斷開、氣流停止，七人同時踉蹌，陣勢見底，蓋「破陣」。']],
+ markers:[{at:1.3,stop:.08,shake:3},{at:2.7,stop:.08,shake:3},{at:4.75,stop:.24,shake:9}],
+ draw(t){const broke=t>=4.75;let G=[635,400],gp='stand',gf=1;
+  if(t>1.1&&t<2.3){gp=t<1.5?'strike':'stand';G=[635-18*eo(seg(t,1.3,1.6))+18*seg(t,1.8,2.3),400];}
+  if(t>2.5&&t<3.6){gf=-1;gp=t<2.9?'strike':'stand';G=[635+18*eo(seg(t,2.7,3.0))-18*seg(t,3.2,3.6),400];}
+  if(t>4.3){const k=eio(seg(t,4.3,4.7));G=[lerp(635,672,k),lerp(400,368,k)];gp=t>4.6&&t<5.1?'strike':'stand';}
+  const node=i=>{let p=ZN[i];if(broke&&i===3)p=[lerp(p[0],728,eo(seg(t,4.75,5.2))),lerp(p[1],292,eo(seg(t,4.75,5.2)))];return p;};
+  for(let i=0;i<6;i++){const a=node(i),b=node(i+1),cut=broke&&(i===2||i===3),hl=t>3.8&&!broke&&(i===2||i===3);
+    g.save();g.strokeStyle=cut?'rgba(179,38,62,.7)':hl?GOLD:'rgba(127,179,230,.6)';g.lineWidth=hl?3:2;if(cut)g.setLineDash([3,6]);g.beginPath();g.moveTo(a[0],a[1]-20);g.lineTo(b[0],b[1]-20);g.stroke();g.restore();
+    const flowA=broke?1-seg(t,4.75,5.2):1;if(flowA>0)for(let j=0;j<2;j++){const f=(t*.6+j/2)%1,p=P(a,b,f);g.save();g.globalAlpha=flowA;g.fillStyle=BLUEQI;g.beginPath();g.arc(p[0],p[1]-20,3,0,7);g.fill();g.restore();}}
+  for(const [s0,hitN] of [[1.3,4],[2.7,1]]){if(t>s0&&t<s0+1.2){const d=(t-s0)*7;for(let j=0;j<7;j++){const a=1-Math.min(1,Math.abs(Math.abs(j-hitN)-d));if(a>0){const p=node(j);ring(p[0],p[1]-10,12+a*8,BLUEQI,a,2.5,.6);}}}}
+  const order=[0,1,2,3,4,5,6].sort((a,b)=>ZN[a][1]-ZN[b][1]);
+  for(const i of order){const p=node(i),hitNow=(t>1.3&&t<1.5&&i===4)||(t>2.7&&t<2.9&&i===1);figure({x:p[0],y:p[1],...WUDANG,face:p[0]<G[0]?1:-1,pose:broke&&t<6.4?'hit':hitNow?'guard':'stand'});if(broke&&t<6.4)stars(p[0],p[1]-58,t+i,1);}
+  dragon(G[0]+8,G[1]-30,ZN[4][0],ZN[4][1]-30,t>1.15&&t<1.6?1-seg(t,1.3,1.6):0,5);
+  dragon(G[0]-8,G[1]-30,ZN[1][0],ZN[1][1]-30,t>2.55&&t<3.0?1-seg(t,2.7,3.0):0,5);
+  dragon(G[0]+8,G[1]-30,ZN[3][0],ZN[3][1]-30,t>4.6&&t<5.3?1-seg(t,4.8,5.3):0,10);
+  if(t>1.35&&t<2.4)label('七人分擔',ZN[4][0]+20,ZN[4][1]-66,'#2f6fae',13);
+  if(t>2.75&&t<3.6)label('七人分擔',ZN[1][0]-10,ZN[1][1]-66,'#2f6fae',13);
+  figure({x:G[0],y:G[1],robe:'#6b5a3a',sash:'#3a2a1a',face:gf,pose:gp});
+  eye(G[0],G[1]-62,seg(t,3.6,4.2));
+  if(t>3.8&&t<4.8){const p=ZN[3];g.save();g.strokeStyle=GOLD;g.shadowColor=GOLD;g.shadowBlur=10;g.lineWidth=2.5;g.beginPath();g.arc(p[0],p[1]-26,8+Math.sin(t*14),0,7);g.stroke();g.restore();label('陣眼',p[0]+30,p[1]-44,'#9a6b06',13);}
+  const pool=t<1.3?1:t<2.7?.93:t<4.75?.86:.12;wideBar(580,236,180,pool,'#3a78b8','陣勢');
+  seal('破陣',870,250,broke?Math.min(1,(t-4.75)/.6):0);
+  label('郭靖',G[0],G[1]+22,'#6b4a2a',12);label('真武七截陣（示意）',670,226,'#55604f',12);
+ }};
+
+const LANE_G=Array.from({length:10},(_,i)=>[480+i*42,392+(i%2?20:-20)]);
+const RUNS=[{t0:0,cap:1,pass:2,sp:45,name:'入門・應接 1 格'},{t0:4.6,cap:3,pass:5,sp:80,name:'大成・應接 3 格'},{t0:9.2,cap:6,pass:10,sp:135,name:'化境・應接 6 格'}];
+D.lane={dur:13.6,rule:'<b>背後數值：</b>應接＝同時能應付幾個人的出手，來自熟練、身法、看破。貼身的人超過應接格數，多出來的招就沒人擋。闖過幾人就是看得見的成長紀錄。',
+ chips:[[0,'第一次','入門，應接只有 1 格。打倒兩個人，第三個人靠近時同時有好幾招來，頭上冒紅圈，被打退。'],[4.6,'第二次','大成，應接 3 格。一路推進到第六個人，被四個人圍住才擋不住。'],[9.2,'第三次','化境，應接 6 格，出手也快。十個人一路闖過，蓋「過」。'],[13,'紀錄','木人巷紀錄：2 人 → 5 人 → 10 人。練功變強就是這個數字往上爬。']],
+ markers:[{at:2.25,stop:.08,shake:4},{at:7.55,stop:.08,shake:4}],
+ draw(t){let ri=0;RUNS.forEach((r,i)=>{if(t>=r.t0)ri=i;});const R=RUNS[ri],lt=t-R.t0;
+  const goal=R.pass<10?LANE_G[R.pass][0]-34:900,tReach=(goal-440)/R.sp;
+  const hFar=Math.min(goal,440+R.sp*lt);let hx=hFar,hp='stand',over=false;const stopped=lt>=tReach&&R.pass<10;
+  if(stopped){const k=seg(lt,tReach+.25,tReach+.7);over=lt>tReach+.15;hx=goal-28*eo(k);hp=lt>tReach+.25&&lt<tReach+1.6?'hit':'stand';}
+  g.save();g.fillStyle='rgba(120,90,60,.10)';g.fillRect(450,356,450,72);g.strokeStyle='rgba(120,90,60,.35)';g.setLineDash([6,6]);g.strokeRect(450,356,450,72);g.setLineDash([]);g.restore();
+  const engaged=[];
+  LANE_G.forEach(([gx,gy],i)=>{const down=i<R.pass&&hFar>=gx-14,near=!down&&Math.abs(gx-hx)<(stopped?110:70);if(near)engaged.push(i);
+    const atk=near&&(Math.floor(t*3+i)%2===0);
+    dummyAt(gx,gy+2,down?.5:atk?.1*Math.sin(t*20):0);
+    if(atk){const hit=over&&engaged.length>R.cap&&engaged.indexOf(i)>=R.cap;g.save();g.strokeStyle=hit?RED:'rgba(179,38,62,.55)';g.lineWidth=hit?2.5:1.5;g.setLineDash(hit?[]:[4,4]);g.beginPath();g.moveTo(gx,gy-30);g.lineTo(hx,392-28);g.stroke();g.restore();}});
+  const walking=lt<tReach;
+  if(walking&&R.cap>=6)for(let k=1;k<=2;k++)figure({x:hx-k*10,y:392,...HERO,alpha:.2/k,noShadow:true});
+  figure({x:hx,y:392,...HERO,face:1,walk:walking?t*12:0,pose:hp==='hit'?'hit':walking&&Math.floor(t*4)%2?'strike':'stand'});
+  LANE_G.forEach(([gx],i)=>{if(i<R.pass&&hx>=gx-14&&hx<gx+20)spark(gx-8,362,12,1-(hx-gx+14)/34,'#fff4d0');});
+  const n=Math.max(R.cap,engaged.length),px0=hx-(n-1)*6;for(let j=0;j<n;j++){const x=px0+j*12,y=392-66;g.save();if(j<R.cap){g.strokeStyle=GOLD;g.lineWidth=1.8;g.beginPath();g.arc(x,y,4.5,0,7);g.stroke();if(j<engaged.length){g.fillStyle=GOLD;g.fill();}}else{g.fillStyle=RED;g.beginPath();g.arc(x,y,4.5,0,7);g.fill();}g.restore();}
+  if(over)label('擋不住了',hx,392-82,RED,13);
+  label(`第 ${ri+1} 次：${R.name}`,665,258,INK,16);
+  const passed=LANE_G.filter(([gx],i)=>i<R.pass&&hFar>=gx-14).length;label(`闖過 ${passed} 人`,665,280,'#55604f',13);
+  if(ri===2)seal('過',880,300,lt>tReach?Math.min(1,(lt-tReach)/.6):0);
+  if(t>13)label('紀錄：2 人 → 5 人 → 10 人',665,470,'#2f5d7c',15);
+  label('木人巷',470,348,'#6b4a2a',12);
+ }};
+
+const LONG={robe:'#f2f2ee',sash:'#9fb8c8',hair:'#1b1b1b',blade:true};
+const DC=[662,396];
+D.duo={dur:7.8,rule:'<b>背後數值：</b>背靠背時，背後來的招改占同伴的應接格。合擊招要兩人都學會、站得近、關係夠深（程式裡的俠客配對就能當門檻）。',
+ chips:[[0,'同行','主角和小龍女一起往敵寨走。'],[1.4,'被圍','七個人圍上來。兩人轉成背靠背，各守一邊，背後的招算在同伴身上，頭上兩排小圈都是金色，沒有冒紅。'],[3.4,'合擊','兩人同時出劍，兩道劍光繞成一圈，範圍內的人一起倒，蓋「合」。'],[4.5,'打上門','繼續走向敵寨山門，門裡會再出下一波。這就是反過來的塔防：換我方闖關。']],
+ markers:[{at:3.6,stop:.2,shake:7}],
+ draw(t){const k1=eio(seg(t,0,1.4)),k2=eio(seg(t,4.5,7));
+  let H=[lerp(440,680,k1)+k2*160,392],L=[lerp(416,644,k1)+k2*164,398];
+  const walking=t<1.4||(t>4.5&&t<7);
+  // gate
+  g.save();g.fillStyle='#5a4130';g.fillRect(868,330,8,70);g.fillRect(922,330,8,70);g.fillStyle='#3d3f46';g.fillRect(858,322,82,10);g.restore();label('敵寨山門',899,312,'#6b4a3a',12);
+  const ap=eo(seg(t,.8,1.8)),E=[];for(let i=0;i<7;i++){const a=i*Math.PI*2/7+.4;const r=lerp(150,82,ap);E.push([DC[0]+Math.cos(a)*r,DC[1]+Math.sin(a)*r*.55]);}
+  const down=t>=3.6;
+  if(t>1.8&&t<3.5)E.forEach((p,i)=>{if(Math.floor(t*3+i)%2)return;const tgt=p[0]>=DC[0]?H:L;g.save();g.strokeStyle='rgba(179,38,62,.6)';g.lineWidth=1.5;g.setLineDash([4,4]);g.beginPath();g.moveTo(p[0],p[1]-28);g.lineTo(tgt[0],tgt[1]-28);g.stroke();g.restore();});
+  const order=[...E.keys()].sort((a,b)=>E[a][1]-E[b][1]);
+  for(const i of order){const p=E[i];if(down&&t>4.6)continue;figure({x:p[0],y:p[1],...BAND,face:p[0]<DC[0]?1:-1,pose:down?(t<4.2?'hit':'crouch'):t>1.8&&Math.floor(t*3+i)%2===0?'chop':t>1.2?'wind':'stand',alpha:down?1-seg(t,4.2,4.6):1});if(down&&t<4.4)stars(p[0],p[1]-58,t+i,1);}
+  if(t>2.0&&t<3.5){g.save();g.strokeStyle='rgba(58,120,184,.7)';g.lineWidth=2.5;g.beginPath();g.moveTo(H[0],H[1]-26);g.lineTo(L[0],L[1]-26);g.stroke();g.restore();label('背靠背',(H[0]+L[0])/2,H[1]+38,'#2f6fae',12);}
+  if(t>3.4&&t<4.4){const k=seg(t,3.4,4.2);for(let j=0;j<2;j++){g.save();g.globalAlpha=1-seg(t,3.9,4.4);g.strokeStyle=j?'#9fd0ff':'#ffffff';g.shadowColor=j?'#9fd0ff':'#fff';g.shadowBlur=12;g.lineWidth=4;g.beginPath();const r=20+k*100;for(let q=0;q<=40;q++){const a=q/40*Math.PI*2*1.2+(j?Math.PI:0)+t*6,rr=r*(.6+.4*q/40);const x=DC[0]+Math.cos(a)*rr,y=DC[1]-24+Math.sin(a)*rr*.55;q?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();g.restore();}}
+  const fight=t>1.4&&t<4.5,hp=t>3.4&&t<3.9?'strike':fight&&Math.floor(t*4)%2?'strike':'stand';
+  figure({x:L[0],y:L[1],...LONG,face:fight?-1:1,walk:walking?t*10:0,pose:hp});
+  figure({x:H[0],y:H[1],...HERO,blade:true,face:1,walk:walking?t*10:0,pose:hp});
+  if(t>1.8&&t<3.6)for(const [P0,n] of [[H,3],[L,3]])for(let j=0;j<n;j++){const x=P0[0]-12+j*12,y=P0[1]-66;g.save();g.strokeStyle=GOLD;g.fillStyle=GOLD;g.lineWidth=1.8;g.beginPath();g.arc(x,y,4.5,0,7);g.fill();g.restore();}
+  seal('合',DC[0],282,t>3.6?Math.min(1,(t-3.6)/.6)*(t<5?1:0):0);
+  label('主角',H[0],H[1]+22,'#2f5d7c',12);label('小龍女',L[0],L[1]+22,'#55607a',12);
+  if(t>3.4&&t<5)label('玉女素心劍・雙劍合璧（示意）',DC[0],DC[1]+80,'#2f5d7c',13);
+ }};
+
+const TDP=[[920,150],[830,250],[700,322],[600,360],[500,392],[400,410],[270,455]];
+const TDL=(()=>{const L=[0];for(let i=1;i<TDP.length;i++)L.push(L[i-1]+Math.hypot(TDP[i][0]-TDP[i-1][0],TDP[i][1]-TDP[i-1][1]));return L;})();
+function tdAt(sv){for(let i=1;i<TDP.length;i++)if(sv<=TDL[i]){const k=(sv-TDL[i-1])/(TDL[i]-TDL[i-1]);return P(TDP[i-1],TDP[i],k);}return TDP[TDP.length-1];}
+const TDW=[{t:0,n:3,gap:1.1},{t:5.5,n:7,gap:.35},{t:11.5,n:9,gap:.4,boss:true}];
+D.td={dur:26.5,rule:'<b>背後數值：</b>站在路上的人能同時擋住幾個敵人＝應接格數（像明日方舟的阻擋數）。格子滿了後面的人就漏過去。暗器不擋人，只在射程內補傷害。',
+ chips:[[0,'第一波・3 人','主角在半山腰擋住，頭上小圈變金色。暗器弟子從旁邊補刀。'],[5.5,'第二波・7 人','主角 3 格擋滿，頭上冒紅圈，後面的人從他身邊走過去，改由山門弟子擋。'],[11.5,'第三波・9 人＋頭目','頭目一人占兩格。山門弟子只有 1 格，好幾個人穿過山門漏進菜園。這一波守不住，就是在告訴玩家：該練功、加人或結陣了。'],[25,'波次之間','空檔裡大家照常幹活練功，下一波前執事調人上守點。']],
+ markers:[],
+ reset(){this.st={t:0,es:[],next:0,leak:0,kill:0,fx:[],defs:[{id:'hero',pos:[700,322],cap:3,dmg:3,cd:.45,c:0,face:-1,look:HERO,name:'主角・應接 3'},{id:'d1',pos:[500,392],cap:1,dmg:2,cd:.7,c:0,face:-1,look:{robe:'#7d8a72'},name:'弟子・應接 1'}],rng:{pos:[640,268],dmg:1.6,cd:.35,c:0,r:120}};
+   const sp=[];TDW.forEach((w,wi)=>{for(let i=0;i<w.n;i++)sp.push({t:w.t+i*w.gap,hp:wi===0?14:12,boss:false});if(w.boss)sp.push({t:w.t+w.n*w.gap+.4,hp:60,boss:true});});this.st.spawn=sp;},
+ step(dt){const S=this.st;S.t+=dt;
+  while(S.next<S.spawn.length&&S.spawn[S.next].t<=S.t){const q=S.spawn[S.next++];S.es.push({s:0,hp:q.hp,max:q.hp,boss:q.boss,by:null,cd:.6,gone:false,uid:S.next});}
+  for(const d of S.defs){d.used=0;}
+  for(const e of S.es){if(e.gone)continue;if(e.by){const d=S.defs.find(x=>x.id===e.by);d.used+=e.boss?2:1;}}
+  for(const e of S.es){if(e.gone||e.by)continue;const p=tdAt(e.s);
+    for(const d of S.defs){if(Math.hypot(p[0]-d.pos[0],p[1]-d.pos[1])<16&&!e.passed?.[d.id]){const need=e.boss?2:1;if(d.used+need<=d.cap){e.by=d.id;d.used+=need;}else{(e.passed||(e.passed={}))[d.id]=1;S.fx.push({k:'over',d:d.id,ttl:.6});}}}
+    if(!e.by){e.s+=(e.boss?40:72)*dt;if(e.s>=TDL[TDL.length-1]){e.gone=true;S.leak++;S.fx.push({k:'leak',ttl:1});}}}
+  for(const d of S.defs){d.c-=dt;if(d.c>0)continue;const tgt=S.es.find(e=>!e.gone&&e.by===d.id);if(!tgt)continue;tgt.hp-=d.dmg;d.c=d.cd;d.hit=.15;S.fx.push({k:'hit',p:tdAt(tgt.s),ttl:.2});if(tgt.hp<=0){tgt.gone=true;S.kill++;}}
+  const R=S.rng;R.c-=dt;if(R.c<=0){const tgt=S.es.filter(e=>!e.gone).map(e=>({e,p:tdAt(e.s)})).filter(o=>Math.hypot(o.p[0]-R.pos[0],(o.p[1]-R.pos[1])/.6)<R.r).sort((a,b)=>b.e.s-a.e.s)[0];if(tgt){tgt.e.hp-=R.dmg;R.c=R.cd;S.fx.push({k:'needle',a:[...R.pos],b:tgt.p,ttl:.18});if(tgt.e.hp<=0){tgt.e.gone=true;S.kill++;}}}
+  for(const e of S.es){if(e.gone||!e.by)continue;e.cd-=dt;if(e.cd<=0){e.cd=.8;e.atk=.15;}if(e.atk>0)e.atk-=dt;}
+  for(const d of S.defs)if(d.hit>0)d.hit-=dt;
+  S.fx=S.fx.filter(f=>(f.ttl-=dt)>0);},
+ draw(t){if(!this.st||t<this.st.t-1e-6)this.reset();while(this.st.t<t-1e-6)this.step(Math.min(1/60,t-this.st.t));const S=this.st;
+  g.save();g.strokeStyle='rgba(120,70,50,.35)';g.lineWidth=16;g.lineCap='round';g.lineJoin='round';g.beginPath();TDP.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.stroke();g.restore();
+  label('賊窩',920,132,'#6b4a3a',12);label('菜園',270,480,'#55604f',12);
+  const R=S.rng;ring(R.pos[0],R.pos[1],R.r,'rgba(160,120,40,.55)',1,1.5,.6);
+  const items=[];
+  for(const e of S.es){if(e.gone)continue;const p=tdAt(e.s);items.push({y:p[1],f:()=>{const d=e.by?S.defs.find(x=>x.id===e.by):null;figure({x:p[0]+(d?(e.uid%3-1)*9:0),y:p[1]+(d?(e.uid%2?6:-6):0),...BAND,scale:e.boss?1.3:.9,face:-1,pose:e.atk>0?'chop':e.by?'wind':'stand',walk:e.by?0:S.t*10+e.uid});
+    g.fillStyle='rgba(42,33,24,.3)';g.fillRect(p[0]-10,p[1]+6,20,3);g.fillStyle=RED;g.fillRect(p[0]-10,p[1]+6,20*Math.max(0,e.hp/e.max),3);if(e.boss)label('頭目・占 2 格',p[0],p[1]-70,RED,12);}});}
+  for(const d of S.defs)items.push({y:d.pos[1],f:()=>{figure({x:d.pos[0],y:d.pos[1],...d.look,blade:d.id==='hero',face:-1,pose:d.hit>0?'strike':'stand'});
+    for(let j=0;j<d.cap;j++){const x=d.pos[0]-(d.cap-1)*6+j*12,y=d.pos[1]-66;g.save();g.strokeStyle=GOLD;g.fillStyle=GOLD;g.lineWidth=1.8;g.beginPath();g.arc(x,y,4.5,0,7);g.stroke();if(j<d.used)g.fill();g.restore();}
+    if(S.fx.some(f=>f.k==='over'&&f.d===d.id)){g.save();g.fillStyle=RED;g.beginPath();g.arc(d.pos[0]+d.cap*6+8,d.pos[1]-66,4.5,0,7);g.fill();g.restore();label('擋不下',d.pos[0],d.pos[1]-80,RED,12);}
+    label(d.name,d.pos[0],d.pos[1]+22,'#2f5d7c',11);}});
+  items.push({y:R.pos[1],f:()=>{figure({x:R.pos[0],y:R.pos[1],robe:'#8a7a50',face:1});label('暗器弟子',R.pos[0],R.pos[1]+22,'#6b5a2a',11);}});
+  items.sort((a,b)=>a.y-b.y).forEach(o=>o.f());
+  for(const f of S.fx){if(f.k==='hit')spark(f.p[0]+8,f.p[1]-28,10,f.ttl/.2,'#fff4d0');if(f.k==='needle'){g.save();g.globalAlpha=f.ttl/.18;g.strokeStyle='#8a6a20';g.lineWidth=1.2;g.setLineDash([3,3]);g.beginPath();g.moveTo(f.a[0],f.a[1]-28);g.lineTo(f.b[0],f.b[1]-26);g.stroke();g.restore();}if(f.k==='leak')label('漏！',290,430-(1-f.ttl)*14,RED,16);}
+  let wi=0;TDW.forEach((w,i)=>{if(t>=w.t)wi=i;});const W=TDW[wi];
+  const alive=S.es.filter(e=>!e.gone).length,pending=S.spawn.length-S.next;
+  label(alive+pending>0?`第 ${wi+1} 波・${W.n} 人${W.boss?'＋頭目':''}`:'波次之間：照常幹活',560,224,INK,17);
+  label(`擊退 ${S.kill}・漏進菜園 ${S.leak}`,560,246,'#55604f',13);
+ }};
+
+const MJ={robe:'#3a2a4a',sash:'#a3243b',blade:true,skin:'#e3c4a0'};
+const NINJA={robe:'#2a2530',sash:'#a3243b',hair:'#111',blade:true};
+const AR={x0:450,x1:900,y0:305,y1:470};
+const clampA=p=>[clamp(p[0],AR.x0,AR.x1),clamp(p[1],AR.y0,AR.y1)];
+const srand=seed=>{let s=seed;return()=>(s=(s*16807)%2147483647)/2147483647;};
+const dst=(a,b)=>Math.hypot(a[0]-b[0],(a[1]-b[1])*1.3);
+const WAVES=[[0,[[930,370,3]]],[7.5,[[930,320,3],[720,520,2]]],[15,[[930,360,6],[430,330,4]]]];
+D.wave={dur:28,rule:'<b>背後數值：</b>強弱決定怎麼閃：比對方強的人（主角、小龍女）只錯開一步，立刻反擊；比對方弱的入門弟子只能後退，被圍就往主角身邊逃。離得遠時用輕功直接縱過去。內圈最多四人出手，其他人在外圈游走等空位。這段是一個小模擬在跑，不是寫死的動畫。',
+ chips:[[0,'第一波・3 人','魔教三人從東邊來。主角用輕功直接縱過去打；對方出刀時只錯開一步，馬上反擊（錯身反擊）。'],[7.5,'第二波・兩股','東邊三人、南邊兩人。入門弟子打不過，只能後退，被兩個人纏上就往主角身邊逃。'],[15,'第三波・兩面夾擊','十人。內圈最多四人出手，外圈的人游走等空位。前搖最後一刻閃開，觸發林克時間。'],[25,'清場','打完照常回去過日子；這一場的「一次應付幾人」記進紀錄。']],
+ markers:[],
+ reset(){const S=this.st={t:0,r:srand(11),es:[],fx:[],slow:0,slowC:[0,0],kills:0,next:0,spawn:[],
+   hs:[{id:'hero',pos:[620,392],look:{...HERO,blade:true},cap:3,cd:0,dcd:0,lcd:0,face:1,eng:0,name:'主角・應接 3'},{id:'long',pos:[580,412],look:LONG,cap:2,cd:0,dcd:0,lcd:0,face:1,eng:0,name:'小龍女・應接 2'},{id:'dz',pos:[560,380],look:{robe:'#7d8a72',blade:true},cap:1,weak:true,cd:0,dcd:0,lcd:0,face:1,eng:0,name:'入門弟子・應接 1'}]};
+   WAVES.forEach(([t,gs])=>gs.forEach(([x,y,n],gi)=>{for(let i=0;i<n;i++)S.spawn.push({t:t+gi*.8+i*.35,pos:[x+(i%2)*16,y+(i-1)*18]});}));S.spawn.sort((a,b)=>a.t-b.t);},
+ step(dt){const S=this.st;S.t+=dt;
+  while(S.next<S.spawn.length&&S.spawn[S.next].t<=S.t){const q=S.spawn[S.next++];S.es.push({pos:[...q.pos],hp:2,state:'walk',tm:0,face:-1,uid:S.next,gone:false});}
+  if(S.slow>0)S.slow-=dt;
+  const live=S.es.filter(e=>!e.gone);
+  for(const e of live){const h=S.hs.reduce((a,b)=>dst(b.pos,e.pos)<dst(a.pos,e.pos)?b:a);e.tgt=h.id;}
+  for(const h of S.hs){const mine=live.filter(e=>e.tgt===h.id).sort((a,b)=>dst(a.pos,h.pos)-dst(b.pos,h.pos));mine.forEach((e,i)=>{e.outer=i>=4&&e.state==='walk';});}
+  for(const e of live){const edt=dt*(S.slow>0&&dst(e.pos,S.slowC)<160?.25:1);
+    const h=S.hs.find(x=>x.id===e.tgt);e.face=h.pos[0]>=e.pos[0]?1:-1;
+    if(e.state==='walk'&&e.outer&&dst(h.pos,e.pos)<95){const a=Math.atan2(e.pos[1]-h.pos[1],e.pos[0]-h.pos[0])+edt*.7*(e.uid%2?1:-1);const tgt=[h.pos[0]+Math.cos(a)*78,h.pos[1]+Math.sin(a)*52];e.pos[0]+=(tgt[0]-e.pos[0])*Math.min(1,edt*4);e.pos[1]+=(tgt[1]-e.pos[1])*Math.min(1,edt*4);e.walk=(e.walk||0)+edt*6;continue;}
+    if(e.state==='walk'){const d=dst(h.pos,e.pos);if(d>26){const k=Math.min(1,52*edt/d);e.pos[0]+=(h.pos[0]-e.pos[0])*k;e.pos[1]+=(h.pos[1]-e.pos[1])*k;e.walk=(e.walk||0)+edt*10;}else{e.state='wind';e.tm=.6;}}
+    else if(e.state==='wind'){e.tm-=edt;if(e.tm<=0){if(dst(h.pos,e.pos)<38&&!h.leap&&!h.dash){h.hit=.2;S.fx.push({k:'hurt',p:[...h.pos],ttl:.45});}else S.fx.push({k:'whiff',p:[e.pos[0]+e.face*16,e.pos[1]],ttl:.45});e.state='rec';e.tm=.55;}}
+    else if(e.state==='rec'){e.tm-=edt;if(e.tm<=0)e.state='walk';}}
+  for(const a of live)for(const b of live){if(a===b)continue;const dx=a.pos[0]-b.pos[0],dy=a.pos[1]-b.pos[1],d=Math.hypot(dx,dy)||1;if(d<20){a.pos[0]+=dx/d*(20-d)*.5;a.pos[1]+=dy/d*(20-d)*.5;}}
+  for(const h of S.hs){h.cd-=dt;h.dcd-=dt;h.lcd-=dt;if(h.hit>0)h.hit-=dt;if(h.strike>0)h.strike-=dt;
+    const near=live.filter(e=>!e.gone&&dst(e.pos,h.pos)<62);h.eng=near.length;
+    if(h.leap){h.leap.t+=dt;const k=Math.min(1,h.leap.t/h.leap.d);h.pos=P(h.leap.a,h.leap.b,eio(k));h.lift=Math.sin(Math.PI*k)*52;if(k>=1){h.leap=null;h.lift=0;S.fx.push({k:'dust',p:[...h.pos],ttl:.5});}continue;}
+    if(h.dash){h.dash.t+=dt;const k=Math.min(1,h.dash.t/h.dash.d);h.pos=P(h.dash.a,h.dash.b,eo(k));if(k>=1)h.dash=null;continue;}
+    const thr=live.find(e=>!e.gone&&e.state==='wind'&&e.tgt===h.id&&e.tm<.16&&dst(e.pos,h.pos)<40);
+    if(thr&&h.dcd<=0&&h.weak){const ang=Math.atan2(h.pos[1]-thr.pos[1],h.pos[0]-thr.pos[0]);h.dash={a:[...h.pos],b:clampA([h.pos[0]+Math.cos(ang)*50,h.pos[1]+Math.sin(ang)*34]),t:0,d:.25};h.dcd=1.2;S.fx.push({k:'label',p:[h.pos[0],h.pos[1]-74],txt:'退',col:'#55604f',ttl:.5});continue;}
+    if(thr&&h.dcd<=0){const ang=Math.atan2(h.pos[1]-thr.pos[1],h.pos[0]-thr.pos[0])+(S.r()<.5?1.57:-1.57);const b=clampA([h.pos[0]+Math.cos(ang)*20,h.pos[1]+Math.sin(ang)*14]);
+      S.fx.push({k:'ghost',p:[...h.pos],look:h.look,face:h.face,ttl:.35});h.dash={a:[...h.pos],b,t:0,d:.1};h.dcd=.9;h.cd=0;
+      if(h.id==='hero'&&S.slow<=0&&S.t>14&&S.r()<.95){S.slow=1.5;S.slowC=[...h.pos];S.fx.push({k:'label',p:[h.pos[0],h.pos[1]-80],txt:'完美閃避',col:'#9a6b06',ttl:.9});}else S.fx.push({k:'label',p:[h.pos[0],h.pos[1]-74],txt:'錯身反擊',col:'#2f5d7c',ttl:.6});continue;}
+    if(h.weak&&near.length>h.cap){const hero=S.hs[0],d=dst(hero.pos,h.pos)||1;const k=Math.min(1,90*dt/d);h.pos[0]+=(hero.pos[0]-h.pos[0])*k;h.pos[1]+=(hero.pos[1]-h.pos[1])*k;h.walking=true;h.face=hero.pos[0]>=h.pos[0]?1:-1;if(!h.fleeT||S.t-h.fleeT>2){h.fleeT=S.t;S.fx.push({k:'label',p:[h.pos[0],h.pos[1]-80],txt:'打不過，快逃',col:RED,ttl:.9});}continue;}
+    if(near.length>h.cap&&h.lcd<=0){const c=near.reduce((a,e)=>[a[0]+e.pos[0]/near.length,a[1]+e.pos[1]/near.length],[0,0]);const dx=h.pos[0]-c[0],dy=h.pos[1]-c[1],L=Math.hypot(dx,dy)||1;
+      h.leap={a:[...h.pos],b:clampA([h.pos[0]+dx/L*130,h.pos[1]+dy/L*80]),t:0,d:.5};h.lcd=2.4;S.fx.push({k:'dust',p:[...h.pos],ttl:.5});S.fx.push({k:'label',p:[h.pos[0],h.pos[1]-88],txt:'被圍，縱開',col:RED,ttl:.9});continue;}
+    if(h.id!=='hero'){const hero=S.hs[0],d=dst(hero.pos,h.pos);if(d>(h.weak?80:110)){const k=Math.min(1,95*dt/d);h.pos[0]+=(hero.pos[0]-h.pos[0])*k;h.pos[1]+=(hero.pos[1]-h.pos[1])*k;h.walking=true;h.face=hero.pos[0]>=h.pos[0]?1:-1;continue;}}
+    const cand=live.filter(e=>!e.gone).map(e=>({e,d:dst(e.pos,h.pos),n:live.filter(o=>dst(o.pos,e.pos)<55).length}));
+    if(!cand.length){h.walking=false;continue;}
+    cand.sort((a,b)=>(a.d+a.n*22)-(b.d+b.n*22));const tg=cand[0].e,d=dst(tg.pos,h.pos),fast=S.slow>0&&h.id==='hero';h.face=tg.pos[0]>=h.pos[0]?1:-1;
+    if(d>110&&h.lcd<=0&&!h.weak){const ux=(h.pos[0]-tg.pos[0])/d,uy=(h.pos[1]-tg.pos[1])/d;h.leap={a:[...h.pos],b:clampA([tg.pos[0]+ux*26,tg.pos[1]+uy*18]),t:0,d:.4};h.lcd=1.4;S.fx.push({k:'dust',p:[...h.pos],ttl:.5});S.fx.push({k:'label',p:[h.pos[0],h.pos[1]-80],txt:'輕功趕上',col:'#2f5d7c',ttl:.7});continue;}
+    if(d>30){const k=Math.min(1,(fast?160:100)*dt/d);h.pos[0]+=(tg.pos[0]-h.pos[0])*k;h.pos[1]+=(tg.pos[1]-h.pos[1])*k;h.walking=true;}
+    else{h.walking=false;if(h.cd<=0){h.cd=fast?.15:h.weak?.9:.5;h.strike=.15;tg.hp-=1;S.fx.push({k:'slash',a:[...h.pos],b:[...tg.pos],ttl:.25,fast});
+      if(tg.hp<=0){tg.gone=true;S.kills++;S.fx.push({k:'down',p:[...tg.pos],face:tg.face,ttl:1.2});}else if(tg.state==='wind'){tg.state='rec';tg.tm=.5;S.fx.push({k:'label',p:[tg.pos[0],tg.pos[1]-70],txt:'截',col:'#9a6b06',ttl:.5});}}}}
+  S.fx=S.fx.filter(f=>(f.ttl-=dt)>0);},
+ draw(t){if(!this.st||t<this.st.t-1e-6)this.reset();while(this.st.t<t-1e-6)this.step(Math.min(1/60,t-this.st.t));const S=this.st;
+  if(S.slow>0){const a=Math.min(1,S.slow*3,(1.5-S.slow)*6);g.save();g.globalAlpha=a;g.fillStyle='rgba(30,45,90,.16)';g.beginPath();g.ellipse(S.slowC[0],S.slowC[1],160,96,0,0,7);g.fill();g.strokeStyle='rgba(30,45,90,.5)';g.setLineDash([3,5]);g.lineWidth=1.5;g.stroke();g.restore();label('林克時間・圈內放慢',S.slowC[0],S.slowC[1]-100,'#2a3a6a',14);}
+  for(const f of S.fx){if(f.k==='down'){figure({x:f.p[0],y:f.p[1],...MJ,face:f.face,pose:'crouch',alpha:Math.min(1,f.ttl)});}
+    if(f.k==='dust')dust(f.p[0],f.p[1],1-f.ttl/.5,22);if(f.k==='whiff')dust(f.p[0],f.p[1],1-f.ttl/.45,12,.4);
+    if(f.k==='ghost')figure({x:f.p[0],y:f.p[1],...f.look,face:f.face,alpha:.3*f.ttl/.45,noShadow:true});}
+  const items=[];
+  for(const e of S.es){if(e.gone)continue;items.push({y:e.pos[1],f:()=>{if(e.state==='wind'){const k=e.tm/.6;g.save();g.strokeStyle=RED;g.lineWidth=2;g.globalAlpha=.85;g.beginPath();g.ellipse(e.pos[0]+e.face*14,e.pos[1],6+14*k,(6+14*k)*.45,0,0,7);g.stroke();g.restore();}
+    if(e.outer)label('…',e.pos[0],e.pos[1]-58,'#8a7a9a',12);figure({x:e.pos[0],y:e.pos[1],...MJ,face:e.face,pose:e.state==='wind'?'wind':e.state==='rec'?'chop':'stand',walk:e.state==='walk'?e.walk:0,scale:.95});}});}
+  for(const h of S.hs)items.push({y:h.pos[1],f:()=>{const L=h.lift||0;if(L>4)for(let k=1;k<=3;k++)figure({x:h.pos[0]-h.face*k*9,y:h.pos[1],lift:L*.9,...h.look,alpha:.18/k,noShadow:true});
+    figure({x:h.pos[0],y:h.pos[1],lift:L,...h.look,face:h.face,pose:h.hit>0?'hit':h.strike>0?'strike':'stand',walk:h.walking?S.t*12:0});
+    const n=Math.max(h.cap,h.eng);for(let j=0;j<n;j++){const x=h.pos[0]-(n-1)*6+j*12,y=h.pos[1]-L-64;g.save();if(j<h.cap){g.strokeStyle=GOLD;g.lineWidth=1.8;g.beginPath();g.arc(x,y,4.5,0,7);g.stroke();if(j<h.eng){g.fillStyle=GOLD;g.fill();}}else{g.fillStyle=RED;g.beginPath();g.arc(x,y,4.5,0,7);g.fill();}g.restore();}
+    label(h.name,h.pos[0],h.pos[1]+22,h.id==='hero'?'#2f5d7c':h.weak?'#55604f':'#55607a',11);}});
+  items.sort((a,b)=>a.y-b.y).forEach(o=>o.f());
+  for(const f of S.fx){if(f.k==='slash'){const a=f.ttl/.25;slash(f.a[0]+f.a[0]*0-6,f.a[1]-30,f.b[0]+6,f.b[1]-20,f.fast?7:5,f.fast?GOLD:INK,a);spark(f.b[0],f.b[1]-26,10,a,'#fff4d0');}
+    if(f.k==='hurt'){g.save();g.globalAlpha=f.ttl/.45;g.strokeStyle=RED;g.lineWidth=2.5;const x=f.p[0],y=f.p[1]-30;g.beginPath();g.moveTo(x-5,y-5);g.lineTo(x+5,y+5);g.moveTo(x+5,y-5);g.lineTo(x-5,y+5);g.stroke();g.restore();}
+    if(f.k==='label')label(f.txt,f.p[0],f.p[1]-(1-f.ttl)*10,f.col,13);}
+  let wi=0;WAVES.forEach(([wt],i)=>{if(t>=wt)wi=i;});const alive=S.es.filter(e=>!e.gone).length,pend=S.spawn.length-S.next,tot=WAVES[wi][1].reduce((a,g2)=>a+g2[2],0);
+  label(alive+pend>0?`第 ${wi+1} 波・魔教 ${tot} 人`:(wi===2?'清場':'這一波清完，下一波快到了'),760,498,INK,17);label(`擊退 ${S.kills}`,760,520,'#55604f',13);
+ }};
+
+D.ninja={dur:6,rule:'<b>背後數值：</b>兩人身法都高時，每一招都是一次突進；兩人同時突進撞在一起就是交擊，雙方掉架勢。完美閃避觸發林克時間：圈內的對手放慢，自己照常出手。',
+ chips:[[0,'試探','魔教刺客先突進，主角側縱閃開，原地留殘影。'],[1.3,'交擊','兩人同時突進撞在一起，火花一閃，各被彈開，兩條架勢都掉一截。'],[2.0,'凌空','刺客縱上半空往下劈，主角腳下的紅圈越縮越小。'],[2.5,'林克時間','最後一刻閃開：圈內刺客放慢，主角照常繞著他連打三下，架勢見底，蓋「破」。']],
+ markers:[{at:1.5,stop:.12,shake:5},{at:2.55,stop:.1,shake:2},{at:3.5,stop:.16,shake:6}],
+ draw(t){let A=[560,392],B=[780,392],aP='stand',bP='stand',aF=1,bF=-1,bL=0,aG=null,bG=null;
+  if(t>=.5&&t<.8){const k=eo(seg(t,.5,.8));B=[lerp(780,540,k),392];bP='strike';bG=1;}else if(t>=.8)B=[540,392];
+  if(t>=.55){const k=eo(seg(t,.55,.72));A=[lerp(560,585,k),lerp(392,345,k)];if(t<.8)aG=[560,392];}
+  if(t>=.8&&t<1.3){bF=1;aF=-1;}
+  if(t>=1.3&&t<1.5){const k=seg(t,1.3,1.5);A=[lerp(585,660,k),lerp(345,388,k)];B=[lerp(540,640,k),392];aP=bP='strike';aF=-1;bF=1;}
+  if(t>=1.5&&t<2.0){const k=eo(seg(t,1.5,1.8));A=[lerp(660,712,k),lerp(388,392,k)];B=[lerp(640,600,k),392];aP=bP='hit';aF=-1;bF=1;}
+  if(t>=2.0){A=[712,392];aF=-1;aP='guard';}
+  if(t>=2.0&&t<2.55){const k=seg(t,2.0,2.55);B=[lerp(600,705,k),392];bL=Math.sin(Math.PI*Math.min(1,k*.9))*80+ (k>.9?0:0);bP='wind';bF=1;}
+  const W0=2.55,W1=3.8;const witch=t>=W0&&t<W1;
+  if(witch){const k=seg(t,W0,W1);B=[705,392];bL=lerp(14,0,k);bP=t<3.5?'chop':'hit';
+    const pts=[[660,420],[680,370],[745,405],[735,360]];const seg2=Math.min(3,Math.floor((t-W0)/.3));const kk=eio(((t-W0)%.3)/.3);A=P(pts[seg2],pts[Math.min(3,seg2+1)],Math.min(1,kk*1.4));aP=(t-W0)%.3>.15?'strike':'stand';aF=A[0]<B[0]?1:-1;}
+  if(t>=W1){A=[690,388];aP='stand';aF=1;const k=eo(seg(t,W1,4.4));B=[lerp(705,800,k),392];bP=t<5?'hit':'crouch';}
+  if(t>=2.55&&t<2.8)aG=[712,392];
+  if(witch||t>=W1&&t<W1+.3){const a=witch?Math.min(1,(t-W0)*5):1-seg(t,W1,W1+.3);g.save();g.globalAlpha=a;g.fillStyle='rgba(30,45,90,.18)';g.beginPath();g.ellipse(705,392,170,100,0,0,7);g.fill();g.restore();label('林克時間・圈內放慢',705,286,'#2a3a6a',15);}
+  if(t>=2.0&&t<2.6){const k=seg(t,2.0,2.55);g.save();g.strokeStyle=RED;g.lineWidth=2;g.beginPath();g.ellipse(712,392,30-22*k,(30-22*k)*.45,0,0,7);g.stroke();g.restore();}
+  if(aG)figure({x:aG[0],y:aG[1],...HERO,blade:true,face:1,alpha:.3,noShadow:true});
+  if(bG&&t<.8)for(let k=1;k<=3;k++)figure({x:B[0]+k*14,y:B[1],...NINJA,face:-1,alpha:.18/k,noShadow:true});
+  figure({x:B[0],y:B[1],lift:bL,...NINJA,face:bF,pose:bP});
+  figure({x:A[0],y:A[1],...HERO,blade:true,face:aF,pose:aP});
+  if(witch)for(const at of [2.75,3.05,3.35])if(t>at&&t<at+.25){spark(B[0],B[1]-30-bL,12,1-(t-at)/.25,'#fff4d0');slash(B[0]-26,B[1]-10-bL,B[0]+26,B[1]-48-bL,6,GOLD,1-(t-at)/.25);}
+  if(t>.6&&t<1.1)label('閃',585,290,'#55604f',16);
+  if(t>=1.5){spark(650,360,30,1-seg(t,1.5,1.9));if(t<2.1)label('交擊',650,322,'#55604f',16);}
+  if(t>=2.55&&t<3.2)label('完美閃避',690,440,'#9a6b06',14);
+  const pa=t<1.5?1:t<3?.7:.7,pb=t<1.5?1:t<2.75?.7:t<3.05?.5:t<3.35?.3:t<3.5?.12:0;
+  bar(A[0],A[1]+30,pa,'#3a78b8','架勢');bar(B[0],B[1]+30,pb,'#3a78b8','架勢');
+  seal('破',800,300,t>3.5?Math.min(1,(t-3.5)/.6):0);
+ }};
+
+function logPanel(lines,x,y,w){if(!lines.length)return;const h=14+lines.length*19;g.save();g.fillStyle='rgba(248,244,232,.93)';g.strokeStyle='rgba(42,33,24,.35)';g.lineWidth=1;g.beginPath();g.roundRect(x,y,w,h,6);g.fill();g.stroke();g.font='13px "LXGW WenKai TC","Noto Sans TC",serif';g.textAlign='left';lines.forEach((l,i)=>{g.fillStyle=l[1]||INK;g.globalAlpha=i===lines.length-1?1:.75;g.fillText(l[0],x+10,y+22+i*19);});g.restore();}
+const SIFU={robe:'#d8d8d0',sash:'#7a7a70',hair:'#9a9a9a'};
+const WUBU=[['弓步衝拳','strike'],['彈踢衝拳','strike'],['馬步架打','crouch'],['歇步蓋打','crouch'],['提膝仆步穿掌','wind'],['虛步挑掌','strike']];
+D.train={dur:10.8,rule:'<b>背後數值：</b>每一招有三層熟練：<b>形</b>（套路練熟，比劃得出來）、<b>用</b>（喂招拆招練熟，知道怎麼用）、<b>戰</b>（實戰裡真的用出來）。只練套路的人，打起來只用得出一兩招。',
+ chips:[[0,'站樁','兩個孩子蹲馬步，一炷香燒完才能起來。中途腿酸站起來，又被叫回去。'],[1.2,'走套路（練形）','弟子一招一式走五步拳，招名浮在頭上。師父在旁看，馬步不夠低就出聲糾正。'],[2.0,'喂招（練用）','師兄慢慢餵一招上盤劈，師弟練「架住、反刺」。重複幾次，這一招的「用」就漲一格。'],[7,'之後','「用」練夠了才帶出門實戰，實戰中用出來才算「戰」熟。']],
+ markers:[],
+ draw(t){
+  // zone 1: 站樁
+  const inc=1-seg(t,0,10.5);g.save();g.fillStyle='#8a6a44';g.fillRect(468,372,3,22);g.fillStyle='rgba(120,120,120,.5)';for(let i=0;i<3;i++){const ph=(t*.5+i/3)%1;g.globalAlpha=.5*(1-ph);g.beginPath();g.arc(470+Math.sin(t*2+i)*3,370-ph*24,2,0,7);g.fill();}g.restore();
+  g.save();g.fillStyle='#b0482e';g.fillRect(466,394-22*inc,8,2);g.restore();
+  const up=t>5.6&&t<6.8;
+  figure({x:445,y:404+Math.sin(t*2)*.8,robe:'#9a8460',pose:'crouch',scale:.75,face:1});
+  figure({x:495,y:404,robe:'#a07a62',pose:up?'stand':'crouch',scale:.75,face:-1});
+  if(up)label('腿酸了…',495,350,'#55604f',12);if(t>6.2&&t<7.2)label('回去，香還沒燒完！',560,330,'#6b4a2a',12);
+  label('站樁',470,300,INK,15);label('馬步・一炷香',470,320,'#55604f',11);
+  // zone 2: 套路
+  const per=1.2,mi=Math.floor(t/per)%WUBU.length,mk=(t%per)/per,[mn,mp]=WUBU[mi];const dir=mi<3?1:-1,base=mi<3?600+mi*18:654-(mi-3)*18;
+  const x2=base+dir*18*eio(Math.min(1,mk*2));figure({x:x2,y:398,robe:'#4f7a8a',pose:mk<.15?'stand':mp,face:dir});
+  if(mk>.15&&mk<.9)label(mn,x2,340,'#2f5d7c',13);
+  figure({x:672,y:352,...SIFU,face:-1});label('師父',672,372,'#55604f',11);
+  if((mi===2||mi===3)&&mk>.3&&mk<.95&&Math.floor(t/(per*6))===0)label('馬步再低一點',730,330,'#6b4a2a',13);
+  label('走套路・五步拳',640,280,INK,15);
+  // zone 3: 喂招
+  const fp=2.2,ft=t-2.0,rep=ft<0?0:Math.min(4,Math.floor(ft/fp)+1),fk=ft<0?-1:(ft%fp)/fp;let sp='stand',st='stand',fl='',sl='';
+  if(fk>=0){if(fk<.35){sp='wind';fl='餵：上盤劈';}else if(fk<.45){sp='chop';st='guard';fl='餵：上盤劈';sl='架';}else if(fk<.6){st='guard';sl='架';}else if(fk<.75){st='strike';sl='反刺';}else{}}
+  const D3=[820,398],S3=[870,398];
+  figure({x:S3[0],y:S3[1],robe:'#6a5a8a',blade:true,face:-1,pose:sp});figure({x:D3[0],y:D3[1],robe:'#7d8a72',blade:true,face:1,pose:st});
+  if(fk>=.35&&fk<.5)spark(845,366,10,1-(fk-.35)/.15,'#fff4d0');
+  if(fl)label(fl,S3[0]+6,344,'#6b4a3a',12);if(sl)label(sl,D3[0]-6,344,'#2f5d7c',13);
+  label('師兄',S3[0],S3[1]+22,'#55604f',11);label('師弟',D3[0],D3[1]+22,'#55604f',11);
+  const use=Math.min(3,Math.max(0,rep-(fk>=0&&fk<.75?1:0)));
+  const dots=n=>'●'.repeat(n)+'○'.repeat(3-n);label(`「反刺」 形 ●●●　用 ${dots(use)}`,845,440,'#2f5d7c',12);
+  if(use>=3)label('這一招會用了',845,460,'#9a6b06',13);
+  label('喂招',845,300,INK,15);
+ }};
+
+D.real={dur:8.6,rule:'<b>背後數值：</b>每一招記下它是什麼「法」（劈、掃、刺、點、帶、抽）、打哪一盤（上、中、下）、要多遠。被攻擊的人從自己「用」得出來的招裡找能拆的那一招，拆完順勢反擊。打的過程寫成像小說一樣的戰報。',
+ chips:[[0,'對峙','主角練太極劍，山賊使刀，兩人隔著一步多。低段的交手沒有特效，只有腳步和招。'],[0.8,'第一回合','山賊「力劈華山」當頭劈下；主角側身「向右平帶」把刀帶開，順勢「獨立反刺」，山賊退步躲過。'],[3.0,'第二回合','山賊回刀「攔腰橫掃」；主角「退步回抽」讓過刀鋒，進步「並步點劍」點中手腕，刀脫手。'],[5.6,'結果','山賊繳械轉身就逃。戰報像小說一樣記下每一招。']],
+ markers:[{at:1.25,stop:.06,shake:1},{at:3.95,stop:.12,shake:3}],
+ draw(t){let ax=580,ay=392,bx=690,aP='stand',bP='stand',bBlade=true,aF=1,bF=-1;const lines=[];
+  // round 1
+  if(t>=.8&&t<1.25){bP='wind';bx=lerp(690,660,seg(t,.8,1.2));}
+  if(t>=1.25&&t<1.6){bP='chop';bx=660;ay=lerp(392,378,eo(seg(t,1.2,1.4)));aP='guard';}
+  if(t>=1.6&&t<2.2){bx=lerp(660,700,eo(seg(t,1.7,2.1)));ay=378;aP=t<2.0?'strike':'stand';ax=lerp(580,600,eo(seg(t,1.6,1.8)));}
+  if(t>=2.2&&t<3.0){bx=700;ay=lerp(378,392,seg(t,2.2,2.6));ax=lerp(600,585,seg(t,2.2,2.6));}
+  // round 2
+  if(t>=3.0&&t<3.5){bx=lerp(700,665,seg(t,3.0,3.4));bP='wind';ax=585;}
+  if(t>=3.5&&t<3.75){bx=665;bP='chop';ax=lerp(585,560,eo(seg(t,3.45,3.7)));aP='stand';}
+  if(t>=3.75&&t<4.3){bx=665;ax=lerp(560,612,eio(seg(t,3.75,3.95)));aP=t>3.85&&t<4.2?'strike':'stand';bP=t>3.95?'hit':'stand';}
+  if(t>=3.95)bBlade=false;
+  if(t>=4.3&&t<5.6){bx=lerp(665,690,seg(t,4.3,4.8));ax=612;bP='hit';}
+  if(t>=5.6){bF=1;bx=lerp(690,900,seg(t,5.6,8));ax=612;bP='stand';}
+  // dropped blade
+  if(t>=3.95){const k=eo(seg(t,3.95,4.4));g.save();g.strokeStyle='#9aa0a6';g.lineWidth=3;g.beginPath();g.moveTo(650-k*6,386+k*8);g.lineTo(668-k*6,394+k*8);g.stroke();g.restore();}
+  if(t>=1.25&&t<1.45)spark(632,352,10,1-seg(t,1.25,1.45),'#fff4d0');
+  if(t>=3.5&&t<3.8)dust(590,394,seg(t,3.5,3.9),12,.4);
+  if(t>=3.95&&t<4.4)spark(652,372,12,1-seg(t,3.95,4.4),'#fff4d0');
+  figure({x:bx,y:392,...BAND,blade:bBlade,face:bF,pose:bP,walk:t>=5.6?t*10:0});
+  figure({x:ax,y:ay,...HERO,blade:true,face:aF,pose:aP});
+  // floating move names
+  const fl=[[.8,1.5,'力劈華山',bx,'#6b4a3a'],[1.25,1.8,'向右平帶',ax,'#2f5d7c'],[1.6,2.2,'獨立反刺',ax,'#2f5d7c'],[1.75,2.3,'退步',bx,'#6b4a3a'],[3.0,3.6,'攔腰橫掃',bx,'#6b4a3a'],[3.45,3.9,'退步回抽',ax,'#2f5d7c'],[3.8,4.5,'並步點劍',ax,'#2f5d7c']];
+  for(const [a,b,n,x,c] of fl)if(t>=a&&t<b)label(n,x,336,c,14);
+  if(t>=4.0&&t<5.6)label('點中手腕・刀脫手',650,312,RED,13);
+  const L=[[.8,'山賊一招「力劈華山」，當頭劈下。','#6b4a3a'],[1.25,'主角側身，「向右平帶」把刀帶開，','#2f5d7c'],[1.6,'順勢「獨立反刺」，山賊退步躲過。','#2f5d7c'],[3.0,'山賊回刀「攔腰橫掃」。','#6b4a3a'],[3.45,'主角「退步回抽」讓過刀鋒，','#2f5d7c'],[3.8,'進步「並步點劍」，點中山賊手腕，刀脫手。','#2f5d7c'],[5.6,'山賊轉身就逃。','#55604f']];
+  for(const [a,txt,c] of L)if(t>=a)lines.push([txt,c]);
+  logPanel(lines.slice(-5),470,424,400);
+  label('主角・太極劍（小成）',ax,ay+22,'#2f5d7c',11);label('山賊・刀',bx,430,'#6b4a3a',11);
+ }};
+
+D.walk={dur:9,rule:'<b>背後數值：</b>和「迎戰魔教」同一套判定，只是差距很大。對方的招在高手眼裡前搖很長，看破必中，所以閃只要錯開半步，人不用停；回手的一掌對方接不住，架勢一下就空。沒有特效、不放慢，碾壓的感覺來自「腳步沒停過」。',
+ chips:[[0,'走過去','高手照常走路，山賊一個個衝上來。'],[1.4,'錯身','刀砍過來，高手只側開半步，腳步不停。'],[1.7,'隨手一掌','順勢一掌，對方架勢一空就倒地。'],[6.6,'結果','走完這條路，倒了六個人，高手一步都沒停。差距大時，碾壓不用特效。']],
+ markers:[],
+ draw(t){const y0=392,vx=52,mx=430+t*vx;let my=y0,pose='stand';
+  const B=[[520,1],[560,-1],[620,1],[660,-1],[720,1],[770,-1]];let down=0;
+  B.forEach(([bx,side],i)=>{const tm=(bx-430-36)/vx;let x=bx,y=y0+side*34,p='stand',f=-1,fall=0;
+   if(t<tm-.5){x=bx+30;}
+   else if(t<tm){const k=seg(t,tm-.5,tm);x=lerp(bx+30,bx+6,k);y=lerp(y0+side*34,y0+side*8,k);p=k>.5?'wind':'stand';}
+   else if(t<tm+.22){x=bx+6;y=y0+side*8;p='chop';}
+   else{fall=eo(seg(t,tm+.22,tm+.7));x=bx+6+fall*16*(side>0?.4:.4);y=y0+side*(8+fall*22);p='crouch';down++;}
+   // sidestep for master
+   if(t>tm-.25&&t<tm+.45){my=y0-side*12*Math.sin(Math.PI*seg(t,tm-.25,tm+.45));}
+   if(t>tm+.15&&t<tm+.4)pose='strike';
+   if(t>=tm&&t<tm+.2)slash(x-4,y-42,x-16,y-10,6,'rgba(154,160,166,.7)',1-seg(t,tm,tm+.2));
+   if(t>=tm+.2&&t<tm+.5)dust(x,y,seg(t,tm+.2,tm+.6),14,.45);
+   figure({x,y,...BAND,face:f,pose:fall?'hit':p,rot:fall*1.35,alpha:fall?1-fall*.2:1});
+   if(fall>.6)stars(x,y-30,t,fall);
+   if(t>=tm-.2&&t<tm+.25)label('錯身',mx,y0-60,'#2f5d7c',12);
+   if(t>=tm+.2&&t<tm+.7)label('隨手一掌',mx+18,y0-60,'#2f5d7c',12);
+  });
+  figure({x:mx,y:my,...MASTER,blade:false,face:1,pose,walk:t*10});
+  label(`倒地 ${down}`,860,300,INK,18);
+  label('腳步沒停過',860,324,'#55604f',13);
+  if(t>6.6)label('走完這條路，倒了六個人',640,290,'#55604f',15);
+  label('高手（大成）',mx,y0+22,'#2f5d7c',11);
+ }};
+
+D.jin={dur:9.4,rule:'<b>背後數值：</b>「勁」看的是發力有沒有連成一條：蹬地、擰腰、送肩、出拳，每一節都是一個熟練度。連得越完整，打中時對方被推得越遠、架勢掉得越多。打中的瞬間畫面停一下、地上起塵，這就是拳拳到肉的感覺，不需要光。八卦掌靠走圈換位，從側面出掌。',
+ chips:[[0,'只用手臂','入門弟子打羅漢拳的衝拳，只動手臂，打在師兄身上，師兄幾乎不動。'],[2.2,'整勁','練熟以後，蹬地、擰腰、送肩、出拳連成一條。一拳打中，畫面頓一下，師兄被推退半步，腳下起塵。'],[4.6,'八卦走圈','八卦掌不正面硬碰，繞著對方走圈，對方只能跟著轉。'],[7.0,'單換掌','對方出拳打向原位，人已轉到側面，一記「單換掌」把他推開。']],
+ markers:[{at:1.1,stop:.03,shake:0},{at:3.4,stop:.14,shake:4},{at:7.25,stop:.12,shake:3}],
+ draw(t){const y=392,chain=['蹬地','擰腰','送肩','出拳'];
+  if(t<4.6){// rohan punch twice
+   const p1=1.1,p2=3.4;let ax=590,bx=650,ap='stand',bp='guard',lit=-1,full=false;
+   if(t>p1-.4&&t<p1+.3){ap=t<p1?'wind':'strike';lit=t<p1?-1:3;if(t>=p1)ax=598;}
+   if(t>=p1&&t<p1+.4){bx=652;label('只用手臂・勁散了',650,318,'#8a7a6a',13);}
+   if(t>p2-.9&&t<p2+.4){full=true;const k=seg(t,p2-.9,p2);lit=Math.min(3,Math.floor(k*4));ap=t<p2?(k<.5?'stand':'wind'):'strike';ax=t<p2?lerp(590,596,k):610;}
+   if(t>=p2){const k=eo(seg(t,p2,p2+.5));bx=650+k*24;if(t<p2+.6)dust(bx,y,seg(t,p2,p2+.6),18,.6);bp=t<p2+.5?'hit':'guard';}
+   if(t>=p2&&t<p2+.35)spark(ax+22,y-30,14,1-seg(t,p2,p2+.35),'#fff4d0');
+   if(t>=p2&&t<p2+1.1)label('整勁・推退半步',bx,318,RED,14);
+   if(t>=p1&&t<p1+.25)spark(ax+20,y-30,7,1-seg(t,p1,p1+.25),'#f0e8d8');
+   figure({x:bx,y,robe:'#7d8a72',face:-1,pose:bp});
+   figure({x:ax,y,robe:'#a07a62',face:1,pose:ap});
+   // chain
+   chain.forEach((c,i)=>{const on=(full&&i<=lit)||(!full&&lit===3&&i===3);g.save();g.fillStyle=on?'rgba(179,38,62,.85)':'rgba(42,33,24,.15)';g.beginPath();g.roundRect(470+i*90,250,70,26,5);g.fill();g.restore();g.save();g.font='700 14px "LXGW WenKai TC",serif';g.textAlign='center';g.fillStyle=on?'#fff8ee':'rgba(42,33,24,.5)';g.fillText(c,505+i*90,268);g.restore();if(i<3)label('→',550+i*90,268,'rgba(42,33,24,.4)',13);});
+   label(t<2.2?'入門・羅漢拳衝拳':'練熟・同一拳',620,236,INK,14);
+  } else {// bagua circle
+   const cx=520,cy=392,T0=4.6;let a=Math.PI+(Math.min(t,7.0)-T0)*1.5;let hx=cx+Math.cos(a)*62,hy=cy+Math.sin(a)*24,hp='guard',bp='guard',bx=cx,by=cy,bf=Math.cos(a)>=0?1:-1;
+   ring(cx,cy,62,'rgba(42,33,24,.25)',1,1.5,.39);
+   if(t>=6.6&&t<7.0){bp='strike';bf=-1;}
+   if(t>=6.6&&t<6.95)label('打向原位',cx-50,cy-60,'#6b4a3a',12);
+   if(t>=7.0){a=.5;hx=cx+Math.cos(a)*62;hy=cy+Math.sin(a)*24;hp=t>7.05&&t<7.6?'strike':'guard';}
+   if(t>=7.25){const k=eo(seg(t,7.25,7.8));bx=cx-k*30;by=cy-k*14;bp=t<7.9?'hit':'stand';if(t<7.9)dust(bx,by,seg(t,7.25,7.9),16,.55);}
+   if(t>=7.25&&t<7.55)spark((hx+bx)/2,hy-30,13,1-seg(t,7.25,7.55),'#fff4d0');
+   const hf=t>=7.0?-1:(Math.sin(a)>=0?-1:1);
+   const back=Math.sin(a)<0;
+   if(back)figure({x:hx,y:hy,...HERO,face:hf,pose:hp,walk:t<7?t*9:0});
+   figure({x:bx,y:by,robe:'#5a4636',face:bf,pose:bp});
+   if(!back)figure({x:hx,y:hy,...HERO,face:hf,pose:hp,walk:t<7?t*9:0});
+   if(t<6.6)label('走圈・對方只能跟著轉',cx,300,'#2f5d7c',14);
+   if(t>=7.0&&t<8.4)label('單換掌',hx,hy-62,'#2f5d7c',15);
+   label('八卦掌',cx,236,INK,14);
+  }
+ }};
+
+D.fast.init();D.tiers.init();
+
+/* ---------- loop ---------- */
+let cur='see',dt0=0,demoT=0,stop=0,shake=0,shT=0,speedK=reduce?.5:1,pause=0,lastFrame=performance.now();
+const capEl=document.getElementById('cap'),ruleEl=document.getElementById('rule');
+function setDemo(k){cur=k;demoT=0;stop=0;pause=0;document.querySelectorAll('[data-demo]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.demo===k));
+  capEl.innerHTML=D[k].chips.map(([,h,tx],i)=>`<div class="chip" data-i="${i}"><b>${h}</b>${tx}</div>`).join('');ruleEl.innerHTML=D[k].rule;}
+document.querySelectorAll('[data-demo]').forEach(b=>b.addEventListener('click',()=>setDemo(b.dataset.demo)));
+document.getElementById('replay').addEventListener('click',()=>setDemo(cur));
+const spd=document.getElementById('spd');if(reduce)spd.value='0.5';spd.addEventListener('change',()=>{speedK=+spd.value;});
+setDemo('wave');
+let lastChip=-1;
+function frame(now){const dt=Math.min(.05,(now-lastFrame)/1000);lastFrame=now;
+  const d=D[cur];vt+=dt*speedK;
+  if(pause>0){pause-=dt;if(pause<=0){demoT=0;}}
+  else if(stop>0){stop-=dt;}
+  else{const prev=demoT;demoT+=dt*speedK*(d.speed?d.speed(demoT):1);
+    for(const m of d.markers)if(prev<m.at&&demoT>=m.at){stop=m.stop;if(!reduce){shake=m.shake;shT=.2;}}
+    if(demoT>d.dur){demoT=d.dur;pause=1.2;}}
+  if(shT>0)shT-=dt;
+  g.save();
+  const sx=shT>0?(Math.random()-.5)*shake*(shT/.2):0,sy=shT>0?(Math.random()-.5)*shake*(shT/.2):0;g.translate(sx,sy);
+  g.drawImage(tex,0,0,W,H);
+  drawVillagers();
+  if(d.bub)bubble(d.bub(demoT));
+  d.draw(demoT);
+  g.restore();
+  // phase indicator
+  let ci=0;d.chips.forEach(([at],i)=>{if(demoT>=at)ci=i;});
+  if(ci!==lastChip||capEl.dataset.k!==cur){capEl.dataset.k=cur;lastChip=ci;capEl.querySelectorAll('.chip').forEach((c,i)=>c.classList.toggle('on',i===ci));}
+  g.save();g.font='12px "Noto Sans TC",sans-serif';g.fillStyle='rgba(42,33,24,.55)';g.fillText('村民的生活不受交手影響，照常挑水、種田、搬柴',16,H-14);g.restore();
+  requestAnimationFrame(frame);}
+requestAnimationFrame(frame);
+})();
+</script>
+
+</body></html>

@@ -1,0 +1,295 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>小胖子成長人物卡</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;900&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: one character card (figure + radar + body) driven by a day slider; references below. */
+:root{
+  --paper:#eceee8; --card:#f7f8f4; --ink:#1e2420; --mute:#5d6660; --line:#c9cec6;
+  --accent:#2f5d7c;   /* 石青 */
+  --muscle:#3f7a5a;   /* 松綠 */
+  --fat:#b5874a;      /* 赭 */
+  --ghost:#8a938c; --warn:#a2452f;
+  --display:"Noto Serif TC","Songti TC",serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#161a18; --card:#1f2421; --ink:#e4e8e2; --mute:#9aa49d; --line:#39413c;
+  --accent:#7fb0d3; --muscle:#76b892; --fat:#d5aa6e; --ghost:#7d877f; --warn:#e08a72; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#161a18; --card:#1f2421; --ink:#e4e8e2; --mute:#9aa49d; --line:#39413c;
+  --accent:#7fb0d3; --muscle:#76b892; --fat:#d5aa6e; --ghost:#7d877f; --warn:#e08a72; color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.6}
+.wrap{max-width:1080px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:22px}
+h1{font-family:var(--display);font-weight:900;font-size:clamp(26px,4vw,36px);margin:0;text-wrap:balance;letter-spacing:.02em}
+h2{font-family:var(--display);font-weight:600;font-size:20px;margin:0 0 8px;text-wrap:balance}
+.lede{color:var(--mute);max-width:64ch;margin:4px 0 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;display:grid;gap:16px}
+.top{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px}
+@media (max-width:760px){.top{grid-template-columns:1fr}}
+.name{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.name b{font-family:var(--display);font-size:24px}
+.tag{font-size:12px;letter-spacing:.08em;color:var(--mute);border:1px solid var(--line);border-radius:99px;padding:1px 9px}
+.stage{position:relative;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--paper)}
+canvas{display:block;width:100%;height:auto;aspect-ratio:16/10}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button,.btn{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px;padding:4px 12px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--card)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.meas{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums}
+.meas b{color:var(--ink);font-weight:500}
+.slider{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+.slider input{width:100%;accent-color:var(--accent)}
+.day{font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums;min-width:5.5em;text-align:right}
+.side{display:grid;gap:14px;align-content:start}
+.tier{font-family:var(--display);font-size:18px}
+.tier small{font-family:var(--body);font-size:13px;color:var(--mute);margin-left:6px}
+svg text{fill:var(--ink);font-family:var(--body)}
+.radar .grid{fill:none;stroke:var(--line)}
+.radar .ghost{fill:none;stroke:var(--ghost);stroke-dasharray:4 3;stroke-width:1.4}
+.radar .now{fill:var(--accent);fill-opacity:.2;stroke:var(--accent);stroke-width:2}
+.radar .lab{font-size:12px}
+.radar .val{font-size:11px;fill:var(--mute);font-variant-numeric:tabular-nums}
+.radar .up{fill:var(--muscle)}
+.body{display:grid;gap:6px;font-size:13px}
+.row{display:grid;grid-template-columns:3.5em 1fr 4.5em;gap:8px;align-items:center;font-variant-numeric:tabular-nums}
+.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.bar span{display:block;height:100%}
+.log{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:13px;max-height:168px;overflow:auto}
+.log li{display:grid;grid-template-columns:4.2em 1fr;gap:8px}
+.log li span:first-child{color:var(--mute);font-variant-numeric:tabular-nums}
+.note{font-size:12px;color:var(--mute)}
+.refs{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.ref{border-top:2px solid var(--accent);padding-top:8px;display:grid;gap:4px;font-size:14px;min-width:0}
+.ref a{color:var(--accent);font-weight:700;text-decoration:none}
+.ref a:hover{text-decoration:underline}
+.ref .take{color:var(--mute)}
+.rules{display:grid;gap:6px;padding-left:1.2em;margin:0;max-width:72ch}
+@media (prefers-reduced-motion:reduce){.radar .now{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>小胖子成長人物卡</h1>
+    <p class="lede">拖動日數或按「播放成長」：同一個人、同一套動作，從圓滾滾、劈柴卡斧，練到結實、一斧兩半。數字都是示意，不是遊戲現值。</p>
+  </header>
+
+  <section class="card" aria-label="人物卡樣稿">
+    <div class="name"><b>阿福</b><span class="tag">白身・十五歲</span><span class="tag" id="buildTag">圓滾滾</span><span class="tag">根骨 ★★☆☆☆ 小骨架</span></div>
+    <div class="top">
+      <div style="display:grid;gap:10px;min-width:0;align-content:start">
+        <div class="tabs" role="group" aria-label="動作">
+          <button id="m-chop" aria-pressed="true">劈柴</button>
+          <button id="m-water" aria-pressed="false">挑水</button>
+          <button id="m-punch" aria-pressed="false">練拳</button>
+          <button id="m-walk" aria-pressed="false">趕路</button>
+        </div>
+        <div class="stage"><canvas id="cv" width="640" height="400" aria-label="人物動作預覽"></canvas></div>
+        <div class="meas" id="meas"></div>
+        <div class="slider">
+          <button class="btn" id="play">播放成長</button>
+          <input id="day" type="range" min="1" max="120" value="1" aria-label="日數">
+          <span class="day" id="dayLab">第 1 日</span>
+        </div>
+      </div>
+      <div class="side">
+        <div class="tier" id="tier">初學<small>多餘動作還很多</small></div>
+        <svg class="radar" id="radar" viewBox="-60 -10 320 250" role="img" aria-label="六維能力圖"></svg>
+        <div class="note">虛線＝第 1 日的自己；實心＝今天。綠色數字是比第 1 日多出來的。</div>
+        <div class="body" id="body"></div>
+        <div>
+          <h2 style="font-size:16px;margin:0 0 4px">紀事</h2>
+          <ul class="log" id="log"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>這張卡的四個設計規則</h2>
+    <ol class="rules">
+      <li>永遠畫出「第 1 日的自己」當虛線，成長是兩個形狀的距離，不用記數字也看得到。</li>
+      <li>體型是數值的一部分：肌肉、脂肪兩條帶像 GTA 聖安地列斯，體重會進戰鬥推倒和走速，所以胖瘦各有用處。</li>
+      <li>動作預覽和地圖上用同一副骨架、同一組參數。卡上看到劈柴不卡斧，地圖上也一樣。</li>
+      <li>紀事只記「第一次」：第一次一斧劈開、第一次挑水不灑。玩家記得的是轉折，不是 +0.3。</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>可以參考的遊戲</h2>
+    <div class="refs">
+      <div class="ref"><a href="https://en.wikipedia.org/wiki/Grand_Theft_Auto:_San_Andreas" target="_blank" rel="noopener">GTA: San Andreas</a><span>吃太多變胖、上健身房長肌肉，體態會改變外觀和跑速，屬性頁有肌肉／脂肪條。</span><span class="take">借：肌肉、脂肪兩條帶，體型真的影響能力。</span></div>
+      <div class="ref"><a href="https://en.wikipedia.org/wiki/Princess_Maker_2" target="_blank" rel="noopener">美少女夢工場 2</a><span>每月排課表，屬性雷達慢慢長；身高體重記錄在卡上，吃太多立繪會變胖。</span><span class="take">借：「排日課 → 數值長 → 樣子變」的養成節奏。</span></div>
+      <div class="ref"><a href="https://en.wikipedia.org/wiki/Fable_(2004_video_game)" target="_blank" rel="noopener">神鬼寓言 Fable</a><span>力量練高手臂變粗，吃多變胖，常用魔法身上有紋路，外觀記錄你怎麼玩。</span><span class="take">借：外觀是玩法的紀錄，不是換裝。</span></div>
+      <div class="ref"><a href="https://en.wikipedia.org/wiki/Punch_Club" target="_blank" rel="noopener">Punch Club</a><span>力量、敏捷、耐力靠訓練長，不練會掉，吃什麼也有差。</span><span class="take">借：會退步，讓「持續努力」有意義。</span></div>
+      <div class="ref"><a href="https://en.wikipedia.org/wiki/The_Sims_4" target="_blank" rel="noopener">The Sims 4</a><span>運動和飲食讓身形在胖瘦、肌肉兩個方向慢慢變。</span><span class="take">借：兩個方向的身形，連續變化不跳級。</span></div>
+      <div class="ref"><a href="https://en.wikipedia.org/wiki/The_Scroll_of_Taiwu" target="_blank" rel="noopener">太吾繪卷</a><span>武俠人物卡資訊密、資質一眼可比，很有門派味。</span><span class="take">借：武俠用語和資質呈現；避免它資訊太滿。</span></div>
+    </div>
+    <p class="note">六維雷達是足球遊戲和女神異聞錄 5 常見的做法；本作現在的「人物實力」圖已是 5–6 軸，這張卡沿用同樣的軸。</p>
+  </section>
+</div>
+
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+const cv=$('cv'),ctx=cv.getContext('2d');
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+let mode='chop',day=1,playing=false;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---- growth model (illustrative) ---- */
+const resid=d=>Math.pow(1+(d-1)/8,-0.7);          // practice residual 1 → ~0.18
+const S=d=>{const r=resid(d),g=1-r,t=(d-1)/119;
+  return{r,g,
+    fat:Math.max(.25,1-.75*Math.min(1,t*1.3)),       // body fat share
+    mus:Math.min(1,.1+.85*Math.min(1,t*1.15)),       // muscle share
+    stats:[8+52*g,6+44*g,12+58*g*1.05,5+60*g,1+.45*g,0+38*Math.max(0,(t-.15)/.85)]}};
+const AX=['掌','腿','力氣','腳力','調息','內力'],HI=[100,100,100,100,1.5,100],LO=[0,0,0,0,1,0];
+const fmt=(i,v)=>i===4?'×'+v.toFixed(2):Math.round(v);
+const tierOf=r=>r>.7?['初學','多餘動作還很多']:r>.45?['熟練','不晃不停，但還是一下一下']:r>.27?['小成','有了力道：蓄、爆、定']:['小成將滿','動作開始變小、變靜'];
+
+/* ---- radar ---- */
+function radar(){
+  const s=S(day),s0=S(1),C=[100,115],R=88,n=6,ang=i=>-Math.PI/2+2*Math.PI*i/n;
+  const P=(i,f)=>[C[0]+R*f*Math.cos(ang(i)),C[1]+R*f*Math.sin(ang(i))];
+  const nf=(i,v)=>Math.max(0,Math.min(1,(v-LO[i])/(HI[i]-LO[i])));
+  const poly=(vals,f=1)=>vals.map((v,i)=>P(i,Math.max(.04,nf(i,v))).join(',')).join(' ');
+  let h=[.25,.5,.75,1].map(f=>`<polygon class="grid" points="${AX.map((_,i)=>P(i,f).join(',')).join(' ')}"/>`).join('');
+  h+=AX.map((_,i)=>`<line class="grid" x1="${C[0]}" y1="${C[1]}" x2="${P(i,1)[0]}" y2="${P(i,1)[1]}"/>`).join('');
+  h+=`<polygon class="ghost" points="${poly(s0.stats)}"/><polygon class="now" points="${poly(s.stats)}"/>`;
+  h+=AX.map((a,i)=>{const[x,y]=P(i,1.22),anc=Math.abs(x-C[0])<5?'middle':x>C[0]?'start':'end';
+    const dv=s.stats[i]-s0.stats[i],up=i===4?dv>=.01:dv>=1;
+    return `<text class="lab" x="${x}" y="${y-4}" text-anchor="${anc}">${a} ${fmt(i,s.stats[i])}</text>`+
+      (up?`<text class="val up" x="${x}" y="${y+11}" text-anchor="${anc}">+${i===4?dv.toFixed(2):Math.round(dv)}</text>`:'');}).join('');
+  $('radar').innerHTML=h;
+}
+/* ---- body panel ---- */
+function bodyPanel(){
+  const s=S(day),frame=40,mus=8+18*s.mus,fat=24*s.fat+2,kg=frame+mus+fat;
+  const build=s.fat>.75?'圓滾滾':s.fat>.5?(s.mus>.5?'壯實帶肉':'微胖'):s.mus>.75?'精壯':'結實';
+  $('buildTag').textContent=build;
+  const row=(k,v,max,col,txt)=>`<div class="row"><span>${k}</span><span class="bar"><span style="width:${100*v/max}%;background:${col}"></span></span><span>${txt}</span></div>`;
+  $('body').innerHTML=row('肌肉',mus,30,'var(--muscle)',mus.toFixed(1)+' kg')+row('脂肪',fat,30,'var(--fat)',fat.toFixed(1)+' kg')+
+    `<div class="row"><span>體重</span><span class="note">骨架 40（根骨定，不會變）＋肌肉＋脂肪</span><span>${kg.toFixed(1)} kg</span></div>`+
+    `<div class="row"><span>飯量</span><span class="note">每日 ${(2.6+fat/18+mus/22).toFixed(1)} 份｜走速 ×${(1+s.stats[3]/100).toFixed(2)}${fat>16?'，上坡喘':''}</span><span></span></div>`;
+  const [t,sub]=tierOf(s.r);$('tier').innerHTML=`${t}<small>${sub}</small>`;
+}
+const EVENTS=[[1,'開局：斧頭舉到頂要停一下，常卡在木頭裡'],[6,'第一次一天劈完一捆柴'],[12,'挑水回來，缸裡多了半桶，灑得少了'],[20,'第一次一斧沒卡住'],[28,'腰圍小了一圈，飯量沒變'],[40,'直拳打到底會「定」住了（熟練）'],[55,'第一次一斧兩半'],[70,'小成：劈柴木屑飛得老遠，挑水桶幾乎不晃'],[90,'趕路帶風，師兄說「這小子瘦了」'],[110,'練拳不喘了，動作反而變小']];
+function logPanel(){$('log').innerHTML=EVENTS.filter(e=>e[0]<=day).reverse().map(([d,t])=>`<li><span>第 ${d} 日</span><span>${t}</span></li>`).join('');}
+
+/* ---- figure ---- */
+const W=640,H=400,G=330;
+let T0=performance.now(),cyc=-1,cycRand=[0,0],stuck=false,chips=[],drops=[];
+function rnd(seed){const x=Math.sin(seed*12.9898)*43758.5453;return x-Math.floor(x);}
+function limb(a,b,w,col){ctx.strokeStyle=col;ctx.lineWidth=w;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);ctx.stroke();}
+function two(a,c,L1,L2,bend){ // simple 2-bone IK
+  const dx=c[0]-a[0],dy=c[1]-a[1],d=Math.min(Math.hypot(dx,dy),L1+L2-.01),th=Math.atan2(dy,dx);
+  const k=Math.acos(Math.max(-1,Math.min(1,(L1*L1+d*d-L2*L2)/(2*L1*d))));const t=th+bend*k;
+  return [a[0]+L1*Math.cos(t),a[1]+L1*Math.sin(t)];}
+function person(o){ // o: hip[x,y], lean(rad), handL, handR, footL, footR
+  const s=S(day),ink=css('--ink'),skin=css('--fat'),robe=css('--accent');
+  const fat=s.fat,mus=s.mus,tw=26+22*fat+8*mus,armW=7+3*fat+6*mus,legW=10+5*fat+5*mus;
+  const hip=o.hip,len=58-6*fat,sh=[hip[0]+Math.sin(o.lean)*len,hip[1]-Math.cos(o.lean)*len];
+  // legs
+  [[o.footL,1],[o.footR,1]].forEach(([f])=>{const k=two(hip,f,44,44,-1);limb(hip,k,legW,ink);limb(k,f,legW-2,ink);});
+  // torso
+  ctx.save();ctx.translate((hip[0]+sh[0])/2,(hip[1]+sh[1])/2);ctx.rotate(o.lean);
+  ctx.fillStyle=robe;ctx.beginPath();ctx.ellipse(0,0,tw/2+6*fat,len/2+8,0,0,Math.PI*2);ctx.fill();
+  if(fat>.3){ctx.beginPath();ctx.ellipse(tw*.18,len*.15,tw*.32*fat+4,len*.28,0,0,Math.PI*2);ctx.fill();} // belly
+  ctx.strokeStyle=css('--card');ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-tw/2,len*.18);ctx.lineTo(tw/2+6*fat,len*.18);ctx.stroke(); // sash
+  ctx.restore();
+  // head
+  const hr=17+5*fat-2*mus,hd=[sh[0]+Math.sin(o.lean)*(hr+4),sh[1]-Math.cos(o.lean)*(hr+4)];
+  ctx.fillStyle=skin;ctx.beginPath();ctx.ellipse(hd[0],hd[1],hr+3*fat,hr,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=ink;ctx.beginPath();ctx.arc(hd[0],hd[1]-hr*.55,hr*.45,Math.PI,0);ctx.fill(); // topknot base
+  ctx.beginPath();ctx.arc(hd[0],hd[1]-hr-4,5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=ink;ctx.beginPath();ctx.arc(hd[0]+hr*.45,hd[1]-2,2,0,Math.PI*2);ctx.fill();
+  if(o.puff){ctx.strokeStyle=css('--mute');ctx.lineWidth=1.5;for(let i=0;i<3;i++){ctx.beginPath();ctx.arc(hd[0]+hr+10+i*7,hd[1]+4-i*5,3+i,0,Math.PI*2);ctx.stroke();}}
+  // arms
+  [o.handL,o.handR].forEach((h,i)=>{const e=two(sh,h,36,34,i?1:1);limb(sh,e,armW,ink);limb(e,h,armW-1,ink);});
+  return {sh,hd};
+}
+function ground(){ctx.strokeStyle=css('--line');ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,G+1);ctx.lineTo(W,G+1);ctx.stroke();}
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+function meas(items){$('meas').innerHTML=items.map(([k,v])=>`<span>${k} <b>${v}</b></span>`).join('');}
+
+function drawChop(t){
+  const s=S(day),r=s.r,T=1.1+1.9*r,ph=(t%T)/T,c=Math.floor(t/T);
+  if(c!==cyc){cyc=c;cycRand=[rnd(c+day*.13),rnd(c*3.7+day)];stuck=cycRand[1]<r*.85-.1;
+    if(!stuck){const n=Math.round(6+14*s.g);for(let i=0;i<n;i++)chips.push({x:470,y:G-40,vx:(Math.random()*2-1)*(1.5+5*s.g),vy:-2-6*s.g*Math.random(),l:1});}}
+  const raise=.15+.35*r,hold=.05+.3*r,strike=.08;let a; // arm angle: 0 = pointing at log, 1 = overhead
+  if(ph<raise)a=ease(ph/raise);else if(ph<raise+hold)a=1;else if(ph<raise+hold+strike)a=1-(ph-raise-hold)/strike;else a=0;
+  const err=(cycRand[0]-.5)*40*r*(a<.05?1:0);
+  const hip=[300,G-86+8*s.fat],sway=Math.sin(t*2.3)*0.08*r;
+  const lean=-0.35*a*(0.6+0.8*r)+0.25*(1-a)+sway;
+  const sx=hip[0]+Math.sin(lean)*55,sy=hip[1]-Math.cos(lean)*55;
+  const ang=-0.35+(-2.6)*a+err*Math.PI/180; // radians from horizontal right
+  const hand=[sx+60*Math.cos(ang),sy+60*Math.sin(ang)];
+  ground();
+  // log
+  ctx.fillStyle=css('--fat');ctx.fillRect(440,G-40,60,40);ctx.fillStyle=css('--card');ctx.fillRect(468,G-40,4,stuck||a>.05?6:40);
+  const P=person({hip,lean,handL:hand,handR:[hand[0]-4,hand[1]+6],footL:[hip[0]-34,G],footR:[hip[0]+30,G],puff:r>.6&&ph>.8});
+  // axe
+  const ax=[hand[0]+70*Math.cos(ang),hand[1]+70*Math.sin(ang)];
+  limb(hand,ax,5,css('--mute'));ctx.fillStyle=css('--ink');ctx.save();ctx.translate(...ax);ctx.rotate(ang);ctx.fillRect(-6,-4,18,22);ctx.restore();
+  chips=chips.filter(p=>(p.x+=p.vx,p.y+=p.vy,p.vy+=.35,p.l-=.02,p.l>0&&p.y<G));chips.forEach(p=>{ctx.fillStyle=css('--fat');ctx.globalAlpha=p.l;ctx.fillRect(p.x,p.y,5,3);ctx.globalAlpha=1;});
+  if(stuck&&a<.05){ctx.fillStyle=css('--warn');ctx.font='600 16px '+css('--body');ctx.fillText('卡斧！',500,G-56);}
+  meas([['頂點停頓',(hold*T).toFixed(2)+' 秒'],['落點偏差',(20*r).toFixed(0)+'°'],['卡斧機率',Math.round(Math.max(0,r*.85-.1)*100)+'%'],['每段幾斧',(1+3*r).toFixed(1)]]);
+}
+function drawWater(t){
+  const s=S(day),r=s.r,step=1.2+0.8*(1-r)+.3*(s.stats[3]/60),ph=t*step*Math.PI;
+  const hip=[320,G-86+8*s.fat+Math.abs(Math.sin(ph))*-4],tilt=Math.sin(t*1.7)*.21*r,lean=.05+.06*s.fat+tilt*.3;
+  ground();
+  const footL=[hip[0]+Math.sin(ph)*24*(.6+.4*s.g),G-Math.max(0,Math.cos(ph))*8],footR=[hip[0]-Math.sin(ph)*24*(.6+.4*s.g),G-Math.max(0,-Math.cos(ph))*8];
+  const sh=[hip[0]+Math.sin(lean)*55,hip[1]-Math.cos(lean)*55];
+  const L=95,pl=[sh[0]-L*Math.cos(tilt),sh[1]-6-L*Math.sin(tilt)],pr=[sh[0]+L*Math.cos(tilt),sh[1]-6+L*Math.sin(tilt)];
+  person({hip,lean,handL:[sh[0]-30,sh[1]-2],handR:[sh[0]+28,sh[1]-4],footL,footR,puff:r>.6});
+  limb(pl,pr,6,css('--fat'));
+  const swing=Math.sin(t*3.1)*0.52*r;
+  [[pl,1],[pr,-1]].forEach(([p,sg],i)=>{const a=swing*sg,b=[p[0]+Math.sin(a)*70,p[1]+Math.cos(a)*70];limb(p,b,2,css('--mute'));
+    ctx.save();ctx.translate(...b);ctx.rotate(-a);ctx.fillStyle=css('--mute');ctx.fillRect(-16,0,32,30);ctx.fillStyle=css('--accent');ctx.globalAlpha=.6;ctx.fillRect(-14,2+8*r,28,26-8*r);ctx.globalAlpha=1;ctx.restore();
+    if(Math.abs(a)>.3&&Math.random()<.35)drops.push({x:b[0],y:b[1],vx:sg*(Math.random()*2+1),vy:-Math.random()*3,l:1});});
+  drops=drops.filter(p=>(p.x+=p.vx,p.y+=p.vy,p.vy+=.3,p.l-=.03,p.l>0&&p.y<G));drops.forEach(p=>{ctx.fillStyle=css('--accent');ctx.globalAlpha=p.l;ctx.beginPath();ctx.arc(p.x,p.y,2.5,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;});
+  meas([['扁擔傾角',(12*r).toFixed(0)+'°'],['桶擺幅',(30*r).toFixed(0)+'°'],['到缸剩水',Math.round(100-35*r)+'%'],['步頻',step.toFixed(2)+' 步/秒']]);
+}
+function drawPunch(t){
+  const s=S(day),r=s.r,wind=.25+.85*r,ext=.08+.3*r,hold=.25-.15*r,back=.3+.3*r,T=wind+ext+hold+back,ph=t%T;
+  let e; if(ph<wind)e=-.3*ease(ph/wind);else if(ph<wind+ext){const u=(ph-wind)/ext;e=-.3+1.3*(r>.5?u:Math.pow(u,.45));}else if(ph<wind+ext+hold)e=1;else e=1-(ph-wind-ext-hold)/back;
+  const drop=8+18*s.g,hip=[300,G-86+drop+8*s.fat],lean=.04+(r>.5?-.04:.02)*e;
+  const sh=[hip[0]+Math.sin(lean)*55,hip[1]-Math.cos(lean)*55],wob=Math.sin(t*9)*10*r*(e>.2?1:0);
+  ground();
+  person({hip,lean,handL:[sh[0]+14,sh[1]+30],handR:[sh[0]+20+62*e,sh[1]+6+wob],footL:[hip[0]-46-18*s.g,G],footR:[hip[0]+46+18*s.g,G],puff:r>.55&&ph>T-.3});
+  if(e>.97&&r<.5){ctx.strokeStyle=css('--accent');ctx.lineWidth=2;const hx=sh[0]+20+62,hy=sh[1]+6;for(let i=0;i<3;i++){ctx.beginPath();ctx.arc(hx+12,hy,8+i*7,-.7,.7);ctx.stroke();}}
+  meas([['前搖',wind.toFixed(2)+' 秒'],['馬步髖高降',drop.toFixed(0)+' px'],['拳路飄移',(10*r).toFixed(0)+' px'],['打到底停頓',hold.toFixed(2)+' 秒']]);
+}
+function drawWalk(t){
+  const s=S(day),r=s.r,spd=1+s.stats[3]/100,fat=s.fat,step=(1.4+.9*(spd-1))*(1-.25*fat*(r)),ph=t*step*Math.PI,stride=18+22*s.g;
+  const hip=[320,G-86+8*fat+(r>.6?6:0)+Math.abs(Math.sin(ph))*-(3+5*s.g)],lean=r>.6?.18:.08+.05*s.g,sideSway=Math.sin(ph)*0.06*fat;
+  ground();
+  // scrolling ground marks show real speed
+  ctx.strokeStyle=css('--line');ctx.lineWidth=2;const off=(t*90*spd)%80;for(let x=-off;x<W;x+=80){ctx.beginPath();ctx.moveTo(x,G+10);ctx.lineTo(x+24,G+10);ctx.stroke();}
+  const footL=[hip[0]+Math.sin(ph)*stride,G-Math.max(0,Math.cos(ph))*(6+6*s.g)],footR=[hip[0]-Math.sin(ph)*stride,G-Math.max(0,-Math.cos(ph))*(6+6*s.g)];
+  const sh=[hip[0]+Math.sin(lean+sideSway)*55,hip[1]-Math.cos(lean+sideSway)*55];
+  person({hip,lean:lean+sideSway,handL:[sh[0]-Math.sin(ph)*24,sh[1]+52],handR:[sh[0]+Math.sin(ph)*24,sh[1]+52],footL,footR,puff:fat>.6});
+  if(s.g>.75){ctx.fillStyle=css('--line');for(let i=0;i<4;i++){ctx.globalAlpha=.5-i*.1;ctx.beginPath();ctx.arc(hip[0]-50-i*18,G-4,5+i*2,0,Math.PI*2);ctx.fill();}ctx.globalAlpha=1;}
+  meas([['走速',' ×'+spd.toFixed(2)+'（腳力）'],['步幅',stride.toFixed(0)+' px'],['樣子',r>.6?'疲憊拖步':s.g>.75?'健步如飛':'標準'],['上坡',fat>.6?'會喘':'不喘']]);
+}
+const DRAW={chop:drawChop,water:drawWater,punch:drawPunch,walk:drawWalk};
+function frame(now){
+  const t=(now-T0)/1000;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=css('--mute');ctx.font='13px '+css('--body');ctx.fillText(`第 ${day} 日・${{chop:'劈柴',water:'挑水',punch:'練拳',walk:'趕路'}[mode]}`,16,24);
+  DRAW[mode](reduce?1.3:t);
+  if(playing){day=Math.min(120,day+(reduce?3:.25));$('day').value=Math.round(day);update(false);if(day>=120){playing=false;$('play').textContent='播放成長';}}
+  requestAnimationFrame(frame);
+}
+function update(fromSlider=true){if(fromSlider)day=+$('day').value;const d=Math.round(day);$('dayLab').textContent=`第 ${d} 日`;
+  const keep=day;day=d;radar();bodyPanel();logPanel();day=keep;}
+$('day').addEventListener('input',()=>{playing=false;$('play').textContent='播放成長';update();});
+$('play').addEventListener('click',()=>{if(day>=120)day=1;playing=!playing;$('play').textContent=playing?'暫停':'播放成長';});
+['chop','water','punch','walk'].forEach(m=>$('m-'+m).addEventListener('click',()=>{mode=m;chips=[];drops=[];cyc=-1;document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-pressed',String(b.id==='m-'+m)));}));
+update();requestAnimationFrame(frame);
+})();
+</script>
+
+</body></html>

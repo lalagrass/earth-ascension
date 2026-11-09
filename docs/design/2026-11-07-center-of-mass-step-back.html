@@ -1,0 +1,126 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>重心與退步試驗</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;900&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: two lanes (untrained vs trained legs) under the same push; controls below; model notes after. */
+:root{
+  --paper:#eceee8; --card:#f7f8f4; --ink:#1e2420; --mute:#5d6660; --line:#c9cec6;
+  --accent:#2f5d7c; --ok:#3f7a5a; --bad:#a2452f; --cp:#b5874a;
+  --display:"Noto Serif TC","Songti TC",serif; --body:"Noto Sans TC","PingFang TC",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#161a18;--card:#1f2421;--ink:#e4e8e2;--mute:#9aa49d;--line:#39413c;--accent:#7fb0d3;--ok:#76b892;--bad:#e08a72;--cp:#d5aa6e;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#161a18;--card:#1f2421;--ink:#e4e8e2;--mute:#9aa49d;--line:#39413c;--accent:#7fb0d3;--ok:#76b892;--bad:#e08a72;--cp:#d5aa6e;color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.6}
+.wrap{max-width:980px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:18px}
+h1{font-family:var(--display);font-weight:900;font-size:clamp(24px,4vw,34px);margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:600;font-size:19px;margin:0 0 6px}
+.lede{color:var(--mute);max-width:66ch;margin:4px 0 0}
+.stage{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+canvas{display:block;width:100%;height:auto;aspect-ratio:8/5}
+.ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 20px;align-items:end}
+.ctl label{display:grid;gap:2px;font-size:14px}
+.ctl output{font-variant-numeric:tabular-nums;color:var(--mute);font-size:13px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.btn{font:inherit;font-size:15px;background:var(--accent);color:var(--card);border:0;border-radius:6px;padding:8px 18px;cursor:pointer;justify-self:start}
+.btn.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.legend{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:13px;color:var(--mute)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.notes{display:grid;gap:8px;max-width:72ch}
+.notes p{margin:0}
+code{font-size:.92em}
+</style>
+<div class="wrap">
+  <header>
+    <h1>重心與退步試驗</h1>
+    <p class="lede">兩個人被同樣的力往後推。上面腿沒練，下面腿練好。沒有寫好的「退一步」動畫：退幾步、倒不倒，全由重心、腳能踩到哪、踩得多快算出來。</p>
+  </header>
+  <div class="stage"><canvas id="cv" width="960" height="600" aria-label="兩人受推後的重心模擬"></canvas></div>
+  <div class="legend"><span><i style="background:var(--ink)"></i>重心</span><span><i style="background:var(--cp)"></i>要停下來得踩到的位置（捕獲點）</span><span><i style="background:var(--accent)"></i>腳底能撐的範圍</span></div>
+  <div class="ctl">
+    <label for="f">推力 <output id="fo"></output><input id="f" type="range" min="20" max="260" value="120"></label>
+    <label for="a">上面：腿功 <output id="ao"></output><input id="a" type="range" min="0" max="100" value="10"></label>
+    <label for="b">下面：腿功 <output id="bo"></output><input id="b" type="range" min="0" max="100" value="80"></label>
+    <label for="m">體重（兩人相同） <output id="mo"></output><input id="m" type="range" min="45" max="110" value="70"></label>
+    <div class="btns"><button class="btn" id="go">推！</button><button class="btn alt" id="slow" aria-pressed="false">慢動作</button></div>
+  </div>
+  <section class="notes">
+    <h2>這個試驗算了什麼</h2>
+    <p>人簡化成一根倒立擺：重心在腳上方，往哪邊偏就往哪邊倒。被推之後重心有速度，模型算出「要在哪裡踩一步才能剛好停下」，也就是機器人學的捕獲點（capture point）。</p>
+    <p>捕獲點還在腳底範圍內，就只靠腳踝、腰撐住，人會晃但不動腳。落在外面，就必須跨步。跨步要時間，也只能跨這麼遠。腿功決定四件事：站得多低（重心越低越穩）、腳底撐的範圍（馬步越寬越大）、一步多快、一步多遠，還有能連續調整幾步。</p>
+    <p>所以腿沒練的人，第一步太慢太短，踩不到捕獲點就倒了。腿練好的人連退幾步，把衝勁吃掉，最後站在比較後面，看起來就像順勢後撤。體重越重，同樣的推力造成的速度越小。</p>
+    <p class="legend">示意數值：重心高 0.95–0.80 m、腳底半寬 0.10–0.20 m、一步 0.38–0.20 秒、步幅 0.42–0.80 m、最多連續 1–4 步。模型是確定性的，同樣的輸入每次結果相同。</p>
+  </section>
+</div>
+<script>
+(()=>{
+const $=id=>document.getElementById(id),cv=$('cv'),ctx=cv.getContext('2d');
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const g=9.81,DT=1/240,SC=210,W=960,H=600,LANE=[280,570];
+let slow=false,people=[];
+function params(skill){const s=skill/100;return{h:.95-.15*s,w:.10+.10*s,stepT:.38-.18*s,reach:.42+.38*s,maxSteps:1+Math.floor(3*s+1e-9)};}
+function make(skill,mass,J,lane){const p=params(skill);return{...p,skill,lane,x:0,v:-J/mass,fs:0,phase:'stand',t:0,steps:0,swingFrom:0,swingTo:0,fallT:0,res:'',time:0};}
+function step(P){
+  if(P.phase==='fallen'){P.fallT=Math.min(1,P.fallT+DT*2.5);return;}
+  P.time+=DT;const w=Math.sqrt(g/P.h),xi=P.x+P.v/w;
+  const lo=P.fs-P.w,hi=P.fs+P.w,p=Math.max(lo,Math.min(hi,xi));      // centre of pressure, limited by the foot
+  const a=w*w*(P.x-p);P.v+=a*DT;P.x+=P.v*DT;
+  if(P.phase==='stand'){
+    if(xi<lo-1e-3||xi>hi+1e-3){ if(P.steps<P.maxSteps){P.phase='step';P.t=0;P.swingFrom=P.fs;}else{P.phase='fallen';P.res='倒地';}}
+    else if(Math.abs(P.v)<.02&&!P.res){P.res=P.steps?`退 ${P.steps} 步站穩，後撤 ${Math.abs(P.fs).toFixed(2)} m`:'只晃不退'; }
+  }else if(P.phase==='step'){
+    P.t+=DT;
+    if(P.t>=P.stepT){const w2=Math.sqrt(g/P.h),xi2=P.x+P.v/w2,dir=Math.sign(xi2-P.fs)||-1;
+      const want=xi2+dir*.02,lim=P.fs+dir*P.reach;P.fs=dir<0?Math.max(want,lim):Math.min(want,lim);P.steps++;P.phase='stand';P.swingTo=P.fs;if(Math.abs(P.x-P.fs)>.7*P.h){P.phase='fallen';P.res='倒地';}}
+  }
+  if(P.phase!=='fallen'&&Math.abs(P.x-P.fs)>(P.phase==='step'?1.2:.7)*P.h){P.phase='fallen';P.res='倒地';}
+}
+function sx(x){return W*.62+x*SC;}
+function draw(P){
+  const y0=LANE[P.lane],ink=css('--ink');
+  ctx.strokeStyle=css('--line');ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,y0);ctx.lineTo(W,y0);ctx.stroke();
+  ctx.fillStyle=css('--mute');ctx.font='14px '+css('--body');
+  ctx.fillText(`${P.lane?'下':'上'}：腿功 ${P.skill}${P.skill<30?'（沒練）':P.skill>65?'（練好）':''}`,16,y0-215);
+  // support region
+  ctx.fillStyle=css('--accent');ctx.globalAlpha=.35;ctx.fillRect(sx(P.fs-P.w),y0-4,(2*P.w)*SC,6);ctx.globalAlpha=1;
+  const w=Math.sqrt(g/P.h),xi=P.x+P.v/w;
+  if(P.phase!=='fallen'){ctx.fillStyle=css('--cp');ctx.beginPath();ctx.arc(sx(xi),y0,6,0,Math.PI*2);ctx.fill();}
+  // body
+  const fx=sx(P.fs);let cx=sx(P.x),cy=y0-P.h*SC*.62;
+  if(P.phase==='fallen'){const k=P.fallT,dir=Math.sign(P.x-P.fs)||-1;const ang=Math.atan2(cx-fx,y0-cy)+k*(dir*1.45-Math.atan2(cx-fx,y0-cy));const L=Math.hypot(cx-fx,y0-cy);cx=fx+Math.sin(ang)*L;cy=y0-Math.cos(ang)*L;}
+  // swing foot
+  let other=P.fs+.12;if(P.phase==='step'){const u=P.t/P.stepT;other=P.swingFrom+(P.swingFrom+(P.x-P.swingFrom)*1.6-P.swingFrom)*u;}
+  const ofx=sx(other),ofy=P.phase==='step'?y0-Math.sin(Math.PI*P.t/P.stepT)*14:y0;
+  ctx.strokeStyle=ink;ctx.lineCap='round';ctx.lineWidth=9;
+  ctx.beginPath();ctx.moveTo(fx,y0);ctx.lineTo(cx,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ofx,ofy);ctx.lineTo(cx,cy);ctx.stroke();
+  const dx=(cx-fx),dy=(cy-y0),L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L,tx=cx+ux*70,ty=cy+uy*70;
+  ctx.lineWidth=14;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(tx,ty);ctx.stroke();
+  ctx.fillStyle=css('--cp');ctx.beginPath();ctx.arc(tx+ux*20,ty+uy*20,16,0,Math.PI*2);ctx.fill();
+  ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(tx-ux*10,ty-uy*10);ctx.lineTo(tx-ux*10+(P.v<0?28:-28)*(1),ty-uy*10+18);ctx.stroke();
+  ctx.fillStyle=ink;ctx.beginPath();ctx.arc(cx,cy,7,0,Math.PI*2);ctx.fill();
+  // result
+  if(P.res){ctx.fillStyle=P.res==='倒地'?css('--bad'):css('--ok');ctx.font='600 18px '+css('--body');ctx.fillText(P.res,16,y0-188);}
+  ctx.fillStyle=css('--mute');ctx.font='13px '+css('--body');
+  ctx.fillText(`重心速度 ${Math.abs(P.v).toFixed(2)} m/s｜已跨 ${P.steps}/${P.maxSteps} 步｜一步 ${P.stepT.toFixed(2)} s・最遠 ${P.reach.toFixed(2)} m`,16,y0-166);
+}
+function frame(){
+  const n=Math.round((slow?.25:1)*(1/60)/DT);for(let i=0;i<n;i++)people.forEach(step);
+  ctx.clearRect(0,0,W,H);people.forEach(draw);
+  ctx.fillStyle=css('--bad');ctx.font='600 15px '+css('--body');ctx.fillText('← 推的方向',W*.62-60,40);
+  requestAnimationFrame(frame);
+}
+function sync(){$('fo').textContent=`${$('f').value} N·s`;$('ao').textContent=$('a').value;$('bo').textContent=$('b').value;$('mo').textContent=`${$('m').value} kg`;}
+function push(){sync();const J=+$('f').value,m=+$('m').value;people=[make(+$('a').value,m,J,0),make(+$('b').value,m,J,1)];}
+['f','a','b','m'].forEach(id=>$(id).addEventListener('input',sync));
+$('go').addEventListener('click',push);
+$('slow').addEventListener('click',e=>{slow=!slow;e.currentTarget.setAttribute('aria-pressed',String(slow));e.currentTarget.textContent=slow?'正常速度':'慢動作';});
+push();
+setTimeout(()=>{},0);
+requestAnimationFrame(frame);
+})();
+</script>
+
+</body></html>
