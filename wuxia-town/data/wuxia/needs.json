@@ -1,0 +1,10 @@
+{
+  "_doc": "武俠小鎮 W3（#555）需求。四個需求 0–100：hunger 餓、fatigue 累、boredom 悶、chore 家事。perHour＝每遊戲小時固定增加的量（不分醒睡，睡覺／吃飯等活動完成時再依 objects.json 的 needs 扣回）。initial＝開局值，再加 game.rng() 的 ±jitter。talk＝一段對話結束時的變化。urgency：需求 > soft 時線性加分（soft→hard 從 0 加到 softMax），> hard 時改成 hardBase＋(v−hard)×hardSlope，一定壓過日程權重（3＋擾動）。stock：每戶物資的開局量與上限。",
+  "needs": ["hunger", "fatigue", "boredom", "chore"],
+  "perHour": {"hunger": 4, "fatigue": 3, "boredom": 3, "chore": 2},
+  "initial": {"hunger": 30, "fatigue": 10, "boredom": 30, "chore": 30},
+  "jitter": 10,
+  "talk": {"boredom": -15},
+  "urgency": {"soft": 70, "hard": 90, "softMax": 3, "hardBase": 3.5, "hardSlope": 0.1},
+  "stock": {"initial": {"water": 2, "meal": 2, "wood": 2}, "max": {"water": 8, "meal": 8, "wood": 8}}
+}

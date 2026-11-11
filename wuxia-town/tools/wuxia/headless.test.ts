@@ -5,9 +5,11 @@ import { skinDiff } from './skin-diff';
 
 describe('headless simulation and replay', () => {
   test('same seed → same hash; different seed → different hash', () => {
-    const a = runHeadless({ seed: 7, minutes: 3, agents: 5 });
-    const b = runHeadless({ seed: 7, minutes: 3, agents: 5 });
-    const c = runHeadless({ seed: 8, minutes: 3, agents: 5 });
+    // W3：這個 W0 測試看的是上游漫遊聊天，w03-life 固定關（生活開啟時前 3 分鐘不會有人聊天；W3 自己的測試在 life.test.ts）
+    const W2 = { 'w03-life': false };
+    const a = runHeadless({ seed: 7, minutes: 3, agents: 5, elements: W2 });
+    const b = runHeadless({ seed: 7, minutes: 3, agents: 5, elements: W2 });
+    const c = runHeadless({ seed: 8, minutes: 3, agents: 5, elements: W2 });
     expect(a.finalHash).toEqual(b.finalHash);
     expect(a.finalHash).not.toEqual(c.finalHash);
     expect(a.summary.stats.messages).toBeGreaterThan(0);

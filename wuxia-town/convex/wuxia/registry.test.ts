@@ -27,8 +27,23 @@ describe('wuxia element registry', () => {
     expect(enabledElements(state).map((e) => e.id)).toEqual(['w01-skin']);
     expect(initWuxiaState({ elements: { 'w01-skin': false }, seed: 7, timeScale: 60 }).enabled).toEqual({});
   });
-  test('W2 default config enables w01-skin and w02-folk', () => {
-    expect(enabledElements(initWuxiaState()).map((e) => e.id)).toEqual(['w01-skin', 'w02-folk']);
+  test('W3 default config enables w01-skin, w02-folk and w03-life', () => {
+    // W3 刻意改變：預設開 w03-life（W2 時是 ['w01-skin', 'w02-folk']）
+    expect(enabledElements(initWuxiaState()).map((e) => e.id)).toEqual([
+      'w01-skin',
+      'w02-folk',
+      'w03-life',
+    ]);
+  });
+  test('w03-life requires w02-folk: turning folk (or skin) off drops life from the frozen flags', () => {
+    for (const off of ['w01-skin', 'w02-folk']) {
+      const state = initWuxiaState({
+        elements: { 'w01-skin': true, 'w02-folk': true, 'w03-life': true, [off]: false },
+        seed: 7,
+        timeScale: 60,
+      });
+      expect(state.enabled['w03-life']).toBeUndefined();
+    }
   });
   test('w02-folk requires w01-skin: turning the skin off drops folk from the frozen flags', () => {
     const state = initWuxiaState({

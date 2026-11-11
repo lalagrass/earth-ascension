@@ -22,6 +22,9 @@ import { distance } from '../util/geometry';
 import { internal } from '../_generated/api';
 import { movePlayer } from './movement';
 import { insertInput } from './insertInput';
+// WUXIA-PATCH(W3): w03-life 開關
+import { isEnabled } from '../wuxia/registry';
+import { W03_LIFE } from '../wuxia/w03_life';
 
 export class Agent {
   id: GameId<'agents'>;
@@ -75,7 +78,14 @@ export class Agent {
     // If we aren't doing an activity or moving, do something.
     // If we have been wandering but haven't thought about something to do for
     // a while, do something.
-    if (!conversation && !doingActivity && (!player.pathfinding || !recentlyAttemptedInvite)) {
+    // WUXIA-PATCH(W3): w03-life 開啟時不發 agentDoSomething（漫遊／隨機活動／邀人），改由 convex/wuxia/w03_life 在引擎 tick 內決定
+    const lifeOn = !!game.world.wuxia && isEnabled(game.world.wuxia, W03_LIFE);
+    if (
+      !lifeOn &&
+      !conversation &&
+      !doingActivity &&
+      (!player.pathfinding || !recentlyAttemptedInvite)
+    ) {
       this.startOperation(game, now, 'agentDoSomething', {
         worldId: game.worldId,
         player: player.serialize(),

@@ -1,0 +1,58 @@
+{
+  "_doc": "武俠小鎮 W3（#555）日程。blocks 的 from/to 是當日分鐘（[from,to)，可跨午夜），do 是這個時段有日程權重 3 的活動。once 裡的活動在同一個時段完成一次後就不再加權（例如吃飯不會一直吃）。沒有被 blocks 蓋到的時間就是留白（#562 W3-5：每人每天至少 2 小時），由需求與擾動決定。worker＝有固定工作（day-report 檢查是否 4 小時以上在 workplace）。",
+  "once": ["eat", "cook"],
+  "schedules": {
+    "lin-sao": {"worker": true, "blocks": [
+      {"from": 300, "to": 360, "label": "起床吃飯", "do": ["eat"]},
+      {"from": 420, "to": 660, "label": "煮茶顧店", "do": ["brew_tea"]},
+      {"from": 660, "to": 720, "label": "午飯", "do": ["eat"]},
+      {"from": 780, "to": 1080, "label": "煮茶顧店", "do": ["brew_tea"]},
+      {"from": 1080, "to": 1140, "label": "晚飯", "do": ["eat"]},
+      {"from": 1260, "to": 300, "label": "睡覺", "do": ["sleep"]}
+    ]},
+    "shi-hu": {"worker": true, "blocks": [
+      {"from": 300, "to": 360, "label": "起床吃飯", "do": ["eat"]},
+      {"from": 420, "to": 660, "label": "打鐵", "do": ["smith"]},
+      {"from": 660, "to": 720, "label": "午飯", "do": ["eat"]},
+      {"from": 780, "to": 1020, "label": "打鐵", "do": ["smith"]},
+      {"from": 1020, "to": 1080, "label": "晚飯", "do": ["eat"]},
+      {"from": 1080, "to": 1200, "label": "茶館", "do": ["drink_tea", "listen_story"]},
+      {"from": 1260, "to": 300, "label": "睡覺", "do": ["sleep"]}
+    ]},
+    "he-langzhong": {"worker": true, "blocks": [
+      {"from": 300, "to": 360, "label": "起床吃飯", "do": ["eat"]},
+      {"from": 420, "to": 660, "label": "看診抓藥", "do": ["consult", "dispense"]},
+      {"from": 660, "to": 720, "label": "午飯", "do": ["eat"]},
+      {"from": 780, "to": 1020, "label": "看診抓藥", "do": ["consult", "dispense"]},
+      {"from": 1020, "to": 1080, "label": "晚飯", "do": ["eat"]},
+      {"from": 1080, "to": 1200, "label": "茶館", "do": ["drink_tea", "listen_story"]},
+      {"from": 1260, "to": 300, "label": "睡覺", "do": ["sleep"]}
+    ]},
+    "lao-han": {"worker": true, "blocks": [
+      {"from": 300, "to": 360, "label": "起床吃飯", "do": ["eat"]},
+      {"from": 480, "to": 660, "label": "說書", "do": ["storytell"]},
+      {"from": 660, "to": 720, "label": "午飯", "do": ["eat"]},
+      {"from": 780, "to": 900, "label": "說書", "do": ["storytell"]},
+      {"from": 960, "to": 1020, "label": "晚飯", "do": ["eat"]},
+      {"from": 1020, "to": 1200, "label": "傍晚說書", "do": ["storytell"]},
+      {"from": 1260, "to": 300, "label": "睡覺", "do": ["sleep"]}
+    ]},
+    "a-qing": {"worker": false, "blocks": [
+      {"from": 300, "to": 360, "label": "起床吃飯", "do": ["eat"]},
+      {"from": 420, "to": 600, "label": "打零工", "do": ["chop_bamboo", "draw_water"]},
+      {"from": 660, "to": 720, "label": "午飯", "do": ["eat"]},
+      {"from": 840, "to": 960, "label": "打零工", "do": ["draw_water", "wash_clothes"]},
+      {"from": 1020, "to": 1080, "label": "晚飯", "do": ["eat"]},
+      {"from": 1080, "to": 1200, "label": "茶館聽書", "do": ["listen_story", "drink_tea"]},
+      {"from": 1260, "to": 300, "label": "睡覺", "do": ["sleep"]}
+    ]},
+    "zhou-jiaotou": {"worker": false, "blocks": [
+      {"from": 300, "to": 360, "label": "起床吃飯", "do": ["eat"]},
+      {"from": 540, "to": 660, "label": "茶館喝悶酒", "do": ["drink_tea"]},
+      {"from": 660, "to": 720, "label": "午飯", "do": ["eat"]},
+      {"from": 840, "to": 1020, "label": "茶館喝悶酒", "do": ["drink_tea", "listen_story"]},
+      {"from": 1020, "to": 1080, "label": "晚飯", "do": ["eat"]},
+      {"from": 1260, "to": 300, "label": "睡覺", "do": ["sleep"]}
+    ]}
+  }
+}

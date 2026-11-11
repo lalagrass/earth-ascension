@@ -61,6 +61,8 @@
 | W2 | `convex/aiTown/agent.ts` | `agentSendMessage` 多收 `metadata`（選填），寫進 `messages` | 同上 |
 | W2 | `convex/schema.ts` | `messages` 表加 `metadata: v.optional(v.any())` | 同上 |
 | W2 | `package.json`（JSON 無法加註解） | `wuxia:folk-diff`、`wuxia:gen-prompts`、`wuxia:sample-dialogue` 指令 | #554 驗收工具 |
+| W3 | `convex/aiTown/agent.ts` | `Agent.tick`：w03-life 開啟時不發 `agentDoSomething`（不漫遊、不隨機活動、不由 action 找人聊天），改由 `convex/wuxia/w03_life` 在引擎 tick 內選事、預約、走路、計時，並在閒暇地點發起邀請 | #555「決策」：取代 `agentDoSomething` 的漫遊／隨機活動 |
+| W3 | `package.json`（JSON 無法加註解） | `wuxia:day-report`、`wuxia:life-diff` 指令 | #555 驗收工具 |
 
 ## 上游刻意保留不改的隨機／時間
 

@@ -1,0 +1,64 @@
+{
+  "_doc": "武俠小鎮 W3（#555）物件與活動。tile 是物件的代表格，slots 是每個座位的站位（長度＝capacity，皆為可走格）。房屋、店鋪內部在地圖上不能走，所以物件都放在門口或簷下。roles：可用的人物 id（\"*\"＝所有人）；owner：只有這個人能用（床）；household：只有 home＝這個地點的人能用（灶，配合 #562 每戶一份物資）。needs：活動完成時加到需求上的量；gives／consumes：每戶物資（water 水、meal 飯、wood 柴），consumes 在開始時扣、gives 在完成時加。requires.timeOfDay＝[開始, 結束)（當日分鐘，可跨午夜）；requires.whileActive＝有人正在做這個活動才能做；requires.minGap＝離上次做完至少隔幾分鐘（吃飯 4 小時，一天不會吃第四餐）；requires.scheduledOrNeed＝只有日程排到、或這個需求已經急（> soft）時才做（睡覺不會因為擾動在早上補眠）。leisure＝閒暇類活動（只有閒暇中或剛結束才會邀人聊天）。",
+  "objects": [
+    {"id": "well", "name": "井", "place": "well", "tile": [22, 22], "capacity": 2, "slots": [[22, 21], [22, 22]],
+     "activities": [
+       {"id": "draw_water", "label": "挑水", "emoji": "🪣", "minutes": 30, "roles": ["*"], "needs": {"chore": -30, "fatigue": 3}, "gives": {"water": 3}, "requires": {"timeOfDay": [300, 1080]}}
+     ]},
+    {"id": "stove-teahouse", "name": "灶（茶館後灶）", "place": "teahouse", "household": "teahouse", "tile": [12, 20], "capacity": 2, "slots": [[12, 20], [11, 20]], "activities": "@stove"},
+    {"id": "stove-smithy", "name": "灶（鐵匠鋪）", "place": "smithy", "household": "smithy", "tile": [19, 29], "capacity": 2, "slots": [[19, 29], [19, 31]], "activities": "@stove"},
+    {"id": "stove-pharmacy", "name": "灶（藥鋪）", "place": "pharmacy", "household": "pharmacy", "tile": [28, 19], "capacity": 2, "slots": [[28, 19], [29, 19]], "activities": "@stove"},
+    {"id": "stove-home-west-1", "name": "灶（西邊民居）", "place": "home-west-1", "household": "home-west-1", "tile": [6, 19], "capacity": 2, "slots": [[6, 19], [7, 19]], "activities": "@stove"},
+    {"id": "stove-home-west-2", "name": "灶（西邊破屋）", "place": "home-west-2", "household": "home-west-2", "tile": [6, 30], "capacity": 2, "slots": [[6, 30], [7, 30]], "activities": "@stove"},
+    {"id": "stove-dojo", "name": "灶（武館）", "place": "dojo", "household": "dojo", "tile": [40, 28], "capacity": 2, "slots": [[40, 28], [41, 28]], "activities": "@stove"},
+    {"id": "bed-lin-sao", "name": "床（林嫂）", "place": "teahouse", "owner": "lin-sao", "tile": [13, 20], "capacity": 1, "slots": [[13, 20]], "activities": "@bed"},
+    {"id": "bed-shi-hu", "name": "床（石虎）", "place": "smithy", "owner": "shi-hu", "tile": [19, 30], "capacity": 1, "slots": [[19, 30]], "activities": "@bed"},
+    {"id": "bed-he-langzhong", "name": "床（何郎中）", "place": "pharmacy", "owner": "he-langzhong", "tile": [30, 19], "capacity": 1, "slots": [[30, 19]], "activities": "@bed"},
+    {"id": "bed-lao-han", "name": "床（老韓）", "place": "home-west-1", "owner": "lao-han", "tile": [4, 19], "capacity": 1, "slots": [[4, 19]], "activities": "@bed"},
+    {"id": "bed-a-qing", "name": "床（阿青）", "place": "home-west-2", "owner": "a-qing", "tile": [4, 30], "capacity": 1, "slots": [[4, 30]], "activities": "@bed"},
+    {"id": "bed-zhou-jiaotou", "name": "床（周教頭）", "place": "dojo", "owner": "zhou-jiaotou", "tile": [38, 28], "capacity": 1, "slots": [[38, 28]], "activities": "@bed"},
+    {"id": "tea-table-1", "name": "茶館桌一", "place": "teahouse", "tile": [21, 14], "capacity": 2, "slots": [[21, 14], [21, 15]], "activities": "@teatable"},
+    {"id": "tea-table-2", "name": "茶館桌二", "place": "teahouse", "tile": [21, 18], "capacity": 2, "slots": [[21, 18], [21, 19]], "activities": "@teatable"},
+    {"id": "tea-table-3", "name": "茶館桌三", "place": "teahouse", "tile": [15, 20], "capacity": 2, "slots": [[15, 20], [16, 20]], "activities": "@teatable"},
+    {"id": "tea-table-4", "name": "茶館桌四", "place": "teahouse", "tile": [18, 20], "capacity": 2, "slots": [[17, 20], [18, 20]], "activities": "@teatable"},
+    {"id": "story-stage", "name": "說書台", "place": "teahouse", "tile": [21, 16], "capacity": 1, "slots": [[21, 16]],
+     "activities": [
+       {"id": "storytell", "label": "說書", "emoji": "📜", "minutes": 60, "roles": ["lao-han"], "needs": {"boredom": -15, "fatigue": 4}, "requires": {"timeOfDay": [480, 1200]}}
+     ]},
+    {"id": "anvil", "name": "鐵砧", "place": "smithy", "tile": [19, 28], "capacity": 1, "slots": [[19, 28]],
+     "activities": [
+       {"id": "smith", "label": "打鐵", "emoji": "🔨", "minutes": 60, "roles": ["shi-hu"], "needs": {"fatigue": 5, "boredom": -5}, "requires": {"timeOfDay": [360, 1140]}}
+     ]},
+    {"id": "medicine-chest", "name": "藥櫃", "place": "pharmacy", "tile": [26, 15], "capacity": 1, "slots": [[26, 15]],
+     "activities": [
+       {"id": "dispense", "label": "抓藥", "emoji": "🌿", "minutes": 60, "roles": ["he-langzhong"], "needs": {"fatigue": 2, "boredom": -5}, "requires": {"timeOfDay": [360, 1140]}},
+       {"id": "consult", "label": "看診", "emoji": "🩺", "minutes": 60, "roles": ["he-langzhong"], "needs": {"fatigue": 3, "boredom": -8}, "requires": {"timeOfDay": [360, 1140]}}
+     ]},
+    {"id": "tea-stove", "name": "茶爐", "place": "teahouse", "tile": [21, 17], "capacity": 1, "slots": [[21, 17]],
+     "activities": [
+       {"id": "brew_tea", "label": "煮茶", "emoji": "🫖", "minutes": 60, "roles": ["lin-sao"], "needs": {"fatigue": 3, "boredom": -8}, "requires": {"timeOfDay": [360, 1200]}}
+     ]},
+    {"id": "river-stones", "name": "河邊石", "place": "river", "tile": [15, 12], "capacity": 3, "slots": [[12, 12], [15, 12], [18, 12]],
+     "activities": [
+       {"id": "wash_clothes", "label": "洗衣", "emoji": "🧺", "minutes": 40, "roles": ["*"], "needs": {"chore": -35, "fatigue": 2}, "requires": {"timeOfDay": [360, 1080]}},
+       {"id": "daydream", "label": "發呆", "emoji": "💭", "minutes": 30, "roles": ["*"], "needs": {"boredom": -20, "fatigue": -6}, "leisure": true}
+     ]},
+    {"id": "bamboo-grove", "name": "竹林", "place": "bamboo", "tile": [17, 7], "capacity": 3, "slots": [[17, 6], [17, 7], [17, 8]],
+     "activities": [
+       {"id": "chop_bamboo", "label": "砍竹", "emoji": "🪓", "minutes": 60, "roles": ["*"], "needs": {"chore": -20, "fatigue": 5}, "gives": {"wood": 3}, "requires": {"timeOfDay": [300, 1140]}}
+     ]}
+  ],
+  "templates": {
+    "@stove": [
+      {"id": "cook", "label": "煮飯", "emoji": "🍳", "minutes": 45, "roles": ["*"], "needs": {"chore": -15}, "consumes": {"water": 1, "wood": 1}, "gives": {"meal": 4}, "requires": {"timeOfDay": [300, 1260]}},
+      {"id": "eat", "label": "吃飯", "emoji": "🍚", "minutes": 30, "roles": ["*"], "needs": {"hunger": -50, "boredom": -5}, "consumes": {"meal": 1}, "requires": {"minGap": 240}, "leisure": true}
+    ],
+    "@bed": [
+      {"id": "sleep", "label": "睡覺", "emoji": "💤", "minutes": 60, "roles": ["*"], "needs": {"fatigue": -20}, "requires": {"timeOfDay": [1260, 420], "scheduledOrNeed": "fatigue"}}
+    ],
+    "@teatable": [
+      {"id": "drink_tea", "label": "喝茶", "emoji": "🍵", "minutes": 40, "roles": ["*"], "needs": {"boredom": -25, "hunger": -3}, "requires": {"timeOfDay": [360, 1230]}, "leisure": true},
+      {"id": "listen_story", "label": "聽書", "emoji": "👂", "minutes": 45, "roles": ["*"], "needs": {"boredom": -35}, "requires": {"whileActive": "storytell"}, "leisure": true}
+    ]
+  }
+}

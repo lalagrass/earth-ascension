@@ -30,7 +30,10 @@ function diffPaths(a: any, b: any, path = '', out: string[] = []): string[] {
 }
 
 export function folkDiff(seed: number, minutes: number) {
-  const off = runHeadless({ seed, minutes, elements: { 'w02-folk': false } });
+  // W3：這是 W2 的隔離測試，w03-life 固定關（W3 自己的開關對照在 life-diff.ts）。
+  // 關掉 w02-folk 時 w03-life 因 requires 也不會生效，A 不受影響；B 要兩邊都關 w03-life 才是「只差 w02-folk」。
+  const W2 = { 'w03-life': false };
+  const off = runHeadless({ seed, minutes, elements: { ...W2, 'w02-folk': false } });
   const offEnabled = Object.keys(off.game.world.wuxia!.enabled);
   const resultA = {
     ok: offEnabled.length === 1 && offEnabled[0] === 'w01-skin' && off.summary.agents === 5,
@@ -38,8 +41,8 @@ export function folkDiff(seed: number, minutes: number) {
     enabled: offEnabled,
     agents: off.summary.agents,
   };
-  const on5 = runHeadless({ seed, minutes, agents: 5 });
-  const off5 = runHeadless({ seed, minutes, agents: 5, elements: { 'w02-folk': false } });
+  const on5 = runHeadless({ seed, minutes, agents: 5, elements: W2 });
+  const off5 = runHeadless({ seed, minutes, agents: 5, elements: { ...W2, 'w02-folk': false } });
   const paths = diffPaths(
     hashableWorld(on5.game.world.serialize()),
     hashableWorld(off5.game.world.serialize()),
@@ -52,7 +55,7 @@ export function folkDiff(seed: number, minutes: number) {
     statsOn: on5.summary.stats,
     statsOff: off5.summary.stats,
   };
-  const on = runHeadless({ seed, minutes });
+  const on = runHeadless({ seed, minutes, elements: W2 });
   const people = (run: ReturnType<typeof runHeadless>) =>
     [...run.game.playerDescriptions.values()].map((d) => `${d.name}(${d.character})`);
   const resultC = {

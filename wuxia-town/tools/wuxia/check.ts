@@ -9,6 +9,7 @@
 // 8.（W2）convex/wuxia/w02_folk/prompts.gen.ts 跟 data/wuxia/prompts/*.txt、anachronisms.txt 同步
 // 9.（W2）w02-folk 開關不改規則：folk-diff A/B（關＝W1、同樣 5 人開／關只差 enabled 旗標）
 // 10.（W2）convex/ 底下的路徑只用英數、底線、句點（Convex 部署的限制；w01-skin 目錄曾因此無法部署）
+// 11.（W3）life-diff A/B/C：關＝W2、開 3 日作息與預約／卡住／挨餓檢查、關掉沒有作息
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
@@ -16,6 +17,7 @@ import { readJournal, replayJournal } from './replay';
 import { skinDiff } from './skin-diff';
 import { promptsInSync } from './gen-prompts';
 import { folkDiff } from './folk-diff';
+import { lifeDiff } from './life-diff';
 import { quietConsole } from './sim';
 
 const ROOT = new URL('../..', import.meta.url).pathname;
@@ -171,6 +173,20 @@ else fail('prompts.gen.ts 不同步：請執行 npm run wuxia:gen-prompts');
     .filter((f) => f.split('/').some((c) => !/^[A-Za-z0-9_.]+$/.test(c)));
   if (badPaths.length === 0) ok('convex/ 的路徑都符合 Convex 模組命名（英數、底線、句點）');
   else fail(`convex/ 有 Convex 不接受的路徑：${badPaths.join(', ')}`);
+}
+
+// 11
+{
+  const r = lifeDiff(7, 3, Number(MINUTES));
+  if (r.resultA.ok) ok(`life-diff A：w03-life 關＝W2 世界 hash ${r.resultA.hash}`);
+  else fail(`life-diff A：w03-life 關的世界不是 W2 ${JSON.stringify(r.resultA)}`);
+  if (r.resultB.ok)
+    ok(
+      `life-diff B：開 3 日 hash ${r.resultB.hash}，第 2、3 日作息全過、預約 ≤ capacity、最長選不到事做 ${r.resultB.stuck} 分、最長 hunger>90 ${r.resultB.hungry} 分`,
+    );
+  else fail(`life-diff B：${r.resultB.fails.join('；')}`);
+  if (r.resultC.ok) ok(`life-diff C：關 3 日 hash ${r.resultC.hash}，沒有作息規律`);
+  else fail(`life-diff C：關掉 w03-life 仍有睡覺／吃飯 ${r.resultC.rows.join('；')}`);
 }
 
 if (failures) {

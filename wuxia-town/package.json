@@ -22,6 +22,8 @@
     "wuxia:folk-diff": "tsx tools/wuxia/folk-diff.ts",
     "wuxia:gen-prompts": "tsx tools/wuxia/gen-prompts.ts",
     "wuxia:sample-dialogue": "tsx tools/wuxia/sample-dialogue.ts",
+    "wuxia:day-report": "tsx tools/wuxia/day-report.ts",
+    "wuxia:life-diff": "tsx tools/wuxia/life-diff.ts",
     "wuxia:check": "npm test && tsx tools/wuxia/check.ts"
   },
   "dependencies": {

@@ -1,5 +1,6 @@
 // 武俠小鎮 W0：無頭模擬（#549 第 5 節）。
 // 用法：npm run wuxia:headless -- --seed 7 --minutes 30 --out /tmp/a.json [--journal x.jsonl] [--agents 5] [--verbose]
+//        [--days 3]（W3：跑 3 個遊戲日，輸出含每人時間表與生活檢查，給 wuxia:day-report）
 //        [--off w01-skin] [--on id,id]（覆寫 world.config.json 的元素開關）[--map town|gentle]（只給對照實驗用）
 //        [--state out.json]（W1：匯出最後狀態給 wuxia:shot 用）
 // 從 data/wuxia/ 與上游預設地圖建初始世界 → 每 step 呼叫 simulateStep、餵 inputs、跑 ticks →
@@ -22,6 +23,8 @@ import { serializedMapFor } from '../../convex/wuxia/w01_skin';
 import { makeRng } from '../../convex/wuxia/rng';
 import { conversationTemplate } from '../../convex/wuxia/templates';
 import { gameMinutes, readClock } from '../../convex/wuxia/clock';
+import { LifeTracer, conversationPlaceStats } from './life-trace';
+import { W03_LIFE, LifeState } from '../../convex/wuxia/w03_life';
 import {
   JournalInput,
   JournalStep,
@@ -47,6 +50,8 @@ export type HeadlessOptions = {
   map?: 'town' | 'gentle';
   /** W1：跑到遊戲時鐘到達這個遊戲分鐘為止（取代 minutes；需要有元素開啟才有時鐘） */
   untilGameMinute?: number;
+  /** W3：記錄每人每遊戲分鐘的地點與活動（day-report 用）；--days 時自動開 */
+  trace?: boolean;
 };
 
 export function initialSnapshot(opts: HeadlessOptions): Snapshot {
@@ -133,6 +138,7 @@ export function runHeadless(opts: HeadlessOptions) {
   const steps: JournalStep[] = [];
   const checkpoints: Array<{ step: number; t: number; hash: string }> = [];
   const traces = new Map<string, Array<{ x: number; y: number }>>();
+  const tracer = opts.trace ? new LifeTracer() : undefined;
 
   const nameOf = (playerId: string) =>
     game.playerDescriptions.get(playerId as any)?.name ?? playerId;
@@ -263,6 +269,7 @@ export function runHeadless(opts: HeadlessOptions) {
         throw new Error(`headless: unknown operation ${op.name}`);
       }
     }
+    tracer?.sample(game, now);
     for (const p of game.world.players.values()) {
       const t = traces.get(p.id) ?? [];
       t.push({ x: p.position.x, y: p.position.y });
@@ -313,8 +320,29 @@ export function runHeadless(opts: HeadlessOptions) {
     checkpoints,
     players,
     sampleMessages: messages.slice(0, 10),
+    // W3：生活時間表與全程檢查（--days 或 trace 時才有）
+    life: tracer
+      ? {
+          on: !!game.world.wuxia!.enabled[W03_LIFE],
+          days: opts.untilGameMinute === undefined ? undefined : opts.untilGameMinute / 1440,
+          checks: tracer.checks,
+          timeline: tracer.timeline,
+          finalNeeds: lifeSummary(game),
+          logTail: ((game.world.wuxia!.elements[W03_LIFE] as LifeState | undefined)?.log ?? []).slice(-20),
+          conversations: conversationPlaceStats(tracer.conversations),
+        }
+      : undefined,
   };
   return { snapshot, queue, steps, summary, finalHash, traces, game, messages };
+}
+
+function lifeSummary(game: any) {
+  const life = game.world.wuxia?.elements?.[W03_LIFE] as LifeState | undefined;
+  if (!life) return undefined;
+  return {
+    people: Object.values(life.people).map((p) => ({ cid: p.cid, needs: p.needs, cur: p.cur?.act })),
+    stock: life.stock,
+  };
 }
 
 /** 自製的軌跡圖（SVG）：灰格是地圖上不能走的物件格，彩線是每個人的移動軌跡。不含任何上游美術。 */
@@ -423,7 +451,13 @@ function main() {
     agents: args.agents === undefined ? undefined : Number(args.agents),
     elements,
     map: args.map === undefined ? undefined : args.map === 'town' ? 'town' : 'gentle',
-    untilGameMinute: args['game-minute'] === undefined ? undefined : Number(args['game-minute']),
+    untilGameMinute:
+      args.days !== undefined
+        ? Number(args.days) * 1440
+        : args['game-minute'] === undefined
+          ? undefined
+          : Number(args['game-minute']),
+    trace: args.days !== undefined || !!args.trace,
   };
   if (
     !Number.isFinite(opts.seed) ||
