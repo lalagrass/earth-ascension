@@ -315,6 +315,8 @@ export const agentSendMessage = internalMutation({
     agentId,
     playerId,
     text: v.string(),
+    // WUXIA-PATCH(W2): 用詞守門結果（w02-folk 開啟時才有）
+    metadata: v.optional(v.any()),
     messageUuid: v.string(),
     leaveConversation: v.boolean(),
     operationId: v.string(),
@@ -324,6 +326,8 @@ export const agentSendMessage = internalMutation({
       conversationId: args.conversationId,
       author: args.playerId,
       text: args.text,
+      // WUXIA-PATCH(W2): 守門 metadata 跟訊息存在一起
+      ...(args.metadata === undefined ? {} : { metadata: args.metadata }),
       messageUuid: args.messageUuid,
       worldId: args.worldId,
     });

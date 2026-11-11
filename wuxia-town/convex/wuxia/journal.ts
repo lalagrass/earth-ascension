@@ -99,11 +99,14 @@ export const messages = internalQuery({
       .collect()) {
       names.set(d.playerId, d.name);
     }
+    // W2：多帶 authorId 與守門 metadata（sample-dialogue 用）
     return rows.map((m) => ({
       at: m._creationTime,
       conversationId: m.conversationId,
+      authorId: m.author,
       author: names.get(m.author) ?? m.author,
       text: m.text,
+      metadata: m.metadata,
     }));
   },
 });

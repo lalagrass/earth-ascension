@@ -1,5 +1,5 @@
 {
-  "elements": { "w01-skin": true },
+  "elements": { "w01-skin": true, "w02-folk": true },
   "seed": 7,
   "timeScale": 60,
   "keepAlive": false,

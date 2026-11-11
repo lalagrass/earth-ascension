@@ -34,12 +34,14 @@ function finalWorld(opts: Parameters<typeof runHeadless>[0]) {
 }
 
 export function skinDiff(seed: number, minutes: number) {
+  // W2：這是 W1 的隔離測試，w02-folk 固定關（W2 自己的開關對照在 folk-diff.ts）
   const base = { seed, minutes, agents: 5 };
-  const w0 = finalWorld({ ...base, elements: { 'w01-skin': false } });
+  const W1 = { 'w02-folk': false };
+  const w0 = finalWorld({ ...base, elements: { ...W1, 'w01-skin': false } });
   // W0 原本的設定：沒有任何元素（world.config.json 在 W0 是 "elements": {}）
   const off = w0;
-  const onSameMap = finalWorld({ ...base, elements: { 'w01-skin': true }, map: 'gentle' });
-  const on = finalWorld({ ...base, elements: { 'w01-skin': true } });
+  const onSameMap = finalWorld({ ...base, elements: { ...W1, 'w01-skin': true }, map: 'gentle' });
+  const on = finalWorld({ ...base, elements: { ...W1, 'w01-skin': true } });
 
   const enabledOff = Object.keys((off.world as any).wuxia.enabled);
   const resultA = { ok: enabledOff.length === 0, hash: off.hash, enabled: enabledOff };

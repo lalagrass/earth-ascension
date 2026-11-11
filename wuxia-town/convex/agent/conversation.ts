@@ -10,6 +10,55 @@ import { NUM_MEMORIES_TO_SEARCH } from '../constants';
 // WUXIA-PATCH(W0): 走 LLM_DAILY_TOKEN_CAP 預算；超過或失敗用模板句
 import { budgetedChatCompletion } from '../wuxia/llmBudget';
 import { conversationTemplate } from '../wuxia/templates';
+// WUXIA-PATCH(W2): w02-folk 開啟時改用繁中古風 prompt（data/wuxia/prompts/）、用詞守門、人物模板句
+import { folkTemplate, Stage, W02_FOLK } from '../wuxia/w02-folk';
+import { guardedReply, GuardMetadata } from '../wuxia/w02-folk/guard';
+import {
+  folkCue,
+  folkLine,
+  folkRetryPrompt,
+  folkStopWords,
+  folkSystemPrompt,
+} from '../wuxia/w02-folk/prompt';
+import { isEnabled } from '../wuxia/registry';
+import { BudgetKind } from '../wuxia/llmBudget';
+
+// WUXIA-PATCH(W2): 回傳文字＋守門 metadata（w02-folk 關閉時 metadata 為 undefined）
+export type GeneratedMessage = { text: string; metadata?: GuardMetadata };
+
+/** 第一次生成超過這個毫秒數就不重抽、直接用模板句（規則不等 LLM）。環境變數 WUXIA_GUARD_RETRY_MS 可調。 */
+const GUARD_RETRY_MS = 30_000;
+
+// WUXIA-PATCH(W2): w02-folk 的生成：守門 → 重抽一次 → 模板句
+async function folkGenerate(
+  ctx: ActionCtx,
+  kind: BudgetKind,
+  stage: Stage,
+  messages: LLMMessage[],
+  speaker: string,
+  other: string,
+): Promise<GeneratedMessage> {
+  const start = Date.now();
+  const budgetMs = Number(process.env.WUXIA_GUARD_RETRY_MS) || GUARD_RETRY_MS;
+  const cue = folkCue(speaker, other);
+  return await guardedReply({
+    speaker,
+    generate: async (retryReasons) => {
+      const msgs: LLMMessage[] = [...messages];
+      if (retryReasons) msgs.push({ role: 'user', content: folkRetryPrompt(retryReasons) });
+      msgs.push({ role: 'user', content: cue });
+      const { content, fallback } = await budgetedChatCompletion(
+        ctx,
+        kind,
+        { messages: msgs, max_tokens: 150, stop: folkStopWords(speaker, other) },
+        '',
+      );
+      return { content: trimContentPrefx(content, cue), fallback };
+    },
+    template: () => folkTemplate(speaker, stage, Math.random(), { other }),
+    retryAllowed: () => Date.now() - start < budgetMs,
+  });
+}
 
 const selfInternal = internal.agent.conversation;
 
@@ -19,8 +68,8 @@ export async function startConversationMessage(
   conversationId: GameId<'conversations'>,
   playerId: GameId<'players'>,
   otherPlayerId: GameId<'players'>,
-): Promise<string> {
-  const { player, otherPlayer, agent, otherAgent, lastConversation } = await ctx.runQuery(
+): Promise<GeneratedMessage> {
+  const { player, otherPlayer, agent, otherAgent, lastConversation, wuxiaFolk } = await ctx.runQuery(
     selfInternal.queryPromptData,
     {
       worldId,
@@ -44,6 +93,26 @@ export async function startConversationMessage(
   const memoryWithOtherPlayer = memories.find(
     (m) => m.data.type === 'conversation' && m.data.playerIds.includes(otherPlayerId),
   );
+  // WUXIA-PATCH(W2): w02-folk 開啟時用繁中古風 prompt＋守門
+  if (wuxiaFolk) {
+    const system = folkSystemPrompt({
+      stage: 'start',
+      player,
+      otherPlayer,
+      agent,
+      otherAgent: otherAgent ?? null,
+      hasMemories: memories.length > 0,
+      memoryWithOtherPlayer: !!memoryWithOtherPlayer,
+    });
+    return await folkGenerate(
+      ctx,
+      'conversation.start',
+      'start',
+      [{ role: 'system', content: system }, ...relatedMemoriesMessages(memories)],
+      player.name,
+      otherPlayer.name,
+    );
+  }
   const prompt = [
     `You are ${player.name}, and you just started a conversation with ${otherPlayer.name}.`,
   ];
@@ -76,7 +145,8 @@ export async function startConversationMessage(
     },
     conversationTemplate('start', Math.random(), { other: otherPlayer.name }),
   );
-  return trimContentPrefx(content, lastPrompt);
+  // WUXIA-PATCH(W2): 回傳型別改成 GeneratedMessage
+  return { text: trimContentPrefx(content, lastPrompt) };
 }
 
 function trimContentPrefx(content: string, prompt: string) {
@@ -92,8 +162,8 @@ export async function continueConversationMessage(
   conversationId: GameId<'conversations'>,
   playerId: GameId<'players'>,
   otherPlayerId: GameId<'players'>,
-): Promise<string> {
-  const { player, otherPlayer, conversation, agent, otherAgent } = await ctx.runQuery(
+): Promise<GeneratedMessage> {
+  const { player, otherPlayer, conversation, agent, otherAgent, wuxiaFolk } = await ctx.runQuery(
     selfInternal.queryPromptData,
     {
       worldId,
@@ -109,6 +179,37 @@ export async function continueConversationMessage(
     `What do you think about ${otherPlayer.name}?`,
   );
   const memories = await memory.searchMemories(ctx, player.id as GameId<'players'>, embedding, 3);
+  // WUXIA-PATCH(W2): w02-folk 開啟時用繁中古風 prompt＋守門
+  if (wuxiaFolk) {
+    const system = folkSystemPrompt({
+      stage: 'continue',
+      player,
+      otherPlayer,
+      agent,
+      otherAgent: otherAgent ?? null,
+      hasMemories: memories.length > 0,
+      memoryWithOtherPlayer: false,
+    });
+    return await folkGenerate(
+      ctx,
+      'conversation.continue',
+      'continue',
+      [
+        { role: 'system', content: system },
+        ...relatedMemoriesMessages(memories),
+        ...(await previousMessages(
+          ctx,
+          worldId,
+          player,
+          otherPlayer,
+          conversation.id as GameId<'conversations'>,
+          folkLine,
+        )),
+      ],
+      player.name,
+      otherPlayer.name,
+    );
+  }
   const prompt = [
     `You are ${player.name}, and you're currently in a conversation with ${otherPlayer.name}.`,
     `The conversation started at ${started.toLocaleString()}. It's now ${now.toLocaleString()}.`,
@@ -148,7 +249,8 @@ export async function continueConversationMessage(
     },
     conversationTemplate('continue', Math.random(), { other: otherPlayer.name }),
   );
-  return trimContentPrefx(content, lastPrompt);
+  // WUXIA-PATCH(W2): 回傳型別改成 GeneratedMessage
+  return { text: trimContentPrefx(content, lastPrompt) };
 }
 
 export async function leaveConversationMessage(
@@ -157,8 +259,8 @@ export async function leaveConversationMessage(
   conversationId: GameId<'conversations'>,
   playerId: GameId<'players'>,
   otherPlayerId: GameId<'players'>,
-): Promise<string> {
-  const { player, otherPlayer, conversation, agent, otherAgent } = await ctx.runQuery(
+): Promise<GeneratedMessage> {
+  const { player, otherPlayer, conversation, agent, otherAgent, wuxiaFolk } = await ctx.runQuery(
     selfInternal.queryPromptData,
     {
       worldId,
@@ -167,6 +269,36 @@ export async function leaveConversationMessage(
       conversationId,
     },
   );
+  // WUXIA-PATCH(W2): w02-folk 開啟時用繁中古風 prompt＋守門
+  if (wuxiaFolk) {
+    const system = folkSystemPrompt({
+      stage: 'leave',
+      player,
+      otherPlayer,
+      agent,
+      otherAgent: otherAgent ?? null,
+      hasMemories: false,
+      memoryWithOtherPlayer: false,
+    });
+    return await folkGenerate(
+      ctx,
+      'conversation.leave',
+      'leave',
+      [
+        { role: 'system', content: system },
+        ...(await previousMessages(
+          ctx,
+          worldId,
+          player,
+          otherPlayer,
+          conversation.id as GameId<'conversations'>,
+          folkLine,
+        )),
+      ],
+      player.name,
+      otherPlayer.name,
+    );
+  }
   const prompt = [
     `You are ${player.name}, and you're currently in a conversation with ${otherPlayer.name}.`,
     `You've decided to leave the question and would like to politely tell them you're leaving the conversation.`,
@@ -203,7 +335,8 @@ export async function leaveConversationMessage(
     },
     conversationTemplate('leave', Math.random(), { other: otherPlayer.name }),
   );
-  return trimContentPrefx(content, lastPrompt);
+  // WUXIA-PATCH(W2): 回傳型別改成 GeneratedMessage
+  return { text: trimContentPrefx(content, lastPrompt) };
 }
 
 function agentPrompts(
@@ -271,6 +404,9 @@ async function previousMessages(
   player: { id: string; name: string },
   otherPlayer: { id: string; name: string },
   conversationId: GameId<'conversations'>,
+  // WUXIA-PATCH(W2): w02-folk 用「某某對某某說：」格式
+  format: (author: string, recipient: string, text: string) => string = (a, r, t) =>
+    `${a} to ${r}: ${t}`,
 ) {
   const llmMessages: LLMMessage[] = [];
   const prevMessages = await ctx.runQuery(api.messages.listMessages, { worldId, conversationId });
@@ -279,7 +415,7 @@ async function previousMessages(
     const recipient = message.author === player.id ? otherPlayer : player;
     llmMessages.push({
       role: 'user',
-      content: `${author.name} to ${recipient.name}: ${message.text}`,
+      content: format(author.name, recipient.name, message.text),
     });
   }
   return llmMessages;
@@ -380,6 +516,8 @@ export const queryPromptData = internalQuery({
         ...otherAgent,
       },
       lastConversation,
+      // WUXIA-PATCH(W2): 開關凍結在 world.wuxia.enabled
+      wuxiaFolk: !!world.wuxia && isEnabled(world.wuxia, W02_FOLK),
     };
   },
 });

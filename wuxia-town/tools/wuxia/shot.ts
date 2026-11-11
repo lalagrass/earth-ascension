@@ -10,7 +10,6 @@ import { existsSync, mkdirSync, statSync, unlinkSync, writeFileSync } from 'node
 import { join, relative, resolve } from 'node:path';
 import { createServer } from 'vite';
 import { chromium } from 'playwright-core';
-import { Descriptions } from '../../data/characters';
 import { exportState, runHeadless } from './headless';
 import { parseArgs, quietConsole } from './sim';
 
@@ -59,8 +58,8 @@ async function main() {
       // 關掉換皮時沒有遊戲時鐘（W0 行為），改用等長的引擎時間：timeScale 60 → 遊戲 60 分鐘 = 引擎 1 分鐘
       const clockless = Object.values(elements).every((v) => !v) && Object.keys(elements).length > 0;
       const run = clockless
-        ? runHeadless({ seed, minutes: Math.max(at, 1) / 60, agents: Descriptions.length, elements })
-        : runHeadless({ seed, minutes: 0, agents: Descriptions.length, untilGameMinute: at, elements });
+        ? runHeadless({ seed, minutes: Math.max(at, 1) / 60, elements })
+        : runHeadless({ seed, minutes: 0, untilGameMinute: at, elements });
       const state = exportState(run);
       const clock = run.summary.clock;
       for (const [w, h] of sizes) {

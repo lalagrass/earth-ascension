@@ -14,6 +14,8 @@ import { Game } from './game';
 import { stopPlayer, findRoute, blocked, movePlayer } from './movement';
 import { inputHandler } from './inputHandler';
 import { characters } from '../../data/characters';
+// WUXIA-PATCH(W2): w02-folk 的人物直接用古裝人物圖名（w1–w8）
+import { folkCharacters } from '../../data/wuxia/characters';
 import { PlayerDescription } from './playerDescription';
 
 const pathfinding = v.object({
@@ -212,7 +214,11 @@ export class Player {
     ];
     // WUXIA-PATCH(W0): 上游的全域亂數改成 game.rng()（種子亂數，可重播）
     const facing = facingOptions[Math.floor(game.rng() * facingOptions.length)];
-    if (!characters.find((c) => c.name === character)) {
+    // WUXIA-PATCH(W2): 也接受古裝人物圖名（data/wuxia/characters.ts）
+    if (
+      !characters.find((c) => c.name === character) &&
+      !folkCharacters.find((c) => c.name === character)
+    ) {
       throw new Error(`Invalid character: ${character}`);
     }
     const playerId = game.allocId('players');

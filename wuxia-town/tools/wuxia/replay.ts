@@ -21,10 +21,12 @@ export type Journal = {
   inputs: JournalInput[];
   steps: JournalStep[];
   final: { hash: string; steps?: number };
+  /** W2：對話訊息（不進狀態 hash，重播不用；sample-dialogue 讀） */
+  messages?: any[];
 };
 
 export function readJournal(path: string): Journal {
-  const j: Partial<Journal> = { inputs: [], steps: [] };
+  const j: Partial<Journal> = { inputs: [], steps: [], messages: [] };
   for (const line of readFileSync(path, 'utf8').split('\n')) {
     if (!line.trim()) continue;
     const { type, ...rec } = JSON.parse(line);
@@ -33,6 +35,7 @@ export function readJournal(path: string): Journal {
     else if (type === 'input') j.inputs!.push(rec as JournalInput);
     else if (type === 'step') j.steps!.push(rec as JournalStep);
     else if (type === 'final') j.final = rec as any;
+    else if (type === 'message') j.messages!.push(rec);
     else throw new Error(`unknown journal record type ${type}`);
   }
   if (!j.snapshot || !j.final) throw new Error(`${path}: missing snapshot or final record`);

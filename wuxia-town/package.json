@@ -19,6 +19,9 @@
     "wuxia:hash": "tsx tools/wuxia/hash.ts",
     "wuxia:skin-diff": "tsx tools/wuxia/skin-diff.ts",
     "wuxia:shot": "tsx tools/wuxia/shot.ts",
+    "wuxia:folk-diff": "tsx tools/wuxia/folk-diff.ts",
+    "wuxia:gen-prompts": "tsx tools/wuxia/gen-prompts.ts",
+    "wuxia:sample-dialogue": "tsx tools/wuxia/sample-dialogue.ts",
     "wuxia:check": "npm test && tsx tools/wuxia/check.ts"
   },
   "dependencies": {

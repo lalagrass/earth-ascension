@@ -52,6 +52,15 @@
 | W1 | `src/components/FreezeButton.tsx` | 「暫停／繼續」、自製圖示 | 介面繁中；上游圖示不在 repo |
 | W1 | `src/components/buttons/InteractButton.tsx` | 「進鎮／離開」、自製圖示 | 同上 |
 | W1 | `src/components/buttons/MusicButton.tsx` | 自製圖示、繁中提示 | 同上 |
+| W2 | `convex/aiTown/agentInputs.ts` | `createAgent` 的人物改用 `descriptionsFor(w02-folk 是否開)`（開：`data/wuxia/characters.json`；關：上游 `Descriptions`），開關讀 `world.wuxia.enabled` | #554 範圍 1；重播不讀設定檔 |
+| W2 | `convex/init.ts` | 建人物的人數改用同一份人物表（開 6 人、關 5 人） | 同上 |
+| W2 | `convex/aiTown/player.ts` | `Player.join` 的人物圖檢查也接受古裝人物圖名（`data/wuxia/characters.ts` 的 w1–w8） | 鎮民直接用 W1 的古裝人物圖 |
+| W2 | `convex/agent/conversation.ts` | w02-folk 開時 start／continue／leave 改用 `data/wuxia/prompts/*.txt` 組的繁中古風 prompt（人物 voice／taboo、每句 40 字、不知現代事物）、過用詞守門（重抽一次→人物模板句）；三個函式改回傳 `{ text, metadata }`；`queryPromptData` 多回傳 `wuxiaFolk`；`previousMessages` 可指定行格式 | #554 範圍 2、3 |
+| W2 | `convex/agent/memory.ts` | w02-folk 開時記憶摘要的 prompt、對話行、`摘要：` 提示與記憶描述改繁中；`loadConversation` 多回傳 `wuxiaFolk` | #554「不做」：記憶摘要的 prompt 也改繁中（邏輯不變） |
+| W2 | `convex/aiTown/agentOperations.ts` | `agentGenerateMessage` 把守門 `metadata` 傳給 `agentSendMessage` | 守門結果記在訊息上 |
+| W2 | `convex/aiTown/agent.ts` | `agentSendMessage` 多收 `metadata`（選填），寫進 `messages` | 同上 |
+| W2 | `convex/schema.ts` | `messages` 表加 `metadata: v.optional(v.any())` | 同上 |
+| W2 | `package.json`（JSON 無法加註解） | `wuxia:folk-diff`、`wuxia:gen-prompts`、`wuxia:sample-dialogue` 指令 | #554 驗收工具 |
 
 ## 上游刻意保留不改的隨機／時間
 

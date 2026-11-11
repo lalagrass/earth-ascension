@@ -14,6 +14,10 @@ import {
   MEMORY_REFLECTION_FALLBACK,
   MEMORY_SUMMARY_TEMPLATE,
 } from '../wuxia/templates';
+// WUXIA-PATCH(W2): w02-folk 開啟時記憶摘要的 prompt 改繁中（data/wuxia/prompts/memory-summary*.txt）
+import { renderPrompt, W02_FOLK } from '../wuxia/w02-folk';
+import { folkLine, folkMemorySummaryPrompt } from '../wuxia/w02-folk/prompt';
+import { isEnabled } from '../wuxia/registry';
 
 // How long to wait before updating a memory's last access time.
 export const MEMORY_ACCESS_THROTTLE = 300_000; // In ms
@@ -46,10 +50,14 @@ export async function rememberConversation(
     return;
   }
 
+  // WUXIA-PATCH(W2): w02-folk 開啟時用繁中 prompt
+  const folk = data.wuxiaFolk;
   const llmMessages: LLMMessage[] = [
     {
       role: 'user',
-      content: `You are ${player.name}, and you just finished a conversation with ${otherPlayer.name}. I would
+      content: folk
+        ? folkMemorySummaryPrompt(player.name, otherPlayer.name)
+        : `You are ${player.name}, and you just finished a conversation with ${otherPlayer.name}. I would
       like you to summarize the conversation from ${player.name}'s perspective, using first-person pronouns like
       "I," and add if you liked or disliked this interaction.`,
     },
@@ -61,10 +69,14 @@ export async function rememberConversation(
     const recipient = message.author === player.id ? otherPlayer : player;
     llmMessages.push({
       role: 'user',
-      content: `${author.name} to ${recipient.name}: ${message.text}`,
+      // WUXIA-PATCH(W2): w02-folk 用「某某對某某說：」格式
+      content: folk
+        ? folkLine(author.name, recipient.name, message.text)
+        : `${author.name} to ${recipient.name}: ${message.text}`,
     });
   }
-  llmMessages.push({ role: 'user', content: 'Summary:' });
+  // WUXIA-PATCH(W2): w02-folk 用「摘要：」
+  llmMessages.push({ role: 'user', content: folk ? renderPrompt('memory-summary-cue', {}) : 'Summary:' });
   // WUXIA-PATCH(W0): chatCompletion → budgetedChatCompletion（模板句後備）
   const { content } = await budgetedChatCompletion(
     ctx,
@@ -75,9 +87,12 @@ export async function rememberConversation(
     },
     MEMORY_SUMMARY_TEMPLATE.replace('{other}', otherPlayer.name),
   );
-  const description = `Conversation with ${otherPlayer.name} at ${new Date(
-    data.conversation._creationTime,
-  ).toLocaleString()}: ${content}`;
+  // WUXIA-PATCH(W2): w02-folk 的記憶描述用繁中
+  const description = folk
+    ? `與${otherPlayer.name}的談話：${content}`
+    : `Conversation with ${otherPlayer.name} at ${new Date(
+        data.conversation._creationTime,
+      ).toLocaleString()}: ${content}`;
   // WUXIA-PATCH(W0): 多傳 ctx 給預算檢查
   const importance = await calculateImportance(ctx, description);
   const { embedding } = await fetchEmbedding(description);
@@ -165,6 +180,8 @@ export const loadConversation = internalQuery({
       player: { ...player, name: playerDescription.name },
       conversation,
       otherPlayer: { ...otherPlayer, name: otherPlayerDescription.name },
+      // WUXIA-PATCH(W2): 開關凍結在 world.wuxia.enabled
+      wuxiaFolk: !!world.wuxia && isEnabled(world.wuxia, W02_FOLK),
     };
   },
 });

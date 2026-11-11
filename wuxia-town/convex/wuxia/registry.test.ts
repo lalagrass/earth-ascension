@@ -21,10 +21,23 @@ describe('wuxia element registry', () => {
     expect(enabledElements(state)).toEqual([]);
     expect(state.enabled).toEqual({});
   });
-  test('W1 default config enables exactly w01-skin; disabled flags are not stored', () => {
-    const state = initWuxiaState();
+  // W2 起預設設定多開 w02-folk（#554）；W1 的設定（只開 w01-skin）仍然只開 w01-skin。
+  test('W1 config enables exactly w01-skin; disabled flags are not stored', () => {
+    const state = initWuxiaState({ elements: { 'w01-skin': true }, seed: 7, timeScale: 60 });
     expect(enabledElements(state).map((e) => e.id)).toEqual(['w01-skin']);
     expect(initWuxiaState({ elements: { 'w01-skin': false }, seed: 7, timeScale: 60 }).enabled).toEqual({});
+  });
+  test('W2 default config enables w01-skin and w02-folk', () => {
+    expect(enabledElements(initWuxiaState()).map((e) => e.id)).toEqual(['w01-skin', 'w02-folk']);
+  });
+  test('w02-folk requires w01-skin: turning the skin off drops folk from the frozen flags', () => {
+    const state = initWuxiaState({
+      elements: { 'w01-skin': false, 'w02-folk': true },
+      seed: 7,
+      timeScale: 60,
+    });
+    expect(state.enabled).toEqual({});
+    expect(enabledElements(state)).toEqual([]);
   });
   test('clock epoch is set on the first tick only when some element is enabled', () => {
     const off = initWuxiaState({ elements: {}, seed: 1, timeScale: 60 });

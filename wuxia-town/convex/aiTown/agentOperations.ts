@@ -69,7 +69,8 @@ export const agentGenerateMessage = internalAction({
       default:
         assertNever(args.type);
     }
-    const text = await completionFn(
+    // WUXIA-PATCH(W2): 生成結果帶守門 metadata（guard: pass|retry|template）
+    const { text, metadata } = await completionFn(
       ctx,
       args.worldId,
       args.conversationId as GameId<'conversations'>,
@@ -83,6 +84,7 @@ export const agentGenerateMessage = internalAction({
       agentId: args.agentId,
       playerId: args.playerId,
       text,
+      metadata,
       messageUuid: args.messageUuid,
       leaveConversation: args.type === 'leave',
       operationId: args.operationId,

@@ -19,6 +19,8 @@ export default defineSchema({
     author: playerId,
     text: v.string(),
     worldId: v.optional(v.id('worlds')),
+    // WUXIA-PATCH(W2): 用詞守門 metadata（{ guard: 'pass'|'retry'|'template', reasons, attempts, cause }）
+    metadata: v.optional(v.any()),
   })
     .index('conversationId', ['worldId', 'conversationId'])
     .index('messageUuid', ['conversationId', 'messageUuid']),

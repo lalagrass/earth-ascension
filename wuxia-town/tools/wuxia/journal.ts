@@ -61,6 +61,22 @@ function exportJournal(worldId: string | undefined, outPath: string, note?: stri
     if (page.length < PAGE) break;
   }
   const current = convexRun('wuxia/journal:currentHash', { worldId });
+  // W2：對話訊息（含守門 metadata）也寫進 journal；不進狀態 hash，重播時略過，只給 sample-dialogue 讀
+  const messages: any[] = convexRun('wuxia/journal:messages', { worldId }) ?? [];
+  messages.sort((a, b) => a.at - b.at);
+  const byConversation = new Map<string, any[]>();
+  for (const m of messages) {
+    const list = byConversation.get(m.conversationId) ?? [];
+    list.push(m);
+    byConversation.set(m.conversationId, list);
+  }
+  for (const list of byConversation.values()) {
+    const authors = [...new Set(list.map((m) => m.author))];
+    list.forEach((m, i) => {
+      m.to = authors.find((a) => a !== m.author) ?? null;
+      m.index = i;
+    });
+  }
   const last = steps[steps.length - 1];
   const lines = [
     JSON.stringify({
@@ -75,13 +91,14 @@ function exportJournal(worldId: string | undefined, outPath: string, note?: stri
     }),
     JSON.stringify({ type: 'snapshot', ...snapshot }),
     ...inputs.map((i) => JSON.stringify({ type: 'input', ...i })),
+    ...messages.map((m) => JSON.stringify({ type: 'message', ...m })),
     ...steps.map((s) => JSON.stringify({ type: 'step', ...s })),
     JSON.stringify({ type: 'final', hash: last.hash, steps: steps.length }),
   ];
   mkdirSync(dirname(outPath), { recursive: true });
   writeFileSync(outPath, lines.join('\n') + '\n');
   process.stdout.write(
-    `exported ${steps.length} steps, ${inputs.length} inputs → ${outPath}\nfinal ${last.hash}\ndb    ${current.hash}\n`,
+    `exported ${steps.length} steps, ${inputs.length} inputs, ${messages.length} messages → ${outPath}\nfinal ${last.hash}\ndb    ${current.hash}\n`,
   );
 }
 

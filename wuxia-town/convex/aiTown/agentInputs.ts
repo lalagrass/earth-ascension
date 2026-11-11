@@ -5,7 +5,9 @@ import { Conversation, conversationInputs } from './conversation';
 import { movePlayer } from './movement';
 import { inputHandler } from './inputHandler';
 import { point } from '../util/types';
-import { Descriptions } from '../../data/characters';
+// WUXIA-PATCH(W2): 人物改由 w02-folk 開關決定（開：data/wuxia/characters.json；關：上游 data/characters.ts）
+import { descriptionsFor, W02_FOLK } from '../wuxia/w02-folk';
+import { isEnabled } from '../wuxia/registry';
 import { AgentDescription } from './agentDescription';
 import { Agent } from './agent';
 
@@ -121,7 +123,9 @@ export const agentInputs = {
       descriptionIndex: v.number(),
     },
     handler: (game, now, args) => {
-      const description = Descriptions[args.descriptionIndex];
+      // WUXIA-PATCH(W2): 開關凍結在 world.wuxia.enabled（重播不讀設定檔）
+      const folkOn = !!game.world.wuxia && isEnabled(game.world.wuxia, W02_FOLK);
+      const description = descriptionsFor(folkOn)[args.descriptionIndex];
       const playerId = Player.join(
         game,
         now,

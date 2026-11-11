@@ -1,6 +1,7 @@
 // 武俠小鎮 W0：world 文件上的 `wuxia` 欄位（#549 第 2、4 節）。
 import worldConfig from '../../data/wuxia/world.config.json';
 import { RngState, seedRng } from './rng';
+import { ELEMENTS } from './registry';
 
 export type WuxiaConfig = {
   /** 元素開關，鍵是元素 id（例如 "w03-life"）。沒列到的元素視為關閉。 */
@@ -40,8 +41,29 @@ export function initWuxiaState(config: WuxiaConfig = defaultWuxiaConfig): WuxiaS
     seed: config.seed,
     timeScale: config.timeScale,
     // W1：只記開啟的元素（沒列到＝關閉）。關掉 w01-skin 的世界因此跟 W0 的世界逐位元組相同。
-    enabled: Object.fromEntries(Object.entries(config.elements).filter(([, on]) => on === true)),
+    enabled: pruneUnmetRequires(
+      Object.fromEntries(Object.entries(config.elements).filter(([, on]) => on === true)),
+    ),
     rng: seedRng(config.seed),
     elements: {},
   };
+}
+
+/**
+ * W2：只凍結「真的會生效」的元素。已登記的元素若 requires 沒開（例如關掉 w01-skin 時的 w02-folk），
+ * 就不記進 enabled，這樣 `--off w01-skin` 的世界仍跟 W0 逐位元組相同。未登記的 id 原樣保留。
+ */
+export function pruneUnmetRequires(enabled: Record<string, boolean>): Record<string, boolean> {
+  const out = { ...enabled };
+  for (let changed = true; changed; ) {
+    changed = false;
+    for (const id of Object.keys(out)) {
+      const element = ELEMENTS.find((e) => e.id === id);
+      if (element && !(element.requires ?? []).every((r) => out[r])) {
+        delete out[id];
+        changed = true;
+      }
+    }
+  }
+  return out;
 }

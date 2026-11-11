@@ -7,7 +7,6 @@
 // --minutes 是引擎時間（牆鐘分鐘，1 step = 1 秒），不是遊戲時辰。
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
-import { Descriptions } from '../../data/characters';
 import { WorldMap } from '../../convex/aiTown/worldMap';
 import {
   ACTIVITIES,
@@ -17,7 +16,8 @@ import {
 } from '../../convex/constants';
 import { distance } from '../../convex/util/geometry';
 import { initWuxiaState, defaultWuxiaConfig } from '../../convex/wuxia/state';
-import { initElements } from '../../convex/wuxia/registry';
+import { initElements, isEnabled } from '../../convex/wuxia/registry';
+import { descriptionsFor, folkTemplate, W02_FOLK } from '../../convex/wuxia/w02-folk';
 import { serializedMapFor } from '../../convex/wuxia/w01-skin';
 import { makeRng } from '../../convex/wuxia/rng';
 import { conversationTemplate } from '../../convex/wuxia/templates';
@@ -39,7 +39,8 @@ export const STEP_MS = 1000;
 export type HeadlessOptions = {
   seed: number;
   minutes: number;
-  agents: number;
+  /** 人數；不給就是人物表的人數（W2 w02-folk 開：6；關：上游 5） */
+  agents?: number;
   /** 覆寫 world.config.json 的元素開關（例如 { 'w01-skin': false }） */
   elements?: Record<string, boolean>;
   /** 對照實驗用：強制用某張地圖，不管 w01-skin 開關 */
@@ -73,11 +74,26 @@ export function initialSnapshot(opts: HeadlessOptions): Snapshot {
   };
 }
 
+export type HeadlessMessage = {
+  t: number;
+  conversationId: string;
+  author: string;
+  to: string;
+  stage: 'start' | 'continue' | 'leave';
+  text: string;
+  /** W2：跟 live 訊息的 metadata 同形狀；無頭模擬一律是模板句 */
+  metadata: { guard: 'template'; reasons: string[][]; attempts: number; cause: 'headless' };
+};
+
 type Pending = { received: number; seq: number; name: string; args: any };
 
 export function runHeadless(opts: HeadlessOptions) {
   const snapshot = initialSnapshot(opts);
   const game = createGame(snapshot);
+  // W2：w02-folk 開時人物用 data/wuxia/characters.json、模板句依人物口吻（data/wuxia/templates/）
+  const folkOn = isEnabled(snapshot.gameState.world.wuxia, W02_FOLK);
+  const descriptions = descriptionsFor(folkOn);
+  const agents = opts.agents ?? descriptions.length;
   // 規則替身（取代 action）自己的亂數，跟引擎的 game.rng() 分開。
   const actionRng = makeRng(opts.seed * 7919 + 1);
   const delay = (min: number, max: number) => Math.floor(min + actionRng() * (max - min));
@@ -97,13 +113,14 @@ export function runHeadless(opts: HeadlessOptions) {
   };
 
   // 跟 init.ts 一樣：世界建好後送 createAgent。
-  for (let i = 0; i < opts.agents; i++) {
-    schedule(HEADLESS_EPOCH, 'createAgent', { descriptionIndex: i % Descriptions.length });
+  for (let i = 0; i < agents; i++) {
+    schedule(HEADLESS_EPOCH, 'createAgent', { descriptionIndex: i % descriptions.length });
   }
 
   // participatedTogether 的替身（findConversationCandidate 要用）
   const lastTogether = new Map<string, number>();
-  const messages: Array<{ t: number; conversationId: string; author: string; text: string }> = [];
+  const messages: HeadlessMessage[] = [];
+  const lastLine = new Map<string, string>();
   const stats = {
     inputs: 0,
     operations: {} as Record<string, number>,
@@ -210,14 +227,23 @@ export function runHeadless(opts: HeadlessOptions) {
       } else if (op.name === 'agentGenerateMessage') {
         // LLM 的替身：模板句，延遲 1～3 秒
         const sent = now + delay(1000, 3000);
-        const text = conversationTemplate(args.type, actionRng(), {
-          other: nameOf(args.otherPlayerId),
-        });
+        const speaker = nameOf(args.playerId);
+        const other = nameOf(args.otherPlayerId);
+        // 每則訊息只抽一次 actionRng()（開關不改 rng 消耗，見 folk-diff）
+        const r = actionRng();
+        const prev = lastLine.get(`${args.conversationId}|${speaker}`);
+        const text = folkOn
+          ? folkTemplate(speaker, args.type, r, { other }, prev)
+          : conversationTemplate(args.type, r, { other });
+        lastLine.set(`${args.conversationId}|${speaker}`, text);
         messages.push({
           t: sent,
           conversationId: args.conversationId,
-          author: nameOf(args.playerId),
+          author: speaker,
+          to: other,
+          stage: args.type,
           text,
+          metadata: { guard: 'template', reasons: [], attempts: 0, cause: 'headless' },
         });
         stats.messages++;
         schedule(sent, 'agentFinishSendingMessage', {
@@ -265,7 +291,7 @@ export function runHeadless(opts: HeadlessOptions) {
     version: 1,
     seed: opts.seed,
     minutes: opts.minutes,
-    agents: opts.agents,
+    agents,
     epoch: HEADLESS_EPOCH,
     steps: steps.length,
     finalHash,
@@ -288,7 +314,7 @@ export function runHeadless(opts: HeadlessOptions) {
     players,
     sampleMessages: messages.slice(0, 10),
   };
-  return { snapshot, queue, steps, summary, finalHash, traces, game };
+  return { snapshot, queue, steps, summary, finalHash, traces, game, messages };
 }
 
 /** 自製的軌跡圖（SVG）：灰格是地圖上不能走的物件格，彩線是每個人的移動軌跡。不含任何上游美術。 */
@@ -371,12 +397,15 @@ export function journalLines(
   steps: JournalStep[],
   finalHash: string,
   meta: Record<string, unknown>,
+  messages: unknown[] = [],
 ): string[] {
   const lines = [
     JSON.stringify({ type: 'header', version: 1, ...meta }),
     JSON.stringify({ type: 'snapshot', ...snapshot }),
   ];
   for (const i of inputs) lines.push(JSON.stringify({ type: 'input', ...i }));
+  // W2：對話訊息（不進狀態 hash，只給 sample-dialogue 讀）
+  for (const m of messages) lines.push(JSON.stringify({ type: 'message', ...(m as object) }));
   for (const s of steps) lines.push(JSON.stringify({ type: 'step', ...s }));
   lines.push(JSON.stringify({ type: 'final', hash: finalHash, steps: steps.length }));
   return lines;
@@ -391,12 +420,16 @@ function main() {
   const opts: HeadlessOptions = {
     seed: Number(args.seed ?? defaultWuxiaConfig.seed),
     minutes: Number(args.minutes ?? 30),
-    agents: Number(args.agents ?? Descriptions.length),
+    agents: args.agents === undefined ? undefined : Number(args.agents),
     elements,
     map: args.map === undefined ? undefined : args.map === 'town' ? 'town' : 'gentle',
     untilGameMinute: args['game-minute'] === undefined ? undefined : Number(args['game-minute']),
   };
-  if (!Number.isFinite(opts.seed) || !(opts.minutes > 0) || !(opts.agents > 0)) {
+  if (
+    !Number.isFinite(opts.seed) ||
+    !(opts.minutes > 0) ||
+    (opts.agents !== undefined && !(opts.agents > 0))
+  ) {
     throw new Error('usage: headless --seed N --minutes M [--agents K] --out run.json');
   }
   const run = runHeadless(opts);
@@ -421,12 +454,19 @@ function main() {
   }
   if (args.journal) {
     mkdirSync(dirname(args.journal), { recursive: true });
-    const lines = journalLines(snapshot, queue, steps, finalHash, {
-      source: 'headless',
-      seed: opts.seed,
-      minutes: opts.minutes,
-      agents: opts.agents,
-    });
+    const lines = journalLines(
+      snapshot,
+      queue,
+      steps,
+      finalHash,
+      {
+        source: 'headless',
+        seed: opts.seed,
+        minutes: opts.minutes,
+        agents: summary.agents,
+      },
+      run.messages,
+    );
     writeFileSync(args.journal, lines.join('\n') + '\n');
   }
   process.stdout.write(
