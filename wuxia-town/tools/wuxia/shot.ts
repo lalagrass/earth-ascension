@@ -11,6 +11,8 @@ import { join, relative, resolve } from 'node:path';
 import { createServer } from 'vite';
 import { chromium } from 'playwright-core';
 import { exportState, runHeadless } from './headless';
+import { enabledElements } from '../../convex/wuxia/registry';
+import { defaultWuxiaConfig, initWuxiaState } from '../../convex/wuxia/state';
 import { parseArgs, quietConsole } from './sim';
 
 const ROOT = new URL('../..', import.meta.url).pathname;
@@ -25,7 +27,9 @@ async function main() {
   const args = parseArgs(process.argv.slice(2));
   quietConsole(!!args.verbose);
   const seed = Number(args.seed ?? 7);
-  const ats = String(args.at ?? '0').split(',').map(Number);
+  const ats = String(args.at ?? '0')
+    .split(',')
+    .map(Number);
   const out = resolve(ROOT, String(args.out ?? 'docs/wuxia/w01/'));
   const sizes = String(args.sizes ?? '1400x820,390x844')
     .split(',')
@@ -33,7 +37,10 @@ async function main() {
   const focus = args.focus ? String(args.focus).split(',') : undefined;
   const prefix = String(args.name ?? `w01-seed${seed}`);
   const elements: Record<string, boolean> = {};
-  for (const id of String(args.off ?? '').split(',').filter(Boolean)) elements[id] = false;
+  for (const id of String(args.off ?? '')
+    .split(',')
+    .filter(Boolean))
+    elements[id] = false;
   mkdirSync(out, { recursive: true });
 
   const chrome = CHROME_CANDIDATES.find((p) => existsSync(p));
@@ -50,20 +57,35 @@ async function main() {
   const url = `http://127.0.0.1:${addr.port}/ai-town/src/wuxia/shot/index.html`;
   const browser = await chromium.launch({
     executablePath: chrome,
-    args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--font-render-hinting=none'],
+    args: [
+      '--use-gl=angle',
+      '--use-angle=swiftshader',
+      '--enable-unsafe-swiftshader',
+      '--font-render-hinting=none',
+    ],
   });
   const index: any[] = [];
   try {
     for (const at of ats) {
       // 關掉換皮時沒有遊戲時鐘（W0 行為），改用等長的引擎時間：timeScale 60 → 遊戲 60 分鐘 = 引擎 1 分鐘
-      const clockless = Object.values(elements).every((v) => !v) && Object.keys(elements).length > 0;
+      // W2：看「實際生效」的元素（--off w02-folk 時 w01-skin 仍開、仍有時鐘）
+      const clockless =
+        enabledElements(
+          initWuxiaState({
+            ...defaultWuxiaConfig,
+            elements: { ...defaultWuxiaConfig.elements, ...elements },
+          }),
+        ).length === 0;
       const run = clockless
         ? runHeadless({ seed, minutes: Math.max(at, 1) / 60, elements })
         : runHeadless({ seed, minutes: 0, untilGameMinute: at, elements });
       const state = exportState(run);
       const clock = run.summary.clock;
       for (const [w, h] of sizes) {
-        const page = await browser.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
+        const page = await browser.newPage({
+          viewport: { width: w, height: h },
+          deviceScaleFactor: 1,
+        });
         const errors: string[] = [];
         page.on('pageerror', (e) => errors.push(String(e)));
         await page.addInitScript(
@@ -74,7 +96,9 @@ async function main() {
           [state, shotOptions(state, focus)] as const,
         );
         await page.goto(url, { waitUntil: 'networkidle' });
-        await page.waitForFunction(() => (window as any).__WUXIA_READY__ === true, null, { timeout: 60_000 });
+        await page.waitForFunction(() => (window as any).__WUXIA_READY__ === true, null, {
+          timeout: 60_000,
+        });
         await page.evaluate(() => document.fonts.ready);
         await page.waitForTimeout(600);
         const tag = `g${String(at).padStart(4, '0')}`;
@@ -92,7 +116,16 @@ async function main() {
         process.stdout.write(
           `${rel}  ${clock?.label ?? '（無時鐘）'}  遊戲分鐘 ${clock?.gameMinute ?? '-'}  hash ${run.finalHash}  ${statSync(file).size} bytes\n`,
         );
-        index.push({ file: rel, seed, at, size: [w, h], clock: clock?.label ?? null, gameMinute: clock?.gameMinute ?? null, hash: run.finalHash, steps: run.summary.steps });
+        index.push({
+          file: rel,
+          seed,
+          at,
+          size: [w, h],
+          clock: clock?.label ?? null,
+          gameMinute: clock?.gameMinute ?? null,
+          hash: run.finalHash,
+          steps: run.summary.steps,
+        });
         await page.close();
       }
     }

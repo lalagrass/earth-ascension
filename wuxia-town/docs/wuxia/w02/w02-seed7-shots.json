@@ -1,0 +1,28 @@
+[
+  {
+    "file": "docs/wuxia/w02/w02-seed7-g0360-1400x820.png",
+    "seed": 7,
+    "at": 360,
+    "size": [
+      1400,
+      820
+    ],
+    "clock": "第 1 日 午正",
+    "gameMinute": 360,
+    "hash": "acfd9df26791ab2e1801d9737cd2c531026fe05e9a642d70d33d80e8d3d0e69b",
+    "steps": 361
+  },
+  {
+    "file": "docs/wuxia/w02/w02-seed7-g0360-390w.png",
+    "seed": 7,
+    "at": 360,
+    "size": [
+      390,
+      844
+    ],
+    "clock": "第 1 日 午正",
+    "gameMinute": 360,
+    "hash": "acfd9df26791ab2e1801d9737cd2c531026fe05e9a642d70d33d80e8d3d0e69b",
+    "steps": 361
+  }
+]

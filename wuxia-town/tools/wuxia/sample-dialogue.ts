@@ -107,8 +107,9 @@ function main() {
   out(`guard: template 比例 ${pct(r.templateRatio)}（目標 < 15%）`);
   out(`sample n=${r.picked.length} seed=${seed}${args.blind ? ' blind' : ''}`);
   if (args.md) {
-    out(args.blind ? '| # | 說話者 | 守門 | 句子 |' : '| # | 說話者 → 對象 | 守門 | 句子 |');
-    out('|---|---|---|---|');
+    // 盲讀版不列守門結果（模板句是事先寫好的，列出來等於給提示）
+    out(args.blind ? '| # | 說話者 | 句子 |' : '| # | 說話者 → 對象 | 守門 | 句子 |');
+    out(args.blind ? '|---|---|---|' : '|---|---|---|---|');
   }
   const ordered = args.blind
     ? [...r.picked].sort(
@@ -122,10 +123,14 @@ function main() {
     const flag = l.check.ok ? '' : `  ⚠ ${l.check.reasons.join(',')}`;
     if (args.md)
       out(
-        `| ${i + 1} | ${who} | ${l.guard} | ${text.replace(/\|/g, '｜').replace(/\n/g, ' ')}${flag} |`,
+        args.blind
+          ? `| ${i + 1} | ${who} | ${text.replace(/\|/g, '｜').replace(/\n/g, ' ')}${flag} |`
+          : `| ${i + 1} | ${who} | ${l.guard} | ${text.replace(/\|/g, '｜').replace(/\n/g, ' ')}${flag} |`,
       );
     else
-      out(`${String(i + 1).padStart(2)}. [${l.guard}] ${who}：${text.replace(/\n/g, ' ')}${flag}`);
+      out(
+        `${String(i + 1).padStart(2)}. ${args.blind ? '' : `[${l.guard}] `}${who}：${text.replace(/\n/g, ' ')}${flag}`,
+      );
   });
   out(
     `抽樣中含禁用詞或英文：${r.badHard.length} 句；全部 ${r.all} 句中：${r.allBadHard.length} 句`,
