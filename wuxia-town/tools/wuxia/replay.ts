@@ -3,6 +3,7 @@
 // 逐 step 重建：每個 step 用 journal 記下的 now、prevTime、inputsThrough 餵給同一段 simulateStep，
 // 每步比對 hash；最後印出 hash，必須等於檔案內 final 記錄的 hash。不符時 exit 1。
 import { readFileSync } from 'node:fs';
+import { initWuxiaState } from '../../convex/wuxia/state';
 import {
   JournalInput,
   JournalStep,
@@ -48,8 +49,22 @@ export type ReplayResult = {
   firstMismatch?: { generation: number; expected: string; actual: string };
 };
 
+/**
+ * W1：W0 時期錄的 live journal，快照裡沒有 wuxia 欄位（Game 建構子依「當時」的設定檔初始化）。
+ * 當時 world.config.json 是 {"elements": {}, "seed": 7, "timeScale": 60}，這裡照原樣補回，
+ * 不讀現在的設定檔（W1 起預設開啟 w01-skin）。W1 起的快照已經自帶 wuxia。
+ */
+export const W0_RECORDING_CONFIG = { elements: {}, seed: 7, timeScale: 60 };
+
+export function withFrozenWuxia(snapshot: Snapshot): Snapshot {
+  if (snapshot.gameState?.world?.wuxia !== undefined) return snapshot;
+  const s = structuredClone(snapshot);
+  s.gameState.world.wuxia = initWuxiaState(W0_RECORDING_CONFIG);
+  return s;
+}
+
 export function replayJournal(j: Journal): ReplayResult {
-  const game = createGame(j.snapshot);
+  const game = createGame(withFrozenWuxia(j.snapshot));
   let firstMismatch: ReplayResult['firstMismatch'];
   let lastHash = game.wuxiaHash();
   for (const step of j.steps) {

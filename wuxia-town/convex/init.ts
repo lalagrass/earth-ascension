@@ -2,7 +2,9 @@ import { v } from 'convex/values';
 import { internal } from './_generated/api';
 import { DatabaseReader, MutationCtx, mutation } from './_generated/server';
 import { Descriptions } from '../data/characters';
-import * as map from '../data/gentle';
+// WUXIA-PATCH(W1): 地圖改由 w01-skin 開關決定（開：山腳古鎮 data/wuxia/town-map.js；關：上游 data/gentle.js）
+import { serializedMapFor } from './wuxia/w01-skin';
+import { defaultWuxiaConfig, initWuxiaState } from './wuxia/state';
 import { insertInput } from './aiTown/insertInput';
 import { Id } from './_generated/dataModel';
 import { createEngine } from './aiTown/main';
@@ -67,17 +69,10 @@ async function getOrCreateDefaultWorld(ctx: MutationCtx) {
     worldId: worldId,
   });
   worldStatus = (await ctx.db.get(worldStatusId))!;
+  // WUXIA-PATCH(W1): 跟 Game 建構子用同一份設定（world.config.json）決定地圖
   await ctx.db.insert('maps', {
     worldId,
-    width: map.mapwidth,
-    height: map.mapheight,
-    tileSetUrl: map.tilesetpath,
-    tileSetDimX: map.tilesetpxw,
-    tileSetDimY: map.tilesetpxh,
-    tileDim: map.tiledim,
-    bgTiles: map.bgtiles,
-    objectTiles: map.objmap,
-    animatedSprites: map.animatedsprites,
+    ...serializedMapFor(initWuxiaState(defaultWuxiaConfig).enabled),
   });
   await ctx.scheduler.runAfter(0, internal.aiTown.main.runStep, {
     worldId,

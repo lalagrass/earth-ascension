@@ -6,7 +6,7 @@ export type WuxiaConfig = {
   /** 元素開關，鍵是元素 id（例如 "w03-life"）。沒列到的元素視為關閉。 */
   elements: Record<string, boolean>;
   seed: number;
-  /** 1 實秒 = timeScale 遊戲秒（W0 只記錄，不用在規則裡）。 */
+  /** 1 實秒 = timeScale 遊戲秒（W1 起用來算遊戲時鐘，見 convex/wuxia/clock.ts）。 */
   timeScale: number;
   /** #562 W0-2：true 時沒有瀏覽器連線也不會因閒置 5 分鐘被停（長時間實跑用）。預設 false。 */
   keepAlive?: boolean;
@@ -23,6 +23,8 @@ export type WuxiaState = {
   rng: RngState;
   /** 各元素自己的狀態，鍵是元素 id。 */
   elements: Record<string, unknown>;
+  /** W1：遊戲時鐘起點（引擎時間 ms）。第一個有元素開啟的 tick 寫入；見 convex/wuxia/clock.ts。 */
+  clockEpoch?: number;
 };
 
 export const defaultWuxiaConfig: WuxiaConfig = worldConfig as WuxiaConfig;
@@ -37,7 +39,8 @@ export function initWuxiaState(config: WuxiaConfig = defaultWuxiaConfig): WuxiaS
     v: 1,
     seed: config.seed,
     timeScale: config.timeScale,
-    enabled: { ...config.elements },
+    // W1：只記開啟的元素（沒列到＝關閉）。關掉 w01-skin 的世界因此跟 W0 的世界逐位元組相同。
+    enabled: Object.fromEntries(Object.entries(config.elements).filter(([, on]) => on === true)),
     rng: seedRng(config.seed),
     elements: {},
   };

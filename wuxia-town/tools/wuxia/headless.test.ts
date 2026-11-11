@@ -1,6 +1,7 @@
 import { runHeadless, initialSnapshot, journalLines } from './headless';
 import { replayJournal } from './replay';
 import { createGame } from './sim';
+import { skinDiff } from './skin-diff';
 
 describe('headless simulation and replay', () => {
   test('same seed → same hash; different seed → different hash', () => {
@@ -37,5 +38,19 @@ describe('headless simulation and replay', () => {
     snap.gameState.world = saved;
     const reloaded = createGame(snap);
     expect(reloaded.rng()).toEqual(x);
+  });
+});
+
+describe('W1 w01-skin keeps the rules unchanged (#553)', () => {
+  test('skin off reproduces the W0 world; same map on/off differs only in enabled flag + clock epoch', () => {
+    const r = skinDiff(7, 3);
+    expect(r.resultA.ok).toBe(true);
+    expect(r.resultB.ok).toBe(true);
+    expect(r.resultC.ok).toBe(true);
+  });
+  test('untilGameMinute stops at the requested game minute', () => {
+    const run = runHeadless({ seed: 7, minutes: 0, agents: 5, untilGameMinute: 60 });
+    expect(run.summary.clock!.gameMinute).toBe(60);
+    expect(run.summary.clock!.label).toBe('第 1 日 辰初');
   });
 });

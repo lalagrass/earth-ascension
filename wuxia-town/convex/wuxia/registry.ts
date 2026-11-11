@@ -3,6 +3,7 @@
 // W0 是空清單；W1 起每一步在這裡加一個元素。
 import type { Game } from '../aiTown/game';
 import type { WuxiaState } from './state';
+import { skinElement } from './w01-skin';
 
 export type WuxiaElement = {
   id: string;
@@ -12,7 +13,7 @@ export type WuxiaElement = {
   handleInput?: Record<string, (game: Game, now: number, args: any) => unknown>;
 };
 
-export const ELEMENTS: WuxiaElement[] = [];
+export const ELEMENTS: WuxiaElement[] = [skinElement];
 
 export function isEnabled(
   state: WuxiaState,
@@ -45,7 +46,12 @@ export function initElements(state: WuxiaState, elements: WuxiaElement[] = ELEME
 export function runElements(game: Game, now: number, elements: WuxiaElement[] = ELEMENTS) {
   const state = game.world.wuxia;
   if (!state) return;
-  for (const element of enabledElements(state, elements)) {
+  const enabled = enabledElements(state, elements);
+  // W1：遊戲時鐘的起點（#549 §3）＝第一個有元素開啟的 tick。全部關閉的世界（W0 的 fixture）不寫，hash 不變。
+  if (enabled.length > 0 && state.clockEpoch === undefined) {
+    state.clockEpoch = now;
+  }
+  for (const element of enabled) {
     element.tick?.(game, now);
   }
 }

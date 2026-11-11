@@ -1,11 +1,12 @@
 // 武俠小鎮 W0：無頭模擬（#549 第 5 節）。
 // 用法：npm run wuxia:headless -- --seed 7 --minutes 30 --out /tmp/a.json [--journal x.jsonl] [--agents 5] [--verbose]
+//        [--off w01-skin] [--on id,id]（覆寫 world.config.json 的元素開關）[--map town|gentle]（只給對照實驗用）
+//        [--state out.json]（W1：匯出最後狀態給 wuxia:shot 用）
 // 從 data/wuxia/ 與上游預設地圖建初始世界 → 每 step 呼叫 simulateStep、餵 inputs、跑 ticks →
 // 把 pendingOperations 交給「規則替身」立即產生回應 input（漫遊用 rng、對話用模板句、不打 LLM）。
 // --minutes 是引擎時間（牆鐘分鐘，1 step = 1 秒），不是遊戲時辰。
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
-import * as map from '../../data/gentle';
 import { Descriptions } from '../../data/characters';
 import { WorldMap } from '../../convex/aiTown/worldMap';
 import {
@@ -17,8 +18,10 @@ import {
 import { distance } from '../../convex/util/geometry';
 import { initWuxiaState, defaultWuxiaConfig } from '../../convex/wuxia/state';
 import { initElements } from '../../convex/wuxia/registry';
+import { serializedMapFor } from '../../convex/wuxia/w01-skin';
 import { makeRng } from '../../convex/wuxia/rng';
 import { conversationTemplate } from '../../convex/wuxia/templates';
+import { gameMinutes, readClock } from '../../convex/wuxia/clock';
 import {
   JournalInput,
   JournalStep,
@@ -33,11 +36,29 @@ import {
 export const HEADLESS_EPOCH = Date.UTC(2026, 0, 1, 0, 0, 0); // 固定起點，不讀系統時鐘
 export const STEP_MS = 1000;
 
-export type HeadlessOptions = { seed: number; minutes: number; agents: number };
+export type HeadlessOptions = {
+  seed: number;
+  minutes: number;
+  agents: number;
+  /** 覆寫 world.config.json 的元素開關（例如 { 'w01-skin': false }） */
+  elements?: Record<string, boolean>;
+  /** 對照實驗用：強制用某張地圖，不管 w01-skin 開關 */
+  map?: 'town' | 'gentle';
+  /** W1：跑到遊戲時鐘到達這個遊戲分鐘為止（取代 minutes；需要有元素開啟才有時鐘） */
+  untilGameMinute?: number;
+};
 
 export function initialSnapshot(opts: HeadlessOptions): Snapshot {
-  const wuxia = initWuxiaState({ ...defaultWuxiaConfig, seed: opts.seed });
+  const wuxia = initWuxiaState({
+    ...defaultWuxiaConfig,
+    seed: opts.seed,
+    elements: { ...defaultWuxiaConfig.elements, ...(opts.elements ?? {}) },
+  });
   initElements(wuxia);
+  const worldMap =
+    opts.map === undefined
+      ? serializedMapFor(wuxia.enabled)
+      : serializedMapFor({ 'w01-skin': opts.map === 'town' });
   return {
     worldId: 'headless-world',
     engineId: 'headless-engine',
@@ -47,17 +68,7 @@ export function initialSnapshot(opts: HeadlessOptions): Snapshot {
       world: { nextId: 0, agents: [], conversations: [], players: [], wuxia },
       playerDescriptions: [],
       agentDescriptions: [],
-      worldMap: {
-        width: map.mapwidth,
-        height: map.mapheight,
-        tileSetUrl: map.tilesetpath,
-        tileSetDimX: map.tilesetpxw,
-        tileSetDimY: map.tilesetpxh,
-        tileDim: map.tiledim,
-        bgTiles: map.bgtiles,
-        objectTiles: map.objmap,
-        animatedSprites: map.animatedsprites,
-      },
+      worldMap,
     },
   };
 }
@@ -109,7 +120,15 @@ export function runHeadless(opts: HeadlessOptions) {
   const nameOf = (playerId: string) =>
     game.playerDescriptions.get(playerId as any)?.name ?? playerId;
 
-  const totalSteps = Math.round((opts.minutes * 60_000) / STEP_MS);
+  const totalSteps =
+    opts.untilGameMinute === undefined ? Math.round((opts.minutes * 60_000) / STEP_MS) : Infinity;
+  const clockReached = () => {
+    const w = game.world.wuxia!;
+    return (
+      w.clockEpoch !== undefined &&
+      gameMinutes(game.engine.currentTime!, w.clockEpoch, w.timeScale) >= opts.untilGameMinute!
+    );
+  };
   for (let k = 1; k <= totalSteps; k++) {
     const now = HEADLESS_EPOCH + k * STEP_MS;
     admit(now);
@@ -223,8 +242,13 @@ export function runHeadless(opts: HeadlessOptions) {
       t.push({ x: p.position.x, y: p.position.y });
       traces.set(p.id, t);
     }
-    if (k % 60 === 0 || k === totalSteps) {
+    const done = opts.untilGameMinute !== undefined && clockReached();
+    if (k % 60 === 0 || k === totalSteps || done) {
       checkpoints.push({ step: k, t: now, hash: result.step.hash });
+    }
+    if (done) break;
+    if (opts.untilGameMinute !== undefined && k > 100_000) {
+      throw new Error('headless: game clock never reached target (no element enabled?)');
     }
   }
   stats.inputs = queue.length;
@@ -248,6 +272,17 @@ export function runHeadless(opts: HeadlessOptions) {
     enabledElements: Object.keys(game.world.wuxia!.enabled).filter(
       (k) => game.world.wuxia!.enabled[k],
     ),
+    map: game.worldMap.tileSetUrl,
+    clock:
+      game.world.wuxia!.clockEpoch === undefined
+        ? null
+        : readClock(
+            gameMinutes(
+              game.engine.currentTime!,
+              game.world.wuxia!.clockEpoch,
+              game.world.wuxia!.timeScale,
+            ),
+          ),
     stats,
     checkpoints,
     players,
@@ -259,8 +294,9 @@ export function runHeadless(opts: HeadlessOptions) {
 /** 自製的軌跡圖（SVG）：灰格是地圖上不能走的物件格，彩線是每個人的移動軌跡。不含任何上游美術。 */
 export function traceSvg(run: ReturnType<typeof runHeadless>, title: string): string {
   const cell = 12;
-  const w = map.mapwidth;
-  const h = map.mapheight;
+  const worldMap = run.snapshot.gameState.worldMap;
+  const w = worldMap.width;
+  const h = worldMap.height;
   const parts: string[] = [];
   parts.push(
     `<svg xmlns="http://www.w3.org/2000/svg" width="${w * cell}" height="${h * cell + 24}" viewBox="0 0 ${w * cell} ${h * cell + 24}">`,
@@ -268,7 +304,7 @@ export function traceSvg(run: ReturnType<typeof runHeadless>, title: string): st
     `<text x="4" y="16" font-family="sans-serif" font-size="13" fill="#333">${title}</text>`,
     `<g transform="translate(0,24)">`,
   );
-  for (const layer of map.objmap as number[][][]) {
+  for (const layer of worldMap.objectTiles as number[][][]) {
     for (let x = 0; x < w; x++) {
       for (let y = 0; y < h; y++) {
         if (layer[x][y] !== -1) {
@@ -312,6 +348,23 @@ export function traceSvg(run: ReturnType<typeof runHeadless>, title: string): st
   return parts.join('\n') + '\n';
 }
 
+/** W1：匯出畫面要用的狀態（wuxia:shot 讀這份，不需要 Convex）。 */
+export function exportState(run: ReturnType<typeof runHeadless>) {
+  const game = run.game;
+  return {
+    tool: 'wuxia-town headless state',
+    version: 1,
+    seed: run.summary.seed,
+    hash: run.finalHash,
+    engineTime: game.engine.currentTime,
+    world: game.world.serialize(),
+    playerDescriptions: [...game.playerDescriptions.values()].map((d) => d.serialize()),
+    agentDescriptions: [...game.agentDescriptions.values()].map((d) => d.serialize()),
+    worldMap: game.worldMap.serialize(),
+    clock: run.summary.clock,
+  };
+}
+
 export function journalLines(
   snapshot: Snapshot,
   inputs: JournalInput[],
@@ -332,10 +385,16 @@ export function journalLines(
 function main() {
   const args = parseArgs(process.argv.slice(2));
   quietConsole(!!args.verbose);
+  const elements: Record<string, boolean> = {};
+  for (const id of String(args.off ?? '').split(',').filter(Boolean)) elements[id] = false;
+  for (const id of String(args.on ?? '').split(',').filter(Boolean)) elements[id] = true;
   const opts: HeadlessOptions = {
     seed: Number(args.seed ?? defaultWuxiaConfig.seed),
     minutes: Number(args.minutes ?? 30),
     agents: Number(args.agents ?? Descriptions.length),
+    elements,
+    map: args.map === undefined ? undefined : args.map === 'town' ? 'town' : 'gentle',
+    untilGameMinute: args['game-minute'] === undefined ? undefined : Number(args['game-minute']),
   };
   if (!Number.isFinite(opts.seed) || !(opts.minutes > 0) || !(opts.agents > 0)) {
     throw new Error('usage: headless --seed N --minutes M [--agents K] --out run.json');
@@ -348,9 +407,13 @@ function main() {
       args.svg,
       traceSvg(
         run,
-        `W0 headless seed ${opts.seed}, ${opts.minutes} min, hash ${finalHash.slice(0, 16)}…`,
+        `headless seed ${opts.seed}, ${opts.minutes} min, hash ${finalHash.slice(0, 16)}…`,
       ),
     );
+  }
+  if (args.state) {
+    mkdirSync(dirname(args.state), { recursive: true });
+    writeFileSync(args.state, JSON.stringify(exportState(run)) + '\n');
   }
   if (args.out) {
     mkdirSync(dirname(args.out), { recursive: true });
@@ -370,6 +433,10 @@ function main() {
     `seed=${opts.seed} minutes=${opts.minutes} steps=${summary.steps} ` +
       `conversations=${summary.stats.conversationsStarted} messages=${summary.stats.messages}\n`,
   );
+  if (summary.clock) {
+    process.stdout.write(`clock ${summary.clock.label}（遊戲分鐘 ${summary.clock.gameMinute}）\n`);
+  }
+  process.stdout.write(`map ${summary.map}\n`);
   process.stdout.write(`hash ${finalHash}\n`);
 }
 

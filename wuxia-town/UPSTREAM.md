@@ -37,6 +37,8 @@
 | W0 | `convex/util/llm.ts` | `EMBEDDING_DIMENSION` 改讀 `data/wuxia/world.config.json` 的 `embeddingDimension`（預設 1024） | #562 W0-1：原本寫死 1024，換雲端模型要改程式；改了要清表 |
 | W0 | `convex/world.ts` | `stopInactiveWorlds` 在 `keepAlive`（設定檔或 `WUXIA_KEEP_ALIVE=1`）開啟時不停世界 | #562 W0-2：沒有瀏覽器時 5 分鐘會自己停；長時間實跑要開 |
 | W0 | `convex/_generated/api.d.ts`（產生檔） | `npx convex dev` 重新產生，多了 `wuxia/*` 模組 | Convex 產生檔 |
+| W1 | `convex/init.ts` | 建世界時的地圖改用 `serializedMapFor(initWuxiaState(defaultWuxiaConfig).enabled)`（`w01-skin` 開：`data/wuxia/town-map.js`；關：上游 `data/gentle.js`） | #553 換皮；關掉時用回原版地圖 |
+| W1 | `package.json`（JSON 無法加註解） | `wuxia:skin-diff`、`wuxia:shot` 指令；devDependency `playwright-core` | #553 驗收工具 |
 
 ## 上游刻意保留不改的隨機／時間
 

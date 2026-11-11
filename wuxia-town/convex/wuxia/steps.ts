@@ -3,6 +3,8 @@ import { Infer } from 'convex/values';
 import { Id } from '../_generated/dataModel';
 import { MutationCtx } from '../_generated/server';
 import { wuxiaStep } from './schema';
+import { initElements } from './registry';
+import { initWuxiaState } from './state';
 
 export type WuxiaStepRecord = Infer<typeof wuxiaStep>;
 
@@ -24,6 +26,12 @@ export async function recordWuxiaStep(
     .first();
   if (!first) {
     const { engine, gameState } = await loadPreStepState();
+    // W1：剛建立的世界在資料庫裡還沒有 wuxia 欄位（Game 建構子才依設定檔初始化）。
+    // 快照時把同一份初始狀態寫進去，重播就不用再讀「現在的」設定檔（W0 的 fixture 因此在 W1 改設定後對不上）。
+    if (gameState.world && gameState.world.wuxia === undefined) {
+      gameState.world.wuxia = initWuxiaState();
+      initElements(gameState.world.wuxia);
+    }
     const { _id, _creationTime, ...engineFields } = engine;
     await ctx.db.insert('wuxiaSnapshots', {
       worldId,

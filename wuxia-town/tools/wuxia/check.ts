@@ -5,10 +5,12 @@
 // 4. git 追蹤的 public/assets 下沒有檔案（上游美術不進 repo）
 // 5. public/wuxia/ 每個素材檔都登記在 CREDITS.md
 // 6. docs/wuxia/ 單檔 ≤ 1 MB、GIF ≤ 3 MB
+// 7.（W1）w01-skin 開關不改規則：skin-diff A/B/C（關＝W0、同地圖只差開關與時鐘起點、不同地圖只差地圖相關欄位）
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { readJournal, replayJournal } from './replay';
+import { skinDiff } from './skin-diff';
 
 const ROOT = new URL('../..', import.meta.url).pathname;
 const MINUTES = process.env.WUXIA_CHECK_MINUTES ?? '30';
@@ -120,6 +122,20 @@ const big = walk(join(ROOT, 'docs/wuxia')).filter((f) => {
 });
 if (big.length === 0) ok('docs/wuxia/ 檔案大小在上限內（單檔 ≤1 MB，GIF ≤3 MB）');
 else fail(`docs/wuxia/ 檔案過大：${big.map((f) => relative(ROOT, f)).join(', ')}`);
+
+// 7
+{
+  const restore = console.log;
+  console.log = () => {};
+  const r = skinDiff(7, Number(MINUTES));
+  console.log = restore;
+  if (r.resultA.ok) ok(`skin-diff A：w01-skin 關＝W0 世界 hash ${r.resultA.hash}`);
+  else fail(`skin-diff A：w01-skin 關的世界仍有開啟的元素 ${JSON.stringify(r.resultA.enabled)}`);
+  if (r.resultB.ok) ok(`skin-diff B：同一張地圖開／關只差 ${r.resultB.paths.map((p) => p.split(':')[0]).join('、')}`);
+  else fail(`skin-diff B：同一張地圖開／關多出差異：\n  ${r.resultB.paths.join('\n  ')}`);
+  if (r.resultC.ok) ok(`skin-diff C：開 ${r.resultC.hashOn} 與關的差異都在地圖相關欄位（${r.resultC.groups.length} 類）`);
+  else fail(`skin-diff C：非地圖相關的差異 ${r.resultC.unexpected.join(', ')}`);
+}
 
 if (failures) {
   process.stdout.write(`wuxia:check FAILED (${failures})\n`);

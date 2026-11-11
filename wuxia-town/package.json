@@ -17,6 +17,7 @@
     "wuxia:replay": "tsx tools/wuxia/replay.ts",
     "wuxia:journal": "tsx tools/wuxia/journal.ts",
     "wuxia:hash": "tsx tools/wuxia/hash.ts",
+    "wuxia:skin-diff": "tsx tools/wuxia/skin-diff.ts",
     "wuxia:check": "npm test && tsx tools/wuxia/check.ts"
   },
   "dependencies": {
