@@ -66,7 +66,11 @@ export function withFrozenWuxia(snapshot: Snapshot): Snapshot {
   return s;
 }
 
-export function replayJournal(j: Journal): ReplayResult {
+/** W3：onStep 讓報表工具（life-report）在每個 step 之後讀世界狀態；不影響重播結果。 */
+export function replayJournal(
+  j: Journal,
+  onStep?: (game: ReturnType<typeof createGame>, step: JournalStep) => void,
+): ReplayResult {
   const game = createGame(withFrozenWuxia(j.snapshot));
   let firstMismatch: ReplayResult['firstMismatch'];
   let lastHash = game.wuxiaHash();
@@ -81,6 +85,7 @@ export function replayJournal(j: Journal): ReplayResult {
     );
     const result = runOneStep(game, inputs, step.now);
     lastHash = result.step.hash;
+    onStep?.(game, step);
     if (!firstMismatch && (result.step.hash !== step.hash || result.step.endTs !== step.endTs)) {
       firstMismatch = {
         generation: step.generation,

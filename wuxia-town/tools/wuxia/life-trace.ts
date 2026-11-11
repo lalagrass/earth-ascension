@@ -3,7 +3,7 @@
 // hunger > 90 的連續時間。w03-life 關掉時也照樣取樣（看得出沒有作息規律）。
 import type { Game } from '../../convex/aiTown/game';
 import { gameMinutes } from '../../convex/wuxia/clock';
-import { OBJECTS, placeAt } from '../../convex/wuxia/w03_life/data';
+import { OBJECTS, PLACES, placeAt } from '../../convex/wuxia/w03_life/data';
 import { LifeState, W03_LIFE } from '../../convex/wuxia/w03_life';
 import { profileByName } from '../../convex/wuxia/w02_folk';
 
@@ -28,14 +28,46 @@ export type LifeChecks = {
 };
 
 /** 對話地點統計：茶館、飯桌（灶）、河邊的比例（#555 驗收） */
+/** 茶館、河邊（地點範圍外 2 格內）或飯桌（各家的灶 2 格內）。茶館內部不可走，人都站在門口外。 */
+const SOCIAL_MARGIN = 2;
+const SOCIAL_RECTS = PLACES.filter((p) => p.id === 'teahouse' || p.id === 'river');
+const TABLES = OBJECTS.filter((o) => o.activities.some((a) => a.id === 'eat'));
+export function socialPlaceAt(x: number, y: number): string | null {
+  for (const p of SOCIAL_RECTS) {
+    const [px, py, pw, ph] = p.rect;
+    if (x >= px - SOCIAL_MARGIN && x <= px + pw + SOCIAL_MARGIN && y >= py - SOCIAL_MARGIN && y <= py + ph + SOCIAL_MARGIN)
+      return p.id;
+  }
+  for (const o of TABLES)
+    for (const [sx, sy] of o.slots)
+      if (Math.hypot(sx - x, sy - y) <= SOCIAL_MARGIN) return `table:${o.place}`;
+  return null;
+}
+export { OBJECTS };
+export const isSocialPlace = (p: string) => p === 'teahouse' || p === 'river' || p.startsWith('table:');
+
+/**
+ * 兩種算法都給：
+ * - 開始地點（place）：w03-life 邀請當下兩人所在（同一地點才會邀）；
+ * - 說話地點（talkPlace）：兩人 participating 期間每遊戲分鐘的位置，取最多的那個；在茶館／河邊／飯桌 2 格內算那裡。
+ * 驗收（social）用說話地點；沒有 participating（被婉拒、還沒走到）的對話用開始地點。
+ */
 export function conversationPlaceStats(conversations: LifeTracer['conversations']) {
   const byPlace: Record<string, number> = {};
-  for (const c of Object.values(conversations)) byPlace[c.place] = (byPlace[c.place] ?? 0) + 1;
+  const byTalkPlace: Record<string, number> = {};
+  let social = 0;
+  for (const c of Object.values(conversations)) {
+    byPlace[c.place] = (byPlace[c.place] ?? 0) + 1;
+    const tp = talkPlaceOf(c);
+    byTalkPlace[tp] = (byTalkPlace[tp] ?? 0) + 1;
+    if (isSocialPlace(tp) || (tp === c.place && c.acts.some((a) => a === 'eat'))) social++;
+  }
   const total = Object.keys(conversations).length;
-  const social = Object.values(conversations).filter(
-    (c) => c.place === 'teahouse' || c.place === 'river' || c.acts.some((a) => a === 'eat'),
-  ).length;
-  return { total, byPlace, social, ratio: total ? social / total : null };
+  return { total, byPlace, byTalkPlace, social, ratio: total ? social / total : null };
+}
+export function talkPlaceOf(c: { place: string; talk: Record<string, number> }): string {
+  const e = Object.entries(c.talk).sort((a, b) => b[1] - a[1]);
+  return e.length ? e[0][0] : c.place;
 }
 
 export class LifeTracer {
@@ -51,7 +83,10 @@ export class LifeTracer {
     maxConversationMinutes: 0,
   };
   /** 每段對話開始時，發起人所在的地點（W3 驗收：對話發生在哪裡） */
-  conversations: Record<string, { t: number; place: string; acts: string[] }> = {};
+  conversations: Record<
+    string,
+    { t: number; place: string; acts: string[]; talk: Record<string, number> }
+  > = {};
   private hungerSince: Record<string, number | undefined> = {};
   private lastMinute = -1;
 
@@ -122,7 +157,16 @@ export class LifeTracer {
             invite?.place ??
             (creator ? placeAt(creator.position.x, creator.position.y) : 'outside'),
           acts,
+          talk: {},
         };
+      }
+      const rec = this.conversations[conv.id];
+      for (const [id, m] of conv.participants) {
+        if (m.status.kind !== 'participating') continue;
+        const pl = game.world.players.get(id);
+        if (!pl) continue;
+        const tp = socialPlaceAt(pl.position.x, pl.position.y) ?? placeAt(pl.position.x, pl.position.y);
+        rec.talk[tp] = (rec.talk[tp] ?? 0) + 1;
       }
       const m = gameMinutes(now, conv.created, w.timeScale);
       this.checks.maxConversationMinutes = Math.max(this.checks.maxConversationMinutes, m);

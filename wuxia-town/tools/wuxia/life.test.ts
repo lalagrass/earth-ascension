@@ -1,5 +1,6 @@
 // 武俠小鎮 W3（#555）：無頭模擬下的生活規則（全程檢查、開關、確定性）。
 import { runHeadless } from './headless';
+import { OBJECTS, socialPlaceAt } from './life-trace';
 
 describe('w03-life 無頭模擬', () => {
   const run = runHeadless({ seed: 7, minutes: 0, untilGameMinute: 1440, trace: true });
@@ -25,6 +26,16 @@ describe('w03-life 無頭模擬', () => {
   test('有人聊天，而且只在閒暇地點開始', () => {
     const conv = run.summary.life!.conversations;
     expect(conv.total).toBeGreaterThan(0);
+    for (const place of Object.keys(conv.byPlace)) expect(['teahouse', 'river']).toContain(place);
+    expect(conv.ratio!).toBeGreaterThanOrEqual(0.8);
+  });
+  test('說話地點：茶館門口 2 格內算茶館、灶旁算飯桌、街心不算', () => {
+    expect(socialPlaceAt(21, 20)).toBe('teahouse');
+    expect(socialPlaceAt(10.5, 16)).toBe('teahouse');
+    expect(socialPlaceAt(24, 30)).toBeNull();
+    const stove = OBJECTS.find((o) => o.activities.some((a) => a.id === 'eat'))!;
+    const [sx, sy] = stove.slots[0];
+    expect(socialPlaceAt(sx, sy)).toMatch(/^(table:|teahouse$)/);
   });
   test('關掉 w03-life＝W2 世界（沒有生活狀態，照舊漫遊）', () => {
     const off = runHeadless({ seed: 7, minutes: 0, untilGameMinute: 300, elements: { 'w03-life': false } });

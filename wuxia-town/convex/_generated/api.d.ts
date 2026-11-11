@@ -66,6 +66,8 @@ import type * as wuxia_w01_skin_index from "../wuxia/w01_skin/index.js";
 import type * as wuxia_w02_folk_guard from "../wuxia/w02_folk/guard.js";
 import type * as wuxia_w02_folk_index from "../wuxia/w02_folk/index.js";
 import type * as wuxia_w02_folk_prompt from "../wuxia/w02_folk/prompt.js";
+import type * as wuxia_w03_life_data from "../wuxia/w03_life/data.js";
+import type * as wuxia_w03_life_index from "../wuxia/w03_life/index.js";
 
 import type {
   ApiFromModules,
@@ -132,6 +134,8 @@ declare const fullApi: ApiFromModules<{
   "wuxia/w02_folk/guard": typeof wuxia_w02_folk_guard;
   "wuxia/w02_folk/index": typeof wuxia_w02_folk_index;
   "wuxia/w02_folk/prompt": typeof wuxia_w02_folk_prompt;
+  "wuxia/w03_life/data": typeof wuxia_w03_life_data;
+  "wuxia/w03_life/index": typeof wuxia_w03_life_index;
 }>;
 
 /**

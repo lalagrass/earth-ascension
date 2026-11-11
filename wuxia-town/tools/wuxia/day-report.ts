@@ -174,7 +174,7 @@ function main() {
   const conv = life.conversations;
   if (conv)
     say(
-      `  INFO 對話 ${conv.total} 段，地點 ${JSON.stringify(conv.byPlace)}；茶館／飯桌／河邊 ${conv.social}/${conv.total}${conv.ratio === null ? '' : `（${(conv.ratio * 100).toFixed(0)}%）`}`,
+      `  INFO 對話 ${conv.total} 段，開始地點 ${JSON.stringify(conv.byPlace)}，說話地點 ${JSON.stringify(conv.byTalkPlace)}；說話在茶館／飯桌／河邊 ${conv.social}/${conv.total}${conv.ratio === null ? '' : `（${(conv.ratio * 100).toFixed(0)}%）`}`,
     );
   say('');
   say(fails ? `day-report: ${fails} 項 FAIL` : 'day-report: 全部 PASS');

@@ -24,6 +24,7 @@
     "wuxia:sample-dialogue": "tsx tools/wuxia/sample-dialogue.ts",
     "wuxia:day-report": "tsx tools/wuxia/day-report.ts",
     "wuxia:life-diff": "tsx tools/wuxia/life-diff.ts",
+    "wuxia:life-report": "tsx tools/wuxia/life-report.ts",
     "wuxia:check": "npm test && tsx tools/wuxia/check.ts"
   },
   "dependencies": {

@@ -62,7 +62,7 @@
 | W2 | `convex/schema.ts` | `messages` 表加 `metadata: v.optional(v.any())` | 同上 |
 | W2 | `package.json`（JSON 無法加註解） | `wuxia:folk-diff`、`wuxia:gen-prompts`、`wuxia:sample-dialogue` 指令 | #554 驗收工具 |
 | W3 | `convex/aiTown/agent.ts` | `Agent.tick`：w03-life 開啟時不發 `agentDoSomething`（不漫遊、不隨機活動、不由 action 找人聊天），改由 `convex/wuxia/w03_life` 在引擎 tick 內選事、預約、走路、計時，並在閒暇地點發起邀請 | #555「決策」：取代 `agentDoSomething` 的漫遊／隨機活動 |
-| W3 | `package.json`（JSON 無法加註解） | `wuxia:day-report`、`wuxia:life-diff` 指令 | #555 驗收工具 |
+| W3 | `package.json`（JSON 無法加註解） | `wuxia:day-report`、`wuxia:life-diff`、`wuxia:life-report` 指令 | #555 驗收工具 |
 | W3 | `src/components/Character.tsx` | 多一個選填 `label`，顯示在頭上 emoji 上方 | #555「畫面」：人物頭上顯示活動 emoji＋標籤 |
 | W3 | `src/components/Player.tsx` | w03-life 開啟、活動進行中時，把活動名稱（已是繁中）當 `label` 傳給 `Character` | 同上 |
 | W3 | `src/components/PlayerDetails.tsx` | 多收 `historicalTime`；名牌下面加 `src/wuxia/LifePanel`（目前活動、下一件事、4 個需求條、今日做過的事） | #555「畫面」：人物詳情面板 |
