@@ -19,9 +19,9 @@
 | W0-10 | 規格未提 | 對話 prompt 的「用繁體中文回答」用環境變數 `WUXIA_REPLY_IN_ZH_TW=1` 開啟，預設關 | 規格說實測時加一句即可；預設不改上游 prompt |
 | W0-11 | 規格未提 | `.github/workflows/wuxia-town.yml` 經 GitHub 連接器（REST contents API）提交，其餘 commit 用 git push | 本機 git 憑證缺 `workflow` 權限，無法 push workflow 檔；內容相同 |
 | W0-12 | #562 W0-1：embedding 維度寫死在 `convex/util/llm.ts:7` | 改成 `data/wuxia/world.config.json` 的 `embeddingDimension`（預設 1024＝Ollama `mxbai-embed-large`）；換供應商時一起改（OpenAI 1536、Together 768），並清 `memoryEmbeddings`／`memories`／`embeddingsCache`（`testing:wipeAllTables` 不清 `embeddingsCache`，要另外清） | 向量索引維度在 schema 部署時固定，只能用打包時就確定的設定檔，不能用執行期環境變數。回退：把常數改回寫死 |
-| W0-13 | #562 W0-2：世界閒置 5 分鐘自己停 | 新增 `keepAlive`（設定檔，預設 false）；也可用 Convex 環境變數 `WUXIA_KEEP_ALIVE=1` 臨時開，不必改檔。開啟時 `stopInactiveWorlds` 直接略過 | 長時間實跑不用一直開瀏覽器。W0 實測期間改用 `live-run.sh` 每 60 秒 heartbeat（30 分鐘那輪中途仍被停過一次並自動重啟，重播照樣對得上） |
+| W0-13 | #562 W0-2：世界閒置 5 分鐘自己停 | 新增 `keepAlive`（設定檔，預設 false）；也可用 Convex 環境變數 `WUXIA_KEEP_ALIVE=1` 臨時開，不必改檔。開啟時 `stopInactiveWorlds` 直接略過 | 長時間實跑不用一直開瀏覽器。W0 實測期間改用 `live-run.sh` 每 60 秒 heartbeat（qwen2.5:1.5b 30 分鐘那輪中途仍被停過一次並自動重啟，重播照樣對得上）；qwen2.5:0.5b 那輪改設 `WUXIA_KEEP_ALIVE=1` 實測 keepAlive |
 
 ## 待 owner 決定
 
-- **D1 預設雲端模型**：W0 沒有雲端金鑰。建議：先以 `gpt-4o-mini`（OpenAI，$0.15／$0.60 每百萬 token）當預設，W2 之前由 owner 提供金鑰（`npx convex env set OPENAI_API_KEY …`，改 `EMBEDDING_DIMENSION` 為 1536）後重跑 `tools/wuxia/live-run.sh` 補兩個雲端模型的比較。目前程式維持上游預設（Ollama），可隨時切換、可回退。
-- **D2 `LLM_DAILY_TOKEN_CAP` 建議值**：依 W0 實測量（見 W0.md）5 人每小時約用 N 萬 token；建議先設 `300000`（約 10 小時開機量），超過改模板句。目前未設定（不設上限）。
+- **D1 預設雲端模型**：W0 沒有雲端金鑰。建議：先以 `gpt-4o-mini`（OpenAI，$0.15／$0.60 每百萬 token）當預設，W2 之前由 owner 提供金鑰（`npx convex env set OPENAI_API_KEY …`，把 `data/wuxia/world.config.json` 的 `embeddingDimension` 改為 1536）後重跑 `tools/wuxia/live-run.sh` 補兩個雲端模型的比較。目前程式維持上游預設（Ollama），可隨時切換、可回退。
+- **D2 `LLM_DAILY_TOKEN_CAP` 建議值**：依 W0 實測量（見 W0.md）5 人每小時約用 25 萬 token（qwen2.5:1.5b 30 分鐘實測 129402 token → 每小時 247396；雲端模型回覆較長，可能更多）；建議先設 `2500000`（約 10 小時開機量，以 gpt-4o-mini 價目約 US$0.45／天），超過改模板句。目前未設定（不設上限）。
