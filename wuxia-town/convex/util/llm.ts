@@ -123,7 +123,13 @@ export async function chatCompletion(
   } & {
     stream?: false | null | undefined;
   },
-): Promise<{ content: string; retries: number; ms: number }>;
+  // WUXIA-PATCH(W0): 多回傳 usage（給 LLM_DAILY_TOKEN_CAP 計量）
+): Promise<{
+  content: string;
+  retries: number;
+  ms: number;
+  usage?: CreateChatCompletionResponse['usage'];
+}>;
 // Overload for streaming
 export async function chatCompletion(
   body: Omit<CreateChatCompletionRequest, 'model'> & {
@@ -136,12 +142,20 @@ export async function chatCompletion(
   body: Omit<CreateChatCompletionRequest, 'model'> & {
     model?: CreateChatCompletionRequest['model'];
   },
-) {
+  // WUXIA-PATCH(W0): 明寫實作的回傳型別（多了 usage）
+): Promise<{
+  content: string | ChatCompletionContent;
+  retries: number;
+  ms: number;
+  usage?: CreateChatCompletionResponse['usage'];
+}> {
   const config = getLLMConfig();
   body.model = body.model ?? config.chatModel;
   const stopWords = body.stop ? (typeof body.stop === 'string' ? [body.stop] : body.stop) : [];
   if (config.stopWords) stopWords.push(...config.stopWords);
   console.log(body);
+  // WUXIA-PATCH(W0): 記下回應的 usage
+  let usage = undefined as CreateChatCompletionResponse['usage'] | undefined;
   const {
     result: content,
     retries,
@@ -172,6 +186,8 @@ export async function chatCompletion(
     } else {
       const json = (await result.json()) as CreateChatCompletionResponse;
       const content = json.choices[0].message?.content;
+      // WUXIA-PATCH(W0): 記下回應的 usage
+      usage = json.usage;
       if (content === undefined) {
         throw new Error('Unexpected result from OpenAI: ' + JSON.stringify(json));
       }
@@ -184,6 +200,8 @@ export async function chatCompletion(
     content,
     retries,
     ms,
+    // WUXIA-PATCH(W0): 多回傳 usage
+    usage,
   };
 }
 

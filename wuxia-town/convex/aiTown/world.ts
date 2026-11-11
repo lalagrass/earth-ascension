@@ -4,6 +4,8 @@ import { Player, serializedPlayer } from './player';
 import { Agent, serializedAgent } from './agent';
 import { GameId, parseGameId, playerId } from './ids';
 import { parseMap } from '../util/object';
+// WUXIA-PATCH(W0): world 文件新增 wuxia 欄位（元素狀態＋種子亂數），跟 step diff 一起存檔
+import type { WuxiaState } from '../wuxia/state';
 
 export const historicalLocations = v.array(
   v.object({
@@ -18,6 +20,8 @@ export const serializedWorld = {
   players: v.array(v.object(serializedPlayer)),
   agents: v.array(v.object(serializedAgent)),
   historicalLocations: v.optional(historicalLocations),
+  // WUXIA-PATCH(W0): 武俠元素狀態與 rng（#549 第 2、4 節）
+  wuxia: v.optional(v.any()),
 };
 export type SerializedWorld = ObjectType<typeof serializedWorld>;
 
@@ -27,6 +31,8 @@ export class World {
   players: Map<GameId<'players'>, Player>;
   agents: Map<GameId<'agents'>, Agent>;
   historicalLocations?: Map<GameId<'players'>, ArrayBuffer>;
+  // WUXIA-PATCH(W0): 武俠元素狀態與 rng
+  wuxia?: WuxiaState;
 
   constructor(serialized: SerializedWorld) {
     const { nextId, historicalLocations } = serialized;
@@ -35,6 +41,8 @@ export class World {
     this.conversations = parseMap(serialized.conversations, Conversation, (c) => c.id);
     this.players = parseMap(serialized.players, Player, (p) => p.id);
     this.agents = parseMap(serialized.agents, Agent, (a) => a.id);
+    // WUXIA-PATCH(W0): 讀入 wuxia 欄位
+    this.wuxia = serialized.wuxia;
 
     if (historicalLocations) {
       this.historicalLocations = new Map();
@@ -60,6 +68,8 @@ export class World {
           playerId,
           location,
         })),
+      // WUXIA-PATCH(W0): 寫出 wuxia 欄位
+      wuxia: this.wuxia,
     };
   }
 }

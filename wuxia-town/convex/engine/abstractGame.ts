@@ -17,7 +17,12 @@ export abstract class AbstractGame {
 
   // Optional callback at the beginning of each step.
   beginStep(now: number) {}
-  abstract saveStep(ctx: ActionCtx, engineUpdate: EngineUpdate): Promise<void>;
+  // WUXIA-PATCH(W0): 多帶 step 邊界紀錄
+  abstract saveStep(
+    ctx: ActionCtx,
+    engineUpdate: EngineUpdate,
+    stepRecord?: WuxiaStepBoundary,
+  ): Promise<void>;
 
   async runStep(ctx: ActionCtx, now: number) {
     const inputs = await ctx.runQuery(internal.engine.abstractGame.loadInputs, {
@@ -26,6 +31,23 @@ export abstract class AbstractGame {
       max: this.maxInputsPerStep,
     });
 
+    // WUXIA-PATCH(W0): 把純計算的部分抽成 simulateStep()，讓無頭模擬與重播跑同一段程式；
+    // 並把 step 邊界 {generation, startTs, endTs, now, ...} 交給 saveStep 寫進 wuxiaSteps。
+    const { engineUpdate, stepRecord } = this.simulateStep(inputs, now);
+    await this.saveStep(ctx, engineUpdate, stepRecord);
+
+    console.debug(
+      `Simulated from ${stepRecord.startTs} to ${stepRecord.endTs} (${
+        stepRecord.endTs - stepRecord.startTs
+      }ms)`,
+    );
+  }
+
+  // WUXIA-PATCH(W0): 原 runStep 的模擬迴圈，邏輯不變，只是不碰資料庫。
+  simulateStep(
+    inputs: Array<Pick<Doc<'inputs'>, '_id' | 'number' | 'name' | 'args' | 'received'>>,
+    now: number,
+  ): { engineUpdate: EngineUpdate; stepRecord: WuxiaStepBoundary } {
     const lastStepTs = this.engine.currentTime;
     const startTs = lastStepTs ? lastStepTs + this.tickDuration : now;
     let currentTs = startTs;
@@ -82,11 +104,32 @@ export abstract class AbstractGame {
     this.engine.processedInputNumber = processedInputNumber;
     const { _id, _creationTime, ...engine } = this.engine;
     const engineUpdate = { engine, completedInputs, expectedGenerationNumber };
-    await this.saveStep(ctx, engineUpdate);
-
-    console.debug(`Simulated from ${startTs} to ${currentTs} (${currentTs - startTs}ms)`);
+    // WUXIA-PATCH(W0): step 邊界紀錄（重播用）
+    const stepRecord: WuxiaStepBoundary = {
+      generation: expectedGenerationNumber,
+      startTs,
+      endTs: currentTs,
+      now,
+      prevTime: lastStepTs,
+      numTicks,
+      inputsThrough: inputs.length > 0 ? inputs[inputs.length - 1].number : undefined,
+      processedInputNumber,
+    };
+    return { engineUpdate, stepRecord };
   }
 }
+
+// WUXIA-PATCH(W0): step 邊界紀錄的型別（hash 由 Game.saveStep 補上）
+export type WuxiaStepBoundary = {
+  generation: number;
+  startTs: number;
+  endTs: number;
+  now: number;
+  prevTime?: number;
+  numTicks: number;
+  inputsThrough?: number;
+  processedInputNumber?: number;
+};
 
 const completedInput = v.object({
   inputId: v.id('inputs'),

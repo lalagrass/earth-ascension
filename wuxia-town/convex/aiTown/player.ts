@@ -151,7 +151,8 @@ export class Player {
     const { position, facing, velocity } = candidate;
     const collisionReason = blocked(game, now, position, this.id);
     if (collisionReason !== null) {
-      const backoff = Math.random() * PATHFINDING_BACKOFF;
+      // WUXIA-PATCH(W0): 上游的全域亂數改成 game.rng()（種子亂數，可重播）
+      const backoff = game.rng() * PATHFINDING_BACKOFF;
       console.warn(`Stopping path for ${this.id}, waiting for ${backoff}ms: ${collisionReason}`);
       this.pathfinding.state = {
         kind: 'waiting',
@@ -190,8 +191,9 @@ export class Player {
     let position;
     for (let attempt = 0; attempt < 10; attempt++) {
       const candidate = {
-        x: Math.floor(Math.random() * game.worldMap.width),
-        y: Math.floor(Math.random() * game.worldMap.height),
+        // WUXIA-PATCH(W0): 上游的全域亂數改成 game.rng()（種子亂數，可重播）
+        x: Math.floor(game.rng() * game.worldMap.width),
+        y: Math.floor(game.rng() * game.worldMap.height),
       };
       if (blocked(game, now, candidate)) {
         continue;
@@ -208,7 +210,8 @@ export class Player {
       { dx: 0, dy: 1 },
       { dx: 0, dy: -1 },
     ];
-    const facing = facingOptions[Math.floor(Math.random() * facingOptions.length)];
+    // WUXIA-PATCH(W0): 上游的全域亂數改成 game.rng()（種子亂數，可重播）
+    const facing = facingOptions[Math.floor(game.rng() * facingOptions.length)];
     if (!characters.find((c) => c.name === character)) {
       throw new Error(`Invalid character: ${character}`);
     }

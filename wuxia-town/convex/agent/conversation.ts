@@ -7,6 +7,9 @@ import { api, internal } from '../_generated/api';
 import * as embeddingsCache from './embeddingsCache';
 import { GameId, conversationId, playerId } from '../aiTown/ids';
 import { NUM_MEMORIES_TO_SEARCH } from '../constants';
+// WUXIA-PATCH(W0): 走 LLM_DAILY_TOKEN_CAP 預算；超過或失敗用模板句
+import { budgetedChatCompletion } from '../wuxia/llmBudget';
+import { conversationTemplate } from '../wuxia/templates';
 
 const selfInternal = internal.agent.conversation;
 
@@ -62,11 +65,17 @@ export async function startConversationMessage(
     { role: 'user', content: lastPrompt },
   ];
 
-  const { content } = await chatCompletion({
-    messages,
-    max_tokens: 300,
-    stop: stopWords(otherPlayer.name, player.name),
-  });
+  // WUXIA-PATCH(W0): chatCompletion → budgetedChatCompletion（模板句後備）
+  const { content } = await budgetedChatCompletion(
+    ctx,
+    'conversation.start',
+    {
+      messages,
+      max_tokens: 300,
+      stop: stopWords(otherPlayer.name, player.name),
+    },
+    conversationTemplate('start', Math.random(), { other: otherPlayer.name }),
+  );
   return trimContentPrefx(content, lastPrompt);
 }
 
@@ -128,11 +137,17 @@ export async function continueConversationMessage(
   const lastPrompt = `${player.name} to ${otherPlayer.name}:`;
   llmMessages.push({ role: 'user', content: lastPrompt });
 
-  const { content } = await chatCompletion({
-    messages: llmMessages,
-    max_tokens: 300,
-    stop: stopWords(otherPlayer.name, player.name),
-  });
+  // WUXIA-PATCH(W0): chatCompletion → budgetedChatCompletion（模板句後備）
+  const { content } = await budgetedChatCompletion(
+    ctx,
+    'conversation.continue',
+    {
+      messages: llmMessages,
+      max_tokens: 300,
+      stop: stopWords(otherPlayer.name, player.name),
+    },
+    conversationTemplate('continue', Math.random(), { other: otherPlayer.name }),
+  );
   return trimContentPrefx(content, lastPrompt);
 }
 
@@ -177,11 +192,17 @@ export async function leaveConversationMessage(
   const lastPrompt = `${player.name} to ${otherPlayer.name}:`;
   llmMessages.push({ role: 'user', content: lastPrompt });
 
-  const { content } = await chatCompletion({
-    messages: llmMessages,
-    max_tokens: 300,
-    stop: stopWords(otherPlayer.name, player.name),
-  });
+  // WUXIA-PATCH(W0): chatCompletion → budgetedChatCompletion（模板句後備）
+  const { content } = await budgetedChatCompletion(
+    ctx,
+    'conversation.leave',
+    {
+      messages: llmMessages,
+      max_tokens: 300,
+      stop: stopWords(otherPlayer.name, player.name),
+    },
+    conversationTemplate('leave', Math.random(), { other: otherPlayer.name }),
+  );
   return trimContentPrefx(content, lastPrompt);
 }
 

@@ -111,7 +111,8 @@ export class Agent {
       if (member.status.kind === 'invited') {
         // Accept a conversation with another agent with some probability and with
         // a human unconditionally.
-        if (otherPlayer.human || Math.random() < INVITE_ACCEPT_PROBABILITY) {
+        // WUXIA-PATCH(W0): 上游的全域亂數改成 game.rng()（種子亂數，可重播）
+        if (otherPlayer.human || game.rng() < INVITE_ACCEPT_PROBABILITY) {
           console.log(`Agent ${player.id} accepting invite from ${otherPlayer.id}`);
           conversation.acceptInvite(game, player);
           // Stop moving so we can start walking towards the other player.
@@ -171,7 +172,8 @@ export class Agent {
           if (isInitiator || awkwardDeadline < now) {
             // Grab the lock on the conversation and send a "start" message.
             console.log(`${player.id} initiating conversation with ${otherPlayer.id}.`);
-            const messageUuid = crypto.randomUUID();
+            // WUXIA-PATCH(W0): 上游的系統 UUID 改成 game.rngUuid()（種子亂數，可重播）
+            const messageUuid = game.rngUuid();
             conversation.setIsTyping(now, player, messageUuid);
             this.startOperation(game, now, 'agentGenerateMessage', {
               worldId: game.worldId,
@@ -192,7 +194,8 @@ export class Agent {
         const tooLongDeadline = started + MAX_CONVERSATION_DURATION;
         if (tooLongDeadline < now || conversation.numMessages > MAX_CONVERSATION_MESSAGES) {
           console.log(`${player.id} leaving conversation with ${otherPlayer.id}.`);
-          const messageUuid = crypto.randomUUID();
+          // WUXIA-PATCH(W0): 上游的系統 UUID 改成 game.rngUuid()（種子亂數，可重播）
+          const messageUuid = game.rngUuid();
           conversation.setIsTyping(now, player, messageUuid);
           this.startOperation(game, now, 'agentGenerateMessage', {
             worldId: game.worldId,
@@ -219,7 +222,8 @@ export class Agent {
         }
         // Grab the lock and send a message!
         console.log(`${player.id} continuing conversation with ${otherPlayer.id}.`);
-        const messageUuid = crypto.randomUUID();
+        // WUXIA-PATCH(W0): 上游的系統 UUID 改成 game.rngUuid()（種子亂數，可重播）
+        const messageUuid = game.rngUuid();
         conversation.setIsTyping(now, player, messageUuid);
         this.startOperation(game, now, 'agentGenerateMessage', {
           worldId: game.worldId,

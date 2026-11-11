@@ -17,6 +17,7 @@ import { InputArgs, InputNames, inputs } from './inputs';
 import {
   AbstractGame,
   EngineUpdate,
+  WuxiaStepBoundary,
   applyEngineUpdate,
   engineUpdate,
   loadEngine,
@@ -25,6 +26,13 @@ import { internal } from '../_generated/api';
 import { HistoricalObject } from '../engine/historicalObject';
 import { AgentDescription, serializedAgentDescription } from './agentDescription';
 import { parseMap, serializeMap } from '../util/object';
+// WUXIA-PATCH(W0): 種子亂數、元素掛鉤、step 紀錄與狀態 hash
+import { nextFloat, rngUuid } from '../wuxia/rng';
+import { initWuxiaState } from '../wuxia/state';
+import { initElements, runElements } from '../wuxia/registry';
+import { stateHash } from '../wuxia/hash';
+import { recordWuxiaStep } from '../wuxia/steps';
+import { wuxiaStep } from '../wuxia/schema';
 
 const gameState = v.object({
   world: v.object(serializedWorld),
@@ -71,6 +79,11 @@ export class Game extends AbstractGame {
 
     this.world = new World(state.world);
     delete this.world.historicalLocations;
+    // WUXIA-PATCH(W0): 舊世界或剛建立的世界沒有 wuxia 欄位時，依 data/wuxia/world.config.json 初始化
+    if (!this.world.wuxia) {
+      this.world.wuxia = initWuxiaState();
+      initElements(this.world.wuxia);
+    }
 
     this.descriptionsModified = false;
     this.worldMap = new WorldMap(state.worldMap);
@@ -144,6 +157,21 @@ export class Game extends AbstractGame {
     };
   }
 
+  // WUXIA-PATCH(W0): 引擎內唯一的亂數來源，狀態存在 world.wuxia.rng（#549 第 4 節）
+  rng(): number {
+    return nextFloat(this.world.wuxia!.rng);
+  }
+
+  // WUXIA-PATCH(W0): 取代系統 UUID，由 rng 產生
+  rngUuid(): string {
+    return rngUuid(() => this.rng());
+  }
+
+  // WUXIA-PATCH(W0): 狀態 hash（world.serialize()＋wuxia，鍵排序 JSON 的 sha256）
+  wuxiaHash(): string {
+    return stateHash(this.world.serialize());
+  }
+
   allocId<T extends IdTypes>(idType: T): GameId<T> {
     const id = allocGameId(idType, this.world.nextId);
     this.world.nextId += 1;
@@ -190,6 +218,8 @@ export class Game extends AbstractGame {
     for (const agent of this.world.agents.values()) {
       agent.tick(this, now);
     }
+    // WUXIA-PATCH(W0): 內建 tick 跑完後，依 registry 順序執行已開啟的武俠元素
+    runElements(this, now);
 
     // Save each player's location into the history buffer at the end of
     // each tick.
@@ -203,13 +233,20 @@ export class Game extends AbstractGame {
     }
   }
 
-  async saveStep(ctx: ActionCtx, engineUpdate: EngineUpdate): Promise<void> {
+  async saveStep(
+    ctx: ActionCtx,
+    engineUpdate: EngineUpdate,
+    stepRecord?: WuxiaStepBoundary,
+  ): Promise<void> {
+    // WUXIA-PATCH(W0): 記下 step 結束時的狀態 hash，跟 step 邊界一起寫進 wuxiaSteps
+    const wuxiaStepRecord = stepRecord && { ...stepRecord, hash: this.wuxiaHash() };
     const diff = this.takeDiff();
     await ctx.runMutation(internal.aiTown.game.saveWorld, {
       engineId: this.engine._id,
       engineUpdate,
       worldId: this.worldId,
       worldDiff: diff,
+      wuxiaStep: wuxiaStepRecord,
     });
   }
 
@@ -247,7 +284,8 @@ export class Game extends AbstractGame {
     return result;
   }
 
-  static async saveDiff(ctx: MutationCtx, worldId: Id<'worlds'>, diff: GameStateDiff) {
+  // WUXIA-PATCH(W0): 多收 step 的 now，取代牆鐘時間
+  static async saveDiff(ctx: MutationCtx, worldId: Id<'worlds'>, diff: GameStateDiff, now: number) {
     const existingWorld = await ctx.db.get(worldId);
     if (!existingWorld) {
       throw new Error(`No world found with id ${worldId}`);
@@ -267,7 +305,8 @@ export class Game extends AbstractGame {
           id: conversation.id,
           created: conversation.created,
           creator: conversation.creator,
-          ended: Date.now(),
+          // WUXIA-PATCH(W0): 用 step 的 now，不用牆鐘時間
+          ended: now,
           lastMessage: conversation.lastMessage,
           numMessages: conversation.numMessages,
           participants,
@@ -285,7 +324,8 @@ export class Game extends AbstractGame {
               conversationId: conversation.id,
               player1,
               player2,
-              ended: Date.now(),
+              // WUXIA-PATCH(W0): 用 step 的 now，不用牆鐘時間
+              ended: now,
             });
           }
         }
@@ -363,9 +403,19 @@ export const saveWorld = internalMutation({
     engineUpdate,
     worldId: v.id('worlds'),
     worldDiff: gameStateDiff,
+    // WUXIA-PATCH(W0): step 邊界＋hash
+    wuxiaStep: v.optional(wuxiaStep),
   },
   handler: async (ctx, args) => {
+    // WUXIA-PATCH(W0): 先記 step（第一筆時順便存套用前的完整快照），再套用
+    if (args.wuxiaStep) {
+      await recordWuxiaStep(ctx, args.worldId, args.engineId, args.wuxiaStep, () =>
+        Game.load(ctx.db, args.worldId, args.engineUpdate.expectedGenerationNumber),
+      );
+    }
     await applyEngineUpdate(ctx, args.engineId, args.engineUpdate);
-    await Game.saveDiff(ctx, args.worldId, args.worldDiff);
+    // WUXIA-PATCH(W0): ended 改用這個 step 的引擎時間
+    const stepNow = args.engineUpdate.engine.currentTime ?? args.wuxiaStep?.endTs ?? 0;
+    await Game.saveDiff(ctx, args.worldId, args.worldDiff, stepNow);
   },
 });

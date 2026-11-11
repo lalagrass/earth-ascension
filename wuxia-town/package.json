@@ -12,7 +12,12 @@
     "dashboard": "convex dashboard",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --verbose",
     "level-editor": "vite src/editor/",
-    "le": "vite src/editor/"
+    "le": "vite src/editor/",
+    "wuxia:headless": "tsx tools/wuxia/headless.ts",
+    "wuxia:replay": "tsx tools/wuxia/replay.ts",
+    "wuxia:journal": "tsx tools/wuxia/journal.ts",
+    "wuxia:hash": "tsx tools/wuxia/hash.ts",
+    "wuxia:check": "npm test && tsx tools/wuxia/check.ts"
   },
   "dependencies": {
     "@clerk/clerk-react": "^4.27.0",
@@ -57,6 +62,7 @@
     "tailwindcss": "^3.3.3",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
+    "tsx": "^4.23.15",
     "vite": "^4.4.9"
   },
   "type": "module"

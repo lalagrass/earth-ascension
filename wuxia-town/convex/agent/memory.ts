@@ -7,6 +7,13 @@ import { asyncMap } from '../util/asyncMap';
 import { GameId, agentId, conversationId, playerId } from '../aiTown/ids';
 import { SerializedPlayer } from '../aiTown/player';
 import { memoryFields } from './schema';
+// WUXIA-PATCH(W0): 走 LLM_DAILY_TOKEN_CAP 預算；超過或失敗用模板句
+import { budgetedChatCompletion } from '../wuxia/llmBudget';
+import {
+  MEMORY_IMPORTANCE_FALLBACK,
+  MEMORY_REFLECTION_FALLBACK,
+  MEMORY_SUMMARY_TEMPLATE,
+} from '../wuxia/templates';
 
 // How long to wait before updating a memory's last access time.
 export const MEMORY_ACCESS_THROTTLE = 300_000; // In ms
@@ -58,14 +65,21 @@ export async function rememberConversation(
     });
   }
   llmMessages.push({ role: 'user', content: 'Summary:' });
-  const { content } = await chatCompletion({
-    messages: llmMessages,
-    max_tokens: 500,
-  });
+  // WUXIA-PATCH(W0): chatCompletion → budgetedChatCompletion（模板句後備）
+  const { content } = await budgetedChatCompletion(
+    ctx,
+    'memory.summary',
+    {
+      messages: llmMessages,
+      max_tokens: 500,
+    },
+    MEMORY_SUMMARY_TEMPLATE.replace('{other}', otherPlayer.name),
+  );
   const description = `Conversation with ${otherPlayer.name} at ${new Date(
     data.conversation._creationTime,
   ).toLocaleString()}: ${content}`;
-  const importance = await calculateImportance(description);
+  // WUXIA-PATCH(W0): 多傳 ctx 給預算檢查
+  const importance = await calculateImportance(ctx, description);
   const { embedding } = await fetchEmbedding(description);
   authors.delete(player.id as GameId<'players'>);
   await ctx.runMutation(selfInternal.insertMemory, {
@@ -243,19 +257,25 @@ export const loadMessages = internalQuery({
   },
 });
 
-async function calculateImportance(description: string) {
-  const { content: importanceRaw } = await chatCompletion({
-    messages: [
-      {
-        role: 'user',
-        content: `On the scale of 0 to 9, where 0 is purely mundane (e.g., brushing teeth, making bed) and 9 is extremely poignant (e.g., a break up, college acceptance), rate the likely poignancy of the following piece of memory.
+// WUXIA-PATCH(W0): 多收 ctx；chatCompletion → budgetedChatCompletion（後備 "0"）
+async function calculateImportance(ctx: ActionCtx, description: string) {
+  const { content: importanceRaw } = await budgetedChatCompletion(
+    ctx,
+    'memory.importance',
+    {
+      messages: [
+        {
+          role: 'user',
+          content: `On the scale of 0 to 9, where 0 is purely mundane (e.g., brushing teeth, making bed) and 9 is extremely poignant (e.g., a break up, college acceptance), rate the likely poignancy of the following piece of memory.
       Memory: ${description}
       Answer on a scale of 0 to 9. Respond with number only, e.g. "5"`,
-      },
-    ],
-    temperature: 0.0,
-    max_tokens: 1,
-  });
+        },
+      ],
+      temperature: 0.0,
+      max_tokens: 1,
+    },
+    MEMORY_IMPORTANCE_FALLBACK,
+  );
 
   let importance = parseFloat(importanceRaw);
   if (isNaN(importance)) {
@@ -359,20 +379,27 @@ async function reflectOnMemories(
     'Example: [{insight: "...", statementIds: [1,2]}, {insight: "...", statementIds: [1]}, ...]',
   );
 
-  const { content: reflection } = await chatCompletion({
-    messages: [
-      {
-        role: 'user',
-        content: prompt.join('\n'),
-      },
-    ],
-  });
+  // WUXIA-PATCH(W0): chatCompletion → budgetedChatCompletion（後備 "[]"）
+  const { content: reflection } = await budgetedChatCompletion(
+    ctx,
+    'memory.reflection',
+    {
+      messages: [
+        {
+          role: 'user',
+          content: prompt.join('\n'),
+        },
+      ],
+    },
+    MEMORY_REFLECTION_FALLBACK,
+  );
 
   try {
     const insights = JSON.parse(reflection) as { insight: string; statementIds: number[] }[];
     const memoriesToSave = await asyncMap(insights, async (item) => {
       const relatedMemoryIds = item.statementIds.map((idx: number) => memories[idx]._id);
-      const importance = await calculateImportance(item.insight);
+      // WUXIA-PATCH(W0): 多傳 ctx 給預算檢查
+      const importance = await calculateImportance(ctx, item.insight);
       const { embedding } = await fetchEmbedding(item.insight);
       console.debug('adding reflection memory...', item.insight);
       return {

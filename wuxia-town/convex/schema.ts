@@ -4,6 +4,8 @@ import { agentTables } from './agent/schema';
 import { aiTownTables } from './aiTown/schema';
 import { conversationId, playerId } from './aiTown/ids';
 import { engineTables } from './engine/schema';
+// WUXIA-PATCH(W0): 武俠小鎮新增的表（wuxiaSteps、wuxiaSnapshots、wuxiaLlmUsage）
+import { wuxiaTables } from './wuxia/schema';
 
 export default defineSchema({
   music: defineTable({
@@ -24,4 +26,6 @@ export default defineSchema({
   ...agentTables,
   ...aiTownTables,
   ...engineTables,
+  // WUXIA-PATCH(W0): 武俠小鎮新增的表
+  ...wuxiaTables,
 });
