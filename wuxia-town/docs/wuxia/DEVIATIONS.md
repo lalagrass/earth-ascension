@@ -37,8 +37,28 @@
 | W1-10 | 規格未提 | 截圖頁放在 `src/wuxia/shot/index.html`（只給 Vite dev server 用，不進正式 build） | 新東西只放 `src/wuxia/` 等目錄（#549 §1） |
 | W1-11 | 開關關掉要能用回原版 | 有做也驗過（本機下載上游素材後截圖，畫面就是原版地圖與人物），但這張截圖**沒有 commit** | 截圖裡就是上游美術，不能放進 repo。無頭狀態的對照放在 W1.md（A 段 hash 與 W0 相同） |
 
+## W2（#554）
+
+| # | 原規格 | 實際做法 | 理由／回退方式 |
+|---|---|---|---|
+| W2-1 | 守門程式放 `convex/wuxia/w02-folk/guard.ts`；#549 §1 元素子資料夾寫成 `w03-life/`、`w04-dojo/` | 目錄改成 `convex/wuxia/w02_folk/`；W1 的 `convex/wuxia/w01-skin/` 一併改成 `w01_skin/`。元素 id（`w01-skin`、`w02-folk`，設定檔與 `world.wuxia.enabled` 裡的字串）不變。`wuxia:check` 第 10 項檢查 `convex/` 底下的路徑 | Convex 部署時模組路徑只接受英數、底線、句點，`w02-folk` 會被拒（`InvalidConfig: Path component w02-folk can only contain alphanumeric characters, underscores, or periods`）。W1 的 `w01-skin` 也有同樣問題，只是 W1 沒有部署到 Convex 實跑，所以沒被發現。之後的 W3–W9 也用底線（`w03_life/`…）。回退：無（帶連字號就無法部署） |
+| W2-2 | 用雲端 LLM 實跑 20 分鐘 | 用本機 Convex 後端＋Ollama `qwen2.5:3b`（CPU）實跑 20 分鐘，匯出 `fixtures/w02-live.jsonl` | 仍沒有雲端金鑰（D1）。journal、重播、抽樣、守門比例的做法跟雲端完全相同；換成雲端只要設金鑰重跑 `tools/wuxia/live-run.sh`。中文品質雲端模型通常更好，守門比例應該只會更低 |
+| W2-3 | prompt 模板放 `data/wuxia/prompts/*.txt` | 照放；另由 `npm run wuxia:gen-prompts` 把 txt 與 `anachronisms.txt` 轉成 `convex/wuxia/w02_folk/prompts.gen.ts` 給程式 import。`wuxia:check` 第 8 項與 jest 檢查兩邊同步 | Convex 打包與 jest 都不能直接 import `.txt`。改 prompt 時只改 txt，跑一次 gen-prompts 即可。回退：改回寫死在程式裡 |
+| W2-4 | 守門條件：禁用詞或英文字母 | 另外加了 4 條（都是更嚴，沒有放寬）：每句（以。！？；…或換行分句，不算標點空白）超過 40 字、整則超過 120 字、空回覆、跟自己在同一段對話裡說過的話一字不差 | 「每句 40 字以內」是 #554 範圍 2 的 prompt 要求，驗收也寫了「長度」的單元測試，所以由守門檢查。重複：實測 qwen2.5:3b 很常原句重複（20 分鐘 216 則訊息的生成過程中，共有 69 次嘗試因原句重複被擋），不擋會讓對話讀起來像卡住。回退：`checkReply` 拿掉對應判斷 |
+| W2-5 | 規格未提 | 守門前先清理：去掉模型自己加的「某某對某某說：」「某某：」前綴、包住整句的引號、以及替對方接下去的第二段 | 只是格式清理，清理後照樣檢查禁用詞與英文（有單元測試）。回退：`normalizeReply` 改成只 trim |
+| W2-6 | LLM 失敗或超過預算用模板句；重抽一次 | LLM 失敗／超過 `LLM_DAILY_TOKEN_CAP` 時不重抽直接用模板句；第一次生成已超過 30 秒（`WUXIA_GUARD_RETRY_MS` 可調）也不重抽 | 「規則永遠不等 LLM」：慢的模型重抽會讓整段對話再卡一輪。metadata 的 `cause` 分 `llm-fallback`／`rejected`／`no-retry`，看得出原因 |
+| W2-7 | 守門結果記在訊息的 metadata（`guard: pass\|retry\|template`） | `messages.metadata = { guard, reasons, attempts, cause }` | 多記每次沒過的理由，方便調 prompt 與禁用詞 |
+| W2-8 | 「開關關閉時用回上游」 | `w02-folk` 宣告 `requires: ['w01-skin']`；建世界時只把「真的會生效」的元素寫進 `world.wuxia.enabled`（`pruneUnmetRequires`），所以 `--off w01-skin` 的世界仍跟 W0 逐位元組相同 | 鎮民用的是 W1 的古裝人物圖與山腳鎮地圖，沒有換皮時用不了。W1 的 skin-diff 固定關掉 `w02-folk`（它是 W1 自己的隔離測試），W2 的開關對照在 `folk-diff` |
+| W2-9 | 規格未提 | 6 人的 `home`／`workplace`：林嫂 茶館／茶館、石虎 鐵匠鋪／鐵匠鋪、何郎中 藥鋪／藥鋪、老韓 西邊民居 1／茶館、阿青 西邊民居 2／小廣場、周教頭 武館／茶館（白天在茶館喝悶酒） | 規格只給身分描述。W2 只是資料，W3 起才用到；W3 可以改 |
+| W2-10 | 禁用詞含「簡體字常見詞」 | 簡體部分列的是 50 個只在簡體出現的常用單字（这、们、说、么、没、时…），子字串比對，等於擋下所有含這些字的詞 | 列單字比列詞涵蓋更廣；這些字在繁體裡都不會出現，不會誤擋。繁體同義句有單元測試確認會過 |
+| W2-11 | 「記憶摘要的 prompt 也改成繁中」 | 只改摘要（prompt、對話行、`摘要：`、存起來的記憶描述）；重要度評分與反思的 prompt 照上游英文 | 規格只點名摘要。反思寫出的記憶如果是英文，之後被帶進對話 prompt，產生的英文回覆會被守門擋下。若要一起改，W5（心念）時處理 |
+| W2-12 | 規格未提 | 無頭模擬的人數預設改成人物表的人數（開 6 人、關 5 人）；`seed 7`／`seed 8` 的預設 hash 因此改變（見 W2.md「hash 變化」） | 規格要「起始 6 人」。`--off w02-folk` 仍重現 W1 的 hash |
+| W2-13 | 規格未提 | `wuxia:shot` 判斷「有沒有遊戲時鐘」改成看實際生效的元素（原本看命令列有沒有開任何元素） | W1 的寫法在 `--off w02-folk` 時誤判成沒有時鐘，截圖時刻差 1 分鐘。修正後 `--off w02-folk` 的 W1 截圖 hash 跟 W1.md 完全一樣 |
+| W2-14 | 規格未提 | `registry.test.ts` 的「預設設定只開 w01-skin」改成「W1 的設定只開 w01-skin」，另加「W2 預設開 w01-skin、w02-folk」與「關換皮時 w02-folk 不生效」 | 預設值是 W2 刻意改的；W1 那條的檢查內容沒變，只是改用明寫的 W1 設定 |
+| W2-15 | 規格未提 | 無頭模擬的模板句：同一段對話裡抽到跟自己上一句一樣時換下一句（不多耗亂數）；live 的模板句也一樣避開上一句 | 讓無頭跑出來的中文對話好讀一點；開／關的 rng 消耗相同（folk-diff B 證明） |
+
 ## 待 owner 決定
 
-- **D1 預設雲端模型**：W0 沒有雲端金鑰。建議：先以 `gpt-4o-mini`（OpenAI，$0.15／$0.60 每百萬 token）當預設，W2 之前由 owner 提供金鑰（`npx convex env set OPENAI_API_KEY …`，把 `data/wuxia/world.config.json` 的 `embeddingDimension` 改為 1536）後重跑 `tools/wuxia/live-run.sh` 補兩個雲端模型的比較。目前程式維持上游預設（Ollama），可隨時切換、可回退。
+- **D1 預設雲端模型**：W0 沒有雲端金鑰（W2 的 20 分鐘實跑也因此改用本機 `qwen2.5:3b`，見 W2-2；有金鑰後兩份實跑都要用雲端模型重錄）。建議：先以 `gpt-4o-mini`（OpenAI，$0.15／$0.60 每百萬 token）當預設，W2 之前由 owner 提供金鑰（`npx convex env set OPENAI_API_KEY …`，把 `data/wuxia/world.config.json` 的 `embeddingDimension` 改為 1536）後重跑 `tools/wuxia/live-run.sh` 補兩個雲端模型的比較。目前程式維持上游預設（Ollama），可隨時切換、可回退。
 - **D2 `LLM_DAILY_TOKEN_CAP` 建議值**：依 W0 實測量（見 W0.md）5 人每小時約用 25 萬 token（qwen2.5:1.5b 30 分鐘實測 129402 token → 每小時 247396；雲端模型回覆較長，可能更多）；建議先設 `2500000`（約 10 小時開機量，以 gpt-4o-mini 價目約 US$0.45／天），超過改模板句。目前未設定（不設上限）。
 - **D3 `wuxia:shot --at` 的時刻**（W1-3）：0／600／1200 遊戲分鐘不可能剛好對到卯、午、戌。建議：把 #553 驗收改成 `--at 0,360,840`（遊戲分鐘 0＝卯正 06:00）。目前兩組截圖都在 `docs/wuxia/w01/`，改不改都不影響程式。
