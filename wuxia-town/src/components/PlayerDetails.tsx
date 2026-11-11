@@ -9,6 +9,8 @@ import { activityLabel, skinEnabled, worldClock } from '../wuxia/skin';
 import { LifePanel } from '../wuxia/LifePanel';
 // WUXIA-PATCH(W4): 技能面板（4 個技能與階級名）
 import { SkillPanel } from '../wuxia/SkillPanel';
+// WUXIA-PATCH(W5): w05-mind 的心事欄
+import { MindPanel } from '../wuxia/MindPanel';
 import { dojoOf } from '../wuxia/dojo';
 import { lifeOf } from '../wuxia/life';
 import { SelectElement } from './Player';
@@ -169,9 +171,12 @@ export default function PlayerDetails({
         playerId={player.id}
         clock={worldClock(game.world, historicalTime ?? Date.now())}
         enabled={game.world.wuxia?.enabled}
+        wuxia={game.world.wuxia}
       />
       {/* WUXIA-PATCH(W4): w04-dojo 的技能面板 */}
       <SkillPanel dojo={dojoOf(game.world)} life={lifeOf(game.world)} playerId={player.id} />
+      {/* WUXIA-PATCH(W5): w05-mind 的心事欄（心念＋強度＋因為） */}
+      <MindPanel wuxia={game.world.wuxia} playerId={player.id} />
       {canInvite && (
         <a
           className={

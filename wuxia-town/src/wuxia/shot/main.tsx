@@ -31,7 +31,8 @@ import { TownStatus } from '../TownStatus';
 import { lifeOf } from '../life';
 import { DojoLayer } from '../DojoLayer';
 import { SkillPanel } from '../SkillPanel';
-import { dojoOf } from '../dojo';
+import { MindPanel } from '../MindPanel';
+import { dojoOf, dojoOpened } from '../dojo';
 
 type ShotState = {
   engineTime: number;
@@ -87,7 +88,7 @@ function Scene(props: { game: ServerGame; width: number; height: number; time: n
       wuxiaFocus={focus}
     >
       <PixiStaticMap map={props.game.worldMap} />
-      {skin && <DojoLayer tileDim={tileDim} open={!!dojoOf(props.game.world)} />}
+      {skin && <DojoLayer tileDim={tileDim} open={dojoOpened(props.game.world)} />}
       {[...props.game.world.players.values()].map((p) => (
         <Player
           key={p.id}
@@ -173,8 +174,10 @@ function ShotApp({ state, opts }: { state: ShotState; opts: ShotOptions }) {
                   playerId={selected.id}
                   clock={clock}
                   enabled={game.world.wuxia?.enabled}
+                  wuxia={game.world.wuxia}
                 />
                 <SkillPanel dojo={dojoOf(game.world)} life={lifeOf(game.world)} playerId={selected.id} />
+                <MindPanel wuxia={game.world.wuxia} playerId={selected.id} />
                 <div className="desc my-6">
                   <p className="leading-tight text-base sm:text-sm">{desc?.description}</p>
                 </div>

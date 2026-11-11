@@ -12,14 +12,7 @@ import { profileByName } from '../w02_folk';
 import { movePlayer, stopPlayer } from '../../aiTown/movement';
 import { Conversation } from '../../aiTown/conversation';
 import { movementSpeed } from '../../../data/characters';
-import {
-  closedOverlays,
-  inviteMultiplier,
-  mindBlocks,
-  mindOf,
-  newcomers,
-  prefersNewcomer,
-} from '../w05_mind/data';
+import { inviteMultiplier, mindOf, newcomers, prefersNewcomer } from '../w05_mind/data';
 import {
   ACTIVITY_BY_ID,
   ActivityDef,
@@ -37,12 +30,14 @@ import {
   activeObjects,
   currentBlock,
   inRange,
+  lifeSchedCtx,
   placeAt,
   schedCtx,
   scheduleFor,
 } from './data';
 
 export const W03_LIFE = 'w03-life';
+export { lifeSchedCtx } from './data';
 
 /** 規則常數（遊戲分鐘）。數值調整寫在 docs/wuxia/W3.md。 */
 export const LIFE_RULES = {
@@ -504,12 +499,6 @@ export function personPlace(person: Person, player: Player): string {
 const LEISURE_PLACES = new Set(
   OBJECTS.filter((o) => o.activities.some((a) => a.leisure)).map((o) => o.place),
 );
-
-/** W5：世界此刻的日程情境（w03-life 的決策、面板、工具共用）。 */
-export function lifeSchedCtx(w: WuxiaState | undefined, day?: number): SchedCtx {
-  if (!w || !mindOf(w)) return schedCtx(w?.enabled, day);
-  return schedCtx(w.enabled, day, { blocks: mindBlocks(w), closed: closedOverlays(w) });
-}
 
 function canChat(game: Game, gm: number, pid: string, person: Person, ctx: SchedCtx): boolean {
   // 該睡覺的時段不邀人聊天

@@ -11,6 +11,11 @@ export function dojoOf(world: WithWuxia | undefined | null): DojoState | undefin
   return w.elements[W04_DOJO] as DojoState | undefined;
 }
 
+/** W5：武館開了沒（w05-mind 開時由周教頭的心念重開；W4 第 1 日就開）。畫面用這個決定武館是破落還是開張。 */
+export function dojoOpened(world: WithWuxia | undefined | null): boolean {
+  return dojoOf(world)?.openedAt !== undefined;
+}
+
 /** 正在打樁的人用「打樁」動作圖（public/wuxia/characters/folk.png 第 5 列）。 */
 export function poseFor(world: WithWuxia | undefined | null, playerId: string): string | undefined {
   if (!dojoOf(world)) return undefined;

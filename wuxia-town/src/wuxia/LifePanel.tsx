@@ -3,7 +3,8 @@
 import type { LifeState } from '../../convex/wuxia/w03_life';
 import type { ClockReading } from '../../convex/wuxia/clock';
 import { NEED_KEYS, NEED_LABELS, describeCurrent, describeNext, todayDone } from './life';
-import { schedCtx } from '../../convex/wuxia/w03_life/data';
+import { lifeSchedCtx, schedCtx } from '../../convex/wuxia/w03_life/data';
+import type { WuxiaState } from '../../convex/wuxia/state';
 
 export function LifePanel(props: {
   life?: LifeState;
@@ -11,6 +12,8 @@ export function LifePanel(props: {
   clock: ClockReading | null;
   /** W4：元素開關（日程覆蓋，例如 w04-dojo 開啟時周教頭的「武館指點」） */
   enabled?: Record<string, boolean>;
+  /** W5：世界的武俠狀態（心念加的時段、武館還沒重開時擋下的覆蓋）；給了就優先用 */
+  wuxia?: WuxiaState;
 }) {
   const { life, playerId, clock } = props;
   if (!life || !playerId || !clock) return null;
@@ -22,7 +25,7 @@ export function LifePanel(props: {
       <p className="wuxia-life-now">
         <b>正在</b> {describeCurrent(person)}
       </p>
-      <p className="wuxia-life-next">{describeNext(person, clock.minuteOfDay, schedCtx(props.enabled, clock.day))}</p>
+      <p className="wuxia-life-next">{describeNext(person, clock.minuteOfDay, props.wuxia ? lifeSchedCtx(props.wuxia, clock.day) : schedCtx(props.enabled, clock.day))}</p>
       <div className="wuxia-needs">
         {NEED_KEYS.map((k) => {
           const v = Math.round(person.needs[k]);

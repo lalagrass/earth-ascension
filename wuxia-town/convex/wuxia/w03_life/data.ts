@@ -3,6 +3,8 @@ import objectsJson from '../../../data/wuxia/objects.json';
 import needsJson from '../../../data/wuxia/needs.json';
 import schedulesJson from '../../../data/wuxia/schedules.json';
 import placesJson from '../../../data/wuxia/places.json';
+import type { WuxiaState } from '../state';
+import { closedOverlays, mindBlocks, mindOf } from '../w05_mind/data';
 
 export type Need = 'hunger' | 'fatigue' | 'boredom' | 'chore';
 export type Resource = 'water' | 'meal' | 'wood';
@@ -114,6 +116,12 @@ export function schedCtx(
   };
   if (mind?.blocks) ctx.blocks = mind.blocks;
   return ctx;
+}
+
+/** W5：世界此刻的日程情境（w03-life 的決策、面板、工具共用）。w05-mind 關閉時＝schedCtx(enabled, day)。 */
+export function lifeSchedCtx(w: WuxiaState | undefined, day?: number): SchedCtx {
+  if (!w || !mindOf(w)) return schedCtx(w?.enabled, day);
+  return schedCtx(w.enabled, day, { blocks: mindBlocks(w), closed: closedOverlays(w) });
 }
 
 export function scheduleFor(cid: string, ctx?: SchedCtx): Schedule | undefined {
