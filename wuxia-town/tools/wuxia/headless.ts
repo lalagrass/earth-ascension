@@ -24,6 +24,7 @@ import { makeRng } from '../../convex/wuxia/rng';
 import { conversationTemplate } from '../../convex/wuxia/templates';
 import { gameMinutes, readClock } from '../../convex/wuxia/clock';
 import { LifeTracer, conversationPlaceStats } from './life-trace';
+import { DojoTracer } from './dojo-trace';
 import { W03_LIFE, LifeState } from '../../convex/wuxia/w03_life';
 import {
   JournalInput,
@@ -139,6 +140,8 @@ export function runHeadless(opts: HeadlessOptions) {
   const checkpoints: Array<{ step: number; t: number; hash: string }> = [];
   const traces = new Map<string, Array<{ x: number; y: number }>>();
   const tracer = opts.trace ? new LifeTracer() : undefined;
+  // W4：練功紀錄（w04-dojo 開啟時才有內容）
+  const dojoTracer = opts.trace ? new DojoTracer() : undefined;
 
   const nameOf = (playerId: string) =>
     game.playerDescriptions.get(playerId as any)?.name ?? playerId;
@@ -270,6 +273,7 @@ export function runHeadless(opts: HeadlessOptions) {
       }
     }
     tracer?.sample(game, now);
+    dojoTracer?.sample(game, now);
     for (const p of game.world.players.values()) {
       const t = traces.get(p.id) ?? [];
       t.push({ x: p.position.x, y: p.position.y });
@@ -332,6 +336,8 @@ export function runHeadless(opts: HeadlessOptions) {
           conversations: conversationPlaceStats(tracer.conversations),
         }
       : undefined,
+    // W4：練功紀錄（--days 或 trace 且 w04-dojo 開時才有）
+    dojo: dojoTracer?.trace.on ? dojoTracer.trace : undefined,
   };
   return { snapshot, queue, steps, summary, finalHash, traces, game, messages };
 }

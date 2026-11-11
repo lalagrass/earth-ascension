@@ -27,13 +27,25 @@ describe('wuxia element registry', () => {
     expect(enabledElements(state).map((e) => e.id)).toEqual(['w01-skin']);
     expect(initWuxiaState({ elements: { 'w01-skin': false }, seed: 7, timeScale: 60 }).enabled).toEqual({});
   });
-  test('W3 default config enables w01-skin, w02-folk and w03-life', () => {
+  test('W4 default config enables w01-skin, w02-folk, w03-life and w04-dojo', () => {
     // W3 刻意改變：預設開 w03-life（W2 時是 ['w01-skin', 'w02-folk']）
+    // W4 刻意改變：預設開 w04-dojo（W3 時是 ['w01-skin', 'w02-folk', 'w03-life']，見 docs/wuxia/W4.md）
     expect(enabledElements(initWuxiaState()).map((e) => e.id)).toEqual([
       'w01-skin',
       'w02-folk',
       'w03-life',
+      'w04-dojo',
     ]);
+  });
+  test('w04-dojo requires w03-life: turning life (or anything below) off drops dojo from the frozen flags', () => {
+    for (const off of ['w01-skin', 'w02-folk', 'w03-life']) {
+      const state = initWuxiaState({
+        elements: { 'w01-skin': true, 'w02-folk': true, 'w03-life': true, 'w04-dojo': true, [off]: false },
+        seed: 7,
+        timeScale: 60,
+      });
+      expect(state.enabled['w04-dojo']).toBeUndefined();
+    }
   });
   test('w03-life requires w02-folk: turning folk (or skin) off drops life from the frozen flags', () => {
     for (const off of ['w01-skin', 'w02-folk']) {

@@ -23,6 +23,8 @@ export type ActivityDef = {
     whileActive?: string;
     minGap?: number;
     scheduledOrNeed?: Need;
+    /** W4：只有日程排到才做（練功不會在留白時亂入） */
+    scheduledOnly?: boolean;
   };
   leisure?: boolean;
 };
@@ -36,10 +38,19 @@ export type ObjectDef = {
   slots: Array<[number, number]>;
   owner?: string;
   household?: string;
+  /** W4：只有這個元素開啟時才存在的物件（例如武館的木人樁屬於 w04-dojo）。沒寫＝W3 起就有 */
+  element?: string;
   activities: ActivityDef[];
 };
 
-export type ScheduleBlock = { from: number; to: number; label: string; do: string[] };
+export type ScheduleBlock = {
+  from: number;
+  to: number;
+  label: string;
+  do: string[];
+  /** W4：每幾天一次（第 1 日起算，第 1、1+n、1+2n… 日才有這個時段）。沒寫＝每天 */
+  everyDays?: number;
+};
 export type Schedule = { worker: boolean; blocks: ScheduleBlock[] };
 
 export type PlaceDef = {
@@ -70,6 +81,37 @@ export const NEED_KEYS: Need[] = NEEDS_CONFIG.needs;
 export const RESOURCES: Resource[] = ['water', 'meal', 'wood'];
 
 export const SCHEDULES = (schedulesJson as any).schedules as Record<string, Schedule>;
+/**
+ * W4：元素開啟時替換某些人的日程（schedules.json 的 overlays，鍵是元素 id）。
+ * 例如 w04-dojo 開啟時周教頭改成「辰–午 武館」。元素關閉時完全用 W3 的日程。
+ */
+export const SCHEDULE_OVERLAYS = ((schedulesJson as any).overlays ?? {}) as Record<
+  string,
+  Record<string, Schedule>
+>;
+/** 日程情境：哪些元素的日程覆蓋生效、今天第幾日（everyDays 用）。不給＝W3 的日程。 */
+export type SchedCtx = { overlays: string[]; day?: number };
+
+/** 依世界的元素開關算日程情境（只看有 overlays 的元素）。 */
+export function schedCtx(enabled: Record<string, boolean> | undefined, day?: number): SchedCtx {
+  return {
+    overlays: Object.keys(SCHEDULE_OVERLAYS).filter((id) => !!enabled?.[id]),
+    day,
+  };
+}
+
+export function scheduleFor(cid: string, ctx?: SchedCtx): Schedule | undefined {
+  for (const id of ctx?.overlays ?? []) {
+    const o = SCHEDULE_OVERLAYS[id]?.[cid];
+    if (o && typeof o === 'object' && Array.isArray(o.blocks)) return o;
+  }
+  return SCHEDULES[cid];
+}
+
+function blockToday(b: ScheduleBlock, day: number | undefined): boolean {
+  if (!b.everyDays || day === undefined) return true;
+  return (day - 1) % b.everyDays === 0;
+}
 export const ONCE_PER_BLOCK: string[] = (schedulesJson as any).once;
 
 export const PLACES: PlaceDef[] = (placesJson as any).places;
@@ -80,6 +122,11 @@ for (const o of OBJECTS) for (const a of o.activities) ACTIVITY_BY_ID[a.id] = a;
 export const OBJECT_BY_ID: Record<string, ObjectDef> = Object.fromEntries(
   OBJECTS.map((o) => [o.id, o]),
 );
+
+/** 這個世界有哪些物件：W3 的全部，加上開啟中元素的物件（W4 武館）。 */
+export function activeObjects(enabled: Record<string, boolean> | undefined): ObjectDef[] {
+  return OBJECTS.filter((o) => !o.element || !!enabled?.[o.element]);
+}
 
 export const LEISURE = new Set(
   Object.values(ACTIVITY_BY_ID)
@@ -93,14 +140,20 @@ export function inRange(minuteOfDay: number, range: [number, number]): boolean {
   return from <= to ? minuteOfDay >= from && minuteOfDay < to : minuteOfDay >= from || minuteOfDay < to;
 }
 
-/** 目前時段（沒有＝留白）。 */
-export function currentBlock(cid: string, minuteOfDay: number): ScheduleBlock | undefined {
-  return SCHEDULES[cid]?.blocks.find((b) => inRange(minuteOfDay, [b.from, b.to]));
+/** 目前時段（沒有＝留白）。重疊時列在前面的時段優先（W4 的 everyDays 時段放在前面）。 */
+export function currentBlock(
+  cid: string,
+  minuteOfDay: number,
+  ctx?: SchedCtx,
+): ScheduleBlock | undefined {
+  return scheduleFor(cid, ctx)?.blocks.find(
+    (b) => blockToday(b, ctx?.day) && inRange(minuteOfDay, [b.from, b.to]),
+  );
 }
 
 /** 下一個時段（給面板顯示「下一件事」）。 */
-export function nextBlock(cid: string, minuteOfDay: number): ScheduleBlock | undefined {
-  const blocks = SCHEDULES[cid]?.blocks ?? [];
+export function nextBlock(cid: string, minuteOfDay: number, ctx?: SchedCtx): ScheduleBlock | undefined {
+  const blocks = (scheduleFor(cid, ctx)?.blocks ?? []).filter((b) => blockToday(b, ctx?.day));
   let best: ScheduleBlock | undefined;
   let bestDelta = Infinity;
   for (const b of blocks) {
@@ -115,9 +168,9 @@ export function nextBlock(cid: string, minuteOfDay: number): ScheduleBlock | und
 }
 
 /** 每人每天留白的分鐘數（沒有被任何時段蓋到）。 */
-export function blankMinutesPerDay(cid: string): number {
+export function blankMinutesPerDay(cid: string, ctx?: SchedCtx): number {
   let blank = 0;
-  for (let m = 0; m < 1440; m++) if (!currentBlock(cid, m)) blank++;
+  for (let m = 0; m < 1440; m++) if (!currentBlock(cid, m, ctx)) blank++;
   return blank;
 }
 

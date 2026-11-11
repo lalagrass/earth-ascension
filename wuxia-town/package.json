@@ -25,6 +25,8 @@
     "wuxia:day-report": "tsx tools/wuxia/day-report.ts",
     "wuxia:life-diff": "tsx tools/wuxia/life-diff.ts",
     "wuxia:life-report": "tsx tools/wuxia/life-report.ts",
+    "wuxia:skill-report": "tsx tools/wuxia/skill-report.ts",
+    "wuxia:dojo-diff": "tsx tools/wuxia/dojo-diff.ts",
     "wuxia:check": "npm test && tsx tools/wuxia/check.ts"
   },
   "dependencies": {

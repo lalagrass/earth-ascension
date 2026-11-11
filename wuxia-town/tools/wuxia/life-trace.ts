@@ -174,6 +174,8 @@ export class LifeTracer {
     if (lifeOn) {
       for (const o of OBJECTS) {
         const seats = life!.res[o.id];
+        // W4：元素沒開的物件（武館）不在這個世界
+        if (!seats) continue;
         const reserved = seats.filter((s) => s !== null);
         if (reserved.length > o.capacity || seats.length > o.capacity) this.checks.reservationOverCapacity++;
         if (new Set(reserved).size !== reserved.length) this.checks.doubleBooked++;

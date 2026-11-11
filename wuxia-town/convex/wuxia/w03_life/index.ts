@@ -24,11 +24,14 @@ import {
   ObjectDef,
   ONCE_PER_BLOCK,
   RESOURCES,
-  SCHEDULES,
+  SchedCtx,
   Stock,
+  activeObjects,
   currentBlock,
   inRange,
   placeAt,
+  schedCtx,
+  scheduleFor,
 } from './data';
 
 export const W03_LIFE = 'w03-life';
@@ -111,9 +114,13 @@ export type LifeState = {
   pairs: Record<string, number>;
 };
 
-export function initLifeState(): LifeState {
+/**
+ * W4：res 只放這個世界有的物件（activeObjects），chooseNext 也只看 res 裡有的物件；
+ * 所以 w04-dojo 關掉時，state 與決策跟 W3 逐位元組相同。enabled 不給＝W3 的物件。
+ */
+export function initLifeState(enabled?: Record<string, boolean>): LifeState {
   const res: LifeState['res'] = {};
-  for (const o of OBJECTS) res[o.id] = o.slots.map(() => null);
+  for (const o of activeObjects(enabled)) res[o.id] = o.slots.map(() => null);
   return { v: 1, minute: -1, people: {}, res, stock: {}, log: [], pairs: {} };
 }
 
@@ -122,7 +129,7 @@ export const lifeElement: WuxiaElement = {
   // w02-folk 本身 requires w01-skin（registry 的循環檢查不接受菱形相依，只列直接上層）
   requires: ['w02-folk'],
   init: (state: WuxiaState) => {
-    state.elements[W03_LIFE] = initLifeState();
+    state.elements[W03_LIFE] = initLifeState(state.enabled);
   },
   tick: (game, now) => tickLife(game, now),
 };
@@ -173,13 +180,18 @@ export function allowed(
   act: ActivityDef,
   minuteOfDay: number,
   state: LifeState,
+  ctx?: SchedCtx,
 ): boolean {
   if (!act.roles.includes('*') && !act.roles.includes(person.cid)) return false;
   if (obj.owner && obj.owner !== person.cid) return false;
   if (obj.household && obj.household !== person.home) return false;
   if (act.requires?.timeOfDay && !inRange(minuteOfDay, act.requires.timeOfDay)) return false;
+  if (act.requires?.scheduledOnly) {
+    const block = currentBlock(person.cid, minuteOfDay, ctx);
+    if (!block || !block.do.includes(act.id)) return false;
+  }
   if (act.requires?.scheduledOrNeed) {
-    const block = currentBlock(person.cid, minuteOfDay);
+    const block = currentBlock(person.cid, minuteOfDay, ctx);
     const scheduled = !!block && block.do.includes(act.id);
     if (!scheduled && person.needs[act.requires.scheduledOrNeed] <= NEEDS_CONFIG.urgency.soft)
       return false;
@@ -210,8 +222,9 @@ export function missedBlockStart(
   actId: string,
   minuteOfDay: number,
   gm: number,
+  ctx?: SchedCtx,
 ): number | undefined {
-  for (const b of SCHEDULES[cid]?.blocks ?? []) {
+  for (const b of scheduleFor(cid, ctx)?.blocks ?? []) {
     if (!b.do.includes(actId)) continue;
     const sinceEnd = (minuteOfDay - b.to + 1440) % 1440;
     if (sinceEnd >= LIFE_RULES.carryMinutes) continue;
@@ -230,15 +243,16 @@ export function chooseNext(
   blockKey: string | undefined,
   state: LifeState,
   r: () => number,
+  ctx?: SchedCtx,
 ): Candidate | undefined {
-  const block = currentBlock(person.cid, minuteOfDay);
+  const block = currentBlock(person.cid, minuteOfDay, ctx);
   const done = person.blockKey === blockKey ? person.blockDone : [];
   const sched = (actId: string) => {
     if (block && block.do.includes(actId))
       return ONCE_PER_BLOCK.includes(actId) && done.includes(actId) ? 0 : LIFE_RULES.scheduleWeight;
     // 一次性的事（吃飯）錯過了時段（被對話或工作拖過頭）：時段結束後 carryMinutes 內、還沒做過，就繼續有日程權重
     if (ONCE_PER_BLOCK.includes(actId)) {
-      const missed = missedBlockStart(person.cid, actId, minuteOfDay, state.minute);
+      const missed = missedBlockStart(person.cid, actId, minuteOfDay, state.minute, ctx);
       if (missed !== undefined && (person.lastDone?.[actId] ?? -Infinity) < missed)
         return LIFE_RULES.scheduleWeight;
     }
@@ -250,10 +264,12 @@ export function chooseNext(
   let best: Candidate | undefined;
   for (const obj of OBJECTS) {
     const seats = state.res[obj.id];
+    // W4：這個世界沒有的物件（元素沒開）不看，也不耗亂數
+    if (!seats) continue;
     const slot = seats.indexOf(null);
     if (slot < 0) continue;
     for (const act of obj.activities) {
-      if (!allowed(person, obj, act, minuteOfDay, state)) continue;
+      if (!allowed(person, obj, act, minuteOfDay, state, ctx)) continue;
       let score = sched(act.id);
       for (const k of NEED_KEYS) {
         // 急迫度乘上這個活動能紓解多少（扣 20 以上算滿），喝茶順便止一點餓不會被當成吃飯
@@ -332,7 +348,7 @@ export function tickLife(game: Game, now: number) {
   if (w.clockEpoch === undefined) return;
   let state = w.elements[W03_LIFE] as LifeState | undefined;
   if (!state) {
-    state = initLifeState();
+    state = initLifeState(w.enabled);
     w.elements[W03_LIFE] = state;
   }
   const gm = gameMinutes(now, w.clockEpoch, w.timeScale);
@@ -341,6 +357,7 @@ export function tickLife(game: Game, now: number) {
   state.minute = gm;
   const clock = readClock(gm);
   const mod = clock.minuteOfDay;
+  const ctx = schedCtx(w.enabled, clock.day);
 
   // 依 agents 的加入順序處理（確定性）
   for (const agent of game.world.agents.values()) {
@@ -368,7 +385,7 @@ export function tickLife(game: Game, now: number) {
         person.needs[k] = round2(clamp(person.needs[k] + (NEEDS_CONFIG.perHour[k] * elapsed) / 60));
       }
     }
-    const block = currentBlock(person.cid, mod);
+    const block = currentBlock(person.cid, mod, ctx);
     const blockKey = block ? `${clock.day}:${block.from}` : undefined;
     if (person.blockKey !== blockKey) {
       person.blockKey = blockKey;
@@ -438,7 +455,7 @@ export function tickLife(game: Game, now: number) {
     }
 
     if (!person.cur) {
-      const pick = chooseNext(person, mod, blockKey, state, () => game.rng());
+      const pick = chooseNext(person, mod, blockKey, state, () => game.rng(), ctx);
       if (!pick) {
         if (person.idleSince === undefined) person.idleSince = gm;
         continue;
@@ -481,7 +498,9 @@ const LEISURE_PLACES = new Set(
 
 function canChat(game: Game, gm: number, pid: string, person: Person): boolean {
   // 該睡覺的時段不邀人聊天
-  if (currentBlock(person.cid, readClock(gm).minuteOfDay)?.do.includes('sleep')) return false;
+  const c = readClock(gm);
+  if (currentBlock(person.cid, c.minuteOfDay, schedCtx(game.world.wuxia?.enabled, c.day))?.do.includes('sleep'))
+    return false;
   const player = game.world.players.get(pid as any);
   if (!player || game.world.playerConversation(player)) return false;
   const agent = [...game.world.agents.values()].find((a) => a.playerId === player.id);
