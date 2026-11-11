@@ -22,6 +22,8 @@ import {
 } from '../wuxia/w02_folk/prompt';
 import { isEnabled } from '../wuxia/registry';
 import { BudgetKind } from '../wuxia/llmBudget';
+// WUXIA-PATCH(W5): 心念放進對話 prompt（#557「跟 LLM 的接法」）
+import { thoughtsLine } from '../wuxia/w05_mind/data';
 
 // WUXIA-PATCH(W2): 回傳文字＋守門 metadata（w02-folk 關閉時 metadata 為 undefined）
 export type GeneratedMessage = { text: string; metadata?: GuardMetadata };
@@ -82,7 +84,8 @@ export async function startConversationMessage(
   playerId: GameId<'players'>,
   otherPlayerId: GameId<'players'>,
 ): Promise<GeneratedMessage> {
-  const { player, otherPlayer, agent, otherAgent, lastConversation, wuxiaFolk } = await ctx.runQuery(
+  // WUXIA-PATCH(W5): 多取 wuxiaThoughts（心念，放進 prompt）
+  const { player, otherPlayer, agent, otherAgent, lastConversation, wuxiaFolk, wuxiaThoughts } = await ctx.runQuery(
     selfInternal.queryPromptData,
     {
       worldId,
@@ -109,6 +112,8 @@ export async function startConversationMessage(
   // WUXIA-PATCH(W2): w02-folk 開啟時用繁中古風 prompt＋守門
   if (wuxiaFolk) {
     const system = folkSystemPrompt({
+      // WUXIA-PATCH(W5): 心念只決定說什麼
+      thoughts: wuxiaThoughts,
       stage: 'start',
       player,
       otherPlayer,
@@ -176,7 +181,8 @@ export async function continueConversationMessage(
   playerId: GameId<'players'>,
   otherPlayerId: GameId<'players'>,
 ): Promise<GeneratedMessage> {
-  const { player, otherPlayer, conversation, agent, otherAgent, wuxiaFolk } = await ctx.runQuery(
+  // WUXIA-PATCH(W5): 多取 wuxiaThoughts（心念，放進 prompt）
+  const { player, otherPlayer, conversation, agent, otherAgent, wuxiaFolk, wuxiaThoughts } = await ctx.runQuery(
     selfInternal.queryPromptData,
     {
       worldId,
@@ -195,6 +201,8 @@ export async function continueConversationMessage(
   // WUXIA-PATCH(W2): w02-folk 開啟時用繁中古風 prompt＋守門
   if (wuxiaFolk) {
     const system = folkSystemPrompt({
+      // WUXIA-PATCH(W5): 心念只決定說什麼
+      thoughts: wuxiaThoughts,
       stage: 'continue',
       player,
       otherPlayer,
@@ -274,7 +282,8 @@ export async function leaveConversationMessage(
   playerId: GameId<'players'>,
   otherPlayerId: GameId<'players'>,
 ): Promise<GeneratedMessage> {
-  const { player, otherPlayer, conversation, agent, otherAgent, wuxiaFolk } = await ctx.runQuery(
+  // WUXIA-PATCH(W5): 多取 wuxiaThoughts（心念，放進 prompt）
+  const { player, otherPlayer, conversation, agent, otherAgent, wuxiaFolk, wuxiaThoughts } = await ctx.runQuery(
     selfInternal.queryPromptData,
     {
       worldId,
@@ -286,6 +295,8 @@ export async function leaveConversationMessage(
   // WUXIA-PATCH(W2): w02-folk 開啟時用繁中古風 prompt＋守門
   if (wuxiaFolk) {
     const system = folkSystemPrompt({
+      // WUXIA-PATCH(W5): 心念只決定說什麼
+      thoughts: wuxiaThoughts,
       stage: 'leave',
       player,
       otherPlayer,
@@ -533,6 +544,9 @@ export const queryPromptData = internalQuery({
       lastConversation,
       // WUXIA-PATCH(W2): 開關凍結在 world.wuxia.enabled
       wuxiaFolk: !!world.wuxia && isEnabled(world.wuxia, W02_FOLK),
+      // WUXIA-PATCH(W5): 這個人目前的心念（w05-mind 關閉或沒有心念時 undefined）
+      wuxiaThoughts:
+        world.wuxia && isEnabled(world.wuxia, W02_FOLK) ? thoughtsLine(world.wuxia, args.playerId) : undefined,
     };
   },
 });

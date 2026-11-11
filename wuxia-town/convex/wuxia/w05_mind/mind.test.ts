@@ -15,6 +15,7 @@ import {
 import { initMindState, remember } from './index';
 import { blankMinutesPerDay, currentBlock, schedCtx, OBJECTS, ACTIVITY_BY_ID, SCHEDULES, SCHEDULE_OVERLAYS, inRange } from '../w03_life/data';
 import type { WuxiaState } from '../state';
+import { folkSystemPrompt } from '../w02_folk/prompt';
 
 const DAY = 1440;
 const mem = (id: number, t: number, kind: Memory['kind'], extra: Partial<Memory> = {}): Memory => ({
@@ -200,5 +201,23 @@ describe('心念的效果', () => {
     expect(thoughtsLine(w, 'p')).toBe('想學武（強度 50）');
     expect(thoughtsLine(w, 'q')).toBeUndefined();
     expect(thoughtsLine(world(undefined), 'p')).toBeUndefined();
+  });
+});
+
+describe('跟 LLM 的接法', () => {
+  const base = {
+    stage: 'start' as const,
+    player: { name: '阿青' },
+    otherPlayer: { name: '周教頭' },
+    agent: null,
+    otherAgent: null,
+    hasMemories: false,
+    memoryWithOtherPlayer: false,
+  };
+  test('有心念時 prompt 多一句「你最近的心事」；沒有時跟 W4 相同', () => {
+    const withT = folkSystemPrompt({ ...base, thoughts: '想學武（強度 70）' });
+    expect(withT).toContain('你最近的心事：想學武（強度 70）');
+    expect(folkSystemPrompt(base)).not.toContain('心事');
+    expect(folkSystemPrompt({ ...base, thoughts: undefined })).toBe(folkSystemPrompt(base));
   });
 });
