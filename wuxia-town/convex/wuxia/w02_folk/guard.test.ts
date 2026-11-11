@@ -98,6 +98,13 @@ describe('guard: 清理（不放寬判定）', () => {
   });
 });
 
+describe('guard: 重複', () => {
+  test('跟自己前面說過的話一字不差 → repeat', () => {
+    expect(checkReply('嗯。', undefined, ['成。', '嗯。']).reasons).toContain('repeat');
+    expect(checkReply('嗯，成。', undefined, ['成。', '嗯。']).ok).toBe(true);
+  });
+});
+
 describe('guardedReply：重抽一次 → 模板句', () => {
   const template = () => '模板句。';
   const seq = (...xs: Array<string | null>) => {

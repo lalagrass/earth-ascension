@@ -111,7 +111,10 @@ function main() {
     out('|---|---|---|---|');
   }
   const ordered = args.blind
-    ? [...r.picked].sort((a, b) => labels.get(a.author)!.localeCompare(labels.get(b.author)!) || 0)
+    ? [...r.picked].sort(
+        (a, b) =>
+          BLIND_LABELS.indexOf(labels.get(a.author)!) - BLIND_LABELS.indexOf(labels.get(b.author)!),
+      )
     : r.picked;
   ordered.forEach((l, i) => {
     const who = args.blind ? labels.get(l.author)! : `${l.author} → ${l.to ?? '?'}`;

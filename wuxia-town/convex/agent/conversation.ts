@@ -29,6 +29,17 @@ export type GeneratedMessage = { text: string; metadata?: GuardMetadata };
 /** 第一次生成超過這個毫秒數就不重抽、直接用模板句（規則不等 LLM）。環境變數 WUXIA_GUARD_RETRY_MS 可調。 */
 const GUARD_RETRY_MS = 30_000;
 
+// WUXIA-PATCH(W2): 這段對話裡自己說過的話（守門擋一字不差的重複）
+async function ownLines(
+  ctx: ActionCtx,
+  worldId: Id<'worlds'>,
+  conversationId: GameId<'conversations'>,
+  playerId: string,
+): Promise<string[]> {
+  const msgs = await ctx.runQuery(api.messages.listMessages, { worldId, conversationId });
+  return msgs.filter((m) => m.author === playerId).map((m) => m.text);
+}
+
 // WUXIA-PATCH(W2): w02-folk 的生成：守門 → 重抽一次 → 模板句
 async function folkGenerate(
   ctx: ActionCtx,
@@ -37,12 +48,14 @@ async function folkGenerate(
   messages: LLMMessage[],
   speaker: string,
   other: string,
+  avoid: string[] = [],
 ): Promise<GeneratedMessage> {
   const start = Date.now();
   const budgetMs = Number(process.env.WUXIA_GUARD_RETRY_MS) || GUARD_RETRY_MS;
   const cue = folkCue(speaker, other);
   return await guardedReply({
     speaker,
+    avoid,
     generate: async (retryReasons) => {
       const msgs: LLMMessage[] = [...messages];
       if (retryReasons) msgs.push({ role: 'user', content: folkRetryPrompt(retryReasons) });
@@ -55,7 +68,7 @@ async function folkGenerate(
       );
       return { content: trimContentPrefx(content, cue), fallback };
     },
-    template: () => folkTemplate(speaker, stage, Math.random(), { other }),
+    template: () => folkTemplate(speaker, stage, Math.random(), { other }, avoid[avoid.length - 1]),
     retryAllowed: () => Date.now() - start < budgetMs,
   });
 }
@@ -208,6 +221,7 @@ export async function continueConversationMessage(
       ],
       player.name,
       otherPlayer.name,
+      await ownLines(ctx, worldId, conversation.id as GameId<'conversations'>, player.id),
     );
   }
   const prompt = [
@@ -297,6 +311,7 @@ export async function leaveConversationMessage(
       ],
       player.name,
       otherPlayer.name,
+      await ownLines(ctx, worldId, conversation.id as GameId<'conversations'>, player.id),
     );
   }
   const prompt = [

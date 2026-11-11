@@ -54,7 +54,12 @@ export function normalizeReply(text: string, speaker?: string): string {
   return t.replace(/[ \t]*\n+[ \t]*/g, '\n').trim();
 }
 
-export function checkReply(text: string, words: string[] = ANACHRONISMS): GuardResult {
+export function checkReply(
+  text: string,
+  words: string[] = ANACHRONISMS,
+  /** 這個人在同一段對話裡已經說過的話：一字不差重複就不合格 */
+  avoid: string[] = [],
+): GuardResult {
   const reasons: string[] = [];
   if (countChars(text) === 0) reasons.push('empty');
   if (LATIN.test(text)) reasons.push('english');
@@ -68,6 +73,7 @@ export function checkReply(text: string, words: string[] = ANACHRONISMS): GuardR
     }
   }
   if (countChars(text) > MAX_REPLY_CHARS) reasons.push(`reply>${MAX_REPLY_CHARS}`);
+  if (avoid.some((a) => a.trim() === text.trim())) reasons.push('repeat');
   return { ok: reasons.length === 0, reasons };
 }
 
@@ -93,6 +99,7 @@ export async function guardedReply(opts: {
   speaker?: string;
   retryAllowed?: () => boolean;
   words?: string[];
+  avoid?: string[];
 }): Promise<{ text: string; metadata: GuardMetadata }> {
   const reasons: string[][] = [];
   const first = await opts.generate();
@@ -103,7 +110,7 @@ export async function guardedReply(opts: {
     };
   }
   const t1 = normalizeReply(first.content, opts.speaker);
-  const r1 = checkReply(t1, opts.words);
+  const r1 = checkReply(t1, opts.words, opts.avoid);
   if (r1.ok) return { text: t1, metadata: { guard: 'pass', reasons, attempts: 1 } };
   reasons.push(r1.reasons);
   if (opts.retryAllowed && !opts.retryAllowed()) {
@@ -120,7 +127,7 @@ export async function guardedReply(opts: {
     };
   }
   const t2 = normalizeReply(second.content, opts.speaker);
-  const r2 = checkReply(t2, opts.words);
+  const r2 = checkReply(t2, opts.words, opts.avoid);
   if (r2.ok) return { text: t2, metadata: { guard: 'retry', reasons, attempts: 2 } };
   reasons.push(r2.reasons);
   return {

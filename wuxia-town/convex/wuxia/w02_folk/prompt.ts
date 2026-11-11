@@ -55,6 +55,7 @@ export function folkStopWords(name: string, other: string): string[] {
 const REASON_ZH: Record<string, string> = {
   empty: '沒有說話',
   english: '夾了英文字母',
+  repeat: '跟你自己前面說過的話一模一樣',
 };
 
 export function reasonsZh(reasons: string[]): string {

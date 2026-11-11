@@ -1,6 +1,6 @@
 // 產生檔，不要手改：改 data/wuxia/prompts/*.txt 或 data/wuxia/anachronisms.txt 後執行 npm run wuxia:gen-prompts。
 export const PROMPTS: Record<string, string> = {
-  "continue": "你正在跟{other}說話，下面是到目前為止的對話。不要再打招呼，接著對方的話回一句。",
+  "continue": "你正在跟{other}說話，下面是到目前為止的對話。不要再打招呼，也不要重複你自己前面說過的話，接著對方的話回一句。",
   "cue": "{name}對{other}說：",
   "leave": "你正在跟{other}說話，下面是到目前為止的對話。你想結束談話了，照你的口吻客氣地跟對方告辭，一句就好。",
   "line": "{author}對{recipient}說：{text}",

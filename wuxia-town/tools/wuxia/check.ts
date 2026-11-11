@@ -7,8 +7,8 @@
 // 6. docs/wuxia/ 單檔 ≤ 1 MB、GIF ≤ 3 MB
 // 7.（W1）w01-skin 開關不改規則：skin-diff A/B/C（關＝W0、同地圖只差開關與時鐘起點、不同地圖只差地圖相關欄位）
 // 8.（W2）convex/wuxia/w02_folk/prompts.gen.ts 跟 data/wuxia/prompts/*.txt、anachronisms.txt 同步
-// 10.（W2）convex/ 底下的路徑只用英數、底線、句點（Convex 部署的限制；w01-skin 目錄曾因此無法部署）
 // 9.（W2）w02-folk 開關不改規則：folk-diff A/B（關＝W1、同樣 5 人開／關只差 enabled 旗標）
+// 10.（W2）convex/ 底下的路徑只用英數、底線、句點（Convex 部署的限制；w01-skin 目錄曾因此無法部署）
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
@@ -137,9 +137,15 @@ else fail(`docs/wuxia/ 檔案過大：${big.map((f) => relative(ROOT, f)).join('
   console.log = restore;
   if (r.resultA.ok) ok(`skin-diff A：w01-skin 關＝W0 世界 hash ${r.resultA.hash}`);
   else fail(`skin-diff A：w01-skin 關的世界仍有開啟的元素 ${JSON.stringify(r.resultA.enabled)}`);
-  if (r.resultB.ok) ok(`skin-diff B：同一張地圖開／關只差 ${r.resultB.paths.map((p) => p.split(':')[0]).join('、')}`);
+  if (r.resultB.ok)
+    ok(
+      `skin-diff B：同一張地圖開／關只差 ${r.resultB.paths.map((p) => p.split(':')[0]).join('、')}`,
+    );
   else fail(`skin-diff B：同一張地圖開／關多出差異：\n  ${r.resultB.paths.join('\n  ')}`);
-  if (r.resultC.ok) ok(`skin-diff C：開 ${r.resultC.hashOn} 與關的差異都在地圖相關欄位（${r.resultC.groups.length} 類）`);
+  if (r.resultC.ok)
+    ok(
+      `skin-diff C：開 ${r.resultC.hashOn} 與關的差異都在地圖相關欄位（${r.resultC.groups.length} 類）`,
+    );
   else fail(`skin-diff C：非地圖相關的差異 ${r.resultC.unexpected.join(', ')}`);
 }
 
@@ -151,7 +157,8 @@ else fail('prompts.gen.ts 不同步：請執行 npm run wuxia:gen-prompts');
 {
   quietConsole(false); // 引擎 log 很吵，這段之後只用 stdout 輸出
   const r = folkDiff(7, Number(MINUTES));
-  if (r.resultA.ok) ok(`folk-diff A：w02-folk 關＝W1 世界（${r.resultA.agents} 人）hash ${r.resultA.hash}`);
+  if (r.resultA.ok)
+    ok(`folk-diff A：w02-folk 關＝W1 世界（${r.resultA.agents} 人）hash ${r.resultA.hash}`);
   else fail(`folk-diff A：w02-folk 關的世界不是 W1 設定 ${JSON.stringify(r.resultA)}`);
   if (r.resultB.ok) ok(`folk-diff B：同樣 5 人開／關只差 ${r.resultB.paths.join('、')}`);
   else fail(`folk-diff B：開／關多出差異 ${r.resultB.paths.join(', ')}`);
