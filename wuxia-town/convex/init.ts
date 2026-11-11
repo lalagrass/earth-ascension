@@ -2,10 +2,10 @@ import { v } from 'convex/values';
 import { internal } from './_generated/api';
 import { DatabaseReader, MutationCtx, mutation } from './_generated/server';
 // WUXIA-PATCH(W2): 人物數改由 w02-folk 開關決定（開：data/wuxia/characters.json 6 人；關：上游 5 人）
-import { descriptionsFor, W02_FOLK } from './wuxia/w02-folk';
+import { descriptionsFor, W02_FOLK } from './wuxia/w02_folk';
 import { isEnabled } from './wuxia/registry';
 // WUXIA-PATCH(W1): 地圖改由 w01-skin 開關決定（開：山腳古鎮 data/wuxia/town-map.js；關：上游 data/gentle.js）
-import { serializedMapFor } from './wuxia/w01-skin';
+import { serializedMapFor } from './wuxia/w01_skin';
 import { defaultWuxiaConfig, initWuxiaState } from './wuxia/state';
 import { insertInput } from './aiTown/insertInput';
 import { Id } from './_generated/dataModel';

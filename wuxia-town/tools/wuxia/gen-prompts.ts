@@ -1,5 +1,5 @@
 // 武俠小鎮 W2（#554）：把 data/wuxia/prompts/*.txt 與 data/wuxia/anachronisms.txt 轉成
-// convex/wuxia/w02-folk/prompts.gen.ts（Convex 打包與 jest 都不能直接 import .txt）。
+// convex/wuxia/w02_folk/prompts.gen.ts（Convex 打包與 jest 都不能直接 import .txt）。
 // 用法：npm run wuxia:gen-prompts            → 重寫產生檔
 //       npm run wuxia:gen-prompts -- --check → 只檢查是否同步（wuxia:check 第 8 項），不同步 exit 1
 import { readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
@@ -10,7 +10,7 @@ const ROOT = process.cwd();
 if (!existsSync(join(ROOT, 'data/wuxia/prompts'))) {
   throw new Error('gen-prompts: 請在 wuxia-town/ 目錄下執行');
 }
-export const GEN_PATH = join(ROOT, 'convex/wuxia/w02-folk/prompts.gen.ts');
+export const GEN_PATH = join(ROOT, 'convex/wuxia/w02_folk/prompts.gen.ts');
 
 export function parseWordList(text: string): string[] {
   return text

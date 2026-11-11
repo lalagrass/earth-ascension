@@ -6,7 +6,7 @@ import { movePlayer } from './movement';
 import { inputHandler } from './inputHandler';
 import { point } from '../util/types';
 // WUXIA-PATCH(W2): 人物改由 w02-folk 開關決定（開：data/wuxia/characters.json；關：上游 data/characters.ts）
-import { descriptionsFor, W02_FOLK } from '../wuxia/w02-folk';
+import { descriptionsFor, W02_FOLK } from '../wuxia/w02_folk';
 import { isEnabled } from '../wuxia/registry';
 import { AgentDescription } from './agentDescription';
 import { Agent } from './agent';

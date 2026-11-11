@@ -15,8 +15,8 @@ import {
   MEMORY_SUMMARY_TEMPLATE,
 } from '../wuxia/templates';
 // WUXIA-PATCH(W2): w02-folk 開啟時記憶摘要的 prompt 改繁中（data/wuxia/prompts/memory-summary*.txt）
-import { renderPrompt, W02_FOLK } from '../wuxia/w02-folk';
-import { folkLine, folkMemorySummaryPrompt } from '../wuxia/w02-folk/prompt';
+import { renderPrompt, W02_FOLK } from '../wuxia/w02_folk';
+import { folkLine, folkMemorySummaryPrompt } from '../wuxia/w02_folk/prompt';
 import { isEnabled } from '../wuxia/registry';
 
 // How long to wait before updating a memory's last access time.

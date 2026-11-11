@@ -6,7 +6,8 @@
 // 5. public/wuxia/ 每個素材檔都登記在 CREDITS.md
 // 6. docs/wuxia/ 單檔 ≤ 1 MB、GIF ≤ 3 MB
 // 7.（W1）w01-skin 開關不改規則：skin-diff A/B/C（關＝W0、同地圖只差開關與時鐘起點、不同地圖只差地圖相關欄位）
-// 8.（W2）convex/wuxia/w02-folk/prompts.gen.ts 跟 data/wuxia/prompts/*.txt、anachronisms.txt 同步
+// 8.（W2）convex/wuxia/w02_folk/prompts.gen.ts 跟 data/wuxia/prompts/*.txt、anachronisms.txt 同步
+// 10.（W2）convex/ 底下的路徑只用英數、底線、句點（Convex 部署的限制；w01-skin 目錄曾因此無法部署）
 // 9.（W2）w02-folk 開關不改規則：folk-diff A/B（關＝W1、同樣 5 人開／關只差 enabled 旗標）
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
@@ -154,6 +155,15 @@ else fail('prompts.gen.ts 不同步：請執行 npm run wuxia:gen-prompts');
   else fail(`folk-diff A：w02-folk 關的世界不是 W1 設定 ${JSON.stringify(r.resultA)}`);
   if (r.resultB.ok) ok(`folk-diff B：同樣 5 人開／關只差 ${r.resultB.paths.join('、')}`);
   else fail(`folk-diff B：開／關多出差異 ${r.resultB.paths.join(', ')}`);
+}
+
+// 10
+{
+  const badPaths = walk(join(ROOT, 'convex'))
+    .map((f) => relative(join(ROOT, 'convex'), f))
+    .filter((f) => f.split('/').some((c) => !/^[A-Za-z0-9_.]+$/.test(c)));
+  if (badPaths.length === 0) ok('convex/ 的路徑都符合 Convex 模組命名（英數、底線、句點）');
+  else fail(`convex/ 有 Convex 不接受的路徑：${badPaths.join(', ')}`);
 }
 
 if (failures) {

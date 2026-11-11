@@ -4,8 +4,8 @@
 //   --blind 盲讀版：不寫名字，說話者改成甲乙丙…（每次執行同一 seed 對應相同），句中出現的人名換成「○○」
 //   --md    輸出 Markdown 表格（貼進 W2.md 用）
 // 結束碼：抽到的句子有任何一句含禁用詞或英文 → 1。
-import { checkReply } from '../../convex/wuxia/w02-folk/guard';
-import { FOLK_CHARACTERS } from '../../convex/wuxia/w02-folk';
+import { checkReply } from '../../convex/wuxia/w02_folk/guard';
+import { FOLK_CHARACTERS } from '../../convex/wuxia/w02_folk';
 import { makeRng } from '../../convex/wuxia/rng';
 import { readJournal } from './replay';
 import { parseArgs } from './sim';

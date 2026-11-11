@@ -17,8 +17,8 @@ import {
 import { distance } from '../../convex/util/geometry';
 import { initWuxiaState, defaultWuxiaConfig } from '../../convex/wuxia/state';
 import { initElements, isEnabled } from '../../convex/wuxia/registry';
-import { descriptionsFor, folkTemplate, W02_FOLK } from '../../convex/wuxia/w02-folk';
-import { serializedMapFor } from '../../convex/wuxia/w01-skin';
+import { descriptionsFor, folkTemplate, W02_FOLK } from '../../convex/wuxia/w02_folk';
+import { serializedMapFor } from '../../convex/wuxia/w01_skin';
 import { makeRng } from '../../convex/wuxia/rng';
 import { conversationTemplate } from '../../convex/wuxia/templates';
 import { gameMinutes, readClock } from '../../convex/wuxia/clock';

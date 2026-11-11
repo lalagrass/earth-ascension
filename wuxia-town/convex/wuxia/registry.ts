@@ -3,8 +3,8 @@
 // W0 是空清單；W1 起每一步在這裡加一個元素（W1 w01-skin、W2 w02-folk）。
 import type { Game } from '../aiTown/game';
 import type { WuxiaState } from './state';
-import { skinElement } from './w01-skin';
-import { folkElement } from './w02-folk';
+import { skinElement } from './w01_skin';
+import { folkElement } from './w02_folk';
 
 export type WuxiaElement = {
   id: string;

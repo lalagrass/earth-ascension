@@ -11,15 +11,15 @@ import { NUM_MEMORIES_TO_SEARCH } from '../constants';
 import { budgetedChatCompletion } from '../wuxia/llmBudget';
 import { conversationTemplate } from '../wuxia/templates';
 // WUXIA-PATCH(W2): w02-folk 開啟時改用繁中古風 prompt（data/wuxia/prompts/）、用詞守門、人物模板句
-import { folkTemplate, Stage, W02_FOLK } from '../wuxia/w02-folk';
-import { guardedReply, GuardMetadata } from '../wuxia/w02-folk/guard';
+import { folkTemplate, Stage, W02_FOLK } from '../wuxia/w02_folk';
+import { guardedReply, GuardMetadata } from '../wuxia/w02_folk/guard';
 import {
   folkCue,
   folkLine,
   folkRetryPrompt,
   folkStopWords,
   folkSystemPrompt,
-} from '../wuxia/w02-folk/prompt';
+} from '../wuxia/w02_folk/prompt';
 import { isEnabled } from '../wuxia/registry';
 import { BudgetKind } from '../wuxia/llmBudget';
 
