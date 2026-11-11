@@ -72,7 +72,7 @@ function main() {
   for (const [day, v] of [[30, 150], [365, 450]] as Array<[number, number]>) {
     if (day > D) continue;
     out.push(`<circle cx="${X(day)}" cy="${Y(v)}" r="5" fill="none" stroke="#000" stroke-width="1.5"/>`);
-    out.push(`<text x="${X(day) - 8}" y="${Y(v) + 18}" text-anchor="end">#556 目標 ${day} 日≈${v / 10}</text>`);
+    out.push(`<text x="${X(day) - 8}" y="${Y(v) + (day > 100 ? -10 : 18)}" text-anchor="end">#556 目標 ${day} 日≈${v / 10}</text>`);
   }
   const lg: Array<[string, string, string]> = [
     ['#b22222', '', `模擬（實際每日平均練 ${avgTrain.toFixed(0)} 分）`],
