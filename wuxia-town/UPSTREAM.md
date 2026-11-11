@@ -67,6 +67,11 @@
 | W3 | `src/components/Player.tsx` | w03-life 開啟、活動進行中時，把活動名稱（已是繁中）當 `label` 傳給 `Character` | 同上 |
 | W3 | `src/components/PlayerDetails.tsx` | 多收 `historicalTime`；名牌下面加 `src/wuxia/LifePanel`（目前活動、下一件事、4 個需求條、今日做過的事） | #555「畫面」：人物詳情面板 |
 | W3 | `src/components/Game.tsx` | 地圖右上角加 `src/wuxia/TownStatus`（鎮況：每個地點現在有誰）；把 `historicalTime` 傳給 `PlayerDetails` | #555「畫面」：鎮況面板 |
+| W4 | `src/components/Character.tsx` | 多一個選填 `pose`（spritesheet 的動畫鍵）；有給就用那組動畫並一直播放 | #556「畫面」：打樁時播出拳動作圖 |
+| W4 | `src/components/Player.tsx` | w04-dojo 開啟、正在打樁時傳 `pose='punch'`（`src/wuxia/dojo.ts` 的 `poseFor`） | 同上 |
+| W4 | `src/components/PixiGame.tsx` | 人物下面疊 `src/wuxia/DojoLayer`（木人樁、石鎖、梅花樁、教頭座、沙包、門口「開館」紅綢），只在 w04-dojo 開啟時畫 | #556「武館重開」 |
+| W4 | `src/components/PlayerDetails.tsx` | 名牌下加 `src/wuxia/SkillPanel`（4 個技能 /10 一位小數＋階級名）；把 `enabled` 傳給 `LifePanel`（下一件事依武館日程） | #556「畫面」：角色面板顯示技能與階級 |
+| W4 | `package.json`（JSON 無法加註解） | `wuxia:skill-report`、`wuxia:dojo-diff` 指令 | #556 驗收工具 |
 
 ## 上游刻意保留不改的隨機／時間
 
