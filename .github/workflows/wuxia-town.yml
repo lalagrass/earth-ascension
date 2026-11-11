@@ -1,0 +1,34 @@
+# 武俠小鎮（wuxia-town/）專用 CI（#549 第 1 節、#552）。不需要 Docker、不需要 LLM。
+name: wuxia-town
+
+on:
+  push:
+    branches: [town/wuxia]
+    paths:
+      - 'wuxia-town/**'
+      - '.github/workflows/wuxia-town.yml'
+  pull_request:
+    paths:
+      - 'wuxia-town/**'
+      - '.github/workflows/wuxia-town.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  wuxia-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: wuxia-town
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: wuxia-town/package-lock.json
+      - run: npm ci
+      - run: npm run wuxia:check
