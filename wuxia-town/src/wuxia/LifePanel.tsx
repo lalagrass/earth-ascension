@@ -3,8 +3,15 @@
 import type { LifeState } from '../../convex/wuxia/w03_life';
 import type { ClockReading } from '../../convex/wuxia/clock';
 import { NEED_KEYS, NEED_LABELS, describeCurrent, describeNext, todayDone } from './life';
+import { schedCtx } from '../../convex/wuxia/w03_life/data';
 
-export function LifePanel(props: { life?: LifeState; playerId?: string; clock: ClockReading | null }) {
+export function LifePanel(props: {
+  life?: LifeState;
+  playerId?: string;
+  clock: ClockReading | null;
+  /** W4：元素開關（日程覆蓋，例如 w04-dojo 開啟時周教頭的「武館指點」） */
+  enabled?: Record<string, boolean>;
+}) {
   const { life, playerId, clock } = props;
   if (!life || !playerId || !clock) return null;
   const person = life.people[playerId];
@@ -15,7 +22,7 @@ export function LifePanel(props: { life?: LifeState; playerId?: string; clock: C
       <p className="wuxia-life-now">
         <b>正在</b> {describeCurrent(person)}
       </p>
-      <p className="wuxia-life-next">{describeNext(person, clock.minuteOfDay)}</p>
+      <p className="wuxia-life-next">{describeNext(person, clock.minuteOfDay, schedCtx(props.enabled, clock.day))}</p>
       <div className="wuxia-needs">
         {NEED_KEYS.map((k) => {
           const v = Math.round(person.needs[k]);

@@ -29,6 +29,9 @@ import { useViewportZoom, wholeMapScale } from '../viewport';
 import { LifePanel } from '../LifePanel';
 import { TownStatus } from '../TownStatus';
 import { lifeOf } from '../life';
+import { DojoLayer } from '../DojoLayer';
+import { SkillPanel } from '../SkillPanel';
+import { dojoOf } from '../dojo';
 
 type ShotState = {
   engineTime: number;
@@ -38,7 +41,12 @@ type ShotState = {
   worldMap: any;
   hash: string;
 };
-type ShotOptions = { focus?: { x: number; y: number; scale: number }; selected?: string };
+type ShotOptions = {
+  focus?: { x: number; y: number; scale: number };
+  selected?: string;
+  /** W4：盲測用，不顯示時辰（左上角）與狀態 hash */
+  blind?: boolean;
+};
 
 declare global {
   interface Window {
@@ -79,6 +87,7 @@ function Scene(props: { game: ServerGame; width: number; height: number; time: n
       wuxiaFocus={focus}
     >
       <PixiStaticMap map={props.game.worldMap} />
+      {skin && <DojoLayer tileDim={tileDim} open={!!dojoOf(props.game.world)} />}
       {[...props.game.world.players.values()].map((p) => (
         <Player
           key={p.id}
@@ -134,7 +143,7 @@ function ShotApp({ state, opts }: { state: ShotState; opts: ShotOptions }) {
         </div>
         <div className="mx-auto w-full max-w grid grid-rows-[290px_1fr] lg:grid-rows-[1fr] lg:grid-cols-[1fr_auto] lg:grow max-w-[1400px] min-h-[480px] game-frame">
           <div className="relative overflow-hidden bg-brown-900" ref={ref}>
-            {skin && <ClockBadge clock={clock} phase={clock ? dayTint(clock.minuteOfDay).phase : undefined} />}
+            {skin && !opts.blind && <ClockBadge clock={clock} phase={clock ? dayTint(clock.minuteOfDay).phase : undefined} />}
             <TownStatus
               life={lifeOf(game.world)}
               players={players}
@@ -159,7 +168,13 @@ function ShotApp({ state, opts }: { state: ShotState; opts: ShotOptions }) {
                   position={selected.position}
                   activity={activityLabel(selected.activity?.description, skin)}
                 />
-                <LifePanel life={lifeOf(game.world)} playerId={selected.id} clock={clock} />
+                <LifePanel
+                  life={lifeOf(game.world)}
+                  playerId={selected.id}
+                  clock={clock}
+                  enabled={game.world.wuxia?.enabled}
+                />
+                <SkillPanel dojo={dojoOf(game.world)} life={lifeOf(game.world)} playerId={selected.id} />
                 <div className="desc my-6">
                   <p className="leading-tight text-base sm:text-sm">{desc?.description}</p>
                 </div>
@@ -172,7 +187,7 @@ function ShotApp({ state, opts }: { state: ShotState; opts: ShotOptions }) {
             <Button imgUrl="/ai-town/wuxia/ui/join.svg">進鎮</Button>
             <Button imgUrl="/ai-town/wuxia/ui/about.svg">關於</Button>
           </div>
-          <small className="opacity-60">state {state.hash.slice(0, 12)}</small>
+          {!opts.blind && <small className="opacity-60">state {state.hash.slice(0, 12)}</small>}
         </footer>
       </div>
     </main>

@@ -2,7 +2,8 @@
 """武俠小鎮 W1：程式畫 8 個古裝人物走路圖（#553 範圍 3）。
 
 格式同上游 data/spritesheets/f1.ts：每人 96×128（3 欄 × 4 列，32×32），列序 down、left、right、up。
-8 人排成 4×2，輸出 public/wuxia/characters/folk.png（384×256）。
+W4（#556）：每人再加第 5 列「打樁」2 格（面向右出拳，左右手交替），每人變 96×160。
+8 人排成 4×2，輸出 public/wuxia/characters/folk.png（384×320）。前 4 列跟 W1 逐像素相同。
 畫法：4 倍大小用多邊形／橢圓畫，外加一圈淡墨描邊（同本專案 STYLE-SCENE「人物描邊」），再縮成 32px。
 全部原創，不描任何既有作品；只用 Pillow、numpy、scipy。
 """
@@ -36,7 +37,7 @@ def shade(c, k):
     return tuple(max(0, min(255, int(v * k))) for v in c[:3]) + (255,)
 
 
-def draw_figure(spec, direction, step):
+def draw_figure(spec, direction, step, punch=None):
     _, _, robe, inner, pants, hair, style, long_robe, acc, size = spec
     im = Image.new("RGBA", (F, F), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
@@ -96,7 +97,19 @@ def draw_figure(spec, direction, step):
 
     # 手臂（袖）
     arm = (swing * 1.6 * S)
-    if side:
+    if punch is not None:
+        # W4 打樁：面向右，前手直拳打出、後手收在胸前；兩格左右手交替（前手伸長／縮回）
+        ax = cx - sgn * 0.5 * S
+        reach = (9.5 if punch == 0 else 6.0) * S
+        rear = (3.0 if punch == 0 else 6.5) * S
+        sy = sh_y + 2.2 * S
+        # 後手（較暗、較短）
+        d.polygon([(ax - 1.6 * S, sy - 1.4 * S), (ax - 1.6 * S, sy + 1.6 * S), (ax + sgn * rear, sy + 1.2 * S), (ax + sgn * rear, sy - 1.0 * S)], fill=shade(robe, 0.78))
+        d.ellipse([ax + sgn * rear - 1.5 * S, sy - 1.4 * S, ax + sgn * rear + 1.5 * S, sy + 1.6 * S], fill=SKIN_SH)
+        # 前手
+        d.polygon([(ax - 1.4 * S, sy - 1.8 * S), (ax - 1.4 * S, sy + 1.4 * S), (ax + sgn * reach, sy + 0.9 * S), (ax + sgn * reach, sy - 1.3 * S)], fill=shade(robe, 0.95))
+        d.ellipse([ax + sgn * reach - 1.7 * S, sy - 1.9 * S, ax + sgn * reach + 1.9 * S, sy + 1.7 * S], fill=SKIN)
+    elif side:
         ax = cx - sgn * 0.5 * S
         d.polygon([(ax - 1.8 * S, sh_y + 0.6 * S), (ax + 1.8 * S, sh_y + 0.6 * S), (ax + 2.2 * S + sgn * arm, sh_y + 8.6 * S), (ax - 2.0 * S + sgn * arm, sh_y + 8.6 * S)], fill=shade(robe, 0.92))
         d.ellipse([ax - 1.3 * S + sgn * arm, sh_y + 8.0 * S, ax + 1.5 * S + sgn * arm, sh_y + 10.4 * S], fill=SKIN)
@@ -176,22 +189,30 @@ def draw_figure(spec, direction, step):
     return Image.fromarray(arr, "RGBA").resize((32, 32), Image.LANCZOS)
 
 
+BLOCK_H = 160  # W4：4 列走路 + 1 列打樁
+
+
 def main():
-    sheet = Image.new("RGBA", (384, 256), (0, 0, 0, 0))
+    sheet = Image.new("RGBA", (384, 2 * BLOCK_H), (0, 0, 0, 0))
     for i, spec in enumerate(FOLK):
-        ox, oy = (i % 4) * 96, (i // 4) * 128
+        ox, oy = (i % 4) * 96, (i // 4) * BLOCK_H
         for row, direction in enumerate(("down", "left", "right", "up")):
             for col in range(3):
                 fr = draw_figure(spec, direction, col)
                 sheet.alpha_composite(fr, (ox + col * 32, oy + row * 32))
+        # W4 打樁：第 5 列 2 格（站穩不邁步：step=1 是兩腳併攏的那格）
+        for col in range(2):
+            fr = draw_figure(spec, "right", 1, punch=col)
+            sheet.alpha_composite(fr, (ox + col * 32, oy + 4 * 32))
     os.makedirs(os.path.join(ROOT, "public/wuxia/characters"), exist_ok=True)
     sheet.save(os.path.join(ROOT, "public/wuxia/characters/folk.png"), optimize=True)
-    big = sheet.resize((384 * 3, 256 * 3), Image.NEAREST)
+    big = sheet.resize((sheet.width * 3, sheet.height * 3), Image.NEAREST)
     bg = Image.new("RGBA", big.size, (233, 223, 197, 255))
     bg.alpha_composite(big)
-    os.makedirs(os.path.join(ROOT, "docs/wuxia/w01"), exist_ok=True)
-    bg.convert("RGB").save(os.path.join(ROOT, "docs/wuxia/w01/folk-sheet-3x.png"), optimize=True)
-    print("folk.png 384x256,", len(FOLK), "characters")
+    # W4：預覽圖改存 docs/wuxia/w04/（W1 的 docs/wuxia/w01/folk-sheet-3x.png 保留當時的 4 列版本）
+    os.makedirs(os.path.join(ROOT, "docs/wuxia/w04"), exist_ok=True)
+    bg.convert("RGB").save(os.path.join(ROOT, "docs/wuxia/w04/folk-sheet-3x.png"), optimize=True)
+    print("folk.png %dx%d," % sheet.size, len(FOLK), "characters")
 
 
 if __name__ == "__main__":

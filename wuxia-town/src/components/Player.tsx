@@ -2,6 +2,8 @@ import { Character } from './Character.tsx';
 import { orientationDegrees } from '../../convex/util/geometry.ts';
 // WUXIA-PATCH(W1): w01-skin 開啟時把上游人物換成古裝造型（public/wuxia/characters/folk.png）
 import { characterFor, skinEnabled } from '../wuxia/skin.ts';
+// WUXIA-PATCH(W4): 打樁時用動作圖
+import { poseFor } from '../wuxia/dojo.ts';
 import { toast } from 'react-toastify';
 import { Player as ServerPlayer } from '../../convex/aiTown/player.ts';
 import { GameId } from '../../convex/aiTown/ids.ts';
@@ -88,6 +90,8 @@ export const Player = ({
             ? player.activity.description
             : undefined
         }
+        // WUXIA-PATCH(W4): w04-dojo 開啟時，打樁的人用打樁動作圖
+        pose={skinEnabled(game.world) ? poseFor(game.world, player.id) : undefined}
         isViewer={isViewer}
         textureUrl={character.textureUrl}
         spritesheetData={character.spritesheetData}

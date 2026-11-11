@@ -1,0 +1,62 @@
+[
+  {
+    "file": "docs/wuxia/w04/w04-seed7-d01-0900-1400x820.png",
+    "seed": 7,
+    "at": 180,
+    "size": [
+      1400,
+      820
+    ],
+    "clock": "第 1 日 巳初",
+    "gameMinute": 180,
+    "who": "阿青",
+    "blind": false,
+    "hash": "48536918ca0c9c7931e1f88c8483a0566b7c6ef6f19a2d056fa7eff93fec7d6c",
+    "steps": 181
+  },
+  {
+    "file": "docs/wuxia/w04/w04-seed7-d01-0900-390w.png",
+    "seed": 7,
+    "at": 180,
+    "size": [
+      390,
+      844
+    ],
+    "clock": "第 1 日 巳初",
+    "gameMinute": 180,
+    "who": "阿青",
+    "blind": false,
+    "hash": "48536918ca0c9c7931e1f88c8483a0566b7c6ef6f19a2d056fa7eff93fec7d6c",
+    "steps": 181
+  },
+  {
+    "file": "docs/wuxia/w04/w04-seed7-d30-0900-1400x820.png",
+    "seed": 7,
+    "at": 41940,
+    "size": [
+      1400,
+      820
+    ],
+    "clock": "第 30 日 巳初",
+    "gameMinute": 41940,
+    "who": "阿青",
+    "blind": false,
+    "hash": "6aa6414e488c54bc7929bfa1a5c9df2046d57549ca07ba897b6f5e0a2edda342",
+    "steps": 41941
+  },
+  {
+    "file": "docs/wuxia/w04/w04-seed7-d30-0900-390w.png",
+    "seed": 7,
+    "at": 41940,
+    "size": [
+      390,
+      844
+    ],
+    "clock": "第 30 日 巳初",
+    "gameMinute": 41940,
+    "who": "阿青",
+    "blind": false,
+    "hash": "6aa6414e488c54bc7929bfa1a5c9df2046d57549ca07ba897b6f5e0a2edda342",
+    "steps": 41941
+  }
+]

@@ -16,6 +16,9 @@ import { SHOW_DEBUG_UI } from './Game.tsx';
 import { ServerGame } from '../hooks/serverGame.ts';
 // WUXIA-PATCH(W1): 換皮的畫面層（日夜色調、地點名牌）
 import { SkinLayers } from '../wuxia/SkinLayers.tsx';
+// WUXIA-PATCH(W4): 武館重開後的練功器具
+import { DojoLayer } from '../wuxia/DojoLayer.tsx';
+import { dojoOf } from '../wuxia/dojo.ts';
 import { skinEnabled, worldClock } from '../wuxia/skin.ts';
 import { useViewportZoom, wholeMapScale } from '../wuxia/viewport.ts';
 
@@ -117,6 +120,8 @@ export const PixiGame = (props: {
         onpointerup={onMapPointerUp}
         onpointerdown={onMapPointerDown}
       />
+      {/* WUXIA-PATCH(W4): 武館器具畫在地圖上、人物下面（w04-dojo 開啟時） */}
+      {skin && <DojoLayer tileDim={tileDim} open={!!dojoOf(props.game.world)} />}
       {players.map(
         (p) =>
           // Only show the path for the human player in non-debug mode.

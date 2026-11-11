@@ -7,7 +7,7 @@
 | 檔案 | 來源 | 作者 | 授權 |
 |---|---|---|---|
 | `tiles/town.jpg` | W1 程式烘焙：`tools/wuxia/bake-tiles.py`（`tools/wuxia/build-map.sh` 重產）。地面、河、街、城門、石橋、井、招牌、燈籠、封條為程式繪製；房舍、樹、竹、石、牆面、草、地面材質取自本專案自製水彩素材的縮小副本 `tools/wuxia/art-src/`（見下表） | earth-ascension 專案（Grok） | 本專案自製素材（與 repo 同一授權，非第三方） |
-| `characters/folk.png` | W1 程式繪製：`tools/wuxia/bake-folk.py`（8 個古裝人物：布衣男、短打、布衣女、老人、少年、長衫、郎中、說書人；四方向各 3 格） | earth-ascension 專案（Grok） | 本專案自製（純程式產生，無外部素材） |
+| `characters/folk.png` | W1 程式繪製：`tools/wuxia/bake-folk.py`（8 個古裝人物：布衣男、短打、布衣女、老人、少年、長衫、郎中、說書人；四方向各 3 格；W4 加第 5 列「打樁」2 格，同一支程式產生） | earth-ascension 專案（Grok） | 本專案自製（純程式產生，無外部素材） |
 | `ui/about.svg` | W1 手寫 SVG（「關於」與網頁圖示：卷軸） | earth-ascension 專案（Grok） | 本專案自製 |
 | `ui/close.svg` | W1 手寫 SVG（關閉：墨筆叉） | earth-ascension 專案（Grok） | 本專案自製 |
 | `ui/join.svg` | W1 手寫 SVG（進鎮／離開：人形） | earth-ascension 專案（Grok） | 本專案自製 |

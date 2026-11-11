@@ -204,3 +204,12 @@ body.wuxia-skin .button img {
 .wuxia-town-status ul { margin-top: 0.15rem; }
 .wuxia-town-status li { margin: 0.1rem 0; }
 @media (max-width: 640px) { .wuxia-town-status { font-size: 0.7rem; max-width: 60%; } }
+/* W4（#556）：技能面板 */
+.wuxia-skill-panel { margin-top: 0.75rem; padding: 0.5rem 0.75rem; background: rgba(60, 40, 25, 0.55); border: 2px solid #8a6a43; font-size: 0.95rem; line-height: 1.35; }
+.wuxia-skill-panel p { margin: 0.15rem 0; }
+.wuxia-skill-strikes { opacity: 0.85; font-size: 0.85rem; }
+.wuxia-skills { display: grid; grid-template-columns: 1fr; gap: 0.2rem; margin-top: 0.3rem; }
+.wuxia-skill { display: grid; grid-template-columns: 2.6rem 1fr 2.6rem; align-items: center; gap: 0.4rem; font-size: 0.85rem; }
+.wuxia-skill-bar { height: 0.55rem; background: rgba(0, 0, 0, 0.35); border: 1px solid #8a6a43; position: relative; }
+.wuxia-skill-fill { position: absolute; left: 0; top: 0; bottom: 0; background: #c79a4a; }
+.wuxia-skill-value { text-align: right; font-variant-numeric: tabular-nums; }

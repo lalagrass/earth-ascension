@@ -9,6 +9,7 @@ import {
   nextBlock,
   placeAt,
   placeName,
+  SchedCtx,
 } from '../../convex/wuxia/w03_life/data';
 import type { LifeState, Person } from '../../convex/wuxia/w03_life';
 
@@ -49,9 +50,9 @@ export function describeCurrent(person: Person): string {
 }
 
 /** 下一件事：目前時段之後的下一個日程時段。 */
-export function describeNext(person: Person, minuteOfDay: number): string {
-  const nb = nextBlock(person.cid, minuteOfDay);
-  const cb = currentBlock(person.cid, minuteOfDay);
+export function describeNext(person: Person, minuteOfDay: number, ctx?: SchedCtx): string {
+  const nb = nextBlock(person.cid, minuteOfDay, ctx);
+  const cb = currentBlock(person.cid, minuteOfDay, ctx);
   const now = cb ? `現在：${cb.label}（到 ${hhmm(cb.to)}）；` : '現在：留白；';
   if (!nb) return now;
   return `${now}下一段 ${hhmm(nb.from)} ${nb.label}`;

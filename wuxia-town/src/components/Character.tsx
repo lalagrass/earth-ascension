@@ -15,6 +15,8 @@ export const Character = ({
   emoji = '',
   // WUXIA-PATCH(W3): 頭上 emoji 旁加活動標籤（w03-life）
   label = '',
+  // WUXIA-PATCH(W4): 動作圖（例如打樁 'punch'）；有給就用這組動畫並一直播放
+  pose = '',
   isViewer = false,
   speed = 0.1,
   onClick,
@@ -35,6 +37,8 @@ export const Character = ({
   emoji?: string;
   // WUXIA-PATCH(W3): 活動標籤（例如「挑水」），顯示在 emoji 上方
   label?: string;
+  // WUXIA-PATCH(W4): 動作圖名稱（spritesheet 的 animations 鍵）
+  pose?: string;
   // Highlights the player.
   isViewer?: boolean;
   // The speed of the animation. Can be tuned depending on the side and speed of the NPC.
@@ -70,6 +74,8 @@ export const Character = ({
   }, [direction, isMoving]);
 
   if (!spriteSheet) return null;
+  // WUXIA-PATCH(W4): 有動作圖時用動作圖（打樁時左右手交替出拳）
+  const poseTextures = pose ? spriteSheet.animations[pose] : undefined;
 
   let blockOffset = { x: 0, y: 0 };
   switch (roundedOrientation) {
@@ -100,9 +106,9 @@ export const Character = ({
       {isViewer && <ViewerIndicator />}
       <AnimatedSprite
         ref={ref}
-        isPlaying={isMoving}
-        textures={spriteSheet.animations[direction]}
-        animationSpeed={speed}
+        isPlaying={isMoving || !!poseTextures}
+        textures={poseTextures ?? spriteSheet.animations[direction]}
+        animationSpeed={poseTextures ? speed * 0.6 : speed}
         anchor={{ x: 0.5, y: 0.5 }}
       />
       {emoji && (

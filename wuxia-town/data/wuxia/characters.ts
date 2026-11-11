@@ -1,5 +1,6 @@
 // 武俠小鎮 W1：8 個古裝人物的走路圖（public/wuxia/characters/folk.png，tools/wuxia/bake-folk.py 產生）。
 // 格式同上游 data/spritesheets/f1.ts：每人 96×128，列序 down、left、right、up，每列 3 格 32×32。
+// W4（#556）：每人多一列「打樁」2 格（面向右出拳），每人變 96×160；動畫名 punch。
 import type { SpritesheetData } from '../spritesheets/types';
 
 export const FOLK_TEXTURE = '/ai-town/wuxia/characters/folk.png';
@@ -17,7 +18,7 @@ export const FOLK = [
 
 function sheet(index: number): SpritesheetData {
   const ox = (index % 4) * 96;
-  const oy = Math.floor(index / 4) * 128;
+  const oy = Math.floor(index / 4) * 160;
   const frames: SpritesheetData['frames'] = {};
   const rows = ['down', 'left', 'right', 'up'];
   rows.forEach((dir, r) => {
@@ -29,10 +30,21 @@ function sheet(index: number): SpritesheetData {
       };
     }
   });
+  // W4：第 5 列打樁 2 格
+  for (let c = 0; c < 2; c++) {
+    frames[c === 0 ? 'punch' : `punch${c + 1}`] = {
+      frame: { x: ox + c * 32, y: oy + 4 * 32, w: 32, h: 32 },
+      sourceSize: { w: 32, h: 32 },
+      spriteSourceSize: { x: 0, y: 0 },
+    };
+  }
   return {
     frames,
     meta: { scale: '1' },
-    animations: Object.fromEntries(rows.map((d) => [d, [d, `${d}2`, `${d}3`]])),
+    animations: {
+      ...Object.fromEntries(rows.map((d) => [d, [d, `${d}2`, `${d}3`]])),
+      punch: ['punch', 'punch2'],
+    },
   };
 }
 
