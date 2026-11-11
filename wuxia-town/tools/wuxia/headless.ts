@@ -284,7 +284,8 @@ export function runHeadless(opts: HeadlessOptions) {
       checkpoints.push({ step: k, t: now, hash: result.step.hash });
     }
     if (done) break;
-    if (opts.untilGameMinute !== undefined && k > 100_000) {
+    // W4：365 日（525600 分）也要能跑，安全上限改成目標分鐘數的 2 倍＋10 萬
+    if (opts.untilGameMinute !== undefined && k > opts.untilGameMinute * 2 + 100_000) {
       throw new Error('headless: game clock never reached target (no element enabled?)');
     }
   }
