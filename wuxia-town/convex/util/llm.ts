@@ -1,10 +1,16 @@
 // That's right! No imports and no dependencies 🤯
+// WUXIA-PATCH(W0): embedding 維度改從 data/wuxia/world.config.json 讀（#562 W0-1）
+import wuxiaWorldConfig from '../../data/wuxia/world.config.json';
 
 const OPENAI_EMBEDDING_DIMENSION = 1536;
 const TOGETHER_EMBEDDING_DIMENSION = 768;
 const OLLAMA_EMBEDDING_DIMENSION = 1024;
 
-export const EMBEDDING_DIMENSION: number = OLLAMA_EMBEDDING_DIMENSION;
+// WUXIA-PATCH(W0): 原本寫死 OLLAMA_EMBEDDING_DIMENSION；改成設定檔 embeddingDimension（預設 1024＝Ollama）。
+// 這個值綁在 memoryEmbeddings 的向量索引，改了要清表（含 embeddingsCache），見 docs/wuxia/W0.md。
+export const EMBEDDING_DIMENSION: number =
+  (wuxiaWorldConfig as { embeddingDimension?: number }).embeddingDimension ??
+  OLLAMA_EMBEDDING_DIMENSION;
 
 export function detectMismatchedLLMProvider() {
   switch (EMBEDDING_DIMENSION) {

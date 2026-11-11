@@ -34,6 +34,8 @@
 | W0 | `convex/tsconfig.json` | `resolveJsonModule: true` | `convex/wuxia/state.ts` 讀 `data/wuxia/world.config.json` |
 | W0 | `package.json`（JSON 無法加註解） | `wuxia:headless`、`wuxia:replay`、`wuxia:journal`、`wuxia:hash`、`wuxia:check` 指令；devDependency `tsx` | 工具（#552 範圍 6） |
 | W0 | `package-lock.json`（JSON） | 跟著 `tsx` 更新 | 同上 |
+| W0 | `convex/util/llm.ts` | `EMBEDDING_DIMENSION` 改讀 `data/wuxia/world.config.json` 的 `embeddingDimension`（預設 1024） | #562 W0-1：原本寫死 1024，換雲端模型要改程式；改了要清表 |
+| W0 | `convex/world.ts` | `stopInactiveWorlds` 在 `keepAlive`（設定檔或 `WUXIA_KEEP_ALIVE=1`）開啟時不停世界 | #562 W0-2：沒有瀏覽器時 5 分鐘會自己停；長時間實跑要開 |
 | W0 | `convex/_generated/api.d.ts`（產生檔） | `npx convex dev` 重新產生，多了 `wuxia/*` 模組 | Convex 產生檔 |
 
 ## 上游刻意保留不改的隨機／時間

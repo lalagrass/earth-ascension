@@ -18,6 +18,8 @@
 | W0-9 | `Date.now()` 只修 `game.ts:270/:288` | 照修（改用 step 的引擎時間）；`engineInsertInput` 與 `agentSendMessage` 的 `Date.now()` 保留 | 那兩處是寫 input 的 mutation，不在 step 內，值已存在 inputs 表、journal 原樣帶出 |
 | W0-10 | 規格未提 | 對話 prompt 的「用繁體中文回答」用環境變數 `WUXIA_REPLY_IN_ZH_TW=1` 開啟，預設關 | 規格說實測時加一句即可；預設不改上游 prompt |
 | W0-11 | 規格未提 | `.github/workflows/wuxia-town.yml` 經 GitHub 連接器（REST contents API）提交，其餘 commit 用 git push | 本機 git 憑證缺 `workflow` 權限，無法 push workflow 檔；內容相同 |
+| W0-12 | #562 W0-1：embedding 維度寫死在 `convex/util/llm.ts:7` | 改成 `data/wuxia/world.config.json` 的 `embeddingDimension`（預設 1024＝Ollama `mxbai-embed-large`）；換供應商時一起改（OpenAI 1536、Together 768），並清 `memoryEmbeddings`／`memories`／`embeddingsCache`（`testing:wipeAllTables` 不清 `embeddingsCache`，要另外清） | 向量索引維度在 schema 部署時固定，只能用打包時就確定的設定檔，不能用執行期環境變數。回退：把常數改回寫死 |
+| W0-13 | #562 W0-2：世界閒置 5 分鐘自己停 | 新增 `keepAlive`（設定檔，預設 false）；也可用 Convex 環境變數 `WUXIA_KEEP_ALIVE=1` 臨時開，不必改檔。開啟時 `stopInactiveWorlds` 直接略過 | 長時間實跑不用一直開瀏覽器。W0 實測期間改用 `live-run.sh` 每 60 秒 heartbeat（30 分鐘那輪中途仍被停過一次並自動重啟，重播照樣對得上） |
 
 ## 待 owner 決定
 

@@ -11,6 +11,8 @@ import {
 import { playerId } from './aiTown/ids';
 import { kickEngine, startEngine, stopEngine } from './aiTown/main';
 import { engineInsertInput } from './engine/abstractGame';
+// WUXIA-PATCH(W0): keepAlive（#562 W0-2）
+import { keepAliveEnabled } from './wuxia/state';
 
 export const defaultWorldStatus = query({
   handler: async (ctx) => {
@@ -58,6 +60,10 @@ export const heartbeatWorld = mutation({
 
 export const stopInactiveWorlds = internalMutation({
   handler: async (ctx) => {
+    // WUXIA-PATCH(W0): keepAlive 開啟時不因閒置停世界（#562 W0-2，長時間實跑用；預設關）
+    if (keepAliveEnabled()) {
+      return;
+    }
     const cutoff = Date.now() - IDLE_WORLD_TIMEOUT;
     const worlds = await ctx.db.query('worldStatus').collect();
     for (const worldStatus of worlds) {

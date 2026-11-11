@@ -8,6 +8,10 @@ export type WuxiaConfig = {
   seed: number;
   /** 1 實秒 = timeScale 遊戲秒（W0 只記錄，不用在規則裡）。 */
   timeScale: number;
+  /** #562 W0-2：true 時沒有瀏覽器連線也不會因閒置 5 分鐘被停（長時間實跑用）。預設 false。 */
+  keepAlive?: boolean;
+  /** #562 W0-1：embedding 維度，綁在 memoryEmbeddings 的向量索引上（Ollama mxbai 1024、OpenAI 1536、Together 768）。 */
+  embeddingDimension?: number;
 };
 
 export type WuxiaState = {
@@ -22,6 +26,11 @@ export type WuxiaState = {
 };
 
 export const defaultWuxiaConfig: WuxiaConfig = worldConfig as WuxiaConfig;
+
+/** keepAlive：設定檔 keepAlive=true，或 Convex 環境變數 WUXIA_KEEP_ALIVE=1。 */
+export function keepAliveEnabled(config: WuxiaConfig = defaultWuxiaConfig): boolean {
+  return config.keepAlive === true || process.env.WUXIA_KEEP_ALIVE === '1';
+}
 
 export function initWuxiaState(config: WuxiaConfig = defaultWuxiaConfig): WuxiaState {
   return {
