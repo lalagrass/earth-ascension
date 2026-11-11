@@ -83,3 +83,27 @@ export const defaultWorld = internalQuery({
     return status && { worldId: status.worldId, engineId: status.engineId, status: status.status };
   },
 });
+
+/** 實測報告用：某世界的對話訊息（含說話者名字）。 */
+export const messages = internalQuery({
+  args: { worldId: v.id('worlds') },
+  handler: async (ctx, args) => {
+    const rows = await ctx.db
+      .query('messages')
+      .withIndex('conversationId', (q) => q.eq('worldId', args.worldId))
+      .collect();
+    const names = new Map<string, string>();
+    for (const d of await ctx.db
+      .query('playerDescriptions')
+      .withIndex('worldId', (q) => q.eq('worldId', args.worldId))
+      .collect()) {
+      names.set(d.playerId, d.name);
+    }
+    return rows.map((m) => ({
+      at: m._creationTime,
+      conversationId: m.conversationId,
+      author: names.get(m.author) ?? m.author,
+      text: m.text,
+    }));
+  },
+});

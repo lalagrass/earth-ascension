@@ -1,0 +1,43 @@
+# UPSTREAM：wuxia-town 的上游來源與修補清單
+
+- 上游：[a16z-infra/ai-town](https://github.com/a16z-infra/ai-town)（MIT，`LICENSE` 原檔保留）
+- 固定 commit：`1b2f7d8b824c7bc679017a091d9d45ba3dc3029e`（2026-11-04，PR #312 merge）
+- 匯入方式：`git archive 1b2f7d8`，只要檔案，不含上游 git 歷史（W0，#552）
+- 武俠小鎮新增的東西只放在 `convex/wuxia/`、`data/wuxia/`、`src/wuxia/`、`tools/wuxia/`、`docs/wuxia/`、`public/wuxia/`（#549 第 1 節）。
+
+## 沒有匯入的上游檔案（授權不明，#548／#549）
+
+清單在 `tools/wuxia/upstream-assets.txt`（48 個檔）。本機要跑原版畫面時執行 `bash tools/wuxia/fetch-upstream-assets.sh`，
+檔案會被 `.gitignore` 排除，不可 commit。
+
+- `public/assets/**`（人物 `32x32folk.png`、tileset、spritesheets、`background.mp3`、字型、`tilemap.json`）
+- `assets/**`（UI 圖：a16z／Convex 標誌、背景、框線 svg）
+- `public/favicon.ico`
+- `src/editor/spritesheets/*.png`、`src/editor/tilesets/*.png`（地圖編輯器用的上游 tileset）
+
+## 修補清單
+
+每處修改在原始碼裡都有 `// WUXIA-PATCH(Wn): 理由`（JSON 檔不能寫註解的例外另註明）。
+
+| 步驟 | 檔案 | 修改 | 理由 |
+|---|---|---|---|
+| W0 | `.gitignore` | 排除上游美術、`tools/wuxia/out/` | 上游美術不進 repo |
+| W0 | `convex/aiTown/world.ts` | `serializedWorld` 加 `wuxia: v.optional(v.any())`；`World` 讀寫 `wuxia` | 元素狀態與 rng 跟 step diff 一起存檔（#549 §2、§4） |
+| W0 | `convex/aiTown/game.ts` | 建構子初始化 `world.wuxia`；新增 `rng()`、`rngUuid()`、`wuxiaHash()`；`tick` 末尾 `runElements`；`saveStep` 帶 step 紀錄＋hash；`saveWorld` 寫 `wuxiaSteps`（第一筆時存 `wuxiaSnapshots`）；`saveDiff` 的 `ended` 改用 step 時間（原 :270／:288） | 種子亂數、元素掛鉤、step 邊界、重播 |
+| W0 | `convex/engine/abstractGame.ts` | `runStep` 的模擬迴圈抽成 `simulateStep()`（邏輯不變），回傳 step 邊界；`saveStep` 多一個參數；新增 `WuxiaStepBoundary` 型別 | 無頭模擬／重播跑同一段程式；記 step 邊界 |
+| W0 | `convex/aiTown/agent.ts` | 接受邀請機率（原 :114）改 `game.rng()`；三處訊息 id（原 :174／:195／:222）改 `game.rngUuid()` | 引擎內不得用全域亂數 |
+| W0 | `convex/aiTown/player.ts` | 尋路退避（原 :154）、出生位置（原 :193-194）、朝向（原 :211）改 `game.rng()` | 同上 |
+| W0 | `convex/schema.ts` | 加入 `wuxiaTables`（`wuxiaSteps`、`wuxiaSnapshots`、`wuxiaLlmUsage`） | 新表 |
+| W0 | `convex/util/llm.ts` | `chatCompletion` 多回傳 `usage`；明寫實作回傳型別 | `LLM_DAILY_TOKEN_CAP` 計量 |
+| W0 | `convex/agent/conversation.ts` | 三個 `chatCompletion` 改 `budgetedChatCompletion`（模板句後備） | 每日上限、LLM 失敗用模板句 |
+| W0 | `convex/agent/memory.ts` | 摘要／重要度／反思改 `budgetedChatCompletion`；`calculateImportance` 多收 `ctx` | 同上 |
+| W0 | `convex/tsconfig.json` | `resolveJsonModule: true` | `convex/wuxia/state.ts` 讀 `data/wuxia/world.config.json` |
+| W0 | `package.json`（JSON 無法加註解） | `wuxia:headless`、`wuxia:replay`、`wuxia:journal`、`wuxia:hash`、`wuxia:check` 指令；devDependency `tsx` | 工具（#552 範圍 6） |
+| W0 | `package-lock.json`（JSON） | 跟著 `tsx` 更新 | 同上 |
+| W0 | `convex/_generated/api.d.ts`（產生檔） | `npx convex dev` 重新產生，多了 `wuxia/*` 模組 | Convex 產生檔 |
+
+## 上游刻意保留不改的隨機／時間
+
+- `convex/aiTown/agentOperations.ts`：action（不在 step 內），結果以 input 寫進 inputs 表，重播直接餵回（#549 §4）。
+- `convex/engine/abstractGame.ts` 的 `engineInsertInput`（`received: Date.now()`）、`convex/aiTown/agent.ts` 的 `agentSendMessage`（`timestamp: Date.now()`）：都是 mutation 寫 input，不在 step 內；值存在 inputs 表，journal 原樣帶出。
+- `convex/aiTown/main.ts` 的 `Date.now()`：決定 step 的 `now`，每個 step 的 `now` 記在 `wuxiaSteps`。

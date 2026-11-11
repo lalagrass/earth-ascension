@@ -51,6 +51,16 @@ import type * as util_sleep from "../util/sleep.js";
 import type * as util_types from "../util/types.js";
 import type * as util_xxhash from "../util/xxhash.js";
 import type * as world from "../world.js";
+import type * as wuxia_canonical from "../wuxia/canonical.js";
+import type * as wuxia_hash from "../wuxia/hash.js";
+import type * as wuxia_journal from "../wuxia/journal.js";
+import type * as wuxia_llmBudget from "../wuxia/llmBudget.js";
+import type * as wuxia_registry from "../wuxia/registry.js";
+import type * as wuxia_rng from "../wuxia/rng.js";
+import type * as wuxia_sha256 from "../wuxia/sha256.js";
+import type * as wuxia_state from "../wuxia/state.js";
+import type * as wuxia_steps from "../wuxia/steps.js";
+import type * as wuxia_templates from "../wuxia/templates.js";
 
 import type {
   ApiFromModules,
@@ -102,6 +112,16 @@ declare const fullApi: ApiFromModules<{
   "util/types": typeof util_types;
   "util/xxhash": typeof util_xxhash;
   world: typeof world;
+  "wuxia/canonical": typeof wuxia_canonical;
+  "wuxia/hash": typeof wuxia_hash;
+  "wuxia/journal": typeof wuxia_journal;
+  "wuxia/llmBudget": typeof wuxia_llmBudget;
+  "wuxia/registry": typeof wuxia_registry;
+  "wuxia/rng": typeof wuxia_rng;
+  "wuxia/sha256": typeof wuxia_sha256;
+  "wuxia/state": typeof wuxia_state;
+  "wuxia/steps": typeof wuxia_steps;
+  "wuxia/templates": typeof wuxia_templates;
 }>;
 
 /**

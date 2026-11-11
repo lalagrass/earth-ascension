@@ -53,6 +53,11 @@ function withLanguageHint(kind: BudgetKind, messages: LLMMessage[]): LLMMessage[
   } else {
     out.unshift({ role: 'system', content: ZH_TW_HINT });
   }
+  // 小模型常忽略 system 裡的語言要求（W0 實測），最後一則 user 訊息也補同一句。
+  const lastUser = [...out].reverse().find((m) => m.role === 'user');
+  if (lastUser) {
+    lastUser.content = `${ZH_TW_HINT}\n${lastUser.content}`;
+  }
   return out;
 }
 

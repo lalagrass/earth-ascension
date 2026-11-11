@@ -104,6 +104,7 @@ export function runHeadless(opts: HeadlessOptions) {
   };
   const steps: JournalStep[] = [];
   const checkpoints: Array<{ step: number; t: number; hash: string }> = [];
+  const traces = new Map<string, Array<{ x: number; y: number }>>();
 
   const nameOf = (playerId: string) =>
     game.playerDescriptions.get(playerId as any)?.name ?? playerId;
@@ -217,6 +218,11 @@ export function runHeadless(opts: HeadlessOptions) {
         throw new Error(`headless: unknown operation ${op.name}`);
       }
     }
+    for (const p of game.world.players.values()) {
+      const t = traces.get(p.id) ?? [];
+      t.push({ x: p.position.x, y: p.position.y });
+      traces.set(p.id, t);
+    }
     if (k % 60 === 0 || k === totalSteps) {
       checkpoints.push({ step: k, t: now, hash: result.step.hash });
     }
@@ -247,7 +253,63 @@ export function runHeadless(opts: HeadlessOptions) {
     players,
     sampleMessages: messages.slice(0, 10),
   };
-  return { snapshot, queue, steps, summary, finalHash };
+  return { snapshot, queue, steps, summary, finalHash, traces, game };
+}
+
+/** 自製的軌跡圖（SVG）：灰格是地圖上不能走的物件格，彩線是每個人的移動軌跡。不含任何上游美術。 */
+export function traceSvg(run: ReturnType<typeof runHeadless>, title: string): string {
+  const cell = 12;
+  const w = map.mapwidth;
+  const h = map.mapheight;
+  const parts: string[] = [];
+  parts.push(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${w * cell}" height="${h * cell + 24}" viewBox="0 0 ${w * cell} ${h * cell + 24}">`,
+    `<rect width="100%" height="100%" fill="#f6f1e4"/>`,
+    `<text x="4" y="16" font-family="sans-serif" font-size="13" fill="#333">${title}</text>`,
+    `<g transform="translate(0,24)">`,
+  );
+  for (const layer of map.objmap as number[][][]) {
+    for (let x = 0; x < w; x++) {
+      for (let y = 0; y < h; y++) {
+        if (layer[x][y] !== -1) {
+          parts.push(
+            `<rect x="${x * cell}" y="${y * cell}" width="${cell}" height="${cell}" fill="#c9c2b0"/>`,
+          );
+        }
+      }
+    }
+  }
+  const colors = [
+    '#b22222',
+    '#1f6f8b',
+    '#2e8b57',
+    '#8b5a2b',
+    '#6a3d9a',
+    '#d2691e',
+    '#008080',
+    '#555',
+  ];
+  let i = 0;
+  for (const [id, pts] of run.traces) {
+    const color = colors[i++ % colors.length];
+    const d = pts
+      .map(
+        (p, j) =>
+          `${j ? 'L' : 'M'}${(p.x * cell + cell / 2).toFixed(1)},${(p.y * cell + cell / 2).toFixed(1)}`,
+      )
+      .join('');
+    parts.push(
+      `<path d="${d}" fill="none" stroke="${color}" stroke-width="1.5" stroke-opacity="0.8"/>`,
+    );
+    const last = pts[pts.length - 1];
+    const name = run.game.playerDescriptions.get(id as any)?.name ?? id;
+    parts.push(
+      `<circle cx="${last.x * cell + cell / 2}" cy="${last.y * cell + cell / 2}" r="4" fill="${color}"/>`,
+      `<text x="${last.x * cell + cell}" y="${last.y * cell + cell / 2}" font-family="sans-serif" font-size="11" fill="${color}">${name}</text>`,
+    );
+  }
+  parts.push('</g></svg>');
+  return parts.join('\n') + '\n';
 }
 
 export function journalLines(
@@ -278,7 +340,18 @@ function main() {
   if (!Number.isFinite(opts.seed) || !(opts.minutes > 0) || !(opts.agents > 0)) {
     throw new Error('usage: headless --seed N --minutes M [--agents K] --out run.json');
   }
-  const { snapshot, queue, steps, summary, finalHash } = runHeadless(opts);
+  const run = runHeadless(opts);
+  const { snapshot, queue, steps, summary, finalHash } = run;
+  if (args.svg) {
+    mkdirSync(dirname(args.svg), { recursive: true });
+    writeFileSync(
+      args.svg,
+      traceSvg(
+        run,
+        `W0 headless seed ${opts.seed}, ${opts.minutes} min, hash ${finalHash.slice(0, 16)}…`,
+      ),
+    );
+  }
   if (args.out) {
     mkdirSync(dirname(args.out), { recursive: true });
     writeFileSync(args.out, JSON.stringify(summary, null, 2) + '\n');
