@@ -26,10 +26,11 @@ export default function FreezeButton() {
       <Button
         onClick={flipSwitch}
         className="hidden lg:block"
-        title="When freezing a world, the agents will take some time to stop what they are doing before they become frozen. "
-        imgUrl="/assets/star.svg"
+        // WUXIA-PATCH(W1): 介面繁中；上游圖示不在 repo，改用自製圖示
+        title="暫停後，人物會先把手上的事做完才停下。"
+        imgUrl="/ai-town/wuxia/ui/pause.svg"
       >
-        {frozen ? 'Unfreeze' : 'Freeze'}
+        {frozen ? '繼續' : '暫停'}
       </Button>
     </>
   );

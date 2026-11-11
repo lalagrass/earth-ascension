@@ -1,7 +1,10 @@
 import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { Id } from '../../convex/_generated/dataModel';
-import closeImg from '../../assets/close.svg';
+// WUXIA-PATCH(W1): 上游 assets/close.svg 不在 repo（授權不明），改用自製圖示；人物詳情加「在○○附近」
+const closeImg = '/ai-town/wuxia/ui/close.svg';
+import { PlayerCard } from '../wuxia/PlayerCard';
+import { activityLabel, skinEnabled } from '../wuxia/skin';
 import { SelectElement } from './Player';
 import { Messages } from './Messages';
 import { toastOnError } from '../toasts';
@@ -56,7 +59,8 @@ export default function PlayerDetails({
   if (!playerId) {
     return (
       <div className="h-full text-xl flex text-center items-center p-4">
-        Click on an agent on the map to see chat history.
+        {/* WUXIA-PATCH(W1): 介面繁中 */}
+        點地圖上的人物，看他在哪裡、聊了什麼。
       </div>
     );
   }
@@ -148,6 +152,8 @@ export default function PlayerDetails({
           </h2>
         </a>
       </div>
+      {/* WUXIA-PATCH(W1): 「在茶館附近」（w01-skin 開啟時，依 data/wuxia/places.json） */}
+      <PlayerCard skin={skinEnabled(game.world)} position={player.position} />
       {canInvite && (
         <a
           className={
@@ -157,21 +163,21 @@ export default function PlayerDetails({
           onClick={onStartConversation}
         >
           <div className="h-full bg-clay-700 text-center">
-            <span>Start conversation</span>
+            <span>上前攀談</span>
           </div>
         </a>
       )}
       {waitingForAccept && (
         <a className="mt-6 button text-white shadow-solid text-xl cursor-pointer pointer-events-auto opacity-50">
           <div className="h-full bg-clay-700 text-center">
-            <span>Waiting for accept...</span>
+            <span>等對方回應…</span>
           </div>
         </a>
       )}
       {waitingForNearby && (
         <a className="mt-6 button text-white shadow-solid text-xl cursor-pointer pointer-events-auto opacity-50">
           <div className="h-full bg-clay-700 text-center">
-            <span>Walking over...</span>
+            <span>走過去…</span>
           </div>
         </a>
       )}
@@ -184,7 +190,7 @@ export default function PlayerDetails({
           onClick={onLeaveConversation}
         >
           <div className="h-full bg-clay-700 text-center">
-            <span>Leave conversation</span>
+            <span>告辭</span>
           </div>
         </a>
       )}
@@ -198,7 +204,7 @@ export default function PlayerDetails({
             onClick={onAcceptInvite}
           >
             <div className="h-full bg-clay-700 text-center">
-              <span>Accept</span>
+              <span>答應</span>
             </div>
           </a>
           <a
@@ -209,7 +215,7 @@ export default function PlayerDetails({
             onClick={onRejectInvite}
           >
             <div className="h-full bg-clay-700 text-center">
-              <span>Reject</span>
+              <span>婉拒</span>
             </div>
           </a>
         </>
@@ -217,18 +223,19 @@ export default function PlayerDetails({
       {!playerConversation && player.activity && player.activity.until > Date.now() && (
         <div className="box flex-grow mt-6">
           <h2 className="bg-brown-700 text-base sm:text-lg text-center">
-            {player.activity.description}
+            {/* WUXIA-PATCH(W1): 活動名稱顯示繁中（規則資料不改） */}
+            {activityLabel(player.activity.description, skinEnabled(game.world))}
           </h2>
         </div>
       )}
       <div className="desc my-6">
         <p className="leading-tight -m-4 bg-brown-700 text-base sm:text-sm">
           {!isMe && playerDescription?.description}
-          {isMe && <i>This is you!</i>}
+          {isMe && <i>這是你。</i>}
           {!isMe && inConversationWithMe && (
             <>
               <br />
-              <br />(<i>Conversing with you!</i>)
+              <br />（<i>正在跟你說話</i>）
             </>
           )}
         </p>
@@ -246,7 +253,7 @@ export default function PlayerDetails({
       {!playerConversation && previousConversation && (
         <>
           <div className="box flex-grow">
-            <h2 className="bg-brown-700 text-lg text-center">Previous conversation</h2>
+            <h2 className="bg-brown-700 text-lg text-center">上一段談話</h2>
           </div>
           <Messages
             worldId={worldId}

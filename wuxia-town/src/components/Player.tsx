@@ -1,6 +1,7 @@
 import { Character } from './Character.tsx';
 import { orientationDegrees } from '../../convex/util/geometry.ts';
-import { characters } from '../../data/characters.ts';
+// WUXIA-PATCH(W1): w01-skin 開啟時把上游人物換成古裝造型（public/wuxia/characters/folk.png）
+import { characterFor, skinEnabled } from '../wuxia/skin.ts';
 import { toast } from 'react-toastify';
 import { Player as ServerPlayer } from '../../convex/aiTown/player.ts';
 import { GameId } from '../../convex/aiTown/ids.ts';
@@ -33,7 +34,8 @@ export const Player = ({
   if (!playerCharacter) {
     throw new Error(`Player ${player.id} has no character`);
   }
-  const character = characters.find((c) => c.name === playerCharacter);
+  // WUXIA-PATCH(W1): 依 w01-skin 選人物圖
+  const character = characterFor(playerCharacter, skinEnabled(game.world));
 
   const locationBuffer = game.world.historicalLocations?.get(player.id);
   const historicalLocation = useHistoricalValue<Location>(

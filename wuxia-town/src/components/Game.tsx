@@ -11,6 +11,10 @@ import { useHistoricalTime } from '../hooks/useHistoricalTime.ts';
 import { DebugTimeManager } from './DebugTimeManager.tsx';
 import { GameId } from '../../convex/aiTown/ids.ts';
 import { useServerGame } from '../hooks/serverGame.ts';
+// WUXIA-PATCH(W1): 時辰顯示、換皮時的畫面框與底色
+import { ClockBadge } from '../wuxia/ClockBadge.tsx';
+import { skinEnabled, worldClock } from '../wuxia/skin.ts';
+import { dayTint } from '../../convex/wuxia/clock.ts';
 
 export const SHOW_DEBUG_UI = !!import.meta.env.VITE_SHOW_DEBUG_UI;
 
@@ -39,15 +43,28 @@ export default function Game() {
   if (!worldId || !engineId || !game) {
     return null;
   }
+  // WUXIA-PATCH(W1): w01-skin 的時辰（依遊戲時鐘）
+  const skin = skinEnabled(game.world);
+  const clock = skin ? worldClock(game.world, historicalTime ?? worldState?.engine.currentTime) : null;
   return (
     <>
       {SHOW_DEBUG_UI && <DebugTimeManager timeManager={timeManager} width={200} height={100} />}
-      <div className="mx-auto w-full max-w grid grid-rows-[240px_1fr] lg:grid-rows-[1fr] lg:grid-cols-[1fr_auto] lg:grow max-w-[1400px] min-h-[480px] game-frame">
+      {/* WUXIA-PATCH(W1): 換皮時手機版的畫面高一點（小鎮是 4:3） */}
+      <div
+        className={
+          skin
+            ? 'mx-auto w-full max-w grid grid-rows-[290px_1fr] lg:grid-rows-[1fr] lg:grid-cols-[1fr_auto] lg:grow max-w-[1400px] min-h-[480px] game-frame'
+            : 'mx-auto w-full max-w grid grid-rows-[240px_1fr] lg:grid-rows-[1fr] lg:grid-cols-[1fr_auto] lg:grow max-w-[1400px] min-h-[480px] game-frame'
+        }
+      >
         {/* Game area */}
         <div className="relative overflow-hidden bg-brown-900" ref={gameWrapperRef}>
+          {/* WUXIA-PATCH(W1): 十二時辰＋第幾日 */}
+          {skin && <ClockBadge clock={clock} phase={clock ? dayTint(clock.minuteOfDay).phase : undefined} />}
           <div className="absolute inset-0">
             <div className="container">
-              <Stage width={width} height={height} options={{ backgroundColor: 0x7ab5ff }}>
+              {/* WUXIA-PATCH(W1): 換皮時底色改紙色 */}
+              <Stage width={width} height={height} options={{ backgroundColor: skin ? 0xe2d5b4 : 0x7ab5ff }}>
                 {/* Re-propagate context because contexts are not shared between renderers.
 https://github.com/michalochman/react-pixi-fiber/issues/145#issuecomment-531549215 */}
                 <ConvexProvider client={convex}>

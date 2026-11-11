@@ -14,6 +14,10 @@ import { DebugPath } from './DebugPath.tsx';
 import { PositionIndicator } from './PositionIndicator.tsx';
 import { SHOW_DEBUG_UI } from './Game.tsx';
 import { ServerGame } from '../hooks/serverGame.ts';
+// WUXIA-PATCH(W1): 換皮的畫面層（日夜色調、地點名牌）
+import { SkinLayers } from '../wuxia/SkinLayers.tsx';
+import { skinEnabled, worldClock } from '../wuxia/skin.ts';
+import { useViewportZoom, wholeMapScale } from '../wuxia/viewport.ts';
 
 export const PixiGame = (props: {
   worldId: Id<'worlds'>;
@@ -81,6 +85,10 @@ export const PixiGame = (props: {
   };
   const { width, height, tileDim } = props.game.worldMap;
   const players = [...props.game.world.players.values()];
+  // WUXIA-PATCH(W1): w01-skin 的畫面層所需資料
+  const skin = skinEnabled(props.game.world);
+  const zoom = useViewportZoom(viewportRef);
+  const clock = skin ? worldClock(props.game.world, props.historicalTime ?? props.game.world.wuxia?.clockEpoch) : null;
 
   // Zoom on the user’s avatar when it is created
   useEffect(() => {
@@ -101,6 +109,8 @@ export const PixiGame = (props: {
       worldWidth={width * tileDim}
       worldHeight={height * tileDim}
       viewportRef={viewportRef}
+      // WUXIA-PATCH(W1): 換皮時可縮小到看見整張小鎮
+      wuxiaMinScale={skin ? wholeMapScale(props.width, props.height, width * tileDim, height * tileDim) : undefined}
     >
       <PixiStaticMap
         map={props.game.worldMap}
@@ -125,6 +135,16 @@ export const PixiGame = (props: {
           historicalTime={props.historicalTime}
         />
       ))}
+      {/* WUXIA-PATCH(W1): 日夜色調與地點名牌疊在人物上面 */}
+      {skin && (
+        <SkinLayers
+          worldWidthPx={width * tileDim}
+          worldHeightPx={height * tileDim}
+          tileDim={tileDim}
+          zoom={zoom}
+          clock={clock}
+        />
+      )}
     </PixiViewport>
   );
 };

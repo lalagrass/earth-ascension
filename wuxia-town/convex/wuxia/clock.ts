@@ -56,7 +56,7 @@ export type DayTint = { phase: 'night' | 'dusk' | 'dawn' | 'day'; color: number;
 
 const NIGHT = { color: 0x16224a, alpha: 0.46 };
 const DUSK = { color: 0xd8742c, alpha: 0.26 };
-const DAWN = { color: 0xe9c79a, alpha: 0.14 };
+const DAWN = { color: 0xf0b574, alpha: 0.24 };
 
 function mix(a: number, b: number, t: number) {
   const ar = (a >> 16) & 255,

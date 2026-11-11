@@ -148,7 +148,8 @@ export function Messages({
             </div>
             <div className={clsx('bubble')}>
               <p className="bg-white -mx-3 -my-1">
-                <i>typing...</i>
+                {/* WUXIA-PATCH(W1): 介面繁中 */}
+                <i>說話中…</i>
               </p>
             </div>
           </div>

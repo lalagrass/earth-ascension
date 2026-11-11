@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import volumeImg from '../../../assets/volume.svg';
+// WUXIA-PATCH(W1): 上游 assets/volume.svg 不在 repo，改用自製圖示
+const volumeImg = '/ai-town/wuxia/ui/music.svg';
 import { sound } from '@pixi/sound';
 import Button from './Button';
 import { useQuery } from 'convex/react';
@@ -43,10 +44,11 @@ export default function MusicButton() {
       <Button
         onClick={() => void flipSwitch()}
         className="hidden lg:block"
-        title="Play AI generated music (press m to play/mute)"
+        // WUXIA-PATCH(W1): 介面繁中
+        title="播放音樂（按 m 開關）"
         imgUrl={volumeImg}
       >
-        {isPlaying ? 'Mute' : 'Music'}
+        {isPlaying ? '靜音' : '音樂'}
       </Button>
     </>
   );

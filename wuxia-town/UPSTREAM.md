@@ -39,6 +39,19 @@
 | W0 | `convex/_generated/api.d.ts`（產生檔） | `npx convex dev` 重新產生，多了 `wuxia/*` 模組 | Convex 產生檔 |
 | W1 | `convex/init.ts` | 建世界時的地圖改用 `serializedMapFor(initWuxiaState(defaultWuxiaConfig).enabled)`（`w01-skin` 開：`data/wuxia/town-map.js`；關：上游 `data/gentle.js`） | #553 換皮；關掉時用回原版地圖 |
 | W1 | `package.json`（JSON 無法加註解） | `wuxia:skin-diff`、`wuxia:shot` 指令；devDependency `playwright-core` | #553 驗收工具 |
+| W1 | `package-lock.json`（JSON） | 跟著 `playwright-core` 更新 | 同上 |
+| W1 | `index.html` | `lang="zh-Hant"`、標題「山腳鎮」、圖示改自製 `public/wuxia/ui/about.svg`；拿掉上游的流量統計 script | #553 介面繁中；上游 favicon 不在 repo |
+| W1 | `src/main.tsx` | 載入 `src/wuxia/wuxia.css` | 換皮樣式 |
+| W1 | `src/App.tsx` | 拿掉 a16z／Convex 標誌、星星、說明圖示與 `PoweredByConvex`；標題「山腳鎮」與副標；說明改成繁中「關於」頁（註明基於 AI Town，MIT）；`w01-skin` 開時 body 加 `wuxia-skin`、不顯示音樂鈕 | #553 介面繁中、拿掉標誌；上游美術與音樂不在 repo |
+| W1 | `src/components/Game.tsx` | 畫面左上角時辰（`ClockBadge`）；換皮時手機版畫面高 290px、Pixi 底色改紙色 | #553 十二時辰＋第幾日 |
+| W1 | `src/components/PixiGame.tsx` | 疊上 `SkinLayers`（日夜色調、地點名牌）；傳 `wuxiaMinScale` 讓畫面能縮到看見整張小鎮 | #553 日夜、店名 |
+| W1 | `src/components/PixiViewport.tsx` | 新增 `wuxiaMinScale`、`wuxiaFocus` 兩個 prop（不傳給 Viewport）；換皮時第一次置中顯示整張小鎮，截圖頁可指定焦點 | 同上；截圖 |
+| W1 | `src/components/Player.tsx` | 人物圖改由 `characterFor()` 決定（換皮開：`public/wuxia/characters/folk.png`；關：上游） | #553 古裝人物；關掉換回原版 |
+| W1 | `src/components/PlayerDetails.tsx` | 關閉圖示改自製；顯示「在○○附近」；活動名稱與按鈕文字繁中 | #553 地點表只用在畫面；介面繁中 |
+| W1 | `src/components/Messages.tsx` | 「說話中…」 | 介面繁中 |
+| W1 | `src/components/FreezeButton.tsx` | 「暫停／繼續」、自製圖示 | 介面繁中；上游圖示不在 repo |
+| W1 | `src/components/buttons/InteractButton.tsx` | 「進鎮／離開」、自製圖示 | 同上 |
+| W1 | `src/components/buttons/MusicButton.tsx` | 自製圖示、繁中提示 | 同上 |
 
 ## 上游刻意保留不改的隨機／時間
 

@@ -1,0 +1,187 @@
+/* 武俠小鎮 W1：紙底、墨框、朱印（同本專案 STYLE-SCENE 的「水墨淡彩」介面方向）。
+   只在 <body class="wuxia-skin"> 時生效；w01-skin 關閉時維持上游樣式。不用任何圖檔。 */
+body.wuxia-skin {
+  --ink: #2b2119;
+  --ink-soft: #5a4a3c;
+  --paper: #efe6cf;
+  --paper-deep: #e2d5b4;
+  --seal: #b3342a;
+  color: var(--ink);
+  background: var(--paper);
+}
+body.wuxia-skin .font-display,
+body.wuxia-skin .font-body,
+body.wuxia-skin {
+  font-family: 'Noto Serif TC', 'Noto Serif CJK TC', 'Songti TC', 'PMingLiU', serif;
+}
+body.wuxia-skin .game-background {
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(120, 140, 120, 0.18), transparent 55%),
+    radial-gradient(ellipse at 90% 10%, rgba(90, 110, 120, 0.16), transparent 50%),
+    linear-gradient(180deg, #e9e0c8 0%, #efe6cf 40%, #e6dbbf 100%);
+  background-attachment: fixed;
+}
+body.wuxia-skin .game-title {
+  background: none;
+  -webkit-text-fill-color: var(--ink);
+  color: var(--ink);
+  filter: none;
+  letter-spacing: 0.2em;
+  font-weight: 900;
+  font-size: clamp(2.2rem, 5.5vw, 4.6rem);
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+}
+body.wuxia-skin .wuxia-title-seal {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 0.4em;
+  padding: 0.12em 0.18em;
+  font-size: 0.32em;
+  line-height: 1.05;
+  letter-spacing: 0;
+  color: #fbf3e2;
+  -webkit-text-fill-color: #fbf3e2;
+  background: var(--seal);
+  border-radius: 3px;
+  writing-mode: vertical-rl;
+}
+body.wuxia-skin .wuxia-subtitle {
+  color: var(--ink-soft);
+  text-shadow: none;
+  font-size: clamp(0.95rem, 1.6vw, 1.25rem);
+}
+body.wuxia-skin .game-frame {
+  border: 3px solid var(--ink);
+  border-image: none;
+  outline: 1px solid var(--ink);
+  outline-offset: 4px;
+  background: var(--paper-deep);
+  box-shadow: 0 6px 18px rgba(43, 33, 25, 0.25);
+}
+body.wuxia-skin .bg-brown-800,
+body.wuxia-skin .bg-brown-900 {
+  background-color: var(--paper);
+  color: var(--ink);
+}
+body.wuxia-skin .text-brown-100,
+body.wuxia-skin .text-white {
+  color: var(--ink);
+}
+body.wuxia-skin .border-brown-900 {
+  border-color: var(--ink);
+}
+body.wuxia-skin .box,
+body.wuxia-skin .desc,
+body.wuxia-skin .chats,
+body.wuxia-skin .bubble,
+body.wuxia-skin .login-prompt {
+  border: 2px solid var(--ink);
+  border-image: none;
+  background: #f7f0de;
+  border-radius: 2px;
+}
+body.wuxia-skin .desc,
+body.wuxia-skin .chats {
+  padding: 0.6rem 0.8rem;
+}
+body.wuxia-skin .bubble-mine {
+  background: #ece2c6;
+}
+body.wuxia-skin .bg-brown-700,
+body.wuxia-skin .bg-brown-200,
+body.wuxia-skin .bg-clay-700 {
+  background: transparent;
+  color: var(--ink);
+}
+body.wuxia-skin .shadow-solid {
+  text-shadow: none;
+}
+body.wuxia-skin .button {
+  border: 2px solid var(--ink);
+  border-image: none;
+  background: #f7f0de;
+  border-radius: 3px;
+  padding: 0.25rem 0.8rem;
+  box-shadow: 2px 2px 0 var(--ink);
+  color: var(--ink);
+}
+body.wuxia-skin .button span {
+  transform: none;
+}
+body.wuxia-skin .button:active {
+  border-image: none;
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+body.wuxia-skin .button img {
+  width: 22px;
+  height: 22px;
+}
+
+/* 時辰牌（疊在遊戲畫面左上） */
+.wuxia-clock {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.7rem 0.3rem 0.35rem;
+  background: rgba(247, 240, 222, 0.93);
+  border: 2px solid #2b2119;
+  outline: 1px solid #2b2119;
+  outline-offset: 2px;
+  color: #2b2119;
+  font-family: 'Noto Serif TC', 'Noto Serif CJK TC', serif;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.1;
+}
+.wuxia-clock small {
+  font-weight: 400;
+  font-size: 13px;
+  color: #5a4a3c;
+}
+.wuxia-clock-seal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: #b3342a;
+  color: #fbf3e2;
+  font-size: 20px;
+  border-radius: 3px;
+}
+@media (max-width: 640px) {
+  .wuxia-clock {
+    font-size: 14px;
+    top: 6px;
+    left: 6px;
+  }
+  .wuxia-clock-seal {
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+  }
+}
+
+/* 人物詳情 */
+.wuxia-place-hint {
+  margin: 0.6rem 0 0.2rem;
+  padding: 0.25rem 0.6rem;
+  display: inline-block;
+  border-left: 4px solid #b3342a;
+  background: rgba(179, 52, 42, 0.08);
+  font-weight: 700;
+}
+.wuxia-desc {
+  margin-top: 0.6rem;
+  line-height: 1.6;
+}
+.wuxia-about p {
+  margin: 0.5rem 0;
+  line-height: 1.7;
+}

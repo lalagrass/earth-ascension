@@ -1,6 +1,7 @@
 import Button from './Button';
 import { toast } from 'react-toastify';
-import interactImg from '../../../assets/interact.svg';
+// WUXIA-PATCH(W1): 上游 assets/interact.svg 不在 repo，改用自製圖示
+const interactImg = '/ai-town/wuxia/ui/join.svg';
 import { useConvex, useMutation, useQuery } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
 // import { SignInButton } from '@clerk/clerk-react';
@@ -69,7 +70,8 @@ export default function InteractButton() {
   // }
   return (
     <Button imgUrl={interactImg} onClick={joinOrLeaveGame}>
-      {isPlaying ? 'Leave' : 'Interact'}
+      {/* WUXIA-PATCH(W1): 介面繁中 */}
+      {isPlaying ? '離開' : '進鎮'}
     </Button>
   );
 }
