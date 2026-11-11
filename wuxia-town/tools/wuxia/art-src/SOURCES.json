@@ -1,0 +1,218 @@
+{
+ "bamboo_clump.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/bamboo_clump.png",
+  "size": [
+   131,
+   170
+  ]
+ },
+ "boulder_l.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/boulder_l.png",
+  "size": [
+   120,
+   82
+  ]
+ },
+ "boulder_m.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/boulder_m.png",
+  "size": [
+   90,
+   55
+  ]
+ },
+ "boulder_s.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/boulder_s.png",
+  "size": [
+   60,
+   35
+  ]
+ },
+ "broadleaf_tree.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/broadleaf_tree.png",
+  "size": [
+   200,
+   190
+  ]
+ },
+ "court_wall.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/court_wall.png",
+  "size": [
+   160,
+   86
+  ]
+ },
+ "creek_bank.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/creek_bank.png",
+  "size": [
+   110,
+   68
+  ]
+ },
+ "dirt-path.png": {
+  "commit": "032f09a9",
+  "path": "sect-chronicle/experiments/water-carry/design/art184-production/ground/dirt-path-tile-256.png",
+  "size": [
+   256,
+   256
+  ]
+ },
+ "dojo_gate.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/dojo_gate.png",
+  "size": [
+   126,
+   150
+  ]
+ },
+ "dojo_main_hall.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/dojo_main_hall.png",
+  "size": [
+   340,
+   293
+  ]
+ },
+ "dojo_side_house.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/dojo_side_house.png",
+  "size": [
+   280,
+   252
+  ]
+ },
+ "far-mountains.jpg": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/design/art184-watercolor/raw/far-mountains.jpg",
+  "size": [
+   960,
+   540
+  ]
+ },
+ "fern.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/fern.png",
+  "size": [
+   50,
+   46
+  ]
+ },
+ "flagstone.png": {
+  "commit": "032f09a9",
+  "path": "sect-chronicle/experiments/water-carry/design/art184-production/ground/flagstone-tile-256.png",
+  "size": [
+   256,
+   256
+  ]
+ },
+ "herb_bed.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/herb_bed.png",
+  "size": [
+   170,
+   97
+  ]
+ },
+ "herb_rack.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/herb_rack.png",
+  "size": [
+   106,
+   110
+  ]
+ },
+ "pine_a.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/pine_a.png",
+  "size": [
+   177,
+   190
+  ]
+ },
+ "pine_b.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/pine_b.png",
+  "size": [
+   165,
+   180
+  ]
+ },
+ "shrub_fern.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/shrub_fern.png",
+  "size": [
+   70,
+   68
+  ]
+ },
+ "stone_bench.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/stone_bench.png",
+  "size": [
+   120,
+   74
+  ]
+ },
+ "stone_mill.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/stone_mill.png",
+  "size": [
+   90,
+   77
+  ]
+ },
+ "tex-forest.jpg": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/design/art184-watercolor/raw/tex-forest.jpg",
+  "size": [
+   512,
+   512
+  ]
+ },
+ "tex-meadow.jpg": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/design/art184-watercolor/raw/tex-meadow.jpg",
+  "size": [
+   512,
+   512
+  ]
+ },
+ "tex-water.jpg": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/design/art184-watercolor/raw/tex-water.jpg",
+  "size": [
+   512,
+   512
+  ]
+ },
+ "water_vat.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/water_vat.png",
+  "size": [
+   68,
+   80
+  ]
+ },
+ "wild_grass.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/wild_grass.png",
+  "size": [
+   46,
+   41
+  ]
+ },
+ "woodpile.png": {
+  "commit": "16e2892c",
+  "path": "sect-chronicle/experiments/water-carry/demo/assets/art184-watercolor/woodpile.png",
+  "size": [
+   110,
+   88
+  ]
+ }
+}
