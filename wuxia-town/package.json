@@ -18,6 +18,7 @@
     "wuxia:journal": "tsx tools/wuxia/journal.ts",
     "wuxia:hash": "tsx tools/wuxia/hash.ts",
     "wuxia:skin-diff": "tsx tools/wuxia/skin-diff.ts",
+    "wuxia:shot": "tsx tools/wuxia/shot.ts",
     "wuxia:check": "npm test && tsx tools/wuxia/check.ts"
   },
   "dependencies": {
@@ -58,6 +59,7 @@
     "concurrently": "^8.2.0",
     "jest": "^29.7.0",
     "npm-run-all": "^4.1.5",
+    "playwright-core": "^1.48.2",
     "postcss": "^8.4.28",
     "prettier": "^3.4.2",
     "tailwindcss": "^3.3.3",
