@@ -31,6 +31,8 @@ export type Memory = {
   other?: string;
   place?: string;
   n?: number;
+  /** 合併進這筆的最後一次事件時間（mergeSameDay） */
+  tEnd?: number;
   /** 升階：例如「拳腳入門」 */
   what?: string;
   weight: number;
@@ -69,6 +71,8 @@ export type MindState = {
   people: Record<string, MindPerson>;
   /** 對照實驗：這些 id 的記憶不寫入（mind-trace --drop-memory） */
   drop?: number[];
+  /** 對照實驗：被丟掉的事件（pid → 種類 → 遊戲日），當天的後續同類事件一起不記 */
+  dropped?: Record<string, Partial<Record<MemoryKind, number>>>;
 };
 
 type Cond =
@@ -105,6 +109,7 @@ export const MIND = thoughtsJson as unknown as {
   decay: number;
   causes: number;
   newcomerAfter: number;
+  mergeSameDay: MemoryKind[];
   weights: Record<MemoryKind, number>;
   thoughts: ThoughtDef[];
 };
@@ -282,7 +287,7 @@ export function thoughtsLine(w: WuxiaState | undefined, pid: string): string | u
 }
 
 const KIND_TEXT: Record<MemoryKind, string> = {
-  listen: '在茶館聽書',
+  listen: '聽書{times}',
   talk: '跟{other}聊天',
   meal_with: '跟{other}一起吃飯',
   first_visit: '第一次去{place}',
@@ -306,7 +311,8 @@ export function describeMemory(
     .replace('{other}', m.other ? names(m.other) : '某人')
     .replace('{place}', m.place ? places(m.place) : '某處')
     .replace('{n}', String(m.n ?? ''))
-    .replace('{what}', m.what ?? '');
+    .replace('{what}', m.what ?? '')
+    .replace('{times}', m.kind === 'listen' && (m.n ?? 1) > 1 ? ` ${m.n} 場` : '');
   const where = m.place && m.kind !== 'first_visit' ? `（${places(m.place)}）` : '';
   return `第 ${day} 日 ${body}${where}`;
 }

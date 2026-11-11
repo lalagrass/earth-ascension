@@ -51,16 +51,35 @@ function tierIndex(level: number): number {
   return i;
 }
 
-/** 寫一筆記憶（被 drop 的 id 照樣佔號，後面的 id 不會位移）。 */
+/**
+ * 寫一筆記憶。mergeSameDay 的種類同一遊戲日再發生就併進當天那一筆（n＋1，時間不變）。
+ * 被 drop 的 id 照樣佔號（後面的 id 不會位移），當天併進它的後續同類事件一起不記。
+ */
 export function remember(
   state: MindState,
-  person: MindPerson,
+  pid: string,
   t: number,
   kind: MemoryKind,
   extra: Partial<Pick<Memory, 'other' | 'place' | 'n' | 'what'>> = {},
 ) {
+  const person = state.people[pid];
+  if (!person) return;
+  const merge = MIND.mergeSameDay.includes(kind);
+  const day = readClock(t).day;
+  if (merge) {
+    if (state.dropped?.[pid]?.[kind] === day) return;
+    const last = [...person.memories].reverse().find((m) => m.kind === kind);
+    if (last && readClock(last.t).day === day) {
+      last.n = (last.n ?? 1) + 1;
+      last.tEnd = t;
+      return;
+    }
+  }
   const id = state.seq++;
-  if (state.drop?.includes(id)) return;
+  if (state.drop?.includes(id)) {
+    if (merge) ((state.dropped ??= {})[pid] ??= {})[kind] = day;
+    return;
+  }
   const m: Memory = { id, t, kind, weight: MIND.weights[kind] ?? 1 };
   if (extra.other !== undefined) m.other = extra.other;
   if (extra.place !== undefined) m.place = extra.place;
@@ -105,7 +124,7 @@ export function tickMind(game: Game, now: number) {
     if (gm > MIND.newcomerAfter) {
       for (const other of Object.keys(state.people).sort()) {
         if (other === pid) continue;
-        remember(state, state.people[other], gm, 'newcomer', { other: cid });
+        remember(state, other, gm, 'newcomer', { other: cid });
       }
     }
   }
@@ -116,7 +135,7 @@ export function tickMind(game: Game, now: number) {
     const pid = pidOf[e.who];
     const me = pid ? state.people[pid] : undefined;
     if (!me) continue;
-    if (e.act === 'listen_story') remember(state, me, e.t, 'listen', { place: 'teahouse' });
+    if (e.act === 'listen_story') remember(state, pid, e.t, 'listen', { place: 'teahouse' });
     else if (e.act === 'talk') {
       const player = game.world.players.get(pid as any);
       const conv = player ? game.world.playerConversation(player) : undefined;
@@ -124,24 +143,24 @@ export function tickMind(game: Game, now: number) {
       if (conv) {
         for (const id of conv.participants.keys()) if (id !== pid) other = life.people[id]?.cid;
       }
-      remember(state, me, e.t, 'talk', { other, place: e.obj || undefined });
+      remember(state, pid, e.t, 'talk', { other, place: e.obj || undefined });
     } else if (e.act === 'eat') {
       for (const opid of pids) {
         if (opid === pid) continue;
         const cur = life.people[opid].cur;
         if (cur?.phase === 'do' && cur.act === 'eat' && cur.obj === e.obj) {
           const ocid = life.people[opid].cid;
-          remember(state, me, e.t, 'meal_with', { other: ocid });
-          if (state.people[opid]) remember(state, state.people[opid], e.t, 'meal_with', { other: e.who });
+          remember(state, pid, e.t, 'meal_with', { other: ocid });
+          remember(state, opid, e.t, 'meal_with', { other: e.who });
         }
       }
     } else if (e.act === 'gaze_dojo') {
-      remember(state, me, e.t, 'gaze', { place: 'dojo-gate' });
+      remember(state, pid, e.t, 'gaze', { place: 'dojo-gate' });
       // #557「周教頭：有人在武館外徘徊」：武館門口就在他住處旁
       const coachPid = pidOf[COACH_ID];
       if (coachPid && coachPid !== pid && state.people[coachPid])
-        remember(state, state.people[coachPid], e.t, 'loiter_seen', { other: e.who, place: 'dojo-gate' });
-    } else if (e.act === 'gaze_home') remember(state, me, e.t, 'gaze_home', { place: 'gate' });
+        remember(state, coachPid, e.t, 'loiter_seen', { other: e.who, place: 'dojo-gate' });
+    } else if (e.act === 'gaze_home') remember(state, pid, e.t, 'gaze_home', { place: 'gate' });
   }
 
   // 第一次去某地、今日練功分鐘、升階
@@ -153,7 +172,7 @@ export function tickMind(game: Game, now: number) {
     const place = personPlace(person, player);
     if (place !== 'outside' && !me.places.includes(place)) {
       me.places.push(place);
-      remember(state, me, gm, 'first_visit', { place });
+      remember(state, pid, gm, 'first_visit', { place });
     }
     const act = trainingAct(person);
     if (act && elapsed > 0) me.trainMin += Math.max(0, Math.min(elapsed, gm - person.cur!.since));
@@ -165,7 +184,7 @@ export function tickMind(game: Game, now: number) {
         if (tiers[k] === undefined) tiers[k] = t;
         else if (t > tiers[k]) {
           tiers[k] = t;
-          remember(state, me, gm, 'tier_up', { what: `${SKILL_LABELS[k]}${TRAINING.tiers[t].name}`, n: skills[k] });
+          remember(state, pid, gm, 'tier_up', { what: `${SKILL_LABELS[k]}${TRAINING.tiers[t].name}`, n: skills[k] });
         }
       }
     }
@@ -179,7 +198,7 @@ export function tickMind(game: Game, now: number) {
     for (const pid of pids) {
       const me = state.people[pid];
       if (me.trainMin > 0) {
-        remember(state, me, gm, 'trained', { n: me.trainMin });
+        remember(state, pid, gm, 'trained', { n: me.trainMin });
         me.trainMin = 0;
       }
       for (const m of me.memories) if (m.t < gm) m.weight = round4(m.weight * MIND.decayPerDay);
