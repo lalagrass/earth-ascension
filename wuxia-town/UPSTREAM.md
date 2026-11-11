@@ -72,6 +72,10 @@
 | W4 | `src/components/PixiGame.tsx` | 人物下面疊 `src/wuxia/DojoLayer`（木人樁、石鎖、梅花樁、教頭座、沙包、門口「開館」紅綢），只在 w04-dojo 開啟時畫 | #556「武館重開」 |
 | W4 | `src/components/PlayerDetails.tsx` | 名牌下加 `src/wuxia/SkillPanel`（4 個技能 /10 一位小數＋階級名）；把 `enabled` 傳給 `LifePanel`（下一件事依武館日程） | #556「畫面」：角色面板顯示技能與階級 |
 | W4 | `package.json`（JSON 無法加註解） | `wuxia:skill-report`、`wuxia:dojo-diff` 指令 | #556 驗收工具 |
+| W5 | `convex/agent/conversation.ts` | `queryPromptData` 多回傳 `wuxiaThoughts`（`w05_mind/data.ts` 的 `thoughtsLine`，w05-mind 關閉或沒有心念時 undefined）；三個 `folkSystemPrompt` 呼叫多傳 `thoughts` | #557「跟 LLM 的接法」：prompt 加「你最近的心事：想學武（強度 70）」；心念只影響說什麼，不回寫規則 |
+| W5 | `src/components/PixiGame.tsx` | 武館開張的畫面層改看 `dojoOpened`（`openedAt` 有值），不是只看 w04-dojo 開關 | #557：武館改由心念重開，重開前維持破落 |
+| W5 | `src/components/PlayerDetails.tsx` | 技能面板下加 `src/wuxia/MindPanel`（心事：心念、強度條、因為…）；`LifePanel` 多傳 `wuxia`（下一件事含心念加的時段） | #557「畫面」 |
+| W5 | `package.json`（JSON 無法加註解） | `wuxia:mind-report`、`wuxia:mind-trace`、`wuxia:mind-diff` 指令 | #557 驗收工具 |
 
 ## 上游刻意保留不改的隨機／時間
 
