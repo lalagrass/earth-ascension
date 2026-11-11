@@ -505,7 +505,8 @@ function canChat(game: Game, gm: number, pid: string, person: Person): boolean {
 
 /** #555「對話怎麼接」：只有閒暇活動中或剛結束、且兩人在同一地點，才會邀請；工作中不聊。 */
 function inviteToTalk(game: Game, now: number, gm: number, state: LifeState) {
-  const ids = Object.keys(state.people);
+  // 固定排序：Convex 存回物件時欄位會依字典序重排，不能靠插入順序（W3 實跑重播不符的原因）
+  const ids = Object.keys(state.people).sort();
   for (const a of ids) {
     const pa = state.people[a];
     if (!canChat(game, gm, a, pa)) continue;
