@@ -45,8 +45,14 @@ export function routine(cid: string, segs: Segment[], day: number): string[] {
   return out;
 }
 
+/**
+ * W5：dojo-diff 比的是「W4 的世界 vs W3 的世界」（武館第 1 日固定重開）。w05-mind 起武館改由心念觸發，
+ * 第 1 日武館還沒開，所以這裡固定關 w05-mind（＝W4 的設定）；W5 開／關的比較在 mind-diff（DEVIATIONS W5-x）。
+ */
+const W4_WORLD = { 'w05-mind': false };
+
 export function dojoDiff(seed: number, minutes: number) {
-  const offShort = runHeadless({ seed, minutes, elements: { 'w04-dojo': false } });
+  const offShort = runHeadless({ seed, minutes, elements: { ...W4_WORLD, 'w04-dojo': false } });
   const w = offShort.game.world.wuxia!;
   const offEnabled = Object.keys(w.enabled).sort();
   const lifeRes = Object.keys((w.elements['w03-life'] as any)?.res ?? {});
@@ -60,8 +66,8 @@ export function dojoDiff(seed: number, minutes: number) {
     enabled: offEnabled,
   };
 
-  const on = runHeadless({ seed, minutes: 0, untilGameMinute: 1440, trace: true });
-  const off = runHeadless({ seed, minutes: 0, untilGameMinute: 1440, trace: true, elements: { 'w04-dojo': false } });
+  const on = runHeadless({ seed, minutes: 0, untilGameMinute: 1440, trace: true, elements: W4_WORLD });
+  const off = runHeadless({ seed, minutes: 0, untilGameMinute: 1440, trace: true, elements: { ...W4_WORLD, 'w04-dojo': false } });
   const [d0, d1] = dayRange(1);
 
   // B：關掉時武館空著

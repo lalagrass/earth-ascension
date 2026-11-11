@@ -12,6 +12,9 @@
 // 11.（W3）life-diff A/B/C：關＝W2、開 3 日作息與預約／卡住／挨餓檢查、關掉沒有作息
 // 12.（W4）dojo-diff A/B/C：關＝W3、關掉武館空著、第 1 日開／關只差練功相關的作息
 // 13.（W4）30 日技能報告：阿青第 30 日拳腳 120–180、教頭在場時增長明顯較高（WUXIA_CHECK_SKILL_DAYS=0 可略過，CI 不略過）
+//    W5 起用預設設定（w05-mind 開，武館由心念重開）仍須通過
+// 14.（W5）mind-diff A/B/C/D：關＝W4、開 14 日練功多 30%／重開由事件決定、不同 seed 不同日、丟記憶心念延後
+//    （WUXIA_CHECK_MIND_DAYS=0 可略過，CI 不略過）
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
@@ -21,6 +24,7 @@ import { promptsInSync } from './gen-prompts';
 import { folkDiff } from './folk-diff';
 import { lifeDiff } from './life-diff';
 import { dojoDiff } from './dojo-diff';
+import { mindDiff } from './mind-diff';
 import { skillReport } from './skill-report';
 import { runHeadless } from './headless';
 import { quietConsole } from './sim';
@@ -216,6 +220,22 @@ else fail('prompts.gen.ts 不同步：請執行 npm run wuxia:gen-prompts');
     const r = skillReport(run.summary.dojo!, 'a-qing');
     for (const v of r.verdicts) (v.ok ? ok : fail)(`skill-report ${days} 日（hash ${run.finalHash.slice(0, 16)}…）${v.rule}：${v.value}`);
   } else ok('（WUXIA_CHECK_SKILL_DAYS=0，略過 30 日技能報告）');
+}
+
+// 14
+{
+  const days = Number(process.env.WUXIA_CHECK_MIND_DAYS ?? 14);
+  if (days > 0) {
+    const r = mindDiff(7, Number(MINUTES), days, [2, 3]);
+    if (r.resultA.ok) ok(`mind-diff A：w05-mind 關＝W4 世界 hash ${r.resultA.hash}（3 日 ${r.resultA.hash3.slice(0, 16)}…）`);
+    else fail(`mind-diff A：w05-mind 關的世界不是 W4 ${JSON.stringify(r.resultA)}`);
+    for (const v of r.resultB.verdicts) (v.ok ? ok : fail)(`mind-diff B ${days} 日：${v.rule}：${v.value}`);
+    if (r.resultB.opened !== null && r.resultB.before === 0 && r.resultB.after > 0)
+      ok(`mind-diff B：武館第 ${r.resultB.opened} 日重開，之前沒人練功、之後 ${r.resultB.after} 人分鐘`);
+    else fail(`mind-diff B：重開前後練功 ${JSON.stringify({ opened: r.resultB.opened, before: r.resultB.before, after: r.resultB.after })}`);
+    (r.resultC.ok ? ok : fail)(`mind-diff C：武館重開的日子 ${JSON.stringify(r.resultC.openDays)}`);
+    (r.resultD.ok ? ok : fail)(`mind-diff D：丟掉記憶 #${r.resultD.dropped}，阿青「想學武」第 ${r.resultD.firstDay} 日 → ${r.resultD.againDay ?? '沒出現'}`);
+  } else ok('（WUXIA_CHECK_MIND_DAYS=0，略過 mind-diff）');
 }
 
 if (failures) {
