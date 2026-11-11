@@ -26,6 +26,9 @@ import { SkinLayers } from '../SkinLayers';
 import { TownSubtitle, TownTitle } from '../Shell';
 import { activityLabel, skinEnabled, worldClock } from '../skin';
 import { useViewportZoom, wholeMapScale } from '../viewport';
+import { LifePanel } from '../LifePanel';
+import { TownStatus } from '../TownStatus';
+import { lifeOf } from '../life';
 
 type ShotState = {
   engineTime: number;
@@ -132,6 +135,11 @@ function ShotApp({ state, opts }: { state: ShotState; opts: ShotOptions }) {
         <div className="mx-auto w-full max-w grid grid-rows-[290px_1fr] lg:grid-rows-[1fr] lg:grid-cols-[1fr_auto] lg:grow max-w-[1400px] min-h-[480px] game-frame">
           <div className="relative overflow-hidden bg-brown-900" ref={ref}>
             {skin && <ClockBadge clock={clock} phase={clock ? dayTint(clock.minuteOfDay).phase : undefined} />}
+            <TownStatus
+              life={lifeOf(game.world)}
+              players={players}
+              nameOf={(id) => game.playerDescriptions.get(id as any)?.name ?? id}
+            />
             <div className="absolute inset-0">
               <Stage width={width} height={height} options={{ backgroundColor: skin ? 0xe2d5b4 : 0x7ab5ff, antialias: true }}>
                 {width > 0 && <Scene game={game} width={width} height={height} time={state.engineTime} opts={opts} />}
@@ -151,6 +159,7 @@ function ShotApp({ state, opts }: { state: ShotState; opts: ShotOptions }) {
                   position={selected.position}
                   activity={activityLabel(selected.activity?.description, skin)}
                 />
+                <LifePanel life={lifeOf(game.world)} playerId={selected.id} clock={clock} />
                 <div className="desc my-6">
                   <p className="leading-tight text-base sm:text-sm">{desc?.description}</p>
                 </div>

@@ -13,6 +13,8 @@ export const Character = ({
   isThinking = false,
   isSpeaking = false,
   emoji = '',
+  // WUXIA-PATCH(W3): 頭上 emoji 旁加活動標籤（w03-life）
+  label = '',
   isViewer = false,
   speed = 0.1,
   onClick,
@@ -31,6 +33,8 @@ export const Character = ({
   // Shows a speech bubble if true.
   isSpeaking?: boolean;
   emoji?: string;
+  // WUXIA-PATCH(W3): 活動標籤（例如「挑水」），顯示在 emoji 上方
+  label?: string;
   // Highlights the player.
   isViewer?: boolean;
   // The speed of the animation. Can be tuned depending on the side and speed of the NPC.
@@ -103,6 +107,16 @@ export const Character = ({
       />
       {emoji && (
         <Text x={0} y={-24} scale={{ x: -0.8, y: 0.8 }} text={emoji} anchor={{ x: 0.5, y: 0.5 }} />
+      )}
+      {/* WUXIA-PATCH(W3): 活動標籤 */}
+      {emoji && label && (
+        <Text
+          x={0}
+          y={-40}
+          text={label}
+          anchor={{ x: 0.5, y: 0.5 }}
+          style={new PIXI.TextStyle({ fontSize: 12, fill: 0x3b2a1a, stroke: 0xf5ecd6, strokeThickness: 3, fontWeight: 'bold' })}
+        />
       )}
     </Container>
   );

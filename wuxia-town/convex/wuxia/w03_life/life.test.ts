@@ -123,13 +123,14 @@ describe('w03-life 決策', () => {
   });
   test('吃飯一個時段只加權一次；錯過午飯時段 2 小時內仍有權重', () => {
     const p = person('shi-hu');
-    p.blockKey = '1:660';
+    // 午飯時段 12:00–13:00
+    p.blockKey = '1:720';
     p.blockDone = ['eat'];
     const state = initLifeState();
     state.minute = 400;
-    const r = makeRng(3);
-    expect(chooseNext(p, 11 * 60 + 30, '1:660', state, r)?.act).not.toBe('eat');
-    expect(missedBlockStart('shi-hu', 'eat', 12 * 60 + 30, 1000)).toBe(1000 - 30 - 60);
-    expect(missedBlockStart('shi-hu', 'eat', 15 * 60, 1000)).toBeUndefined();
+    for (let s = 1; s < 10; s++)
+      expect(chooseNext(p, 12 * 60 + 30, '1:720', state, makeRng(s))?.act).not.toBe('eat');
+    expect(missedBlockStart('shi-hu', 'eat', 13 * 60 + 30, 1000)).toBe(1000 - 30 - 60);
+    expect(missedBlockStart('shi-hu', 'eat', 16 * 60, 1000)).toBeUndefined();
   });
 });

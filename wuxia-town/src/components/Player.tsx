@@ -80,6 +80,14 @@ export const Player = ({
             ? player.activity?.emoji
             : undefined
         }
+        // WUXIA-PATCH(W3): w03-life 開啟時頭上顯示活動標籤（活動名稱已是繁中）
+        label={
+          game.world.wuxia?.enabled['w03-life'] &&
+          player.activity &&
+          player.activity.until > (historicalTime ?? Date.now())
+            ? player.activity.description
+            : undefined
+        }
         isViewer={isViewer}
         textureUrl={character.textureUrl}
         spritesheetData={character.spritesheetData}

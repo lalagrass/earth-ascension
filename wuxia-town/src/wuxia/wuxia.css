@@ -185,3 +185,22 @@ body.wuxia-skin .button img {
   margin: 0.5rem 0;
   line-height: 1.7;
 }
+
+/* W3（#555）：生活面板、需求條、鎮況、頭上活動標籤 */
+.wuxia-life-panel { margin-top: 0.75rem; padding: 0.5rem 0.75rem; background: rgba(60, 40, 25, 0.55); border: 2px solid #8a6a43; font-size: 0.95rem; line-height: 1.35; }
+.wuxia-life-panel p { margin: 0.15rem 0; }
+.wuxia-life-next { opacity: 0.85; font-size: 0.85rem; }
+.wuxia-needs { margin-top: 0.4rem; display: grid; gap: 0.2rem; }
+.wuxia-need { display: grid; grid-template-columns: 2.4em 1fr 2em; align-items: center; gap: 0.4rem; font-size: 0.85rem; }
+.wuxia-need-bar { height: 0.55rem; background: rgba(255, 255, 255, 0.15); border: 1px solid #8a6a43; position: relative; }
+.wuxia-need-fill { position: absolute; left: 0; top: 0; bottom: 0; background: #7fa36b; }
+.wuxia-need-fill.warm { background: #d39b3a; }
+.wuxia-need-fill.hot { background: #b8432f; }
+.wuxia-need-value { text-align: right; opacity: 0.8; }
+.wuxia-life-done { margin-top: 0.4rem; font-size: 0.82rem; }
+.wuxia-life-done ol { margin: 0.2rem 0 0 1.2rem; list-style: decimal; columns: 2; column-gap: 1rem; }
+.wuxia-town-status { position: absolute; right: 0.5rem; top: 0.5rem; z-index: 10; max-width: 46%; background: rgba(245, 236, 214, 0.92); color: #3b2a1a; border: 2px solid #8a6a43; font-size: 0.8rem; line-height: 1.3; padding: 0.3rem 0.5rem; }
+.wuxia-town-status-title { font-weight: bold; cursor: pointer; pointer-events: auto; }
+.wuxia-town-status ul { margin-top: 0.15rem; }
+.wuxia-town-status li { margin: 0.1rem 0; }
+@media (max-width: 640px) { .wuxia-town-status { font-size: 0.7rem; max-width: 60%; } }

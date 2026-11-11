@@ -15,6 +15,9 @@ import { useServerGame } from '../hooks/serverGame.ts';
 import { ClockBadge } from '../wuxia/ClockBadge.tsx';
 import { skinEnabled, worldClock } from '../wuxia/skin.ts';
 import { dayTint } from '../../convex/wuxia/clock.ts';
+// WUXIA-PATCH(W3): 鎮況面板（每個地點現在有誰）
+import { TownStatus } from '../wuxia/TownStatus.tsx';
+import { lifeOf } from '../wuxia/life.ts';
 
 export const SHOW_DEBUG_UI = !!import.meta.env.VITE_SHOW_DEBUG_UI;
 
@@ -61,6 +64,12 @@ export default function Game() {
         <div className="relative overflow-hidden bg-brown-900" ref={gameWrapperRef}>
           {/* WUXIA-PATCH(W1): 十二時辰＋第幾日 */}
           {skin && <ClockBadge clock={clock} phase={clock ? dayTint(clock.minuteOfDay).phase : undefined} />}
+          {/* WUXIA-PATCH(W3): 鎮況（w03-life 開啟時） */}
+          <TownStatus
+            life={lifeOf(game.world)}
+            players={[...game.world.players.values()]}
+            nameOf={(id) => game.playerDescriptions.get(id as GameId<'players'>)?.name ?? id}
+          />
           <div className="absolute inset-0">
             <div className="container">
               {/* WUXIA-PATCH(W1): 換皮時底色改紙色 */}
@@ -94,6 +103,8 @@ https://github.com/michalochman/react-pixi-fiber/issues/145#issuecomment-5315492
             playerId={selectedElement?.id}
             setSelectedElement={setSelectedElement}
             scrollViewRef={scrollViewRef}
+            // WUXIA-PATCH(W3): 生活面板用的遊戲時鐘
+            historicalTime={historicalTime ?? worldState?.engine.currentTime}
           />
         </div>
       </div>

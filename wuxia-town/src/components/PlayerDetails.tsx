@@ -4,7 +4,10 @@ import { Id } from '../../convex/_generated/dataModel';
 // WUXIA-PATCH(W1): 上游 assets/close.svg 不在 repo（授權不明），改用自製圖示；人物詳情加「在○○附近」
 const closeImg = '/ai-town/wuxia/ui/close.svg';
 import { PlayerCard } from '../wuxia/PlayerCard';
-import { activityLabel, skinEnabled } from '../wuxia/skin';
+import { activityLabel, skinEnabled, worldClock } from '../wuxia/skin';
+// WUXIA-PATCH(W3): 生活面板（目前活動、下一件事、需求條、今日做過的事）
+import { LifePanel } from '../wuxia/LifePanel';
+import { lifeOf } from '../wuxia/life';
 import { SelectElement } from './Player';
 import { Messages } from './Messages';
 import { toastOnError } from '../toasts';
@@ -20,6 +23,7 @@ export default function PlayerDetails({
   playerId,
   setSelectedElement,
   scrollViewRef,
+  historicalTime,
 }: {
   worldId: Id<'worlds'>;
   engineId: Id<'engines'>;
@@ -27,6 +31,8 @@ export default function PlayerDetails({
   playerId?: GameId<'players'>;
   setSelectedElement: SelectElement;
   scrollViewRef: React.RefObject<HTMLDivElement>;
+  // WUXIA-PATCH(W3): 生活面板要用遊戲時鐘
+  historicalTime?: number;
 }) {
   const humanTokenIdentifier = useQuery(api.world.userStatus, { worldId });
 
@@ -154,6 +160,12 @@ export default function PlayerDetails({
       </div>
       {/* WUXIA-PATCH(W1): 「在茶館附近」（w01-skin 開啟時，依 data/wuxia/places.json） */}
       <PlayerCard skin={skinEnabled(game.world)} position={player.position} />
+      {/* WUXIA-PATCH(W3): w03-life 的生活面板 */}
+      <LifePanel
+        life={lifeOf(game.world)}
+        playerId={player.id}
+        clock={worldClock(game.world, historicalTime ?? Date.now())}
+      />
       {canInvite && (
         <a
           className={

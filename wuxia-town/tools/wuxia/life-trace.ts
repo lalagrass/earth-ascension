@@ -109,9 +109,18 @@ export class LifeTracer {
           const p = life?.people[id];
           return p?.cur?.act ?? 'idle';
         });
+        // 地點：w03-life 的邀請紀錄（邀請當下兩人所在）；沒有就用發起人目前位置
+        const creatorName = creator ? game.playerDescriptions.get(creator.id)?.name : undefined;
+        const creatorCid = creatorName ? profileByName(creatorName)?.id : undefined;
+        const invite = life?.log
+          .slice()
+          .reverse()
+          .find((e) => e.act === 'invite' && e.who === creatorCid && e.t >= gm - 1);
         this.conversations[conv.id] = {
           t: gm,
-          place: creator ? placeAt(creator.position.x, creator.position.y) : 'outside',
+          place:
+            invite?.place ??
+            (creator ? placeAt(creator.position.x, creator.position.y) : 'outside'),
           acts,
         };
       }

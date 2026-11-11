@@ -92,7 +92,8 @@ export type Person = {
   lastDone?: Record<string, number>;
 };
 
-export type LifeEvent = { t: number; who: string; act: string; obj: string };
+/** obj：物件 id（invite 時是被邀的人）；place：invite 時兩人所在的地點 */
+export type LifeEvent = { t: number; who: string; act: string; obj: string; place?: string };
 
 export type LifeState = {
   v: 1;
@@ -474,6 +475,10 @@ export function personPlace(person: Person, player: Player): string {
   return placeAt(player.position.x, player.position.y);
 }
 
+const LEISURE_PLACES = new Set(
+  OBJECTS.filter((o) => o.activities.some((a) => a.leisure)).map((o) => o.place),
+);
+
 function canChat(game: Game, gm: number, pid: string, person: Person): boolean {
   // 該睡覺的時段不邀人聊天
   if (currentBlock(person.cid, readClock(gm).minuteOfDay)?.do.includes('sleep')) return false;
@@ -506,6 +511,8 @@ function inviteToTalk(game: Game, now: number, gm: number, state: LifeState) {
     if (!canChat(game, gm, a, pa)) continue;
     const playerA = game.world.players.get(a as any)!;
     const placeA = personPlace(pa, playerA);
+    // 只在有閒暇物件的地點（茶館、河邊、各家飯桌）開口；走在街上不攀談
+    if (!LEISURE_PLACES.has(placeA)) continue;
     let best: { id: string; d: number } | undefined;
     for (const b of ids) {
       if (b === a) continue;
@@ -530,7 +537,7 @@ function inviteToTalk(game: Game, now: number, gm: number, state: LifeState) {
       const agentA = [...game.world.agents.values()].find((x) => x.playerId === playerA.id)!;
       agentA.lastInviteAttempt = now;
       state.pairs[[a, best.id].sort().join('|')] = gm;
-      pushLog(state, { t: gm, who: pa.cid, act: 'invite', obj: state.people[best.id].cid });
+      pushLog(state, { t: gm, who: pa.cid, act: 'invite', obj: state.people[best.id].cid, place: placeA });
     }
   }
 }
