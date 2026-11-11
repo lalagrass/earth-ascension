@@ -1,0 +1,92 @@
+{
+  "_doc": "武俠小鎮 W5（#557，元素 w05-mind）心念。每遊戲日寅正（04:00，evalMinuteOfDay）替每人評估一次（像睡前想一想）：看近 windowDays 日的事件記憶，條件成立就出現（強度 start）或增強（+grow），不成立每日 −decay，到 0 消失；每人同時最多 maxPerPerson 個（超過時留強度高的）。「因為」＝觸發它的最近 causes 筆記憶。心念只改 W3 決策的權重與日程模板（effects），不直接指定動作；不讓 LLM 產生心念。條件語法：count＝近 windowDays 日某種記憶 ≥ min 筆；skill＝技能值 < lt；daysSince＝距最後一筆某種記憶（沒有就從開局算）≥ min 日；all／any 組合。effects：schedule＝依武館開／關替某人加日程時段（只填在原本的留白裡，dojoClosed／dojoOpen／always）；inviteX＝跟 with 的人邀請機率乘幾倍；preferNewcomer＝優先邀新人；reopenDojo＝觸發武館重開。每個數值旁的 *_src 標來源（#562 W4-8）：量測＝有出處、推導＝由別的數算出、旋鈕＝設計決定。",
+  "memorySize": 200,
+  "memorySize_src": "量測：#557「環形 200 筆」",
+  "decayPerDay": 0.9,
+  "decayPerDay_src": "量測：#557「weight 隨時間衰減：每遊戲日 ×0.9」",
+  "windowDays": 7,
+  "windowDays_src": "量測：#557「觸發（近 7 日記憶）」",
+  "evalMinuteOfDay": 240,
+  "evalMinuteOfDay_src": "量測＋旋鈕：#557「每遊戲日寅時評估一次」；寅時 03:00–05:00，取寅正 04:00（旋鈕）",
+  "maxPerPerson": 3,
+  "maxPerPerson_src": "量測：#557「每人同時最多 3 個心念」",
+  "decay": 20,
+  "decay_src": "量測：#557「條件不再成立時每日 -20，到 0 消失」",
+  "causes": 3,
+  "causes_src": "量測：#557「列出觸發它的 2–3 筆記憶」",
+  "newcomerAfter": 60,
+  "newcomerAfter_src": "旋鈕：開局 60 遊戲分鐘內進鎮的是原本的鎮民（建世界時一起出生），之後才進鎮的算新人",
+  "weights": {"listen": 1, "talk": 1, "meal_with": 0.5, "first_visit": 0.5, "trained": 1, "tier_up": 1.5, "gaze": 1, "loiter_seen": 1, "gaze_home": 1, "newcomer": 1, "spar_lost": 1.5},
+  "weights_src": "旋鈕：記憶的初始 weight（之後每日 ×0.9）。weight 只用來排「因為」的順序與畫面強弱，觸發條件看筆數（#557 表格寫的是次數）",
+  "thoughts": [
+    {
+      "id": "learn",
+      "name": "想學武",
+      "who": "*",
+      "when": {"all": [{"count": "listen", "min": 3}, {"skill": "fist", "lt": 100}]},
+      "when_src": "量測：#557「在茶館聽書 ≥3 次＋拳腳 < 100」",
+      "start": 40, "grow": 15,
+      "start_src": "旋鈕：出現時 40、每日條件仍成立 +15（約 4 日到 100）",
+      "effects": {
+        "inviteX": {"with": "zhou-jiaotou", "x": 2},
+        "schedule": {
+          "a-qing": {
+            "dojoClosed": [{"from": 600, "to": 690, "label": "到武館外張望", "do": ["gaze_dojo", "daydream"]}],
+            "dojoOpen": [{"from": 600, "to": 660, "label": "武館加練", "do": ["stand_post", "hit_sandbag"]}]
+          }
+        }
+      },
+      "effects_src": "量測＋旋鈕：#557「日程加練功時段；對周教頭的邀請機率 ×2」是量測。#562 W5-10：武館還沒開時，阿青的「練功時段」改成到武館門口張望（張望或在河邊發呆二選一，由擾動決定，所以每個 seed 張望的日子不同）；開了以後才是真的加練（站樁／沙袋 60 分）。時段放在阿青原本 10:00–12:00 的留白。#556 寫「其他人不練」，所以其他人有這個心念時只影響對話與邀請，不加練功時段"
+    },
+    {
+      "id": "stronger",
+      "name": "想變強",
+      "who": "*",
+      "when": {"any": [{"count": "tier_up", "min": 1}, {"count": "spar_lost", "min": 2}]},
+      "when_src": "量測：#557「練功升階或（W6 後）切磋輸 ≥2」；切磋輸的記憶 W6 才會有",
+      "start": 50, "grow": 10,
+      "start_src": "旋鈕",
+      "effects": {
+        "schedule": {
+          "a-qing": {"dojoOpen": [{"from": 660, "to": 720, "label": "武館加練（想變強）", "do": ["hit_dummy", "stand_post"]}]}
+        }
+      },
+      "effects_src": "量測＋旋鈕：#557「練功時段 +1 小時」。只有阿青有可以延長的留白（周教頭已精通、石虎的留白只剩 2 小時，再加就違反 #562 W3-5）"
+    },
+    {
+      "id": "reopen",
+      "name": "想重開武館",
+      "who": ["zhou-jiaotou"],
+      "when": {"count": "loiter_seen", "min": 2},
+      "when_src": "量測：#557「周教頭：有人在武館外徘徊 ≥2 次」；#562 W5-10 的「張望」就是徘徊",
+      "start": 60, "grow": 20,
+      "start_src": "旋鈕",
+      "effects": {"reopenDojo": true},
+      "effects_src": "量測：#557「觸發武館重開（取代 W4 的固定第 1 天）」。開了就不再關（W5 不做關館）"
+    },
+    {
+      "id": "homesick",
+      "name": "想回鄉",
+      "who": ["a-qing"],
+      "when": {"daysSince": "talk", "min": 5},
+      "when_src": "量測：#557「阿青：連續 5 日沒聊天」",
+      "start": 40, "grow": 15,
+      "start_src": "旋鈕",
+      "effects": {
+        "schedule": {"a-qing": {"always": [{"from": 1200, "to": 1230, "label": "城門外張望", "do": ["gaze_home"]}]}}
+      },
+      "effects_src": "量測＋旋鈕：#557「日程加『城門外張望』」；時段放在聽書之後、睡覺之前的留白（20:00–20:30）"
+    },
+    {
+      "id": "ask",
+      "name": "想打聽",
+      "who": ["lin-sao"],
+      "when": {"count": "newcomer", "min": 1},
+      "when_src": "量測：#557「林嫂：有新人到鎮」；W8 俠客路過、W9 真人進鎮才會有新人",
+      "start": 60, "grow": 10,
+      "start_src": "旋鈕",
+      "effects": {"preferNewcomer": true, "inviteX": {"with": "newcomer", "x": 2}},
+      "effects_src": "量測＋旋鈕：#557「優先邀請新人聊天」：同地點有新人時先挑新人，邀請機率 ×2（旋鈕）"
+    }
+  ]
+}

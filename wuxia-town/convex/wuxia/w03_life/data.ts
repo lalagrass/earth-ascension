@@ -89,23 +89,45 @@ export const SCHEDULE_OVERLAYS = ((schedulesJson as any).overlays ?? {}) as Reco
   string,
   Record<string, Schedule>
 >;
-/** 日程情境：哪些元素的日程覆蓋生效、今天第幾日（everyDays 用）。不給＝W3 的日程。 */
-export type SchedCtx = { overlays: string[]; day?: number };
+/**
+ * 日程情境：哪些元素的日程覆蓋生效、今天第幾日（everyDays 用）。不給＝W3 的日程。
+ * W5：blocks＝心念加的時段（cid → 時段，排在原日程前面，所以優先）；closed＝暫時不生效的覆蓋
+ * （w05-mind 開著而武館還沒重開時，w04-dojo 的覆蓋不生效）。w05-mind 關閉時兩者都是 undefined，跟 W4 相同。
+ */
+export type SchedCtx = {
+  overlays: string[];
+  day?: number;
+  blocks?: Record<string, ScheduleBlock[]>;
+};
 
-/** 依世界的元素開關算日程情境（只看有 overlays 的元素）。 */
-export function schedCtx(enabled: Record<string, boolean> | undefined, day?: number): SchedCtx {
-  return {
-    overlays: Object.keys(SCHEDULE_OVERLAYS).filter((id) => !!enabled?.[id]),
+/** 依世界的元素開關算日程情境（只看有 overlays 的元素）。W5：mind＝心念的時段與擋下的覆蓋。 */
+export function schedCtx(
+  enabled: Record<string, boolean> | undefined,
+  day?: number,
+  mind?: { blocks?: Record<string, ScheduleBlock[]>; closed?: string[] },
+): SchedCtx {
+  const ctx: SchedCtx = {
+    overlays: Object.keys(SCHEDULE_OVERLAYS).filter(
+      (id) => !!enabled?.[id] && !(mind?.closed ?? []).includes(id),
+    ),
     day,
   };
+  if (mind?.blocks) ctx.blocks = mind.blocks;
+  return ctx;
 }
 
 export function scheduleFor(cid: string, ctx?: SchedCtx): Schedule | undefined {
+  let base: Schedule | undefined = SCHEDULES[cid];
   for (const id of ctx?.overlays ?? []) {
     const o = SCHEDULE_OVERLAYS[id]?.[cid];
-    if (o && typeof o === 'object' && Array.isArray(o.blocks)) return o;
+    if (o && typeof o === 'object' && Array.isArray(o.blocks)) {
+      base = o;
+      break;
+    }
   }
-  return SCHEDULES[cid];
+  const extra = ctx?.blocks?.[cid];
+  if (!extra || extra.length === 0 || !base) return base;
+  return { worker: base.worker, blocks: [...extra, ...base.blocks] };
 }
 
 function blockToday(b: ScheduleBlock, day: number | undefined): boolean {
@@ -196,5 +218,6 @@ export function placeAt(x: number, y: number): string {
 
 export function placeName(id: string): string {
   if (id === 'outside') return '野外';
-  return PLACES.find((p) => p.id === id)?.name ?? id;
+  // W5：武館門口這類只有物件、沒有地點範圍的地方，用物件名
+  return PLACES.find((p) => p.id === id)?.name ?? OBJECTS.find((o) => o.place === id)?.name ?? id;
 }

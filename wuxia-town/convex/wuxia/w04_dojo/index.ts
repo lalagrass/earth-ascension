@@ -110,8 +110,8 @@ export function tickDojo(game: Game, now: number) {
   if (gm <= state.minute) return;
   const elapsed = state.minute < 0 ? 0 : gm - state.minute;
   state.minute = gm;
-  // W4：第 1 日固定重開（W5 起改由心念觸發）
-  if (state.openedAt === undefined && readClock(gm).day >= 1) state.openedAt = gm;
+  // W4：第 1 日固定重開。W5：w05-mind 開著時改由周教頭的心念「想重開武館」觸發（w05_mind 寫 openedAt），這裡不自動開
+  if (state.openedAt === undefined && !w.enabled['w05-mind'] && readClock(gm).day >= 1) state.openedAt = gm;
 
   const coach = coachPresent(game, life);
   state.coachHere = coach;

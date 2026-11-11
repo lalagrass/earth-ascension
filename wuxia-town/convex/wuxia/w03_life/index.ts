@@ -13,6 +13,14 @@ import { movePlayer, stopPlayer } from '../../aiTown/movement';
 import { Conversation } from '../../aiTown/conversation';
 import { movementSpeed } from '../../../data/characters';
 import {
+  closedOverlays,
+  inviteMultiplier,
+  mindBlocks,
+  mindOf,
+  newcomers,
+  prefersNewcomer,
+} from '../w05_mind/data';
+import {
   ACTIVITY_BY_ID,
   ActivityDef,
   LEISURE,
@@ -357,7 +365,8 @@ export function tickLife(game: Game, now: number) {
   state.minute = gm;
   const clock = readClock(gm);
   const mod = clock.minuteOfDay;
-  const ctx = schedCtx(w.enabled, clock.day);
+  // W5：w05-mind 開時，心念加的日程時段與「武館還沒重開」擋下的覆蓋（關閉時兩者 undefined，跟 W4 相同）
+  const ctx = lifeSchedCtx(w, clock.day);
 
   // 依 agents 的加入順序處理（確定性）
   for (const agent of game.world.agents.values()) {
@@ -496,10 +505,16 @@ const LEISURE_PLACES = new Set(
   OBJECTS.filter((o) => o.activities.some((a) => a.leisure)).map((o) => o.place),
 );
 
-function canChat(game: Game, gm: number, pid: string, person: Person): boolean {
+/** W5：世界此刻的日程情境（w03-life 的決策、面板、工具共用）。 */
+export function lifeSchedCtx(w: WuxiaState | undefined, day?: number): SchedCtx {
+  if (!w || !mindOf(w)) return schedCtx(w?.enabled, day);
+  return schedCtx(w.enabled, day, { blocks: mindBlocks(w), closed: closedOverlays(w) });
+}
+
+function canChat(game: Game, gm: number, pid: string, person: Person, ctx: SchedCtx): boolean {
   // 該睡覺的時段不邀人聊天
   const c = readClock(gm);
-  if (currentBlock(person.cid, c.minuteOfDay, schedCtx(game.world.wuxia?.enabled, c.day))?.do.includes('sleep'))
+  if (currentBlock(person.cid, c.minuteOfDay, ctx)?.do.includes('sleep'))
     return false;
   const player = game.world.players.get(pid as any);
   if (!player || game.world.playerConversation(player)) return false;
@@ -524,20 +539,26 @@ function canChat(game: Game, gm: number, pid: string, person: Person): boolean {
 
 /** #555「對話怎麼接」：只有閒暇活動中或剛結束、且兩人在同一地點，才會邀請；工作中不聊。 */
 function inviteToTalk(game: Game, now: number, gm: number, state: LifeState) {
+  const w = game.world.wuxia!;
+  const ctx = lifeSchedCtx(w, readClock(gm).day);
+  // W5：心念的邀請倍率（想學武→周教頭 ×2）與「想打聽」優先挑新人；w05-mind 關閉時 mind＝undefined，跟 W4 相同
+  const mind = mindOf(w);
+  const fresh = mind ? newcomers(mind) : undefined;
   // 固定排序：Convex 存回物件時欄位會依字典序重排，不能靠插入順序（W3 實跑重播不符的原因）
   const ids = Object.keys(state.people).sort();
   for (const a of ids) {
     const pa = state.people[a];
-    if (!canChat(game, gm, a, pa)) continue;
+    if (!canChat(game, gm, a, pa, ctx)) continue;
     const playerA = game.world.players.get(a as any)!;
     const placeA = personPlace(pa, playerA);
     // 只在有閒暇物件的地點（茶館、河邊、各家飯桌）開口；走在街上不攀談
     if (!LEISURE_PLACES.has(placeA)) continue;
-    let best: { id: string; d: number } | undefined;
+    const preferNew = !!fresh && fresh.size > 0 && prefersNewcomer(mind, a);
+    let best: { id: string; d: number; fresh: boolean } | undefined;
     for (const b of ids) {
       if (b === a) continue;
       const pb = state.people[b];
-      if (!canChat(game, gm, b, pb)) continue;
+      if (!canChat(game, gm, b, pb, ctx)) continue;
       const playerB = game.world.players.get(b as any)!;
       if (personPlace(pb, playerB) !== placeA) continue;
       const key = [a, b].sort().join('|');
@@ -547,10 +568,18 @@ function inviteToTalk(game: Game, now: number, gm: number, state: LifeState) {
         playerA.position.x - playerB.position.x,
         playerA.position.y - playerB.position.y,
       );
-      if (!best || d < best.d) best = { id: b, d };
+      const isNew = !!fresh?.has(b);
+      if (preferNew && best && best.fresh !== isNew) {
+        if (isNew) best = { id: b, d, fresh: isNew };
+        continue;
+      }
+      if (!best || d < best.d) best = { id: b, d, fresh: isNew };
     }
     if (!best) continue;
-    if (game.rng() >= LIFE_RULES.inviteChancePerMinute) continue;
+    const chance =
+      LIFE_RULES.inviteChancePerMinute *
+      (mind ? inviteMultiplier(mind, a, state.people[best.id].cid, best.fresh) : 1);
+    if (game.rng() >= chance) continue;
     const playerB = game.world.players.get(best.id as any)!;
     const result = Conversation.start(game, now, playerA, playerB);
     if ('conversationId' in result) {

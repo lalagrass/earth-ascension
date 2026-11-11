@@ -1,5 +1,5 @@
 {
-  "_doc": "武俠小鎮 W3（#555）物件與活動。tile 是物件的代表格，slots 是每個座位的站位（長度＝capacity，皆為可走格）。房屋、店鋪內部在地圖上不能走，所以物件都放在門口或簷下。roles：可用的人物 id（\"*\"＝所有人）；owner：只有這個人能用（床）；household：只有 home＝這個地點的人能用（灶，配合 #562 每戶一份物資）。needs：活動完成時加到需求上的量；gives／consumes：每戶物資（water 水、meal 飯、wood 柴），consumes 在開始時扣、gives 在完成時加。requires.timeOfDay＝[開始, 結束)（當日分鐘，可跨午夜）；requires.whileActive＝有人正在做這個活動才能做；requires.minGap＝離上次做完至少隔幾分鐘（吃飯 4 小時，一天不會吃第四餐）；requires.scheduledOrNeed＝只有日程排到、或這個需求已經急（> soft）時才做（睡覺不會因為擾動在早上補眠）。leisure＝閒暇類活動（只有閒暇中或剛結束才會邀人聊天）。W4（#556）：element＝只有這個元素開啟時才存在的物件（武館：木人樁×2、石鎖×2（各是一個 capacity 2 的物件，練完一輪接著練會留在同一個座位）、梅花樁、教頭位、沙袋；座位在武館院子裡，從西側塌牆進出）；requires.scheduledOnly＝只有日程排到才做（練功不在留白時亂入，「其他人不練」）。練功的技能成長在 data/wuxia/training.json。",
+  "_doc": "武俠小鎮 W3（#555）物件與活動。W5（#557／#562 W5-10）：武館門口（張望，武館沒開時也在）、城門外（想回鄉時張望）屬於 w05-mind，元素關閉時不存在。tile 是物件的代表格，slots 是每個座位的站位（長度＝capacity，皆為可走格）。房屋、店鋪內部在地圖上不能走，所以物件都放在門口或簷下。roles：可用的人物 id（\"*\"＝所有人）；owner：只有這個人能用（床）；household：只有 home＝這個地點的人能用（灶，配合 #562 每戶一份物資）。needs：活動完成時加到需求上的量；gives／consumes：每戶物資（water 水、meal 飯、wood 柴），consumes 在開始時扣、gives 在完成時加。requires.timeOfDay＝[開始, 結束)（當日分鐘，可跨午夜）；requires.whileActive＝有人正在做這個活動才能做；requires.minGap＝離上次做完至少隔幾分鐘（吃飯 4 小時，一天不會吃第四餐）；requires.scheduledOrNeed＝只有日程排到、或這個需求已經急（> soft）時才做（睡覺不會因為擾動在早上補眠）。leisure＝閒暇類活動（只有閒暇中或剛結束才會邀人聊天）。W4（#556）：element＝只有這個元素開啟時才存在的物件（武館：木人樁×2、石鎖×2（各是一個 capacity 2 的物件，練完一輪接著練會留在同一個座位）、梅花樁、教頭位、沙袋；座位在武館院子裡，從西側塌牆進出）；requires.scheduledOnly＝只有日程排到才做（練功不在留白時亂入，「其他人不練」）。練功的技能成長在 data/wuxia/training.json。",
   "objects": [
     {"id": "well", "name": "井", "place": "well", "tile": [22, 22], "capacity": 2, "slots": [[22, 21], [22, 22]],
      "activities": [
@@ -60,6 +60,14 @@
     {"id": "sandbag", "name": "沙袋", "place": "dojo", "element": "w04-dojo", "tile": [41, 25], "capacity": 1, "slots": [[40, 25]],
      "activities": [
        {"id": "hit_sandbag", "label": "擊打沙袋", "emoji": "🥊", "minutes": 60, "roles": ["a-qing", "zhou-jiaotou"], "needs": {"fatigue": 7, "hunger": 4, "boredom": -8}, "requires": {"scheduledOnly": true}}
+     ]},
+    {"id": "dojo-gate", "name": "武館門口", "place": "dojo-gate", "element": "w05-mind", "tile": [39, 29], "capacity": 2, "slots": [[39, 30], [40, 30]],
+     "activities": [
+       {"id": "gaze_dojo", "label": "在武館外張望", "emoji": "👀", "minutes": 20, "roles": ["*"], "needs": {"boredom": -5}, "requires": {"scheduledOnly": true, "minGap": 240}}
+     ]},
+    {"id": "gate-outlook", "name": "城門外", "place": "gate", "element": "w05-mind", "tile": [23, 34], "capacity": 2, "slots": [[22, 34], [24, 34]],
+     "activities": [
+       {"id": "gaze_home", "label": "城門外張望", "emoji": "🌄", "minutes": 20, "roles": ["*"], "needs": {"boredom": -5}, "requires": {"scheduledOnly": true, "minGap": 240}}
      ]}
   ],
   "templates": {

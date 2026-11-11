@@ -3,6 +3,7 @@
 //        [--days 3]（W3：跑 3 個遊戲日，輸出含每人時間表與生活檢查，給 wuxia:day-report）
 //        [--off w01-skin] [--on id,id]（覆寫 world.config.json 的元素開關）[--map town|gentle]（只給對照實驗用）
 //        [--state out.json]（W1：匯出最後狀態給 wuxia:shot 用）
+//        [--drop-memory id,id]（W5：這些 id 的事件記憶不寫入，mind-trace 的因果對照用）
 // 從 data/wuxia/ 與上游預設地圖建初始世界 → 每 step 呼叫 simulateStep、餵 inputs、跑 ticks →
 // 把 pendingOperations 交給「規則替身」立即產生回應 input（漫遊用 rng、對話用模板句、不打 LLM）。
 // --minutes 是引擎時間（牆鐘分鐘，1 step = 1 秒），不是遊戲時辰。
@@ -25,6 +26,8 @@ import { conversationTemplate } from '../../convex/wuxia/templates';
 import { gameMinutes, readClock } from '../../convex/wuxia/clock';
 import { LifeTracer, conversationPlaceStats } from './life-trace';
 import { DojoTracer } from './dojo-trace';
+import { MindTracer } from './mind-trace';
+import { W05_MIND } from '../../convex/wuxia/w05_mind/data';
 import { W03_LIFE, LifeState } from '../../convex/wuxia/w03_life';
 import {
   JournalInput,
@@ -53,6 +56,8 @@ export type HeadlessOptions = {
   untilGameMinute?: number;
   /** W3：記錄每人每遊戲分鐘的地點與活動（day-report 用）；--days 時自動開 */
   trace?: boolean;
+  /** W5：這些 id 的事件記憶不寫入（mind-trace --drop-memory） */
+  dropMemories?: number[];
 };
 
 export function initialSnapshot(opts: HeadlessOptions): Snapshot {
@@ -62,6 +67,9 @@ export function initialSnapshot(opts: HeadlessOptions): Snapshot {
     elements: { ...defaultWuxiaConfig.elements, ...(opts.elements ?? {}) },
   });
   initElements(wuxia);
+  // W5：因果對照實驗（mind-trace --drop-memory）；不給就不寫這個欄位，hash 不變
+  if (opts.dropMemories?.length && wuxia.elements[W05_MIND])
+    (wuxia.elements[W05_MIND] as any).drop = [...opts.dropMemories];
   const worldMap =
     opts.map === undefined
       ? serializedMapFor(wuxia.enabled)
@@ -142,6 +150,8 @@ export function runHeadless(opts: HeadlessOptions) {
   const tracer = opts.trace ? new LifeTracer() : undefined;
   // W4：練功紀錄（w04-dojo 開啟時才有內容）
   const dojoTracer = opts.trace ? new DojoTracer() : undefined;
+  // W5：心念紀錄（w05-mind 開啟時才有內容）
+  const mindTracer = opts.trace ? new MindTracer() : undefined;
 
   const nameOf = (playerId: string) =>
     game.playerDescriptions.get(playerId as any)?.name ?? playerId;
@@ -274,6 +284,7 @@ export function runHeadless(opts: HeadlessOptions) {
     }
     tracer?.sample(game, now);
     dojoTracer?.sample(game, now);
+    mindTracer?.sample(game, now);
     for (const p of game.world.players.values()) {
       const t = traces.get(p.id) ?? [];
       t.push({ x: p.position.x, y: p.position.y });
@@ -290,6 +301,7 @@ export function runHeadless(opts: HeadlessOptions) {
     }
   }
   stats.inputs = queue.length;
+  mindTracer?.finish(game);
 
   const finalHash = steps[steps.length - 1].hash;
   const players = [...game.world.players.values()].map((p) => ({
@@ -339,6 +351,8 @@ export function runHeadless(opts: HeadlessOptions) {
       : undefined,
     // W4：練功紀錄（--days 或 trace 且 w04-dojo 開時才有）
     dojo: dojoTracer?.trace.on ? dojoTracer.trace : undefined,
+    // W5：心念紀錄（--days 或 trace 且 w05-mind 開時才有）
+    mind: mindTracer?.trace.on ? mindTracer.trace : undefined,
   };
   return { snapshot, queue, steps, summary, finalHash, traces, game, messages };
 }
@@ -465,6 +479,10 @@ function main() {
           ? undefined
           : Number(args['game-minute']),
     trace: args.days !== undefined || !!args.trace,
+    dropMemories:
+      args['drop-memory'] === undefined
+        ? undefined
+        : String(args['drop-memory']).split(',').filter(Boolean).map(Number),
   };
   if (
     !Number.isFinite(opts.seed) ||

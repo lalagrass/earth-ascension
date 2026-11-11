@@ -27,15 +27,24 @@ describe('wuxia element registry', () => {
     expect(enabledElements(state).map((e) => e.id)).toEqual(['w01-skin']);
     expect(initWuxiaState({ elements: { 'w01-skin': false }, seed: 7, timeScale: 60 }).enabled).toEqual({});
   });
-  test('W4 default config enables w01-skin, w02-folk, w03-life and w04-dojo', () => {
+  test('W5 default config enables w01-skin, w02-folk, w03-life, w04-dojo and w05-mind', () => {
     // W3 刻意改變：預設開 w03-life（W2 時是 ['w01-skin', 'w02-folk']）
     // W4 刻意改變：預設開 w04-dojo（W3 時是 ['w01-skin', 'w02-folk', 'w03-life']，見 docs/wuxia/W4.md）
+    // W5 刻意改變：預設開 w05-mind（W4 時是 [..., 'w04-dojo']，見 docs/wuxia/W5.md）
     expect(enabledElements(initWuxiaState()).map((e) => e.id)).toEqual([
       'w01-skin',
       'w02-folk',
       'w03-life',
       'w04-dojo',
+      'w05-mind',
     ]);
+  });
+  test('w05-mind requires w03-life (w04-dojo optional)', () => {
+    const base = { 'w01-skin': true, 'w02-folk': true, 'w03-life': true, 'w05-mind': true };
+    expect(initWuxiaState({ elements: base, seed: 7, timeScale: 60 }).enabled['w05-mind']).toBe(true);
+    expect(
+      initWuxiaState({ elements: { ...base, 'w03-life': false }, seed: 7, timeScale: 60 }).enabled['w05-mind'],
+    ).toBeUndefined();
   });
   test('w04-dojo requires w03-life: turning life (or anything below) off drops dojo from the frozen flags', () => {
     for (const off of ['w01-skin', 'w02-folk', 'w03-life']) {
