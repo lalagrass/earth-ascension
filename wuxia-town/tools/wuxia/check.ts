@@ -10,6 +10,8 @@
 // 9.（W2）w02-folk 開關不改規則：folk-diff A/B（關＝W1、同樣 5 人開／關只差 enabled 旗標）
 // 10.（W2）convex/ 底下的路徑只用英數、底線、句點（Convex 部署的限制；w01-skin 目錄曾因此無法部署）
 // 11.（W3）life-diff A/B/C：關＝W2、開 3 日作息與預約／卡住／挨餓檢查、關掉沒有作息
+// 12.（W4）dojo-diff A/B/C：關＝W3、關掉武館空著、第 1 日開／關只差練功相關的作息
+// 13.（W4）30 日技能報告：阿青第 30 日拳腳 120–180、教頭在場時增長明顯較高（WUXIA_CHECK_SKILL_DAYS=0 可略過，CI 不略過）
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
@@ -18,6 +20,9 @@ import { skinDiff } from './skin-diff';
 import { promptsInSync } from './gen-prompts';
 import { folkDiff } from './folk-diff';
 import { lifeDiff } from './life-diff';
+import { dojoDiff } from './dojo-diff';
+import { skillReport } from './skill-report';
+import { runHeadless } from './headless';
 import { quietConsole } from './sim';
 
 const ROOT = new URL('../..', import.meta.url).pathname;
@@ -187,6 +192,30 @@ else fail('prompts.gen.ts 不同步：請執行 npm run wuxia:gen-prompts');
   else fail(`life-diff B：${r.resultB.fails.join('；')}`);
   if (r.resultC.ok) ok(`life-diff C：關 3 日 hash ${r.resultC.hash}，沒有作息規律`);
   else fail(`life-diff C：關掉 w03-life 仍有睡覺／吃飯 ${r.resultC.rows.join('；')}`);
+}
+
+// 12
+{
+  const r = dojoDiff(7, Number(MINUTES));
+  if (r.resultA.ok) ok(`dojo-diff A：w04-dojo 關＝W3 世界 hash ${r.resultA.hash}`);
+  else fail(`dojo-diff A：w04-dojo 關的世界不是 W3 ${JSON.stringify(r.resultA)}`);
+  if (r.resultB.ok)
+    ok(`dojo-diff B：關掉時武館空著（第 1 日練功 ${r.resultB.offTraining} 分、進院子 ${r.resultB.offCourtyard} 次）；開時 ${r.resultB.onTraining} 人分鐘`);
+  else fail(`dojo-diff B：${JSON.stringify(r.resultB)}`);
+  const others = r.resultC.rows.filter((x) => !x.overlaid);
+  if (r.resultC.ok)
+    ok(`dojo-diff C：第 1 日開／關，日程沒改的 ${others.length} 人作息相同（${others.filter((x) => x.same).length} 人時間表完全相同）`);
+  else fail(`dojo-diff C：${others.filter((x) => !x.routineSame).map((x) => `${x.name} ${x.routineDiff.join('；')}`).join('｜')}`);
+}
+
+// 13
+{
+  const days = Number(process.env.WUXIA_CHECK_SKILL_DAYS ?? 30);
+  if (days > 0) {
+    const run = runHeadless({ seed: 7, minutes: 0, untilGameMinute: days * 1440, trace: true });
+    const r = skillReport(run.summary.dojo!, 'a-qing');
+    for (const v of r.verdicts) (v.ok ? ok : fail)(`skill-report ${days} 日（hash ${run.finalHash.slice(0, 16)}…）${v.rule}：${v.value}`);
+  } else ok('（WUXIA_CHECK_SKILL_DAYS=0，略過 30 日技能報告）');
 }
 
 if (failures) {
