@@ -35,6 +35,9 @@ const hhmm = (m: number) =>
 export function actLabel(act: string): string {
   if (act === 'talk') return '聊天';
   if (act === 'abandon') return '放棄';
+  // W6：切磋與旁觀不在活動表裡
+  if (act === 'spar') return '切磋';
+  if (act === 'watch') return '看切磋';
   return ACTIVITY_BY_ID[act]?.label ?? act;
 }
 
@@ -43,6 +46,8 @@ export function describeCurrent(person: Person): string {
   const cur = person.cur;
   if (!cur) return '想下一件事';
   if (cur.phase === 'talk') return '💬 聊天中';
+  if (cur.phase === 'spar') return '🤜 切磋中';
+  if (cur.phase === 'watch') return '👀 看切磋';
   const act = ACTIVITY_BY_ID[cur.act];
   const obj = OBJECT_BY_ID[cur.obj];
   if (cur.phase === 'walk') return `走去${obj?.name ?? ''}${act ? `${act.label}` : ''}`;

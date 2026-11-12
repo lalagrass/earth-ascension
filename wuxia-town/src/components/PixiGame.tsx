@@ -18,6 +18,8 @@ import { ServerGame } from '../hooks/serverGame.ts';
 import { SkinLayers } from '../wuxia/SkinLayers.tsx';
 // WUXIA-PATCH(W4): 武館重開後的練功器具
 import { DojoLayer } from '../wuxia/DojoLayer.tsx';
+// WUXIA-PATCH(W6): 切磋的勢點、擊中白光、旁白框
+import { SparLayer } from '../wuxia/SparLayer.tsx';
 // WUXIA-PATCH(W5): 武館改由心念重開，畫面看 openedAt（dojoOpened）
 import { dojoOpened } from '../wuxia/dojo.ts';
 import { skinEnabled, worldClock } from '../wuxia/skin.ts';
@@ -141,6 +143,15 @@ export const PixiGame = (props: {
           historicalTime={props.historicalTime}
         />
       ))}
+      {/* WUXIA-PATCH(W6): 切磋畫面層疊在人物上面（w06-spar 關閉時不畫） */}
+      {skin && (
+        <SparLayer
+          world={props.game.world}
+          time={props.historicalTime ?? Date.now()}
+          tileDim={tileDim}
+          pos={(id) => props.game.world.players.get(id as any)?.position}
+        />
+      )}
       {/* WUXIA-PATCH(W1): 日夜色調與地點名牌疊在人物上面 */}
       {skin && (
         <SkinLayers

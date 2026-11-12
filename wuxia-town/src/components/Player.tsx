@@ -4,6 +4,8 @@ import { orientationDegrees } from '../../convex/util/geometry.ts';
 import { characterFor, skinEnabled } from '../wuxia/skin.ts';
 // WUXIA-PATCH(W4): 打樁時用動作圖
 import { poseFor } from '../wuxia/dojo.ts';
+// WUXIA-PATCH(W6): 切磋時攻方前衝、守方後退（位移只由回合時間算出）
+import { sparOffset } from '../wuxia/spar.ts';
 import { toast } from 'react-toastify';
 import { Player as ServerPlayer } from '../../convex/aiTown/player.ts';
 import { GameId } from '../../convex/aiTown/ids.ts';
@@ -68,11 +70,15 @@ export const Player = ({
     );
   const tileDim = game.worldMap.tileDim;
   const historicalFacing = { dx: historicalLocation.dx, dy: historicalLocation.dy };
+  // WUXIA-PATCH(W6): w06-spar 開啟時加上切磋動作的位移（關閉時恆為 0）
+  const sparOff = sparOffset(game.world, player.id, historicalTime ?? Date.now(), tileDim, (id) =>
+    game.world.players.get(id as GameId<'players'>)?.position,
+  );
   return (
     <>
       <Character
-        x={historicalLocation.x * tileDim + tileDim / 2}
-        y={historicalLocation.y * tileDim + tileDim / 2}
+        x={historicalLocation.x * tileDim + tileDim / 2 + sparOff.dx}
+        y={historicalLocation.y * tileDim + tileDim / 2 + sparOff.dy}
         orientation={orientationDegrees(historicalFacing)}
         isMoving={historicalLocation.speed > 0}
         isThinking={isThinking}
