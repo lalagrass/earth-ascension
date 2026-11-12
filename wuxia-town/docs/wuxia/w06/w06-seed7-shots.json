@@ -1,0 +1,32 @@
+[
+  {
+    "file": "docs/wuxia/w06/w06-seed7-d24-1100-1400x820.png",
+    "seed": 7,
+    "at": 33420,
+    "size": [
+      1400,
+      820
+    ],
+    "clock": "第 24 日 午初",
+    "gameMinute": 33420,
+    "who": "阿青",
+    "blind": false,
+    "hash": "d3e6433270f38ee6e46c78b60e238f4f3df7089fb93337dad7f362997d062f36",
+    "steps": 33421
+  },
+  {
+    "file": "docs/wuxia/w06/w06-seed7-d24-1100-390w.png",
+    "seed": 7,
+    "at": 33420,
+    "size": [
+      390,
+      844
+    ],
+    "clock": "第 24 日 午初",
+    "gameMinute": 33420,
+    "who": "阿青",
+    "blind": false,
+    "hash": "d3e6433270f38ee6e46c78b60e238f4f3df7089fb93337dad7f362997d062f36",
+    "steps": 33421
+  }
+]

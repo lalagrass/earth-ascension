@@ -37,7 +37,8 @@ export function actLabel(act: string): string {
   if (act === 'abandon') return '放棄';
   // W6：切磋與旁觀不在活動表裡
   if (act === 'spar') return '切磋';
-  if (act === 'watch') return '看切磋';
+  if (act === 'watch' || act === 'watch_spar') return '看切磋';
+  if (act.startsWith('spar_end')) return '切磋收勢';
   return ACTIVITY_BY_ID[act]?.label ?? act;
 }
 
@@ -65,7 +66,7 @@ export function describeNext(person: Person, minuteOfDay: number, ctx?: SchedCtx
 
 export function todayDone(life: LifeState, person: Person, day: number): string[] {
   return life.log
-    .filter((e) => e.who === person.cid && readClock(e.t).day === day && e.act !== 'invite')
+    .filter((e) => e.who === person.cid && readClock(e.t).day === day && e.act !== 'invite' && e.act !== 'spar_rest_end')
     .map((e) => {
       const c = readClock(e.t);
       return `${hhmm(c.minuteOfDay)} ${actLabel(e.act)}`;
