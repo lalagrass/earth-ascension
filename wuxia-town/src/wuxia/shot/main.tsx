@@ -34,6 +34,9 @@ import { SkillPanel } from '../SkillPanel';
 import { MindPanel } from '../MindPanel';
 import { dojoOf, dojoOpened } from '../dojo';
 import { SparLayer } from '../SparLayer';
+import { BondPanel, DetailTabs } from '../BondPanel';
+import { DojoPanel } from '../DojoPanel';
+import { plaqueName } from '../bond';
 
 type ShotState = {
   engineTime: number;
@@ -50,6 +53,8 @@ type ShotOptions = {
   blind?: boolean;
   /** W6：GIF 逐格——畫面上不疊時辰牌與鎮況（只截地圖） */
   gif?: boolean;
+  /** W7：人物詳情開哪個分頁（'bond'＝關係） */
+  tab?: 'main' | 'bond';
 };
 
 declare global {
@@ -93,7 +98,7 @@ function Scene(props: { game: ServerGame; width: number; height: number; time: n
       wuxiaFocus={focus}
     >
       <PixiStaticMap map={props.game.worldMap} />
-      {skin && <DojoLayer tileDim={tileDim} open={dojoOpened(props.game.world)} />}
+      {skin && <DojoLayer tileDim={tileDim} open={dojoOpened(props.game.world)} plaque={plaqueName(props.game.world)} />}
       {[...props.game.world.players.values()].map((p) => (
         <Player
           key={p.id}
@@ -186,6 +191,7 @@ function ShotApp({ state: initial, opts }: { state: ShotState; opts: ShotOptions
                 nameOf={(id) => game.playerDescriptions.get(id as any)?.name ?? id}
               />
             )}
+            {!opts.gif && <DojoPanel wuxia={game.world.wuxia} />}
             <div className="absolute inset-0">
               <Stage width={width} height={height} options={{ backgroundColor: skin ? 0xe2d5b4 : 0x7ab5ff, antialias: true }}>
                 {width > 0 && <Scene game={game} width={width} height={height} time={frame.time ?? state.engineTime} opts={opts} />}
@@ -205,15 +211,25 @@ function ShotApp({ state: initial, opts }: { state: ShotState; opts: ShotOptions
                   position={selected.position}
                   activity={activityLabel(selected.activity?.description, skin)}
                 />
-                <LifePanel
-                  life={lifeOf(game.world)}
-                  playerId={selected.id}
-                  clock={clock}
-                  enabled={game.world.wuxia?.enabled}
+                <DetailTabs
                   wuxia={game.world.wuxia}
+                  tab={opts.tab ?? 'main'}
+                  onTab={() => {}}
+                  bond={<BondPanel wuxia={game.world.wuxia} playerId={selected.id} />}
+                  main={
+                    <>
+                      <LifePanel
+                        life={lifeOf(game.world)}
+                        playerId={selected.id}
+                        clock={clock}
+                        enabled={game.world.wuxia?.enabled}
+                        wuxia={game.world.wuxia}
+                      />
+                      <SkillPanel dojo={dojoOf(game.world)} life={lifeOf(game.world)} playerId={selected.id} />
+                      <MindPanel wuxia={game.world.wuxia} playerId={selected.id} />
+                    </>
+                  }
                 />
-                <SkillPanel dojo={dojoOf(game.world)} life={lifeOf(game.world)} playerId={selected.id} />
-                <MindPanel wuxia={game.world.wuxia} playerId={selected.id} />
                 <div className="desc my-6">
                   <p className="leading-tight text-base sm:text-sm">{desc?.description}</p>
                 </div>

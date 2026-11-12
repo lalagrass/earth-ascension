@@ -16,10 +16,19 @@ export function dojoOpened(world: WithWuxia | undefined | null): boolean {
   return dojoOf(world)?.openedAt !== undefined;
 }
 
-/** 正在打樁的人用「打樁」動作圖（public/wuxia/characters/folk.png 第 5 列）。 */
+/**
+ * 正在打樁的人用「打樁」動作圖（public/wuxia/characters/folk.png 第 5 列）。
+ * W7：拜師跪拜中的弟子用「跪拜」動作圖（第 6 列；w07-bond 的拜師事件在 kneel 階段）。
+ */
 export function poseFor(world: WithWuxia | undefined | null, playerId: string): string | undefined {
   if (!dojoOf(world)) return undefined;
   const life = world!.wuxia!.elements['w03-life'] as LifeState | undefined;
   const cur = life?.people[playerId]?.cur;
+  if (cur?.phase === 'bow') {
+    const bond = world!.wuxia!.enabled['w07-bond']
+      ? (world!.wuxia!.elements['w07-bond'] as { active?: { a: string; phase: string } } | undefined)
+      : undefined;
+    return bond?.active?.a === playerId && bond.active.phase === 'kneel' ? 'kneel' : undefined;
+  }
   return cur?.phase === 'do' && cur.act === 'hit_dummy' ? 'punch' : undefined;
 }

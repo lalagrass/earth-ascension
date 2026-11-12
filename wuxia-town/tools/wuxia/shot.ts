@@ -7,6 +7,7 @@
 //       沒給 --focus 時近景對準他（縮放 2.6）；--blind＝不顯示時辰與狀態 hash（盲測用）。
 //       檔名前綴預設是「輸出資料夾名-seedN」（docs/wuxia/w04/ → w04-seed7）。
 //   W6：--gif --match 周教頭,阿青 [--stage 石虎,林嫂]＝切磋短 GIF（見 tools/wuxia/shot-gif.ts）。
+//   W7：--tab bond＝人物詳情開「關係」分頁（預設「概況」）。
 // 流程：每個 --at（遊戲分鐘）各跑一次無頭模擬到那個遊戲分鐘 → 匯出狀態 → 用 Vite 開截圖頁
 //      （src/wuxia/shot/index.html，跟 live 同一批元件，不連 Convex）→ Playwright 截圖。1400 寬截可視範圍，390 寬截整頁。
 // 需要本機有 Chrome／Chromium（預設 /usr/bin/google-chrome，或設 WUXIA_CHROME），不需要 Docker、Convex、LLM。
@@ -55,6 +56,7 @@ async function main() {
   const out = resolve(ROOT, String(args.out ?? 'docs/wuxia/w01/'));
   const who = args.who === undefined ? undefined : String(args.who);
   const blind = !!args.blind;
+  const tab = args.tab === 'bond' ? ('bond' as const) : undefined;
   const sizes = String(args.sizes ?? '1400x820,390x844')
     .split(',')
     .map((s) => s.split('x').map(Number) as [number, number]);
@@ -117,7 +119,7 @@ async function main() {
             (window as any).__WUXIA_STATE__ = s;
             (window as any).__WUXIA_SHOT__ = o;
           },
-          [state, shotOptions(state, focus, who, blind)] as const,
+          [state, { ...shotOptions(state, focus, who, blind), ...(tab ? { tab } : {}) }] as const,
         );
         await page.goto(url, { waitUntil: 'networkidle' });
         await page.waitForFunction(() => (window as any).__WUXIA_READY__ === true, null, {
@@ -148,6 +150,7 @@ async function main() {
           gameMinute: clock?.gameMinute ?? null,
           who: who ?? null,
           blind,
+          ...(tab ? { tab } : {}),
           hash: run.finalHash,
           steps: run.summary.steps,
         });

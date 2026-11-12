@@ -33,6 +33,9 @@
     "wuxia:spar-sim": "tsx tools/wuxia/spar-sim.ts",
     "wuxia:spar-report": "tsx tools/wuxia/spar-report.ts",
     "wuxia:spar-diff": "tsx tools/wuxia/spar-diff.ts",
+    "wuxia:bond-report": "tsx tools/wuxia/bond-report.ts",
+    "wuxia:bond-trace": "tsx tools/wuxia/bond-trace.ts",
+    "wuxia:bond-diff": "tsx tools/wuxia/bond-diff.ts",
     "wuxia:check": "npm test && tsx tools/wuxia/check.ts"
   },
   "dependencies": {

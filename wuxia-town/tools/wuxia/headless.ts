@@ -28,6 +28,7 @@ import { gameMinutes, readClock } from '../../convex/wuxia/clock';
 import { LifeTracer, conversationPlaceStats } from './life-trace';
 import { DojoTracer } from './dojo-trace';
 import { MindTracer } from './mind-trace';
+import { BondTracer } from './bond-tracer';
 import { W05_MIND } from '../../convex/wuxia/w05_mind/data';
 import { W03_LIFE, LifeState } from '../../convex/wuxia/w03_life';
 import {
@@ -157,6 +158,8 @@ export function runHeadless(opts: HeadlessOptions) {
   const dojoTracer = opts.trace ? new DojoTracer() : undefined;
   // W5：心念紀錄（w05-mind 開啟時才有內容）
   const mindTracer = opts.trace ? new MindTracer() : undefined;
+  // W7：關係與拜師紀錄（w07-bond 開啟時才有內容）
+  const bondTracer = opts.trace ? new BondTracer() : undefined;
 
   const nameOf = (playerId: string) =>
     game.playerDescriptions.get(playerId as any)?.name ?? playerId;
@@ -293,6 +296,7 @@ export function runHeadless(opts: HeadlessOptions) {
     tracer?.sample(game, now);
     dojoTracer?.sample(game, now);
     mindTracer?.sample(game, now);
+    bondTracer?.sample(game, now);
     for (const p of game.world.players.values()) {
       const t = traces.get(p.id) ?? [];
       t.push({ x: p.position.x, y: p.position.y });
@@ -311,6 +315,7 @@ export function runHeadless(opts: HeadlessOptions) {
   }
   stats.inputs = queue.length;
   mindTracer?.finish(game);
+  bondTracer?.finish(game);
 
   const finalHash = steps[steps.length - 1].hash;
   const players = [...game.world.players.values()].map((p) => ({
@@ -364,6 +369,8 @@ export function runHeadless(opts: HeadlessOptions) {
     mind: mindTracer?.trace.on ? mindTracer.trace : undefined,
     // W6：切磋紀錄（--days 或 trace 且 w06-spar 開時才有）
     spar: opts.trace ? sparSummary(game) : undefined,
+    // W7：關係與拜師（--days 或 trace 且 w07-bond 開時才有）
+    bond: bondTracer?.trace.on ? bondTracer.trace : undefined,
   };
   return { snapshot, queue, steps, summary, finalHash, traces, game, messages };
 }

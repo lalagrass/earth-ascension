@@ -147,11 +147,11 @@ export function tickBond(game: Game, now: number) {
   if (state.active) stepBow(game, now, gm, state, life, mind, pidOf);
   else maybeStartBow(game, now, gm, mod, state, life, mind);
 
-  // 5. 師父的「指點徒弟」時段
+  // 5. 日程時段：弟子的「辰時練功（門規）」、師父的「指點徒弟」
   const key = `${clock.day}|${mind.evalDay}|${Object.keys(state.disciples).sort().join(',')}`;
   if (state.blocksKey !== key) {
     state.blocksKey = key;
-    state.masterBlocks = computeMasterBlocks(w, state, clock.day);
+    state.masterBlocks = computeBondBlocks(w, state, clock.day);
   }
 }
 
@@ -353,15 +353,28 @@ function stepBow(game: Game, now: number, gm: number, state: BondState, life: Li
 }
 
 /**
- * #559「師父日程加『指點』時段，會主動去弟子練功的地方」：弟子日程裡有練功的時段，師父那時候如果是留白或本來就在指點，
- * 就加一段「指點徒弟」（coach，在武館）。留白至少留 2 小時（#562 W3-5）。
+ * 日程加的時段（人物 id → 時段，排在心念時段前面）：
+ * - 門規「辰時練功」：弟子每天辰時（07:00–09:00）到武館練功（rules.json 的 do）。
+ * - #559「師父日程加『指點』時段，會主動去弟子練功的地方」：弟子日程裡有練功的時段，師父那時候如果是留白或本來就在指點，
+ *   就加一段「指點徒弟」（coach，在武館）。留白至少留 2 小時（#562 W3-5）。
  */
-export function computeMasterBlocks(w: WuxiaState, state: BondState, day: number): BondState['masterBlocks'] {
+export function computeBondBlocks(w: WuxiaState, state: BondState, day: number): BondState['masterBlocks'] {
   const out: BondState['masterBlocks'] = {};
-  const masters = [...new Set(Object.values(state.disciples).map((d) => d.master))].sort();
-  if (masters.length === 0) return out;
+  const disciples = Object.keys(state.disciples).sort();
+  if (disciples.length === 0) return out;
   const mind = w.enabled[W05_MIND] ? { blocks: mindBlocks(w), closed: closedOverlays(w) } : undefined;
   const ctx: SchedCtx = schedCtx(w.enabled, day, mind);
+  const drill = RULE_BY_ID['morning-drill'];
+  if (drill?.from !== undefined && drill.to !== undefined) {
+    const blocks: Record<string, ScheduleBlock[]> = { ...(ctx.blocks ?? {}) };
+    for (const d of disciples) {
+      const b = { from: drill.from, to: drill.to, label: `${drill.name}（門規）`, do: [...(drill.do ?? [])] };
+      out[d] = [b];
+      blocks[d] = [b, ...(blocks[d] ?? [])];
+    }
+    ctx.blocks = blocks;
+  }
+  const masters = [...new Set(Object.values(state.disciples).map((d) => d.master))].sort();
   for (const m of masters) {
     const ds = disciplesOf(state, m);
     const take = new Array<boolean>(1440).fill(false);
@@ -382,11 +395,10 @@ export function computeMasterBlocks(w: WuxiaState, state: BondState, day: number
       if (!take[t]) continue;
       let e = t;
       while (e < 1440 && take[e]) e++;
-      blocks.push({ from: t, to: e, label: '指點徒弟', do: [COACH_ACT] } as ScheduleBlock);
+      blocks.push({ from: t, to: e, label: '指點徒弟', do: [COACH_ACT] });
       t = e;
     }
-    if (blocks.length) out[m] = blocks as any;
+    if (blocks.length) out[m] = [...blocks, ...(out[m] ?? [])];
   }
   return out;
 }
-

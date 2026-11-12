@@ -3,7 +3,8 @@
 
 格式同上游 data/spritesheets/f1.ts：每人 96×128（3 欄 × 4 列，32×32），列序 down、left、right、up。
 W4（#556）：每人再加第 5 列「打樁」2 格（面向右出拳，左右手交替），每人變 96×160。
-8 人排成 4×2，輸出 public/wuxia/characters/folk.png（384×320）。前 4 列跟 W1 逐像素相同。
+W7（#559）：每人再加第 6 列「跪拜」1 格（面向右，跪地彎腰行禮），每人變 96×192。
+8 人排成 4×2，輸出 public/wuxia/characters/folk.png（384×384）。前 5 列跟 W4 逐像素相同。
 畫法：4 倍大小用多邊形／橢圓畫，外加一圈淡墨描邊（同本專案 STYLE-SCENE「人物描邊」），再縮成 32px。
 全部原創，不描任何既有作品；只用 Pillow、numpy、scipy。
 """
@@ -37,7 +38,7 @@ def shade(c, k):
     return tuple(max(0, min(255, int(v * k))) for v in c[:3]) + (255,)
 
 
-def draw_figure(spec, direction, step, punch=None):
+def draw_figure(spec, direction, step, punch=None, kneel=False):
     _, _, robe, inner, pants, hair, style, long_robe, acc, size = spec
     im = Image.new("RGBA", (F, F), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
@@ -59,9 +60,11 @@ def draw_figure(spec, direction, step, punch=None):
     sgn = -1 if direction == "left" else 1
     half_w = (5.6 if not side else 4.2) * S * k
 
-    # 腿／腳
+    # 腿／腳（W7 跪拜：腿另外畫在跪姿裡）
     swing = (-1, 0, 1)[step]
-    if side:
+    if kneel:
+        pass
+    elif side:
         for s_, col in ((-swing, shade(pants, 0.8)), (swing, pants)):
             fx = cx + s_ * 2.6 * S * sgn
             d.rectangle([fx - 1.6 * S, hip_y - 1 * S, fx + 1.6 * S, foot - 1 * S], fill=col)
@@ -181,6 +184,22 @@ def draw_figure(spec, direction, step, punch=None):
         if acc == "beard":
             d.polygon([(hx + sgn * 1.0 * S, ey + 2.6 * S), (hx + sgn * head_r * 0.95, ey + 2.6 * S), (hx + sgn * head_r * 0.5, head_cy + head_r + 4.2 * S)], fill=(236, 234, 228, 255))
 
+    if kneel:
+        # W7 跪拜：上半身（含袍）以下襬為軸向前（右）彎 30°、往下沉到跪地的高度；小腿貼地、腳在身後
+        hem = foot - (1.2 * S if long_robe else leg_h - 0.5 * S)
+        body = im.rotate(-30, resample=Image.BICUBIC, center=(cx, hem))
+        out = Image.new("RGBA", (F, F), (0, 0, 0, 0))
+        dk = ImageDraw.Draw(out)
+        knee_x = cx + 2.6 * S
+        ground = foot - 0.6 * S
+        # 小腿（往後貼地）與腳
+        dk.rectangle([cx - 6.5 * S, ground - 3.0 * S, knee_x, ground], fill=shade(pants, 0.85))
+        dk.ellipse([cx - 8.6 * S, ground - 2.6 * S, cx - 5.4 * S, ground + 0.4 * S], fill=INK)
+        # 大腿（膝蓋著地）
+        dk.ellipse([knee_x - 2.4 * S, ground - 3.4 * S, knee_x + 1.6 * S, ground], fill=pants)
+        sink = int(leg_h * 0.75)
+        out.alpha_composite(body, (0, sink))
+        im = out
     # 淡墨描邊
     a = np.asarray(im)[..., 3] > 30
     ring = binary_dilation(a, iterations=int(1.1 * S)) & ~a
@@ -189,7 +208,7 @@ def draw_figure(spec, direction, step, punch=None):
     return Image.fromarray(arr, "RGBA").resize((32, 32), Image.LANCZOS)
 
 
-BLOCK_H = 160  # W4：4 列走路 + 1 列打樁
+BLOCK_H = 192  # W4：4 列走路 + 1 列打樁；W7：+ 1 列跪拜
 
 
 def main():
@@ -204,14 +223,18 @@ def main():
         for col in range(2):
             fr = draw_figure(spec, "right", 1, punch=col)
             sheet.alpha_composite(fr, (ox + col * 32, oy + 4 * 32))
+        # W7 跪拜：第 6 列 1 格
+        fr = draw_figure(spec, "right", 1, kneel=True)
+        sheet.alpha_composite(fr, (ox, oy + 5 * 32))
     os.makedirs(os.path.join(ROOT, "public/wuxia/characters"), exist_ok=True)
     sheet.save(os.path.join(ROOT, "public/wuxia/characters/folk.png"), optimize=True)
     big = sheet.resize((sheet.width * 3, sheet.height * 3), Image.NEAREST)
     bg = Image.new("RGBA", big.size, (233, 223, 197, 255))
     bg.alpha_composite(big)
     # W4：預覽圖改存 docs/wuxia/w04/（W1 的 docs/wuxia/w01/folk-sheet-3x.png 保留當時的 4 列版本）
-    os.makedirs(os.path.join(ROOT, "docs/wuxia/w04"), exist_ok=True)
-    bg.convert("RGB").save(os.path.join(ROOT, "docs/wuxia/w04/folk-sheet-3x.png"), optimize=True)
+    # W7：再改存 docs/wuxia/w07/（W4 的 5 列版本保留）
+    os.makedirs(os.path.join(ROOT, "docs/wuxia/w07"), exist_ok=True)
+    bg.convert("RGB").save(os.path.join(ROOT, "docs/wuxia/w07/folk-sheet-3x.png"), optimize=True)
     print("folk.png %dx%d," % sheet.size, len(FOLK), "characters")
 
 

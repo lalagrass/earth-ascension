@@ -223,3 +223,25 @@ body.wuxia-skin .button img {
 .wuxia-thought-fill { position: absolute; left: 0; top: 0; bottom: 0; background: #b5655a; }
 .wuxia-thought-value { text-align: right; font-variant-numeric: tabular-nums; }
 .wuxia-thought-why { font-size: 0.8rem; opacity: 0.9; margin-left: 0.2rem; }
+/* W7（#559）：「關係」分頁、武館面板 */
+.wuxia-tabs { margin-top: 0.75rem; }
+.wuxia-tab-bar { display: flex; gap: 0.3rem; }
+.wuxia-tab-bar button { pointer-events: auto; padding: 0.15rem 0.8rem; border: 2px solid #8a6a43; background: rgba(50, 35, 25, 0.5); color: #e9dcc0; font-size: 0.95rem; }
+.wuxia-tab-bar button.on { background: #8a6a43; color: #fff6e0; font-weight: bold; }
+.wuxia-bond-panel { margin-top: 0.5rem; padding: 0.5rem 0.75rem; background: rgba(35, 40, 50, 0.55); border: 2px solid #8a6a43; font-size: 0.9rem; line-height: 1.3; }
+.wuxia-bond-master { margin-bottom: 0.3rem; }
+.wuxia-bond-row { margin: 0.35rem 0 0.5rem; padding-bottom: 0.3rem; border-bottom: 1px dashed rgba(138, 106, 67, 0.6); }
+.wuxia-bond-name { font-weight: bold; margin-bottom: 0.1rem; }
+.wuxia-bond-title { margin-left: 0.4rem; padding: 0 0.3rem; font-size: 0.75rem; font-weight: normal; background: #b3342a; color: #fff6e0; border-radius: 2px; }
+.wuxia-bond-axis { display: grid; grid-template-columns: 2.4rem 1fr 2.2rem; align-items: center; gap: 0.35rem; font-size: 0.8rem; }
+.wuxia-bond-bar { height: 0.5rem; background: rgba(0, 0, 0, 0.35); border: 1px solid #8a6a43; position: relative; }
+.wuxia-bond-mid { position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: #e9dcc0; opacity: 0.6; }
+.wuxia-bond-fill { position: absolute; top: 0; bottom: 0; background: #b5655a; }
+.wuxia-bond-respect .wuxia-bond-fill { background: #c9a14a; }
+.wuxia-bond-rival .wuxia-bond-fill { background: #5f8fb0; }
+.wuxia-bond-fill.neg { background: #6b6b6b; }
+.wuxia-bond-value { text-align: right; font-variant-numeric: tabular-nums; }
+.wuxia-bond-why { font-size: 0.75rem; opacity: 0.9; margin-top: 0.1rem; }
+.wuxia-dojo-panel { position: absolute; right: 0.5rem; bottom: 0.5rem; z-index: 10; max-width: 46%; background: rgba(245, 236, 214, 0.92); color: #3b2a1a; border: 2px solid #8a6a43; font-size: 0.8rem; line-height: 1.3; padding: 0.3rem 0.5rem; }
+.wuxia-dojo-name { font-size: 1rem; font-weight: bold; color: #7a2a20; letter-spacing: 0.1em; }
+@media (max-width: 640px) { .wuxia-dojo-panel { font-size: 0.7rem; max-width: 60%; } }

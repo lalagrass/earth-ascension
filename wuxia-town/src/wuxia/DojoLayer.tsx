@@ -1,4 +1,5 @@
 // 武俠小鎮 W4（#556）：武館重開後院子裡的練功器具（木人樁、石鎖、梅花樁、教頭位、沙袋）與門口的「開館」紅綢。
+// W7（#559）：周教頭收第一個徒弟後，門楣上掛匾（館名依 seed 選，見 data/wuxia/dojo-names.json）——把門口那一格換成「有匾」的樣子。
 // 全部用 Pixi Graphics 程式畫（不需要素材檔）；位置來自 data/wuxia/objects.json 的 w04-dojo 物件。w04-dojo 關閉時不畫（武館維持 W1 的封門樣子）。
 import { Container, Graphics, Text } from '@pixi/react';
 import * as PIXI from 'pixi.js';
@@ -130,16 +131,42 @@ function spots(tileDim: number): Array<{ id: string; x: number; y: number }> {
   return out;
 }
 
-export function DojoLayer(props: { tileDim: number; open: boolean }) {
+/** W7：門楣上的匾（黑底金邊，名號另用 Text 寫上去）。 */
+function drawPlaque(g: PIXI.Graphics) {
+  g.beginFill(0x000000, 0.25).drawRect(1235, 806, 92, 30).endFill();
+  g.lineStyle(2.5, 0xc9a14a, 1);
+  g.beginFill(0x2a1c12).drawRect(1232, 802, 92, 30).endFill();
+  g.lineStyle(1, 0x8a6a2a, 1);
+  g.drawRect(1236, 806, 84, 22);
+  g.lineStyle(0);
+  // 掛繩
+  g.lineStyle(1.5, INK, 0.9);
+  g.moveTo(1244, 802).lineTo(1256, 792).lineTo(1300, 792).lineTo(1312, 802);
+  g.lineStyle(0);
+}
+
+export function DojoLayer(props: { tileDim: number; open: boolean; plaque?: string }) {
   const list = useMemo(() => spots(props.tileDim), [props.tileDim]);
   const draw = useCallback(
     (g: PIXI.Graphics) => {
       g.clear();
       if (!props.open) return;
       drawGate(g);
+      if (props.plaque) drawPlaque(g);
       for (const s of list) DRAW[s.id]?.(g, s.x, s.y);
     },
-    [list, props.open],
+    [list, props.open, props.plaque],
+  );
+  const plaqueStyle = useMemo(
+    () =>
+      new PIXI.TextStyle({
+        fontFamily: LABEL_FONT,
+        fontSize: 15,
+        fontWeight: '700',
+        fill: '#e8c15a',
+        letterSpacing: 3,
+      }),
+    [],
   );
   const style = useMemo(
     () =>
@@ -157,6 +184,7 @@ export function DojoLayer(props: { tileDim: number; open: boolean }) {
     <Container eventMode="none">
       <Graphics draw={draw} />
       <Text text="開館" x={1279} y={872} anchor={{ x: 0.5, y: 0.5 }} style={style} />
+      {props.plaque && <Text text={props.plaque} x={1278} y={817} anchor={{ x: 0.5, y: 0.5 }} style={plaqueStyle} />}
     </Container>
   );
 }

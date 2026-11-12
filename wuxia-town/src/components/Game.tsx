@@ -17,6 +17,8 @@ import { skinEnabled, worldClock } from '../wuxia/skin.ts';
 import { dayTint } from '../../convex/wuxia/clock.ts';
 // WUXIA-PATCH(W3): 鎮況面板（每個地點現在有誰）
 import { TownStatus } from '../wuxia/TownStatus.tsx';
+// WUXIA-PATCH(W7): 武館面板
+import { DojoPanel } from '../wuxia/DojoPanel.tsx';
 import { lifeOf } from '../wuxia/life.ts';
 
 export const SHOW_DEBUG_UI = !!import.meta.env.VITE_SHOW_DEBUG_UI;
@@ -70,6 +72,8 @@ export default function Game() {
             players={[...game.world.players.values()]}
             nameOf={(id) => game.playerDescriptions.get(id as GameId<'players'>)?.name ?? id}
           />
+          {/* WUXIA-PATCH(W7): 武館面板（館名、師父、弟子、入門日；w07-bond 開啟且武館已開時） */}
+          <DojoPanel wuxia={game.world.wuxia} />
           <div className="absolute inset-0">
             <div className="container">
               {/* WUXIA-PATCH(W1): 換皮時底色改紙色 */}

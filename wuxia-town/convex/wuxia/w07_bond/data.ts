@@ -36,7 +36,7 @@ export const BONDS = bondsJson as unknown as {
   bowMaxNeed: number;
 };
 export const DOJO_NAMES: string[] = (dojoNamesJson as any).names;
-export type RuleDef = { id: string; name: string; text: string; check: string; from?: number; to?: number; minMinutes?: number };
+export type RuleDef = { id: string; name: string; text: string; check: string; from?: number; to?: number; minMinutes?: number; do?: string[] };
 export const RULES: RuleDef[] = (rulesJson as any).rules;
 export const RULE_BY_ID: Record<string, RuleDef> = Object.fromEntries(RULES.map((r) => [r.id, r]));
 
@@ -89,7 +89,7 @@ export type BondState = {
   /** bonds[A][B]＝A 對 B 的三軸（#559「快取在 wuxia.bonds」；放在元素狀態裡，見 DEVIATIONS W7-1） */
   bonds: Record<string, Record<string, Bond>>;
   disciples: Record<string, Disciple>;
-  /** 師父日程加的「指點徒弟」時段（人物 id → 時段）；w03-life 的日程讀它 */
+  /** 日程加的時段（人物 id → 時段）：弟子的「辰時練功（門規）」、師父的「指點徒弟」；w03-life 的日程讀它 */
   masterBlocks: Record<string, Array<{ from: number; to: number; label: string; do: string[] }>>;
   /** masterBlocks 是依哪一天、哪一次心念評估、哪些弟子算的（變了就重算） */
   blocksKey?: string;

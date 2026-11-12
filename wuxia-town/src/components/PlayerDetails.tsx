@@ -11,6 +11,9 @@ import { LifePanel } from '../wuxia/LifePanel';
 import { SkillPanel } from '../wuxia/SkillPanel';
 // WUXIA-PATCH(W5): w05-mind 的心事欄
 import { MindPanel } from '../wuxia/MindPanel';
+// WUXIA-PATCH(W7): 「關係」分頁
+import { BondPanel, DetailTabs } from '../wuxia/BondPanel';
+import { useState as useWuxiaState } from 'react';
 import { dojoOf } from '../wuxia/dojo';
 import { lifeOf } from '../wuxia/life';
 import { SelectElement } from './Player';
@@ -40,6 +43,8 @@ export default function PlayerDetails({
   historicalTime?: number;
 }) {
   const humanTokenIdentifier = useQuery(api.world.userStatus, { worldId });
+  // WUXIA-PATCH(W7): 人物詳情的分頁（概況／關係）
+  const [wuxiaTab, setWuxiaTab] = useWuxiaState<'main' | 'bond'>('main');
 
   const players = [...game.world.players.values()];
   const humanPlayer = players.find((p) => p.human === humanTokenIdentifier);
@@ -165,18 +170,29 @@ export default function PlayerDetails({
       </div>
       {/* WUXIA-PATCH(W1): 「在茶館附近」（w01-skin 開啟時，依 data/wuxia/places.json） */}
       <PlayerCard skin={skinEnabled(game.world)} position={player.position} />
-      {/* WUXIA-PATCH(W3): w03-life 的生活面板 */}
-      <LifePanel
-        life={lifeOf(game.world)}
-        playerId={player.id}
-        clock={worldClock(game.world, historicalTime ?? Date.now())}
-        enabled={game.world.wuxia?.enabled}
+      {/* WUXIA-PATCH(W7): 分頁「概況」（W3–W5 的面板）／「關係」（w07-bond 開啟時才有分頁鈕） */}
+      <DetailTabs
         wuxia={game.world.wuxia}
+        tab={wuxiaTab}
+        onTab={setWuxiaTab}
+        bond={<BondPanel wuxia={game.world.wuxia} playerId={player.id} />}
+        main={
+          <>
+            {/* WUXIA-PATCH(W3): w03-life 的生活面板 */}
+            <LifePanel
+              life={lifeOf(game.world)}
+              playerId={player.id}
+              clock={worldClock(game.world, historicalTime ?? Date.now())}
+              enabled={game.world.wuxia?.enabled}
+              wuxia={game.world.wuxia}
+            />
+            {/* WUXIA-PATCH(W4): w04-dojo 的技能面板 */}
+            <SkillPanel dojo={dojoOf(game.world)} life={lifeOf(game.world)} playerId={player.id} />
+            {/* WUXIA-PATCH(W5): w05-mind 的心事欄（心念＋強度＋因為） */}
+            <MindPanel wuxia={game.world.wuxia} playerId={player.id} />
+          </>
+        }
       />
-      {/* WUXIA-PATCH(W4): w04-dojo 的技能面板 */}
-      <SkillPanel dojo={dojoOf(game.world)} life={lifeOf(game.world)} playerId={player.id} />
-      {/* WUXIA-PATCH(W5): w05-mind 的心事欄（心念＋強度＋因為） */}
-      <MindPanel wuxia={game.world.wuxia} playerId={player.id} />
       {canInvite && (
         <a
           className={
