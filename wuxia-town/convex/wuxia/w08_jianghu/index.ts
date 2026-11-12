@@ -52,7 +52,7 @@ import { xiakeEvent } from './events/xiake';
 import { xiaobiEvent } from './events/xiaobi';
 import { storyCandidate, storyEvent } from './events/story';
 import { chronicleTemplateDay } from './chronicle';
-import { zhNumber } from '../w06_spar/narration';
+import { zhCount } from './data';
 
 export { W08_JIANGHU } from './data';
 
@@ -144,7 +144,7 @@ function birthRumors(c: Ctx) {
     const r = newRumor(c, 'wealth', { goods });
     c.st.born[`restock:${c.day}`] = r.id;
     for (const cid of witnessesAt(c, 'pharmacy', ['he-langzhong'])) hear(c, cid, r, 'saw');
-    chronicle(c, { kind: 'restock', text: `藥鋪進了${zhNumber(goods)}箱藥材` });
+    chronicle(c, { kind: 'restock', text: `藥鋪進了${zhCount(goods)}箱藥材` });
   }
 }
 

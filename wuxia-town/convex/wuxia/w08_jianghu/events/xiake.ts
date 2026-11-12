@@ -1,7 +1,7 @@
 // 武俠小鎮 W8 事件「外地俠客路過」（#560）：一位外地俠客（暫時人物，最多 1 位）從城門進鎮、住茶館 2–4 日，
 // 每天去武館找人切磋（W6 判定），最後一天離開。每場切磋產生一則傳聞，旁觀的人親眼看到。
 import { JIANGHU, cidName, rollInt, rollSkills } from '../data';
-import { zhNumber } from '../../w06_spar/narration';
+import { zhCount } from '../data';
 import {
   Ctx,
   EventImpl,
@@ -31,7 +31,11 @@ const P = JIANGHU.places;
 
 export const xiakeEvent: EventImpl = {
   start(c, ev) {
-    const name = DEF.names[Math.floor(c.game.rng() * DEF.names.length)];
+    // 沒來過的人優先（名字都用過了才重複）
+    const used = new Set(c.st.history.filter((h) => h.kind === 'xiake').map((h) => h.outcome.name));
+    const pool = DEF.names.filter((n: string) => !used.has(n));
+    const list = pool.length ? pool : DEF.names;
+    const name = list[Math.floor(c.game.rng() * list.length)];
     const stay = rollInt(() => c.game.rng(), DEF.stayDays);
     const f = addFigure(c, ev, {
       kind: 'xiake',
@@ -147,11 +151,11 @@ export const xiakeEvent: EventImpl = {
       else groups.push({ opp: b.opp, result: b.result, n: 1 });
     }
     const verb = (g: { opp: string; result: string; n: number }) =>
-      `${zhNumber(g.n)}回${g.result === 'town' ? `敗給${cidName(g.opp)}` : g.result === 'xiake' ? `勝了${cidName(g.opp)}` : `與${cidName(g.opp)}打平`}`;
+      `${zhCount(g.n)}回${g.result === 'town' ? `敗給${cidName(g.opp)}` : g.result === 'xiake' ? `勝了${cidName(g.opp)}` : `與${cidName(g.opp)}打平`}`;
     const text =
       real.length === 0
-        ? `外地俠客${d.name}在茶館住了${zhNumber(d.stay)}日，沒找到人切磋就走了`
-        : `外地俠客${d.name}路過山腳鎮，住了${zhNumber(d.stay)}日，到武館討教${groups.map(verb).join('、')}`;
+        ? `外地俠客${d.name}在茶館住了${zhCount(d.stay)}日，沒找到人切磋就走了`
+        : `外地俠客${d.name}路過山腳鎮，住了${zhCount(d.stay)}日，到武館討教${groups.map(verb).join('、')}`;
     void setAct;
     return { text, outcome: { name: d.name, stay: d.stay, bouts: d.bouts }, rumors };
   },

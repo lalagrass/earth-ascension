@@ -4,7 +4,7 @@ import { COACH_ID } from '../../w04_dojo/data';
 import { W07_BOND } from '../../w07_bond/data';
 import type { BondState } from '../../w07_bond/data';
 import { JIANGHU } from '../data';
-import { zhNumber } from '../../w06_spar/narration';
+import { zhCount } from '../data';
 import {
   Ctx,
   EventImpl,
@@ -160,7 +160,7 @@ export const xiaobiEvent: EventImpl = {
     const rumor = newRumor(c, 'dojo', { feat: 'xiaobi', coach: COACH_ID, disciples: dis.length, winner: winner ?? COACH_ID }, ev.id);
     for (const cid of [...d.fighters, ...d.spectators].sort()) hear(c, cid, rumor, 'saw');
     return {
-      text: `武館小比：${rumor.text}，圍觀${zhNumber(d.spectators.length)}人`,
+      text: `武館小比：${rumor.text}，圍觀${zhCount(d.spectators.length)}人`,
       outcome: { held: true, mode: d.mode, results: d.results, winner, spectators: d.spectators },
       rumors: [rumor.id],
     };

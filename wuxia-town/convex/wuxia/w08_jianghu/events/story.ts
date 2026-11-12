@@ -2,7 +2,7 @@
 // 那天他在茶館說書時，正在聽書的人得到這則傳聞（老韓的版本，再傳一手、可能走樣）。
 import { JIANGHU, JianghuState } from '../data';
 import { EventImpl, heardOf, hear, people } from '../common';
-import { zhNumber } from '../../w06_spar/narration';
+import { zhCount } from '../data';
 
 const DEF = JIANGHU.events.story;
 
@@ -46,7 +46,7 @@ export const storyEvent: EventImpl = {
     const mine = heardOf(c.st, DEF.teller, d.rid);
     const tale = mine?.text ?? '';
     const text = d.listeners.length
-      ? `老韓在茶館說了新段子「${tale}」，${zhNumber(d.listeners.length)}人聽了`
+      ? `老韓在茶館說了新段子「${tale}」，${zhCount(d.listeners.length)}人聽了`
       : `老韓備了新段子「${tale}」，那天沒人來聽`;
     return { text, outcome: { rid: d.rid, listeners: d.listeners, tale }, rumors: [] };
   },

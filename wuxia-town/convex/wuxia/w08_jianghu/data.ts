@@ -110,9 +110,15 @@ export type TrailEntry = {
 
 export type OutRumor = { rid: number; about: RumorAbout; facts: Facts; text: string; day: number; gm: number; from: string };
 
+/** 數量（量詞前）：2 說「兩」，其他用中文數字（0–99）。 */
+export function zhCount(v: number): string {
+  const x = Math.max(0, Math.min(99, Math.round(v)));
+  return x === 2 ? '兩' : zhNumber(x);
+}
+
 /** 規則產生的傳聞文字（names 已含在 cidName）。 */
 export function rumorText(about: RumorAbout, f: Facts): string {
-  const n = (v: number | undefined) => zhNumber(Math.max(0, Math.min(99, v ?? 0)));
+  const n = (v: number | undefined) => zhCount(v ?? 0);
   switch (about) {
     case 'wealth':
       return `藥鋪新進了${n(f.goods)}箱藥材`;
@@ -120,7 +126,8 @@ export function rumorText(about: RumorAbout, f: Facts): string {
       const coach = cidName(f.coach);
       const dis = (f.disciples ?? 0) > 0 ? `，門下已有${n(f.disciples)}個徒弟` : '';
       if (f.feat === 'plaque') return `武館掛上「${f.dojoName ?? '武館'}」的匾${dis}，${coach}寶刀未老`;
-      if (f.feat === 'xiaobi') return `武館辦小比，${cidName(f.winner)}拔了頭籌${dis}`;
+      if (f.feat === 'xiaobi')
+        return f.winner === f.coach ? `武館辦小比，${coach}親自下場考較${dis ? `，門下${n(f.disciples)}個徒弟都不是對手` : '，沒人接得住'}` : `武館辦小比，${cidName(f.winner)}拔了頭籌${dis}`;
       return `${coach}把破武館重新開了${dis}`;
     }
     case 'bandit':
