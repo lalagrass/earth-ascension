@@ -7,7 +7,7 @@
 | 檔案 | 來源 | 作者 | 授權 |
 |---|---|---|---|
 | `tiles/town.jpg` | W1 程式烘焙：`tools/wuxia/bake-tiles.py`（`tools/wuxia/build-map.sh` 重產）。地面、河、街、城門、石橋、井、招牌、燈籠、封條為程式繪製；房舍、樹、竹、石、牆面、草、地面材質取自本專案自製水彩素材的縮小副本 `tools/wuxia/art-src/`（見下表） | earth-ascension 專案（Grok） | 本專案自製素材（與 repo 同一授權，非第三方） |
-| `characters/folk.png` | W1 程式繪製：`tools/wuxia/bake-folk.py`（8 個古裝人物：布衣男、短打、布衣女、老人、少年、長衫、郎中、說書人；四方向各 3 格；W4 加第 5 列「打樁」2 格，同一支程式產生） | earth-ascension 專案（Grok） | 本專案自製（純程式產生，無外部素材） |
+| `characters/folk.png` | W1 程式繪製：`tools/wuxia/bake-folk.py`（8 個古裝人物：布衣男、短打、布衣女、老人、少年、長衫、郎中、說書人；四方向各 3 格；W4 加第 5 列「打樁」2 格；W7 加第 6 列「跪拜」1 格，圖變成 384×384，前 5 列逐像素不變；同一支程式產生） | earth-ascension 專案（Grok） | 本專案自製（純程式產生，無外部素材） |
 | `ui/about.svg` | W1 手寫 SVG（「關於」與網頁圖示：卷軸） | earth-ascension 專案（Grok） | 本專案自製 |
 | `ui/close.svg` | W1 手寫 SVG（關閉：墨筆叉） | earth-ascension 專案（Grok） | 本專案自製 |
 | `ui/join.svg` | W1 手寫 SVG（進鎮／離開：人形） | earth-ascension 專案（Grok） | 本專案自製 |
@@ -28,3 +28,5 @@
 招牌字（茶、藥、鐵、山腳鎮、武館）是烘焙時用系統的 Noto Serif CJK 字型（SIL OFL）畫進圖裡，字型檔本身不進 repo。
 
 W4 的練功器具（`src/wuxia/DojoLayer.tsx`）與 W6 的切磋畫面（`src/wuxia/SparLayer.tsx`：勢點、擊中白光、「中！」、旁白框）都是 Pixi Graphics 程式畫的，沒有新增素材檔。W6 的 GIF 編碼用 devDependencies `gifenc`、`pngjs`（MIT，只在截圖工具裡用，不進前端）。
+
+W7 的武館匾額（`src/wuxia/DojoLayer.tsx` 的 `drawPlaque`：木框、金邊、深底）是 Pixi Graphics 程式畫的，匾上的字用畫面字型即時排出；名號從 `data/wuxia/dojo-names.json`（自擬的 8 個名字）依 seed 選。關係分頁與武館面板只用 CSS，沒有新增素材檔。

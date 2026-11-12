@@ -83,6 +83,11 @@
 | W6 | `src/components/PixiGame.tsx` | 人物上面疊 `src/wuxia/SparLayer`（勢點、擊中白光與「中！」、旁白框），w06-spar 關閉時不畫 | #558「畫面」 |
 | W6 | `package.json`（JSON 無法加註解） | `wuxia:spar-sim`、`wuxia:spar-report`、`wuxia:spar-diff` 指令；devDependencies 加 `gifenc`（MIT）、`pngjs`（MIT）、`@types/pngjs`（MIT） | #558 驗收工具；`wuxia:shot --gif` 編 GIF |
 | W6 | `package-lock.json`（JSON） | 跟著上面三個 devDependencies 更新 | 同上 |
+| W7 | `convex/aiTown/agent.ts` | 接受邀請前先問 `mustAcceptInvite`（門規「尊師」：師父邀請一定接受、不擲接受機率）；拒絕邀請後呼叫 `inviteRejected`（邀請人記一筆「被拒」，換算親近 −） | #559 規則與「被拒絕邀請 → 親近 −」；w07-bond 關閉時兩個掛鉤都不做事、不擲多餘的 rng，`--off w07-bond` ＝ W6 hash |
+| W7 | `src/components/PixiGame.tsx` | 武館門口畫匾（`DojoLayer` 的 `plaque`） | #559「武館掛匾」 |
+| W7 | `src/components/Game.tsx` | 右側加武館面板 `DojoPanel`（名號、師父、弟子名單） | #559「武館頁顯示名號、師父、弟子名單」 |
+| W7 | `src/components/PlayerDetails.tsx` | 人物詳情分成「概況／關係」兩個分頁（`DetailTabs`） | #559「人物詳情新增『關係』分頁」 |
+| W7 | `package.json`（JSON 無法加註解） | `wuxia:bond-report`、`wuxia:bond-trace`、`wuxia:bond-diff` 指令 | #559 驗收工具 |
 
 ## 上游刻意保留不改的隨機／時間
 
