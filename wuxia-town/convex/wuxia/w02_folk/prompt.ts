@@ -15,6 +15,8 @@ export function folkSystemPrompt(opts: {
   memoryWithOtherPlayer: boolean;
   /** W5（#557）：「想學武（強度 70）、想變強（強度 50）」；w05-mind 關閉或沒有心念時不給 */
   thoughts?: string;
+  /** W8：最近聽說的傳聞（w08-jianghu） */
+  rumors?: string;
 }): string {
   const { player, otherPlayer, agent, otherAgent } = opts;
   const me = profileByName(player.name);
@@ -35,6 +37,7 @@ export function folkSystemPrompt(opts: {
   }
   // W5：心念只影響「說什麼」（#557「跟 LLM 的接法」）
   if (opts.thoughts) parts.push(renderPrompt('thoughts', { thoughts: opts.thoughts }));
+  if (opts.rumors) parts.push(renderPrompt('rumors', { rumors: opts.rumors }));
   parts.push(renderPrompt('rules', { name: player.name }));
   parts.push(renderPrompt(opts.stage, { other: otherPlayer.name }));
   if (opts.stage === 'start' && opts.memoryWithOtherPlayer)

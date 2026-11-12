@@ -14,7 +14,9 @@ export type BudgetKind =
   | 'memory.importance'
   | 'memory.reflection'
   // W6：切磋旁白
-  | 'spar.narration';
+  | 'spar.narration'
+  // W8：亥時鎮誌改寫
+  | 'jianghu.chronicle';
 
 /** 未設定、空字串、非正數 → 不設上限（跟上游行為一致）。 */
 export function parseTokenCap(raw: string | undefined): number | null {

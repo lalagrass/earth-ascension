@@ -325,6 +325,10 @@ export async function runAgentOperation(ctx: MutationCtx, operation: string, arg
     case 'wuxiaSparNarrate':
       reference = internal.wuxia.w06_spar.narrate.sparNarrate;
       break;
+    // WUXIA-PATCH(W8): 亥時鎮誌改寫（convex/wuxia/w08_jianghu/rewrite.ts）
+    case 'wuxiaChronicleRewrite':
+      reference = internal.wuxia.w08_jianghu.rewrite.chronicleRewrite;
+      break;
     default:
       throw new Error(`Unknown operation: ${operation}`);
   }

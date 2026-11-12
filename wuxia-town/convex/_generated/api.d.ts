@@ -78,6 +78,15 @@ import type * as wuxia_w06_spar_duel from "../wuxia/w06_spar/duel.js";
 import type * as wuxia_w06_spar_index from "../wuxia/w06_spar/index.js";
 import type * as wuxia_w06_spar_narrate from "../wuxia/w06_spar/narrate.js";
 import type * as wuxia_w06_spar_narration from "../wuxia/w06_spar/narration.js";
+import type * as wuxia_w08_jianghu_chronicle from "../wuxia/w08_jianghu/chronicle.js";
+import type * as wuxia_w08_jianghu_common from "../wuxia/w08_jianghu/common.js";
+import type * as wuxia_w08_jianghu_data from "../wuxia/w08_jianghu/data.js";
+import type * as wuxia_w08_jianghu_events_bandit from "../wuxia/w08_jianghu/events/bandit.js";
+import type * as wuxia_w08_jianghu_events_story from "../wuxia/w08_jianghu/events/story.js";
+import type * as wuxia_w08_jianghu_events_xiake from "../wuxia/w08_jianghu/events/xiake.js";
+import type * as wuxia_w08_jianghu_events_xiaobi from "../wuxia/w08_jianghu/events/xiaobi.js";
+import type * as wuxia_w08_jianghu_index from "../wuxia/w08_jianghu/index.js";
+import type * as wuxia_w08_jianghu_rewrite from "../wuxia/w08_jianghu/rewrite.js";
 
 import type {
   ApiFromModules,
@@ -156,6 +165,15 @@ declare const fullApi: ApiFromModules<{
   "wuxia/w06_spar/index": typeof wuxia_w06_spar_index;
   "wuxia/w06_spar/narrate": typeof wuxia_w06_spar_narrate;
   "wuxia/w06_spar/narration": typeof wuxia_w06_spar_narration;
+  "wuxia/w08_jianghu/chronicle": typeof wuxia_w08_jianghu_chronicle;
+  "wuxia/w08_jianghu/common": typeof wuxia_w08_jianghu_common;
+  "wuxia/w08_jianghu/data": typeof wuxia_w08_jianghu_data;
+  "wuxia/w08_jianghu/events/bandit": typeof wuxia_w08_jianghu_events_bandit;
+  "wuxia/w08_jianghu/events/story": typeof wuxia_w08_jianghu_events_story;
+  "wuxia/w08_jianghu/events/xiake": typeof wuxia_w08_jianghu_events_xiake;
+  "wuxia/w08_jianghu/events/xiaobi": typeof wuxia_w08_jianghu_events_xiaobi;
+  "wuxia/w08_jianghu/index": typeof wuxia_w08_jianghu_index;
+  "wuxia/w08_jianghu/rewrite": typeof wuxia_w08_jianghu_rewrite;
 }>;
 
 /**

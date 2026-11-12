@@ -37,7 +37,12 @@ export type MemoryKind =
   | 'apprenticed'
   | 'took_disciple'
   | 'violated'
-  | 'disciple_violated';
+  | 'disciple_violated'
+  // W8（#560）：聽說傳聞（what＝傳聞類別 dojo／wealth／bandit／xiake，n＝傳聞 id，other＝誰說的；親眼看到時沒有 other）、
+  // 跟外人交手（what＝外人名字，n＝1 贏／−1 輸／0 平）、藥鋪被搶（何郎中記，n＝箱數）
+  | 'rumor'
+  | 'fought_outsider'
+  | 'robbed';
 
 /** #557：`{t, kind, other?, place?, weight}`；另加 id（全世界唯一、遞增，給 --drop-memory 用）與 n（數量，例如練功分鐘）。 */
 export type Memory = {
@@ -96,7 +101,8 @@ export type MindState = {
 type Cond =
   | { all: Cond[] }
   | { any: Cond[] }
-  | { count: MemoryKind; min: number }
+  // W8：what＝只數 what 相同的記憶（例：聽說山賊 {count:'rumor', what:'bandit'}）
+  | { count: MemoryKind; min: number; what?: string }
   | { skill: string; lt: number }
   | { daysSince: MemoryKind; min: number }
   // W7（#559）：bond＝對某人的某軸 ≥ min 且對方 skill 比自己高 ≥ skillGap（成立時對象寫進心念的 target）；
@@ -191,7 +197,9 @@ export function evalCond(
   if ('thoughtAny' in cond) return { ok: cond.thoughtAny.some((id) => ctx.thoughts?.includes(id)), causes: [] };
   if ('noMaster' in cond) return { ok: !!ctx.bond && !ctx.bond.hasMaster, causes: [] };
   if ('count' in cond) {
-    const hits = person.memories.filter((m) => m.kind === cond.count && m.t >= since && m.t <= ctx.gm);
+    const hits = person.memories.filter(
+      (m) => m.kind === cond.count && m.t >= since && m.t <= ctx.gm && (cond.what === undefined || m.what === cond.what),
+    );
     return { ok: hits.length >= cond.min, causes: hits.slice().reverse() };
   }
   if ('skill' in cond) {
@@ -344,6 +352,9 @@ export function thoughtsLine(w: WuxiaState | undefined, pid: string): string | u
   return p.thoughts.map((t) => `${THOUGHT_BY_ID[t.id]?.name ?? t.id}（強度 ${t.s}）`).join('、');
 }
 
+/** W8：傳聞類別的說明（記憶「聽說…」） */
+const RUMOR_LABEL: Record<string, string> = { dojo: '武館的事', wealth: '藥鋪進貨', bandit: '山賊的事', xiake: '外地俠客的事' };
+
 const KIND_TEXT: Record<MemoryKind, string> = {
   listen: '聽書{times}',
   talk: '跟{other}聊天',
@@ -365,6 +376,9 @@ const KIND_TEXT: Record<MemoryKind, string> = {
   took_disciple: '收{other}為徒',
   violated: '犯了門規「{what}」',
   disciple_violated: '徒弟{other}犯了門規「{what}」',
+  rumor: '{rumor}',
+  fought_outsider: '跟{what}交手{won}',
+  robbed: '藥鋪被山賊搶走 {n} 箱{what}',
 };
 
 /** 記憶的說明文字（畫面「因為…」與報告共用）。names：cid → 名字；places：地點 id → 名字。 */
@@ -382,6 +396,8 @@ export function describeMemory(
     .replace('{seen}', m.kind === 'spar_seen' ? `${m.n === 0 ? '與' : '勝'}${m.what ? names(m.what) : '某人'}${m.n === 0 ? '打平' : ''}` : '')
     .replace('{gap}', m.kind === 'saw_skill' ? `${(m.n ?? 0) >= 0 ? '高' : '低'} ${Math.abs(m.n ?? 0)}` : '')
     .replace('{rej}', m.kind === 'rejected' ? (m.what ? `想拜${m.other ? names(m.other) : '某人'}為師被拒` : `邀${m.other ? names(m.other) : '某人'}聊天被拒`) : '')
+    .replace('{rumor}', m.kind === 'rumor' ? `${m.other ? `聽${names(m.other)}說` : '親眼看到'}${RUMOR_LABEL[m.what ?? ''] ?? '一件事'}` : '')
+    .replace('{won}', m.kind === 'fought_outsider' ? (m.n === 1 ? '，贏了' : m.n === -1 ? '，輸了' : '，打平') : '')
     .replace('{times}', m.kind === 'listen' && (m.n ?? 1) > 1 ? ` ${m.n} 場` : '');
   const where = m.place && m.kind !== 'first_visit' ? `（${places(m.place)}）` : '';
   return `第 ${day} 日 ${body}${where}`;

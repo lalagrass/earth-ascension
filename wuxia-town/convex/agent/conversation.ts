@@ -24,6 +24,8 @@ import { isEnabled } from '../wuxia/registry';
 import { BudgetKind } from '../wuxia/llmBudget';
 // WUXIA-PATCH(W5): 心念放進對話 prompt（#557「跟 LLM 的接法」）
 import { thoughtsLine } from '../wuxia/w05_mind/data';
+// WUXIA-PATCH(W8): 最近聽說的傳聞放進對話 prompt（#560「你最近聽說：…」）
+import { rumorsLineForPlayer } from '../wuxia/w08_jianghu/data';
 
 // WUXIA-PATCH(W2): 回傳文字＋守門 metadata（w02-folk 關閉時 metadata 為 undefined）
 export type GeneratedMessage = { text: string; metadata?: GuardMetadata };
@@ -85,7 +87,8 @@ export async function startConversationMessage(
   otherPlayerId: GameId<'players'>,
 ): Promise<GeneratedMessage> {
   // WUXIA-PATCH(W5): 多取 wuxiaThoughts（心念，放進 prompt）
-  const { player, otherPlayer, agent, otherAgent, lastConversation, wuxiaFolk, wuxiaThoughts } = await ctx.runQuery(
+  // WUXIA-PATCH(W8): 多取 wuxiaRumors（最近聽說的傳聞，放進 prompt）
+  const { player, otherPlayer, agent, otherAgent, lastConversation, wuxiaFolk, wuxiaThoughts, wuxiaRumors } = await ctx.runQuery(
     selfInternal.queryPromptData,
     {
       worldId,
@@ -114,6 +117,8 @@ export async function startConversationMessage(
     const system = folkSystemPrompt({
       // WUXIA-PATCH(W5): 心念只決定說什麼
       thoughts: wuxiaThoughts,
+      // WUXIA-PATCH(W8): 傳聞只決定說什麼
+      rumors: wuxiaRumors,
       stage: 'start',
       player,
       otherPlayer,
@@ -182,7 +187,8 @@ export async function continueConversationMessage(
   otherPlayerId: GameId<'players'>,
 ): Promise<GeneratedMessage> {
   // WUXIA-PATCH(W5): 多取 wuxiaThoughts（心念，放進 prompt）
-  const { player, otherPlayer, conversation, agent, otherAgent, wuxiaFolk, wuxiaThoughts } = await ctx.runQuery(
+  // WUXIA-PATCH(W8): 多取 wuxiaRumors（最近聽說的傳聞，放進 prompt）
+  const { player, otherPlayer, conversation, agent, otherAgent, wuxiaFolk, wuxiaThoughts, wuxiaRumors } = await ctx.runQuery(
     selfInternal.queryPromptData,
     {
       worldId,
@@ -203,6 +209,8 @@ export async function continueConversationMessage(
     const system = folkSystemPrompt({
       // WUXIA-PATCH(W5): 心念只決定說什麼
       thoughts: wuxiaThoughts,
+      // WUXIA-PATCH(W8): 傳聞只決定說什麼
+      rumors: wuxiaRumors,
       stage: 'continue',
       player,
       otherPlayer,
@@ -283,7 +291,8 @@ export async function leaveConversationMessage(
   otherPlayerId: GameId<'players'>,
 ): Promise<GeneratedMessage> {
   // WUXIA-PATCH(W5): 多取 wuxiaThoughts（心念，放進 prompt）
-  const { player, otherPlayer, conversation, agent, otherAgent, wuxiaFolk, wuxiaThoughts } = await ctx.runQuery(
+  // WUXIA-PATCH(W8): 多取 wuxiaRumors（最近聽說的傳聞，放進 prompt）
+  const { player, otherPlayer, conversation, agent, otherAgent, wuxiaFolk, wuxiaThoughts, wuxiaRumors } = await ctx.runQuery(
     selfInternal.queryPromptData,
     {
       worldId,
@@ -297,6 +306,8 @@ export async function leaveConversationMessage(
     const system = folkSystemPrompt({
       // WUXIA-PATCH(W5): 心念只決定說什麼
       thoughts: wuxiaThoughts,
+      // WUXIA-PATCH(W8): 傳聞只決定說什麼
+      rumors: wuxiaRumors,
       stage: 'leave',
       player,
       otherPlayer,
@@ -547,6 +558,9 @@ export const queryPromptData = internalQuery({
       // WUXIA-PATCH(W5): 這個人目前的心念（w05-mind 關閉或沒有心念時 undefined）
       wuxiaThoughts:
         world.wuxia && isEnabled(world.wuxia, W02_FOLK) ? thoughtsLine(world.wuxia, args.playerId) : undefined,
+      // WUXIA-PATCH(W8): 這個人最近聽說的傳聞（w08-jianghu 關閉或沒聽過傳聞時 undefined）
+      wuxiaRumors:
+        world.wuxia && isEnabled(world.wuxia, W02_FOLK) ? rumorsLineForPlayer(world.wuxia, args.playerId) : undefined,
     };
   },
 });

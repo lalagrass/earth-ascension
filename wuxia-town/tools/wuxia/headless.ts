@@ -4,6 +4,7 @@
 //        [--off w01-skin] [--on id,id]（覆寫 world.config.json 的元素開關）[--map town|gentle]（只給對照實驗用）
 //        [--state out.json]（W1：匯出最後狀態給 wuxia:shot 用）
 //        [--drop-memory id,id]（W5：這些 id 的事件記憶不寫入，mind-trace 的因果對照用）
+//        [--force-event bandit --day 5]（W8：第 5 日卯時強制開始某事件）[--no-rumor-out]（W8：行商聽到的傳聞不算出鎮）
 // 從 data/wuxia/ 與上游預設地圖建初始世界 → 每 step 呼叫 simulateStep、餵 inputs、跑 ticks →
 // 把 pendingOperations 交給「規則替身」立即產生回應 input（漫遊用 rng、對話用模板句、不打 LLM）。
 // --minutes 是引擎時間（牆鐘分鐘，1 step = 1 秒），不是遊戲時辰。
@@ -30,6 +31,7 @@ import { DojoTracer } from './dojo-trace';
 import { MindTracer } from './mind-trace';
 import { BondTracer } from './bond-tracer';
 import { W05_MIND } from '../../convex/wuxia/w05_mind/data';
+import { W08_JIANGHU, JianghuState, EventKind } from '../../convex/wuxia/w08_jianghu/data';
 import { W03_LIFE, LifeState } from '../../convex/wuxia/w03_life';
 import {
   JournalInput,
@@ -62,6 +64,10 @@ export type HeadlessOptions = {
   dropMemories?: number[];
   /** W6：每一步跑完後呼叫（wuxia:shot --gif 逐步取格、擺旁觀者用）；回傳 true 就停。不給時行為與 hash 不變 */
   onStep?: (game: ReturnType<typeof createGame>, now: number, hash: string) => boolean | void;
+  /** W8：第 day 日卯時強制開始某事件（對照實驗；不給就不寫這個欄位，hash 不變） */
+  forceEvent?: { kind: EventKind; day: number };
+  /** W8：行商聽到的傳聞不算出鎮（#562 W8-12 驗收 --no-rumor-out） */
+  noRumorOut?: boolean;
 };
 
 export function initialSnapshot(opts: HeadlessOptions): Snapshot {
@@ -74,6 +80,10 @@ export function initialSnapshot(opts: HeadlessOptions): Snapshot {
   // W5：因果對照實驗（mind-trace --drop-memory）；不給就不寫這個欄位，hash 不變
   if (opts.dropMemories?.length && wuxia.elements[W05_MIND])
     (wuxia.elements[W05_MIND] as any).drop = [...opts.dropMemories];
+  // W8：對照實驗（--force-event、--no-rumor-out）；不給就不寫，hash 不變
+  const jh = wuxia.elements[W08_JIANGHU] as JianghuState | undefined;
+  if (jh && opts.forceEvent) jh.force = { ...opts.forceEvent };
+  if (jh && opts.noRumorOut) jh.noRumorOut = true;
   const worldMap =
     opts.map === undefined
       ? serializedMapFor(wuxia.enabled)
@@ -149,6 +159,8 @@ export function runHeadless(opts: HeadlessOptions) {
     wanders: 0,
     /** W6：切磋旁白 operation 次數（＝打完的場次） */
     spars: undefined as number | undefined,
+    /** W8：亥時鎮誌改寫 operation 次數 */
+    chronicles: undefined as number | undefined,
   };
   const steps: JournalStep[] = [];
   const checkpoints: Array<{ step: number; t: number; hash: string }> = [];
@@ -286,6 +298,9 @@ export function runHeadless(opts: HeadlessOptions) {
           agentId: args.agentId,
           operationId: args.operationId,
         });
+      } else if (op.name === 'wuxiaChronicleRewrite') {
+        // W8：亥時鎮誌改寫。無頭模擬不打 LLM：引擎已放了模板段落，不送 input（等同 LLM 失敗）
+        stats.chronicles = (stats.chronicles ?? 0) + 1;
       } else if (op.name === 'wuxiaSparNarrate') {
         // W6：切磋旁白。無頭模擬不打 LLM：引擎打完那一刻已放了模板句，不送 input（等同 LLM 失敗）
         stats.spars = (stats.spars ?? 0) + 1;
@@ -371,6 +386,8 @@ export function runHeadless(opts: HeadlessOptions) {
     spar: opts.trace ? sparSummary(game) : undefined,
     // W7：關係與拜師（--days 或 trace 且 w07-bond 開時才有）
     bond: bondTracer?.trace.on ? bondTracer.trace : undefined,
+    // W8：江湖事件、傳聞與鎮誌（--days 或 trace 且 w08-jianghu 開時才有）
+    jianghu: opts.trace ? jianghuSummary(game) : undefined,
   };
   return { snapshot, queue, steps, summary, finalHash, traces, game, messages };
 }
@@ -382,6 +399,15 @@ function sparSummary(game: any) {
   const st = w.elements[W06_SPAR] as SparState | undefined;
   if (!st) return undefined;
   return { on: true, history: st.history, active: st.active.length };
+}
+
+/** W8：整份 w08-jianghu 狀態（事件、導演擲骰、傳聞、路徑、出鎮、鎮誌）＋人物 id → 名字。 */
+function jianghuSummary(game: any) {
+  const w = game.world.wuxia;
+  if (!w?.enabled?.[W08_JIANGHU]) return undefined;
+  const st = w.elements[W08_JIANGHU] as JianghuState | undefined;
+  if (!st) return undefined;
+  return { on: true, ...JSON.parse(JSON.stringify(st)) };
 }
 
 function lifeSummary(game: any) {
@@ -506,6 +532,11 @@ function main() {
           ? undefined
           : Number(args['game-minute']),
     trace: args.days !== undefined || !!args.trace,
+    forceEvent:
+      args['force-event'] === undefined
+        ? undefined
+        : { kind: String(args['force-event']) as EventKind, day: Number(args.day ?? 1) },
+    noRumorOut: !!args['no-rumor-out'],
     dropMemories:
       args['drop-memory'] === undefined
         ? undefined

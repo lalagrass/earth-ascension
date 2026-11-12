@@ -1,6 +1,6 @@
 // 武俠小鎮 W0：元素清單與掛鉤（#549 第 2 節）。
 // Game.tick 在內建 tick 跑完後呼叫 runElements(game, now)，依本清單順序執行已開啟的元素。
-// W0 是空清單；W1 起每一步在這裡加一個元素（W1 w01-skin、W2 w02-folk、W3 w03-life、W4 w04-dojo、W5 w05-mind、W6 w06-spar、W7 w07-bond）。
+// W0 是空清單；W1 起每一步在這裡加一個元素（W1 w01-skin、W2 w02-folk、W3 w03-life、W4 w04-dojo、W5 w05-mind、W6 w06-spar、W7 w07-bond、W8 w08-jianghu）。
 import type { Game } from '../aiTown/game';
 import type { WuxiaState } from './state';
 import { skinElement } from './w01_skin';
@@ -10,6 +10,7 @@ import { dojoElement } from './w04_dojo';
 import { mindElement } from './w05_mind';
 import { sparElement } from './w06_spar';
 import { bondElement } from './w07_bond';
+import { jianghuElement } from './w08_jianghu';
 
 export type WuxiaElement = {
   id: string;
@@ -27,6 +28,7 @@ export const ELEMENTS: WuxiaElement[] = [
   mindElement,
   sparElement,
   bondElement,
+  jianghuElement,
 ];
 
 export function isEnabled(
