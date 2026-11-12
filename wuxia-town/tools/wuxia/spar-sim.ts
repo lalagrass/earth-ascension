@@ -1,7 +1,8 @@
 // 武俠小鎮 W6（#558 驗收）：只跑判定，不跑小鎮。
 // 用法：npm run wuxia:spar-sim -- --a 周教頭 --b 阿青 --n 200 --seed 7
 //        [--a-skills fist=150,stance=60,stamina=40]（覆寫起始技能，沒寫的項目用 characters.json）
-//        [--sweep]（加跑「相近」掃描：其他技能相同、拳腳差 0–49，每格 --sweep-n 場，雙方各當一次發起人）
+//        [--sweep]（加跑「相近」掃描：其他技能相同、拳腳差 0–49，每格 --sweep-n 場，雙方各當一次發起人；
+//                  以及「強對弱」掃描：拳腳差 300／400／600，強者勝率 > 90%）
 //        [--json out.json]
 // a 是發起人；先手照引擎一樣用亂數擲（spar.json firstAttacker=coin）。只用 seed 的亂數，同 seed 結果相同。
 // 判定：實力差距大（任一方拳腳高 300 以上）時強者勝率 > 90%；--sweep 的每一格 40–60%。不符 exit 1。
@@ -62,6 +63,21 @@ export function sweep(n: number, seed: number) {
   return rows;
 }
 
+/** 「強對弱」掃描：其他技能相同，拳腳差 300（雙方肯切磋的上限，spar.json agreeFistGap）以上，強者勝率 > 90%。 */
+export function strongSweep(n: number, seed: number) {
+  const rows: Array<{ gap: number; highAsA: number; highAsB: number; ok: boolean }> = [];
+  for (const gap of [300, 400, 600]) {
+    const low: Fighter = { fist: 100, power: 50, stance: 50, stamina: 50 };
+    const high: Fighter = { ...low, fist: 100 + gap };
+    const r1 = simulate(high, low, n, seed + 1000 + gap);
+    const r2 = simulate(low, high, n, seed + 2000 + gap);
+    const highAsA = r1.aWin / n;
+    const highAsB = r2.bWin / n;
+    rows.push({ gap, highAsA, highAsB, ok: highAsA > SPAR_SIM_RULES.strongMin && highAsB > SPAR_SIM_RULES.strongMin });
+  }
+  return rows;
+}
+
 const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
 
 function main() {
@@ -93,6 +109,7 @@ function main() {
     say(`${ok ? 'PASS' : 'INFO'} 拳腳差 ${Math.abs(gap)} < 50：${nameOf(ca)} 勝率 ${pct(rate)}（40–60%；其他技能不同時只列出，不判定）`);
   }
   let rows: ReturnType<typeof sweep> | undefined;
+  let strong: ReturnType<typeof strongSweep> | undefined;
   if (args.sweep) {
     const sn = Number(args['sweep-n'] ?? 2000);
     rows = sweep(sn, seed);
@@ -103,10 +120,18 @@ function main() {
       if (!row.ok) fails++;
       say(`${String(row.gap).padStart(6)} | ${pct(row.lowAsA).padStart(14)} | ${pct(row.lowAsB).padStart(14)} | ${row.ok ? 'PASS' : 'FAIL'} 40–60%`);
     }
+    strong = strongSweep(sn, seed);
+    say('');
+    say(`強對弱掃描（其他技能相同；弱方拳腳 100；每格 ${sn} 場 × 2）`);
+    say('拳腳差 | 強方發起的勝率 | 強方被邀的勝率 | 判定');
+    for (const row of strong) {
+      if (!row.ok) fails++;
+      say(`${String(row.gap).padStart(6)} | ${pct(row.highAsA).padStart(14)} | ${pct(row.highAsB).padStart(14)} | ${row.ok ? 'PASS' : 'FAIL'} > 90%`);
+    }
   }
   say(fails ? `spar-sim: ${fails} 項 FAIL` : 'spar-sim: PASS');
   process.stdout.write(lines.join('\n') + '\n');
-  if (args.json) writeFileSync(String(args.json), JSON.stringify({ seed, n, a, b, ca, cb, result: r, sweep: rows }, null, 2) + '\n');
+  if (args.json) writeFileSync(String(args.json), JSON.stringify({ seed, n, a, b, ca, cb, result: r, sweep: rows, strongSweep: strong }, null, 2) + '\n');
   if (fails) process.exit(1);
 }
 

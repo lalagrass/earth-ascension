@@ -76,6 +76,13 @@
 | W5 | `src/components/PixiGame.tsx` | 武館開張的畫面層改看 `dojoOpened`（`openedAt` 有值），不是只看 w04-dojo 開關 | #557：武館改由心念重開，重開前維持破落 |
 | W5 | `src/components/PlayerDetails.tsx` | 技能面板下加 `src/wuxia/MindPanel`（心事：心念、強度條、因為…）；`LifePanel` 多傳 `wuxia`（下一件事含心念加的時段） | #557「畫面」 |
 | W5 | `package.json`（JSON 無法加註解） | `wuxia:mind-report`、`wuxia:mind-trace`、`wuxia:mind-diff` 指令 | #557 驗收工具 |
+| W6 | `convex/aiTown/inputs.ts` | 併入 `convex/wuxia/inputs.ts` 的 `wuxiaSparNarration`（LLM 旁白結果寫回切磋紀錄） | #558「LLM 旁白一句」：LLM 結果照上游慣例以 input 回到引擎，重播時直接餵回 |
+| W6 | `convex/aiTown/agent.ts` | `runAgentOperation` 多一個 `wuxiaSparNarrate` → `internal.wuxia.w06_spar.narrate.sparNarrate` | 同上：旁白在 action 裡打 LLM（W2 守門＋30 字），失敗就保留模板句 |
+| W6 | `convex/_generated/api.d.ts`（產生檔） | `npx convex dev --once` 重新產生，多了 `wuxia/inputs`、`wuxia/w06_spar/*` | Convex 產生檔 |
+| W6 | `src/components/Player.tsx` | 人物座標加上 `src/wuxia/spar.ts` 的 `sparOffset`（攻方前衝半格、守方後退或側身、輸家收勢時退半格；w06-spar 關閉時恆為 0） | #558「畫面」：攻方前衝半格、守方後退 |
+| W6 | `src/components/PixiGame.tsx` | 人物上面疊 `src/wuxia/SparLayer`（勢點、擊中白光與「中！」、旁白框），w06-spar 關閉時不畫 | #558「畫面」 |
+| W6 | `package.json`（JSON 無法加註解） | `wuxia:spar-sim`、`wuxia:spar-report`、`wuxia:spar-diff` 指令；devDependencies 加 `gifenc`（MIT）、`pngjs`（MIT）、`@types/pngjs`（MIT） | #558 驗收工具；`wuxia:shot --gif` 編 GIF |
+| W6 | `package-lock.json`（JSON） | 跟著上面三個 devDependencies 更新 | 同上 |
 
 ## 上游刻意保留不改的隨機／時間
 

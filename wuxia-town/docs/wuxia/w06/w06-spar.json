@@ -1,0 +1,41 @@
+{
+  "seed": 7,
+  "at": "day21-06:00",
+  "match": {
+    "id": 1,
+    "place": "dojo",
+    "a": "周教頭",
+    "b": "阿青",
+    "result": {
+      "winner": "zhou-jiaotou",
+      "loser": "a-qing",
+      "draw": false,
+      "rounds": 4,
+      "endAt": 1767254621024,
+      "endGm": 29021,
+      "memories": {
+        "zhou-jiaotou": 322,
+        "a-qing": 323,
+        "lin-sao": 324,
+        "shi-hu": 325
+      },
+      "growth": {
+        "a-qing": 4,
+        "zhou-jiaotou": 0
+      }
+    },
+    "spectators": 2
+  },
+  "staged": [
+    "石虎",
+    "林嫂"
+  ],
+  "frames": 26,
+  "files": [
+    "docs/wuxia/w06/w06-spar.gif",
+    "docs/wuxia/w06/w06-spar-start.png",
+    "docs/wuxia/w06/w06-spar-hit.png",
+    "docs/wuxia/w06/w06-spar-end.png"
+  ],
+  "finalHash": "a37f105651f00378d157543177ff1f96e777e9c13f6c4c6478c010f8843735ff"
+}

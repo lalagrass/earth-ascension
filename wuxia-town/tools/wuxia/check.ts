@@ -255,6 +255,9 @@ let skillRunOff: any;
   (b.closeOk ? ok : fail)(
     `spar-diff B：相近（拳腳差 0–49，其他相同）弱方勝率 ${b.rows.map((r) => `${r.gap}:${(r.lowAsA * 100).toFixed(0)}/${(r.lowAsB * 100).toFixed(0)}%`).join(' ')}（40–60%）`,
   );
+  (b.strongRowsOk ? ok : fail)(
+    `spar-diff B：強對弱（拳腳差 300／400／600，其他相同）強方勝率 ${b.strongRows.map((r) => `${r.gap}:${(r.highAsA * 100).toFixed(1)}/${(r.highAsB * 100).toFixed(1)}%`).join(' ')}（> 90%）`,
+  );
   const days = Number(process.env.WUXIA_CHECK_SPAR_DAYS ?? 30);
   if (days > 0) {
     const on = runHeadless({ seed: 7, minutes: 0, untilGameMinute: days * 1440, trace: true });

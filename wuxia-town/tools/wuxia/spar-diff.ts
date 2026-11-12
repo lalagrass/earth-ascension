@@ -8,7 +8,7 @@
 // 任一不符 exit 1。
 import { runHeadless } from './headless';
 import { parseArgs, quietConsole } from './sim';
-import { simulate, sweep, parseSkills, SPAR_SIM_RULES } from './spar-sim';
+import { simulate, sweep, strongSweep, parseSkills, SPAR_SIM_RULES } from './spar-sim';
 import { sparReport } from './spar-report';
 import { W06_SPAR } from '../../convex/wuxia/w06_spar/data';
 
@@ -34,7 +34,15 @@ export function sparDiffB(seed: number) {
   const r = simulate(coach, aqing, 200, seed);
   const strong = r.aWin / r.n;
   const rows = sweep(2000, seed);
-  return { strongOk: strong > SPAR_SIM_RULES.strongMin, strong, rows, closeOk: rows.every((x) => x.ok) };
+  const strongRows = strongSweep(2000, seed);
+  return {
+    strongOk: strong > SPAR_SIM_RULES.strongMin,
+    strong,
+    rows,
+    closeOk: rows.every((x) => x.ok),
+    strongRows,
+    strongRowsOk: strongRows.every((x) => x.ok),
+  };
 }
 
 /** C：給 30 日的開／關 run（check 第 13 項的關掉切磋 run 可以共用）。 */
@@ -58,6 +66,7 @@ function main() {
   const b = sparDiffB(seed);
   out(b.strongOk, `spar-diff B：周教頭對阿青 200 場勝率 ${(b.strong * 100).toFixed(1)}% > 90%`);
   out(b.closeOk, `spar-diff B：相近（拳腳差 0–49）勝率 ${b.rows.map((r) => `${r.gap}:${(r.lowAsA * 100).toFixed(0)}/${(r.lowAsB * 100).toFixed(0)}%`).join(' ')}（40–60%）`);
+  out(b.strongRowsOk, `spar-diff B：強對弱（拳腳差 300／400／600，其他相同）強方勝率 ${b.strongRows.map((r) => `${r.gap}:${(r.highAsA * 100).toFixed(1)}/${(r.highAsB * 100).toFixed(1)}%`).join(' ')}（> 90%）`);
   const on = runHeadless({ seed, minutes: 0, untilGameMinute: days * 1440, trace: true }).summary;
   const off = runHeadless({ seed, minutes: 0, untilGameMinute: days * 1440, trace: true, elements: { [W06_SPAR]: false } }).summary;
   for (const v of sparDiffC(on, off)) out(v.ok, `spar-diff C ${days} 日：${v.rule}：${v.value}`);
