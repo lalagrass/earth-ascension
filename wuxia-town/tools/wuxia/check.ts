@@ -17,6 +17,8 @@
 //    （WUXIA_CHECK_MIND_DAYS=0 可略過，CI 不略過）
 // 15.（W6）spar-diff A/B/C：關＝W5、判定勝率（教頭對新手 > 90%、相近 40–60%）、30 日切磋報告（輸了 → 想變強，追得到記憶 id）
 //    第 13 項 W6 起改用「關掉切磋」的世界量 W4 的練功曲線（切磋另有成長，見 docs/wuxia/W6.md），那個 run 在這裡當對照組共用
+// 16.（W7）bond-diff A/B：關＝W6、seed 7 跑 45 日：發生拜師、報告列出拜師日與觸發記憶、拜師後練功增長高於拜師前、
+//    bond-trace 重算＝引擎快取且列出 5 筆記憶（WUXIA_CHECK_BOND_DAYS=0 可略過，CI 不略過；seed 8、9 的多 seed 判定見 W7.md）
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
@@ -28,6 +30,7 @@ import { lifeDiff } from './life-diff';
 import { dojoDiff } from './dojo-diff';
 import { mindDiff } from './mind-diff';
 import { sparDiffA, sparDiffB, sparDiffC } from './spar-diff';
+import { bondDiffA, bondDiffB } from './bond-diff';
 import { W06_SPAR } from '../../convex/wuxia/w06_spar/data';
 import { skillReport } from './skill-report';
 import { runHeadless } from './headless';
@@ -268,6 +271,20 @@ let skillRunOff: any;
     for (const v of sparDiffC(on.summary, off)) (v.ok ? ok : fail)(`spar-report ${days} 日（hash ${on.finalHash.slice(0, 16)}…）${v.rule}：${v.value}`);
     ok(`（資訊）切磋開著時阿青第 ${days} 日拳腳 ${on.summary.dojo?.final?.['a-qing']?.fist}，關掉 ${off.dojo?.final?.['a-qing']?.fist}`);
   } else ok('（WUXIA_CHECK_SPAR_DAYS=0，略過 30 日切磋報告）');
+}
+
+// 16
+{
+  const a = bondDiffA(7, Number(MINUTES));
+  (a.ok ? ok : fail)(`bond-diff A：w07-bond 關＝W6 世界 hash ${a.hash}（3 日 ${a.hash3.slice(0, 16)}…）`);
+  const days = Number(process.env.WUXIA_CHECK_BOND_DAYS ?? 45);
+  if (days > 0) {
+    const b = bondDiffB(7, days);
+    for (const v of b.report.verdicts) (v.ok ? ok : fail)(`bond-report ${days} 日（hash ${b.hash.slice(0, 16)}…）${v.rule}：${v.value}`);
+    (b.trace.ok ? ok : fail)(
+      `bond-trace 第 ${days} 日 阿青→周教頭 敬重 ${b.trace.bond.respect}（引擎快取 ${b.trace.cached?.respect ?? '-'}），貢獻最大 ${b.trace.top.length} 筆：${b.trace.top.map((c) => `#${c.memory!.id}`).join(' ')}`,
+    );
+  } else ok('（WUXIA_CHECK_BOND_DAYS=0，略過 45 日關係報告）');
 }
 
 if (failures) {
