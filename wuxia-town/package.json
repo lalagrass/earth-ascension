@@ -30,6 +30,9 @@
     "wuxia:mind-report": "tsx tools/wuxia/mind-report.ts",
     "wuxia:mind-trace": "tsx tools/wuxia/mind-trace.ts",
     "wuxia:mind-diff": "tsx tools/wuxia/mind-diff.ts",
+    "wuxia:spar-sim": "tsx tools/wuxia/spar-sim.ts",
+    "wuxia:spar-report": "tsx tools/wuxia/spar-report.ts",
+    "wuxia:spar-diff": "tsx tools/wuxia/spar-diff.ts",
     "wuxia:check": "npm test && tsx tools/wuxia/check.ts"
   },
   "dependencies": {

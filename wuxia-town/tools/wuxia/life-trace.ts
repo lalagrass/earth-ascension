@@ -109,7 +109,8 @@ export class LifeTracer {
       const person = life?.people[player.id];
       if (lifeOn && person) {
         const cur = person.cur;
-        act = !cur ? 'idle' : cur.phase === 'do' ? cur.act : cur.phase === 'walk' ? 'walk' : 'talk';
+        // W6：切磋（spar）與旁觀（watch）各自標出來，不再算成聊天
+        act = !cur ? 'idle' : cur.phase === 'do' ? cur.act : cur.phase === 'walk' ? 'walk' : cur.phase === 'spar' || cur.phase === 'watch' ? cur.phase : 'talk';
         if (person.idleSince !== undefined) {
           const span = gm - person.idleSince;
           this.checks.maxNoChoiceMinutes[who] = Math.max(this.checks.maxNoChoiceMinutes[who] ?? 0, span);

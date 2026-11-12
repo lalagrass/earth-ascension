@@ -27,17 +27,43 @@ describe('wuxia element registry', () => {
     expect(enabledElements(state).map((e) => e.id)).toEqual(['w01-skin']);
     expect(initWuxiaState({ elements: { 'w01-skin': false }, seed: 7, timeScale: 60 }).enabled).toEqual({});
   });
-  test('W5 default config enables w01-skin, w02-folk, w03-life, w04-dojo and w05-mind', () => {
+  test('W6 default config enables w01-skin to w05-mind and w06-spar', () => {
     // W3 刻意改變：預設開 w03-life（W2 時是 ['w01-skin', 'w02-folk']）
     // W4 刻意改變：預設開 w04-dojo（W3 時是 ['w01-skin', 'w02-folk', 'w03-life']，見 docs/wuxia/W4.md）
     // W5 刻意改變：預設開 w05-mind（W4 時是 [..., 'w04-dojo']，見 docs/wuxia/W5.md）
+    // W6 刻意改變：預設開 w06-spar（W5 時是 [..., 'w05-mind']，見 docs/wuxia/W6.md）
     expect(enabledElements(initWuxiaState()).map((e) => e.id)).toEqual([
       'w01-skin',
       'w02-folk',
       'w03-life',
       'w04-dojo',
       'w05-mind',
+      'w06-spar',
     ]);
+  });
+  test('w06-spar requires w04-dojo and w05-mind (diamond requires is not a cycle)', () => {
+    const all = {
+      'w01-skin': true,
+      'w02-folk': true,
+      'w03-life': true,
+      'w04-dojo': true,
+      'w05-mind': true,
+      'w06-spar': true,
+    };
+    expect(initWuxiaState({ elements: all, seed: 7, timeScale: 60 }).enabled['w06-spar']).toBe(true);
+    for (const off of ['w01-skin', 'w03-life', 'w04-dojo', 'w05-mind']) {
+      const state = initWuxiaState({ elements: { ...all, [off]: false }, seed: 7, timeScale: 60 });
+      expect(state.enabled['w06-spar']).toBeUndefined();
+    }
+  });
+  test('a real cycle still throws', () => {
+    const cyc: WuxiaElement[] = [
+      { id: 'x', requires: ['y'] },
+      { id: 'y', requires: ['x'] },
+    ];
+    const state = initWuxiaState({ elements: {}, seed: 1, timeScale: 60 });
+    state.enabled = { x: true, y: true };
+    expect(() => enabledElements(state, cyc)).toThrow(/Circular/);
   });
   test('w05-mind requires w03-life (w04-dojo optional)', () => {
     const base = { 'w01-skin': true, 'w02-folk': true, 'w03-life': true, 'w05-mind': true };
