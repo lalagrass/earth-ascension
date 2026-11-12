@@ -37,6 +37,8 @@ import { SparLayer } from '../SparLayer';
 import { BondPanel, DetailTabs } from '../BondPanel';
 import { DojoPanel } from '../DojoPanel';
 import { plaqueName } from '../bond';
+import { ChroniclePanel } from '../ChroniclePanel';
+import { JianghuLayer } from '../JianghuLayer';
 
 type ShotState = {
   engineTime: number;
@@ -109,6 +111,7 @@ function Scene(props: { game: ServerGame; width: number; height: number; time: n
           historicalTime={props.time}
         />
       ))}
+      {skin && <JianghuLayer world={props.game.world} tileDim={tileDim} time={props.time} />}
       {skin && (
         <SparLayer
           world={props.game.world}
@@ -192,6 +195,7 @@ function ShotApp({ state: initial, opts }: { state: ShotState; opts: ShotOptions
               />
             )}
             {!opts.gif && <DojoPanel wuxia={game.world.wuxia} />}
+            {!opts.gif && <ChroniclePanel world={game.world} max={8} />}
             <div className="absolute inset-0">
               <Stage width={width} height={height} options={{ backgroundColor: skin ? 0xe2d5b4 : 0x7ab5ff, antialias: true }}>
                 {width > 0 && <Scene game={game} width={width} height={height} time={frame.time ?? state.engineTime} opts={opts} />}
