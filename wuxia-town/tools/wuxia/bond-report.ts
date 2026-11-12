@@ -21,11 +21,14 @@ const hhmm = (gm: number) => {
 export type Verdict = { rule: string; ok: boolean; value: string };
 
 /** 拜師前後同樣多的師父在場練功分鐘裡，拳腳增加多少。 */
-export function trainCompare(trace: BondTrace, ev: BowRecord) {
+/** 相鄰窗：拜師前最後 N 分 vs 拜師後最前 N 分（N 再被兩邊較少的截短）。三個都要後 > 前。 */
+export const ADJACENT_WINDOWS = [300, 600, 1200];
+
+export function trainCompare(trace: BondTrace, ev: BowRecord, cap?: number) {
   const rows = (trace.train[ev.disciple] ?? []).filter((r) => r[3].includes(ev.master));
   const before = rows.filter((r) => r[0] < ev.gm);
   const after = rows.filter((r) => r[0] > ev.gm);
-  const n = Math.min(before.length, after.length);
+  const n = Math.min(before.length, after.length, cap ?? Infinity);
   const b = before.slice(before.length - n);
   const a = after.slice(0, n);
   const sum = (xs: typeof rows, i: 1 | 2) => Math.round(xs.reduce((s, r) => s + r[i], 0) * 1000) / 1000;
@@ -103,13 +106,51 @@ export function bondReport(run: any, day?: number) {
       );
     }
   }
+  // W7-9（D8）：拳腳增長是 (1 − L/1000)^2 遞減，全期（N 動輒 2500 分、跨 2–3 週）的原始增長會被「拜師後等級較高」吃掉，
+  // 量不出拜師的效果。判定改成兩件都要過：
+  //   (1) 相鄰窗：拜師前最後 N 分 vs 拜師後最前 N 分，N＝300／600／1200 三個都要後 > 前（原始拳腳增長）；
+  //   (2) 全期 N＝兩邊較少的：同等級折算（每分增長 ÷ (1 − L/1000)^2）後 > 前。
+  // 全期原始增長照樣列出（資訊），不隱藏。
+  for (const { e } of cmp) {
+    const parts = ADJACENT_WINDOWS.map((w) => {
+      const c = trainCompare(trace, e, w);
+      return `N=${c.n}：前 +${c.beforeGain} → 後 +${c.afterGain}`;
+    });
+    say(`  相鄰窗（原始增長）${parts.join('；')}`);
+  }
   const evaluable = cmp.filter((x) => x.c.n >= 60);
   verdicts.push({
-    rule: '拜師後弟子練功增長高於拜師前（同師父在場時數下比較）',
-    ok: evaluable.length > 0 && evaluable.every((x) => x.c.afterGain > x.c.beforeGain),
+    rule: '拜師後弟子練功增長高於拜師前（同師父在場時數下比較；相鄰窗 N=300／600／1200 原始增長）',
+    ok:
+      evaluable.length > 0 &&
+      evaluable.every((x) =>
+        ADJACENT_WINDOWS.every((w) => {
+          const c = trainCompare(trace, x.e, w);
+          return c.n >= 60 && c.afterGain > c.beforeGain;
+        }),
+      ),
     value:
-      evaluable.map((x) => `${nameOf(x.e.disciple)} N=${x.c.n} 分：前 +${x.c.beforeGain} → 後 +${x.c.afterGain}`).join('；') ||
-      '沒有可比較的拜師（N < 60 分）',
+      evaluable
+        .map(
+          (x) =>
+            `${nameOf(x.e.disciple)} ` +
+            ADJACENT_WINDOWS.map((w) => {
+              const c = trainCompare(trace, x.e, w);
+              return `N=${c.n}：+${c.beforeGain}→+${c.afterGain}`;
+            }).join('；'),
+        )
+        .join('；') || '沒有可比較的拜師（N < 60 分）',
+  });
+  verdicts.push({
+    rule: '拜師後弟子練功增長高於拜師前（全期同等級折算）',
+    ok: evaluable.length > 0 && evaluable.every((x) => x.c.afterEffort > x.c.beforeEffort),
+    value:
+      evaluable
+        .map(
+          (x) =>
+            `${nameOf(x.e.disciple)} N=${x.c.n} 分：每分 ${(x.c.beforeEffort / x.c.n).toFixed(4)} → ${(x.c.afterEffort / x.c.n).toFixed(4)}（資訊：全期原始 +${x.c.beforeGain} → +${x.c.afterGain}）`,
+        )
+        .join('；') || '沒有可比較的拜師（N < 60 分）',
   });
   say();
   say('## 門規違規');
