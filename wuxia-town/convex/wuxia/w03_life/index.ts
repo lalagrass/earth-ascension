@@ -68,8 +68,8 @@ export const LIFE_RULES = {
   lowStockWeight: 1.5,
 } as const;
 
-/** W6：'spar'＝切磋中（雙方）、'watch'＝旁觀切磋；這兩種由 w06-spar 管，本元素不替他們做決定 */
-export type Phase = 'walk' | 'do' | 'talk' | 'spar' | 'watch';
+/** W6：'spar'＝切磋中（雙方）、'watch'＝旁觀切磋；這兩種由 w06-spar 管，本元素不替他們做決定。W7：'bow'＝拜師（弟子與師父），由 w07-bond 管 */
+export type Phase = 'walk' | 'do' | 'talk' | 'spar' | 'watch' | 'bow';
 export type Current = {
   act: string;
   obj: string;
@@ -417,7 +417,8 @@ export function tickLife(game: Game, now: number) {
     }
 
     // W6：切磋中／旁觀中由 w06-spar 管（打完才放回來）
-    if (person.cur?.phase === 'spar' || person.cur?.phase === 'watch') continue;
+    // W7：拜師中（走到師父面前、跪拜）由 w07-bond 管
+    if (person.cur?.phase === 'spar' || person.cur?.phase === 'watch' || person.cur?.phase === 'bow') continue;
 
     const conversation = game.world.playerConversation(player);
     if (conversation) {

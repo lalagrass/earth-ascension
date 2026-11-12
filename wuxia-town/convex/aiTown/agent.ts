@@ -25,6 +25,8 @@ import { insertInput } from './insertInput';
 // WUXIA-PATCH(W3): w03-life 開關
 import { isEnabled } from '../wuxia/registry';
 import { W03_LIFE } from '../wuxia/w03_life';
+// WUXIA-PATCH(W7): 門規「尊師」與「邀請被拒」記憶的掛鉤
+import { inviteRejected, mustAcceptInvite } from '../wuxia/w07_bond/hooks';
 
 export class Agent {
   id: GameId<'agents'>;
@@ -122,7 +124,12 @@ export class Agent {
         // Accept a conversation with another agent with some probability and with
         // a human unconditionally.
         // WUXIA-PATCH(W0): 上游的全域亂數改成 game.rng()（種子亂數，可重播）
-        if (otherPlayer.human || game.rng() < INVITE_ACCEPT_PROBABILITY) {
+        // WUXIA-PATCH(W7): 師父邀請必接受（門規「尊師」，w07-bond 開啟時；成立時不擲接受機率）
+        if (
+          otherPlayer.human ||
+          mustAcceptInvite(game, player.id, otherPlayer.id) ||
+          game.rng() < INVITE_ACCEPT_PROBABILITY
+        ) {
           console.log(`Agent ${player.id} accepting invite from ${otherPlayer.id}`);
           conversation.acceptInvite(game, player);
           // Stop moving so we can start walking towards the other player.
@@ -132,6 +139,8 @@ export class Agent {
         } else {
           console.log(`Agent ${player.id} rejecting invite from ${otherPlayer.id}`);
           conversation.rejectInvite(game, now, player);
+          // WUXIA-PATCH(W7): 邀請被拒 → 邀請人記一筆（#559「被拒絕邀請 → 親近 −」；w07-bond 關閉時不做事）
+          inviteRejected(game, now, player.id, otherPlayer.id);
         }
         return;
       }

@@ -7,6 +7,7 @@ import { movePlayer } from '../../aiTown/movement';
 import { mindOf } from '../w05_mind/data';
 import { initialSkills, Skills } from '../w04_dojo/data';
 import { Bout, SPAR } from './duel';
+import { mutualRival } from '../w07_bond/data';
 
 export const W06_SPAR = 'w06-spar';
 const W04_DOJO_ID = 'w04-dojo';
@@ -180,7 +181,8 @@ export function sparCandidate(
     if (!canFight(game, other, op)) continue;
     if (placeOf(other) !== place) continue;
     if (state.pairDay[pairKey(person.cid, op.cid)] === day) continue;
-    if (!motivated(w, pid) && !motivated(w, other)) continue;
+    // W7：#558「（W7 後）彼此『競爭』高」也算有動機（w07-bond 關閉時 mutualRival 恆為 false）
+    if (!motivated(w, pid) && !motivated(w, other) && !mutualRival(w, person.cid, op.cid, SPAR.rivalMin)) continue;
     if (!agrees(w, person.cid, op.cid)) continue;
     const p = game.world.players.get(other as any)!;
     const d = Math.hypot(me.position.x - p.position.x, me.position.y - p.position.y);

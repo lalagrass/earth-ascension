@@ -47,13 +47,14 @@ export function gainPerMinute(
   act: string,
   key: SkillKey,
   level: number,
-  coach: boolean,
+  coach: boolean | number,
   fatigue: number,
 ): number {
   const w = TRAINING.activities[act]?.weight[key] ?? 0;
   if (!w) return 0;
   const room = Math.max(0, 1 - level / TRAINING.max);
-  const bonus = coach ? TRAINING.coachBonus : 1;
+  // W7：coach 也可以直接給倍率（師父在場的 2.0）；true／false 照舊是 coachBonus／1
+  const bonus = typeof coach === 'number' ? coach : coach ? TRAINING.coachBonus : 1;
   const tired = fatigue > TRAINING.tiredAbove ? TRAINING.tiredFactor : 1;
   return TRAINING.base * w * Math.pow(room, TRAINING.exponent) * bonus * tired;
 }

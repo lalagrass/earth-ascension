@@ -6,6 +6,8 @@
   "maxFatigue_src": "量測：#558「都不累（fatigue < 60）」",
   "motivation": ["stronger"],
   "motivation_src": "量測：#558「至少一方有『想變強』」（W7 再加『彼此競爭高』）",
+  "rivalMin": 40,
+  "rivalMin_src": "量測＋旋鈕：#558「至少一方有『想變強』或（W7 後）彼此『競爭』高」；高＝雙方對彼此的競爭都 ≥ 40（旋鈕）。w07-bond 關閉時不看",
   "agreeFistGap": 300,
   "agreeFistGap_src": "量測：#558「對方拳腳差距 < 300 或對方是教頭」",
   "coachAlwaysAgrees": "zhou-jiaotou",

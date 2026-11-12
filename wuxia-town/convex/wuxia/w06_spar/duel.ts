@@ -8,6 +8,8 @@ export const SPAR = sparJson as unknown as {
   maxFatigue: number;
   motivation: string[];
   agreeFistGap: number;
+  /** W7：彼此競爭都 ≥ 這個值也能切磋 */
+  rivalMin: number;
   coachAlwaysAgrees: string;
   perPairPerDay: number;
   score: number;

@@ -25,6 +25,7 @@ import {
   W05_MIND,
   evaluatePerson,
 } from './data';
+import { bondEvalCtx } from '../w07_bond/data';
 
 export { W05_MIND } from './data';
 
@@ -205,7 +206,9 @@ export function tickMind(game: Game, now: number) {
       }
       for (const m of me.memories) if (m.t < gm) m.weight = round4(m.weight * MIND.decayPerDay);
       const skills = dojo?.skills[me.cid];
-      changes.push(...evaluatePerson(me, { gm, skills: skills as any }, clock.day));
+      // W7：心念「想拜師」要 w07-bond 開啟（enabled）與當天寅初算好的關係（bond）；w07-bond 關閉時 bond＝undefined、該心念不評估
+      const bond = bondEvalCtx(w, state, pid, gm);
+      changes.push(...evaluatePerson(me, { gm, skills: skills as any, enabled: w.enabled, ...(bond ? { bond } : {}) }, clock.day));
     }
     state.last = changes;
     // 想重開武館 → 重開

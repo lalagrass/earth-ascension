@@ -21,6 +21,7 @@ import {
   initialSkills,
   tierOf,
 } from './data';
+import { masterBonusFor } from '../w07_bond/data';
 
 export const W04_DOJO = 'w04-dojo';
 
@@ -71,8 +72,13 @@ export function trainingAct(person: Person | undefined): string | undefined {
  * 「在武館」＝在做武館物件的活動，或站在武館範圍內。
  */
 export function coachPresent(game: Game, life: LifeState): boolean {
+  return personAtDojo(game, life, COACH_ID);
+}
+
+/** W7：某人此刻「在武館」（同教頭在場的判定：醒著、不在對話、在做武館物件的活動或站在武館範圍內）。 */
+export function personAtDojo(game: Game, life: LifeState, cid: string): boolean {
   for (const [pid, person] of Object.entries(life.people)) {
-    if (person.cid !== COACH_ID) continue;
+    if (person.cid !== cid) continue;
     const player = game.world.players.get(pid as any);
     if (!player) return false;
     if (game.world.playerConversation(player)) return false;
@@ -140,8 +146,10 @@ export function tickDojo(game: Game, now: number) {
     if (minutes <= 0) continue;
     const skills = state.skills[person.cid];
     const withCoach = coach && person.cid !== COACH_ID;
+    // W7：師父在場時用師父加成（#559「1.5 → 2.0」）；w07-bond 關閉或沒拜師時 undefined，跟 W6 相同
+    const master = masterBonusFor(w, person.cid, (m) => (m === COACH_ID ? coach : personAtDojo(game, life, m)));
     for (const k of SKILL_KEYS) {
-      const g = gainPerMinute(act, k, skills[k], withCoach, person.needs.fatigue) * minutes;
+      const g = gainPerMinute(act, k, skills[k], master ?? withCoach, person.needs.fatigue) * minutes;
       addGain(state, person.cid, k, g);
     }
   }

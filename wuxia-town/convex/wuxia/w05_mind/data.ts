@@ -28,7 +28,16 @@ export type MemoryKind =
   // W6（#558）：切磋贏／平手、旁觀（other＝贏家，what＝輸家人物 id，n＝0 表示平手）
   | 'spar_won'
   | 'spar_draw'
-  | 'spar_seen';
+  | 'spar_seen'
+  // W7（#559）：看到對方練功（other＝對方，n＝對方拳腳 − 自己拳腳；每日對同一人一筆）、邀請被拒（other＝拒絕的人）、
+  // 拜師（弟子記，other＝師父）、收徒（師父記，other＝弟子）、違規（弟子記，other＝師父，what＝門規 id）、
+  // 弟子違規（師父記，other＝弟子，what＝門規 id）
+  | 'saw_skill'
+  | 'rejected'
+  | 'apprenticed'
+  | 'took_disciple'
+  | 'violated'
+  | 'disciple_violated';
 
 /** #557：`{t, kind, other?, place?, weight}`；另加 id（全世界唯一、遞增，給 --drop-memory 用）與 n（數量，例如練功分鐘）。 */
 export type Memory = {
@@ -53,6 +62,8 @@ export type Thought = {
   since: number;
   /** 觸發它的記憶 id（最近評估時） */
   causes: number[];
+  /** W7：對象（人物 id），例如「想拜師」想拜的人；沒有對象的心念不寫這個欄位 */
+  target?: string;
 };
 
 export type MindPerson = {
@@ -87,11 +98,18 @@ type Cond =
   | { any: Cond[] }
   | { count: MemoryKind; min: number }
   | { skill: string; lt: number }
-  | { daysSince: MemoryKind; min: number };
+  | { daysSince: MemoryKind; min: number }
+  // W7（#559）：bond＝對某人的某軸 ≥ min 且對方 skill 比自己高 ≥ skillGap（成立時對象寫進心念的 target）；
+  // thoughtAny＝這次評估已有其中一個心念（定義排在前面的）；noMaster＝還沒拜師
+  | { bond: 'close' | 'respect' | 'rival'; min: number; skill: string; skillGap: number }
+  | { thoughtAny: string[] }
+  | { noMaster: true };
 
 export type ThoughtDef = {
   id: string;
   name: string;
+  /** W7：只有這個元素開啟時才評估（關閉時跟上一步逐位元組相同） */
+  requires?: string;
   who: '*' | string[];
   when: Cond;
   start: number;
@@ -100,6 +118,8 @@ export type ThoughtDef = {
     inviteX?: { with: string; x: number };
     preferNewcomer?: boolean;
     reopenDojo?: boolean;
+    /** W7：去拜 target 為師（w07-bond 的拜師事件） */
+    apprentice?: boolean;
     schedule?: Record<
       string,
       { dojoClosed?: ThoughtBlock[]; dojoOpen?: ThoughtBlock[]; always?: ThoughtBlock[] }
@@ -132,23 +152,44 @@ export function mindOf(w: WuxiaState | undefined): MindState | undefined {
 }
 
 /** 評估用的情境：此刻遊戲分鐘、技能值、新人名單。 */
-export type EvalCtx = { gm: number; skills?: Record<string, number> };
+export type EvalCtx = {
+  gm: number;
+  skills?: Record<string, number>;
+  /** W7：世界的元素開關（ThoughtDef.requires 用）；不給＝只評估沒有 requires 的心念 */
+  enabled?: Record<string, boolean>;
+  /** W7：這次評估到目前為止已有的心念 id（thoughtAny 用；evaluatePerson 自己填） */
+  thoughts?: string[];
+  /** W7：關係查詢（w07_bond/data.ts 的 bondEvalCtx）；w07-bond 關閉時不給 */
+  bond?: BondEvalCtx;
+};
+
+/** W7：心念評估看的關係。best＝對哪個人的 axis ≥ min 且技能高 ≥ gap（最高的那個），附貢獻最大的記憶。 */
+export type BondEvalCtx = {
+  hasMaster: boolean;
+  best: (axis: 'close' | 'respect' | 'rival', min: number, skill: string, gap: number) => { cid: string; causes: Memory[] } | undefined;
+};
 
 /** 條件是否成立；成立時回傳觸發的記憶（最近的在前）。 */
 export function evalCond(
   cond: Cond,
   person: MindPerson,
   ctx: EvalCtx,
-): { ok: boolean; causes: Memory[] } {
+): { ok: boolean; causes: Memory[]; target?: string } {
   const since = ctx.gm - MIND.windowDays * 1440;
   if ('all' in cond) {
     const parts = cond.all.map((c) => evalCond(c, person, ctx));
-    return { ok: parts.every((p) => p.ok), causes: parts.flatMap((p) => p.causes) };
+    return { ok: parts.every((p) => p.ok), causes: parts.flatMap((p) => p.causes), target: parts.find((p) => p.target)?.target };
   }
   if ('any' in cond) {
     const parts = cond.any.map((c) => evalCond(c, person, ctx)).filter((p) => p.ok);
-    return { ok: parts.length > 0, causes: parts.flatMap((p) => p.causes) };
+    return { ok: parts.length > 0, causes: parts.flatMap((p) => p.causes), target: parts.find((p) => p.target)?.target };
   }
+  if ('bond' in cond) {
+    const hit = ctx.bond?.best(cond.bond, cond.min, cond.skill, cond.skillGap);
+    return hit ? { ok: true, causes: hit.causes, target: hit.cid } : { ok: false, causes: [] };
+  }
+  if ('thoughtAny' in cond) return { ok: cond.thoughtAny.some((id) => ctx.thoughts?.includes(id)), causes: [] };
+  if ('noMaster' in cond) return { ok: !!ctx.bond && !ctx.bond.hasMaster, causes: [] };
   if ('count' in cond) {
     const hits = person.memories.filter((m) => m.kind === cond.count && m.t >= since && m.t <= ctx.gm);
     return { ok: hits.length >= cond.min, causes: hits.slice().reverse() };
@@ -188,17 +229,21 @@ export function evaluatePerson(person: MindPerson, ctx: EvalCtx, day: number): T
   const next: Thought[] = [];
   for (const def of THOUGHTS) {
     if (!appliesTo(def, person.cid)) continue;
+    // W7：要某元素開啟才有的心念（例如「想拜師」要 w07-bond）
+    if (def.requires && !ctx.enabled?.[def.requires]) continue;
     const cur = person.thoughts.find((t) => t.id === def.id);
-    const r = evalCond(def.when, person, ctx);
+    const r = evalCond(def.when, person, { ...ctx, thoughts: next.map((t) => t.id) });
     if (r.ok) {
-      const causes = pickCauses(r.causes);
+      // W7：有對象的條件（bond）不用 weight 排「因為」，用 bondEvalCtx 給的貢獻順序
+      const causes = r.target ? r.causes.slice(0, MIND.causes).map((m) => m.id) : pickCauses(r.causes);
+      const target = r.target ? { target: r.target } : {};
       if (cur) {
         const s = Math.min(100, cur.s + def.grow);
         if (s !== cur.s) changes.push({ cid: person.cid, thought: def.name, kind: 'grow', s });
-        next.push({ ...cur, s, causes: causes.length ? causes : cur.causes });
+        next.push({ ...cur, s, causes: causes.length ? causes : cur.causes, ...target });
       } else {
         changes.push({ cid: person.cid, thought: def.name, kind: 'appear', s: def.start });
-        next.push({ id: def.id, s: def.start, since: day, causes });
+        next.push({ id: def.id, s: def.start, since: day, causes, ...target });
       }
     } else if (cur) {
       const s = Math.max(0, cur.s - MIND.decay);
@@ -314,6 +359,12 @@ const KIND_TEXT: Record<MemoryKind, string> = {
   spar_won: '切磋贏了{other}',
   spar_draw: '跟{other}切磋打平',
   spar_seen: '看到{other}{seen}',
+  saw_skill: '看{other}練功（拳腳{gap}）',
+  rejected: '{rej}',
+  apprenticed: '拜{other}為師',
+  took_disciple: '收{other}為徒',
+  violated: '犯了門規「{what}」',
+  disciple_violated: '徒弟{other}犯了門規「{what}」',
 };
 
 /** 記憶的說明文字（畫面「因為…」與報告共用）。names：cid → 名字；places：地點 id → 名字。 */
@@ -329,6 +380,8 @@ export function describeMemory(
     .replace('{n}', String(m.n ?? ''))
     .replace('{what}', m.what ?? '')
     .replace('{seen}', m.kind === 'spar_seen' ? `${m.n === 0 ? '與' : '勝'}${m.what ? names(m.what) : '某人'}${m.n === 0 ? '打平' : ''}` : '')
+    .replace('{gap}', m.kind === 'saw_skill' ? `${(m.n ?? 0) >= 0 ? '高' : '低'} ${Math.abs(m.n ?? 0)}` : '')
+    .replace('{rej}', m.kind === 'rejected' ? (m.what ? `想拜${m.other ? names(m.other) : '某人'}為師被拒` : `邀${m.other ? names(m.other) : '某人'}聊天被拒`) : '')
     .replace('{times}', m.kind === 'listen' && (m.n ?? 1) > 1 ? ` ${m.n} 場` : '');
   const where = m.place && m.kind !== 'first_visit' ? `（${places(m.place)}）` : '';
   return `第 ${day} 日 ${body}${where}`;

@@ -121,7 +121,17 @@ export function schedCtx(
 /** W5：世界此刻的日程情境（w03-life 的決策、面板、工具共用）。w05-mind 關閉時＝schedCtx(enabled, day)。 */
 export function lifeSchedCtx(w: WuxiaState | undefined, day?: number): SchedCtx {
   if (!w || !mindOf(w)) return schedCtx(w?.enabled, day);
-  return schedCtx(w.enabled, day, { blocks: mindBlocks(w), closed: closedOverlays(w) });
+  const ctx = schedCtx(w.enabled, day, { blocks: mindBlocks(w), closed: closedOverlays(w) });
+  // W7：師父的「指點徒弟」時段（w07-bond 算好放在元素狀態裡；排在心念時段前面）。w07-bond 關閉或沒有徒弟時不動
+  const master = w.enabled['w07-bond']
+    ? (w.elements['w07-bond'] as { masterBlocks?: Record<string, ScheduleBlock[]> } | undefined)?.masterBlocks
+    : undefined;
+  if (master && Object.keys(master).length) {
+    const blocks: Record<string, ScheduleBlock[]> = { ...(ctx.blocks ?? {}) };
+    for (const cid of Object.keys(master)) blocks[cid] = [...master[cid], ...(blocks[cid] ?? [])];
+    ctx.blocks = blocks;
+  }
+  return ctx;
 }
 
 export function scheduleFor(cid: string, ctx?: SchedCtx): Schedule | undefined {
