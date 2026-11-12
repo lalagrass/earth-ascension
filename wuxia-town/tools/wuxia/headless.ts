@@ -59,6 +59,8 @@ export type HeadlessOptions = {
   trace?: boolean;
   /** W5：這些 id 的事件記憶不寫入（mind-trace --drop-memory） */
   dropMemories?: number[];
+  /** W6：每一步跑完後呼叫（wuxia:shot --gif 逐步取格、擺旁觀者用）；回傳 true 就停。不給時行為與 hash 不變 */
+  onStep?: (game: ReturnType<typeof createGame>, now: number, hash: string) => boolean | void;
 };
 
 export function initialSnapshot(opts: HeadlessOptions): Snapshot {
@@ -296,7 +298,8 @@ export function runHeadless(opts: HeadlessOptions) {
       t.push({ x: p.position.x, y: p.position.y });
       traces.set(p.id, t);
     }
-    const done = opts.untilGameMinute !== undefined && clockReached();
+    const stop = opts.onStep?.(game, now, result.step.hash) === true;
+    const done = stop || (opts.untilGameMinute !== undefined && clockReached());
     if (k % 60 === 0 || k === totalSteps || done) {
       checkpoints.push({ step: k, t: now, hash: result.step.hash });
     }

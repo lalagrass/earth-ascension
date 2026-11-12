@@ -33,6 +33,7 @@ import { DojoLayer } from '../DojoLayer';
 import { SkillPanel } from '../SkillPanel';
 import { MindPanel } from '../MindPanel';
 import { dojoOf, dojoOpened } from '../dojo';
+import { SparLayer } from '../SparLayer';
 
 type ShotState = {
   engineTime: number;
@@ -47,6 +48,8 @@ type ShotOptions = {
   selected?: string;
   /** W4：盲測用，不顯示時辰（左上角）與狀態 hash */
   blind?: boolean;
+  /** W6：GIF 逐格——畫面上不疊時辰牌與鎮況（只截地圖） */
+  gif?: boolean;
 };
 
 declare global {
@@ -54,6 +57,8 @@ declare global {
     __WUXIA_STATE__?: ShotState;
     __WUXIA_SHOT__?: ShotOptions;
     __WUXIA_READY__?: boolean;
+    __WUXIA_FRAME__?: (s: ShotState | null, time?: number) => void;
+    __WUXIA_FRAME_DONE__?: number;
   }
 }
 
@@ -100,6 +105,14 @@ function Scene(props: { game: ServerGame; width: number; height: number; time: n
         />
       ))}
       {skin && (
+        <SparLayer
+          world={props.game.world}
+          time={props.time}
+          tileDim={tileDim}
+          pos={(id) => props.game.world.players.get(id as any)?.position}
+        />
+      )}
+      {skin && (
         <SkinLayers
           worldWidthPx={width * tileDim}
           worldHeightPx={height * tileDim}
@@ -112,7 +125,18 @@ function Scene(props: { game: ServerGame; width: number; height: number; time: n
   );
 }
 
-function ShotApp({ state, opts }: { state: ShotState; opts: ShotOptions }) {
+function ShotApp({ state: initial, opts }: { state: ShotState; opts: ShotOptions }) {
+  // W6：GIF 逐格——截圖工具用 __WUXIA_FRAME__(狀態, 畫面時間) 換格，畫好後 __WUXIA_FRAME_DONE__ 加一
+  const [frame, setFrame] = useState<{ state: ShotState; time?: number; n: number }>({ state: initial, n: 0 });
+  const state = frame.state;
+  useEffect(() => {
+    window.__WUXIA_FRAME__ = (s: ShotState | null, time?: number) =>
+      setFrame((f) => ({ state: s ?? f.state, time, n: f.n + 1 }));
+  }, []);
+  useEffect(() => {
+    if (frame.n === 0) return;
+    requestAnimationFrame(() => requestAnimationFrame(() => (window.__WUXIA_FRAME_DONE__ = frame.n)));
+  }, [frame.n]);
   const game = useMemo(() => toGame(state), [state]);
   const skin = skinEnabled(game.world);
   const [ref, { width, height }] = useElementSize();
@@ -133,6 +157,16 @@ function ShotApp({ state, opts }: { state: ShotState; opts: ShotOptions }) {
       return () => clearTimeout(t);
     }
   }, [width, ready]);
+  if (opts.gif) {
+    // W6：GIF 只要地圖——畫布佔滿整個視窗
+    return (
+      <div ref={ref} style={{ position: 'fixed', inset: 0 }}>
+        <Stage width={width} height={height} options={{ backgroundColor: skin ? 0xe2d5b4 : 0x7ab5ff, antialias: true }}>
+          {width > 0 && <Scene game={game} width={width} height={height} time={frame.time ?? state.engineTime} opts={opts} />}
+        </Stage>
+      </div>
+    );
+  }
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-between font-body game-background">
       <div className="w-full lg:h-screen min-h-screen relative isolate overflow-hidden lg:p-8 shadow-2xl flex flex-col justify-start">
@@ -144,15 +178,17 @@ function ShotApp({ state, opts }: { state: ShotState; opts: ShotOptions }) {
         </div>
         <div className="mx-auto w-full max-w grid grid-rows-[290px_1fr] lg:grid-rows-[1fr] lg:grid-cols-[1fr_auto] lg:grow max-w-[1400px] min-h-[480px] game-frame">
           <div className="relative overflow-hidden bg-brown-900" ref={ref}>
-            {skin && !opts.blind && <ClockBadge clock={clock} phase={clock ? dayTint(clock.minuteOfDay).phase : undefined} />}
-            <TownStatus
-              life={lifeOf(game.world)}
-              players={players}
-              nameOf={(id) => game.playerDescriptions.get(id as any)?.name ?? id}
-            />
+            {skin && !opts.blind && !opts.gif && <ClockBadge clock={clock} phase={clock ? dayTint(clock.minuteOfDay).phase : undefined} />}
+            {!opts.gif && (
+              <TownStatus
+                life={lifeOf(game.world)}
+                players={players}
+                nameOf={(id) => game.playerDescriptions.get(id as any)?.name ?? id}
+              />
+            )}
             <div className="absolute inset-0">
               <Stage width={width} height={height} options={{ backgroundColor: skin ? 0xe2d5b4 : 0x7ab5ff, antialias: true }}>
-                {width > 0 && <Scene game={game} width={width} height={height} time={state.engineTime} opts={opts} />}
+                {width > 0 && <Scene game={game} width={width} height={height} time={frame.time ?? state.engineTime} opts={opts} />}
               </Stage>
             </div>
           </div>

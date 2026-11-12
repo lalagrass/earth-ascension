@@ -26,3 +26,5 @@
 
 以上都是本專案（earth-ascension）先前為山門紀畫的水彩素材，由 Grok 在 #184 以影像生成工具產生後收錄進 repo；不是上游 AI Town 美術，也不是第三方素材。
 招牌字（茶、藥、鐵、山腳鎮、武館）是烘焙時用系統的 Noto Serif CJK 字型（SIL OFL）畫進圖裡，字型檔本身不進 repo。
+
+W4 的練功器具（`src/wuxia/DojoLayer.tsx`）與 W6 的切磋畫面（`src/wuxia/SparLayer.tsx`：勢點、擊中白光、「中！」、旁白框）都是 Pixi Graphics 程式畫的，沒有新增素材檔。W6 的 GIF 編碼用 devDependencies `gifenc`、`pngjs`（MIT，只在截圖工具裡用，不進前端）。

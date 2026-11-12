@@ -6,6 +6,7 @@
 //   W4：--at 也可寫 dayN-HH:MM（第 N 日幾點，例如 day30-09:00）；--who 人名（例如 阿青）＝人物詳情選這個人，
 //       沒給 --focus 時近景對準他（縮放 2.6）；--blind＝不顯示時辰與狀態 hash（盲測用）。
 //       檔名前綴預設是「輸出資料夾名-seedN」（docs/wuxia/w04/ → w04-seed7）。
+//   W6：--gif --match 周教頭,阿青 [--stage 石虎,林嫂]＝切磋短 GIF（見 tools/wuxia/shot-gif.ts）。
 // 流程：每個 --at（遊戲分鐘）各跑一次無頭模擬到那個遊戲分鐘 → 匯出狀態 → 用 Vite 開截圖頁
 //      （src/wuxia/shot/index.html，跟 live 同一批元件，不連 Convex）→ Playwright 截圖。1400 寬截可視範圍，390 寬截整頁。
 // 需要本機有 Chrome／Chromium（預設 /usr/bin/google-chrome，或設 WUXIA_CHROME），不需要 Docker、Convex、LLM。
@@ -45,6 +46,8 @@ const CHROME_CANDIDATES = [
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   quietConsole(!!args.verbose);
+  // W6：--gif＝一場切磋的短 GIF（tools/wuxia/shot-gif.ts）
+  if (args.gif) return (await import('./shot-gif')).shotGif(args);
   const seed = Number(args.seed ?? 7);
   const ats = String(args.at ?? '0')
     .split(',')
