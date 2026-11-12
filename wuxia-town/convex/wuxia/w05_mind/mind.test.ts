@@ -43,7 +43,9 @@ const world = (mind: MindState | undefined, dojoOpenedAt?: number, dojo = true):
 
 describe('thoughts.json', () => {
   test('#557 表格的五個心念都在，常數照規格', () => {
-    expect(THOUGHTS.map((t) => t.name)).toEqual(['想學武', '想變強', '想重開武館', '想回鄉', '想打聽']);
+    // W7 刻意改變：#559 加第 6 個心念「想拜師」（requires w07-bond）；#557 的五個照舊在前、順序不變
+    expect(THOUGHTS.map((t) => t.name)).toEqual(['想學武', '想變強', '想重開武館', '想回鄉', '想打聽', '想拜師']);
+    expect(THOUGHTS.filter((t) => !t.requires).map((t) => t.name)).toEqual(['想學武', '想變強', '想重開武館', '想回鄉', '想打聽']);
     expect(MIND.memorySize).toBe(200);
     expect(MIND.decayPerDay).toBe(0.9);
     expect(MIND.maxPerPerson).toBe(3);

@@ -27,11 +27,12 @@ describe('wuxia element registry', () => {
     expect(enabledElements(state).map((e) => e.id)).toEqual(['w01-skin']);
     expect(initWuxiaState({ elements: { 'w01-skin': false }, seed: 7, timeScale: 60 }).enabled).toEqual({});
   });
-  test('W6 default config enables w01-skin to w05-mind and w06-spar', () => {
+  test('W7 default config enables w01-skin to w06-spar and w07-bond', () => {
     // W3 刻意改變：預設開 w03-life（W2 時是 ['w01-skin', 'w02-folk']）
     // W4 刻意改變：預設開 w04-dojo（W3 時是 ['w01-skin', 'w02-folk', 'w03-life']，見 docs/wuxia/W4.md）
     // W5 刻意改變：預設開 w05-mind（W4 時是 [..., 'w04-dojo']，見 docs/wuxia/W5.md）
     // W6 刻意改變：預設開 w06-spar（W5 時是 [..., 'w05-mind']，見 docs/wuxia/W6.md）
+    // W7 刻意改變：預設開 w07-bond（W6 時是 [..., 'w06-spar']，見 docs/wuxia/W7.md）
     expect(enabledElements(initWuxiaState()).map((e) => e.id)).toEqual([
       'w01-skin',
       'w02-folk',
@@ -39,6 +40,7 @@ describe('wuxia element registry', () => {
       'w04-dojo',
       'w05-mind',
       'w06-spar',
+      'w07-bond',
     ]);
   });
   test('w06-spar requires w04-dojo and w05-mind (diamond requires is not a cycle)', () => {

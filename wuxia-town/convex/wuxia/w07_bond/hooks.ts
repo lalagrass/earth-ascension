@@ -2,7 +2,10 @@
 // 只讀寫世界狀態裡的純資料（不 import 元素的 index，避免 agent.ts → w03_life → aiTown 的循環）。w07-bond 關閉時什麼都不做。
 import type { Game } from '../../aiTown/game';
 import { gameMinutes } from '../clock';
-import { BondState, W07_BOND } from './data';
+// 只 import 型別：data.ts 會帶進 w04_dojo → w02_folk，從 agent.ts 這頭 import 會在 jest ESM 連結時形成循環
+import type { BondState } from './data';
+
+const W07_BOND = 'w07-bond';
 
 function bondState(game: Game): BondState | undefined {
   const w = game.world.wuxia;
