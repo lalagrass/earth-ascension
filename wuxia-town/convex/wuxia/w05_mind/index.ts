@@ -61,24 +61,25 @@ export function remember(
   t: number,
   kind: MemoryKind,
   extra: Partial<Pick<Memory, 'other' | 'place' | 'n' | 'what'>> = {},
-) {
+): number | undefined {
+  // W6：回傳寫入的記憶 id（併進當天那一筆時回傳那一筆的 id；沒寫入回 undefined），切磋報告用來追因果
   const person = state.people[pid];
-  if (!person) return;
+  if (!person) return undefined;
   const merge = MIND.mergeSameDay.includes(kind);
   const day = readClock(t).day;
   if (merge) {
-    if (state.dropped?.[pid]?.[kind] === day) return;
+    if (state.dropped?.[pid]?.[kind] === day) return undefined;
     const last = [...person.memories].reverse().find((m) => m.kind === kind);
     if (last && readClock(last.t).day === day) {
       last.n = (last.n ?? 1) + 1;
       last.tEnd = t;
-      return;
+      return last.id;
     }
   }
   const id = state.seq++;
   if (state.drop?.includes(id)) {
     if (merge) ((state.dropped ??= {})[pid] ??= {})[kind] = day;
-    return;
+    return undefined;
   }
   const m: Memory = { id, t, kind, weight: MIND.weights[kind] ?? 1 };
   if (extra.other !== undefined) m.other = extra.other;
@@ -88,6 +89,7 @@ export function remember(
   person.memories.push(m);
   if (person.memories.length > MIND.memorySize)
     person.memories.splice(0, person.memories.length - MIND.memorySize);
+  return id;
 }
 
 /** 最後一次評估的變化（給畫面與工具看；每次評估覆寫） */

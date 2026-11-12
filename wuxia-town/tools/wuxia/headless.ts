@@ -22,6 +22,7 @@ import { initElements, isEnabled } from '../../convex/wuxia/registry';
 import { descriptionsFor, folkTemplate, W02_FOLK } from '../../convex/wuxia/w02_folk';
 import { serializedMapFor } from '../../convex/wuxia/w01_skin';
 import { makeRng } from '../../convex/wuxia/rng';
+import { W06_SPAR, SparState } from '../../convex/wuxia/w06_spar/data';
 import { conversationTemplate } from '../../convex/wuxia/templates';
 import { gameMinutes, readClock } from '../../convex/wuxia/clock';
 import { LifeTracer, conversationPlaceStats } from './life-trace';
@@ -143,6 +144,8 @@ export function runHeadless(opts: HeadlessOptions) {
     messages: 0,
     activities: 0,
     wanders: 0,
+    /** W6：切磋旁白 operation 次數（＝打完的場次） */
+    spars: undefined as number | undefined,
   };
   const steps: JournalStep[] = [];
   const checkpoints: Array<{ step: number; t: number; hash: string }> = [];
@@ -278,6 +281,9 @@ export function runHeadless(opts: HeadlessOptions) {
           agentId: args.agentId,
           operationId: args.operationId,
         });
+      } else if (op.name === 'wuxiaSparNarrate') {
+        // W6：切磋旁白。無頭模擬不打 LLM：引擎打完那一刻已放了模板句，不送 input（等同 LLM 失敗）
+        stats.spars = (stats.spars ?? 0) + 1;
       } else {
         throw new Error(`headless: unknown operation ${op.name}`);
       }
@@ -353,8 +359,19 @@ export function runHeadless(opts: HeadlessOptions) {
     dojo: dojoTracer?.trace.on ? dojoTracer.trace : undefined,
     // W5：心念紀錄（--days 或 trace 且 w05-mind 開時才有）
     mind: mindTracer?.trace.on ? mindTracer.trace : undefined,
+    // W6：切磋紀錄（--days 或 trace 且 w06-spar 開時才有）
+    spar: opts.trace ? sparSummary(game) : undefined,
   };
   return { snapshot, queue, steps, summary, finalHash, traces, game, messages };
+}
+
+/** W6：打完的場次（最近 200 場）與還在進行的場次。 */
+function sparSummary(game: any) {
+  const w = game.world.wuxia;
+  if (!w?.enabled?.[W06_SPAR]) return undefined;
+  const st = w.elements[W06_SPAR] as SparState | undefined;
+  if (!st) return undefined;
+  return { on: true, history: st.history, active: st.active.length };
 }
 
 function lifeSummary(game: any) {

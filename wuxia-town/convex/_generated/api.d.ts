@@ -54,6 +54,7 @@ import type * as world from "../world.js";
 import type * as wuxia_canonical from "../wuxia/canonical.js";
 import type * as wuxia_clock from "../wuxia/clock.js";
 import type * as wuxia_hash from "../wuxia/hash.js";
+import type * as wuxia_inputs from "../wuxia/inputs.js";
 import type * as wuxia_journal from "../wuxia/journal.js";
 import type * as wuxia_llmBudget from "../wuxia/llmBudget.js";
 import type * as wuxia_registry from "../wuxia/registry.js";
@@ -68,6 +69,15 @@ import type * as wuxia_w02_folk_index from "../wuxia/w02_folk/index.js";
 import type * as wuxia_w02_folk_prompt from "../wuxia/w02_folk/prompt.js";
 import type * as wuxia_w03_life_data from "../wuxia/w03_life/data.js";
 import type * as wuxia_w03_life_index from "../wuxia/w03_life/index.js";
+import type * as wuxia_w04_dojo_data from "../wuxia/w04_dojo/data.js";
+import type * as wuxia_w04_dojo_index from "../wuxia/w04_dojo/index.js";
+import type * as wuxia_w05_mind_data from "../wuxia/w05_mind/data.js";
+import type * as wuxia_w05_mind_index from "../wuxia/w05_mind/index.js";
+import type * as wuxia_w06_spar_data from "../wuxia/w06_spar/data.js";
+import type * as wuxia_w06_spar_duel from "../wuxia/w06_spar/duel.js";
+import type * as wuxia_w06_spar_index from "../wuxia/w06_spar/index.js";
+import type * as wuxia_w06_spar_narrate from "../wuxia/w06_spar/narrate.js";
+import type * as wuxia_w06_spar_narration from "../wuxia/w06_spar/narration.js";
 
 import type {
   ApiFromModules,
@@ -122,6 +132,7 @@ declare const fullApi: ApiFromModules<{
   "wuxia/canonical": typeof wuxia_canonical;
   "wuxia/clock": typeof wuxia_clock;
   "wuxia/hash": typeof wuxia_hash;
+  "wuxia/inputs": typeof wuxia_inputs;
   "wuxia/journal": typeof wuxia_journal;
   "wuxia/llmBudget": typeof wuxia_llmBudget;
   "wuxia/registry": typeof wuxia_registry;
@@ -136,6 +147,15 @@ declare const fullApi: ApiFromModules<{
   "wuxia/w02_folk/prompt": typeof wuxia_w02_folk_prompt;
   "wuxia/w03_life/data": typeof wuxia_w03_life_data;
   "wuxia/w03_life/index": typeof wuxia_w03_life_index;
+  "wuxia/w04_dojo/data": typeof wuxia_w04_dojo_data;
+  "wuxia/w04_dojo/index": typeof wuxia_w04_dojo_index;
+  "wuxia/w05_mind/data": typeof wuxia_w05_mind_data;
+  "wuxia/w05_mind/index": typeof wuxia_w05_mind_index;
+  "wuxia/w06_spar/data": typeof wuxia_w06_spar_data;
+  "wuxia/w06_spar/duel": typeof wuxia_w06_spar_duel;
+  "wuxia/w06_spar/index": typeof wuxia_w06_spar_index;
+  "wuxia/w06_spar/narrate": typeof wuxia_w06_spar_narrate;
+  "wuxia/w06_spar/narration": typeof wuxia_w06_spar_narration;
 }>;
 
 /**

@@ -87,13 +87,27 @@ export function coachPresent(game: Game, life: LifeState): boolean {
   return false;
 }
 
-function ensure(state: DojoState, cid: string) {
+export function ensure(state: DojoState, cid: string) {
   if (!state.skills[cid]) {
     state.skills[cid] = initialSkills(cid);
     const z = {} as Skills;
     for (const k of SKILL_KEYS) z[k] = 0;
     state.frac[cid] = z;
   }
+}
+
+/** 把一筆（可有小數的）成長加到某人某技能上；小數累積在 frac。回傳整數技能值實際加了多少。W6 切磋的成長也走這裡。 */
+export function addGain(state: DojoState, cid: string, k: (typeof SKILL_KEYS)[number], g: number): number {
+  ensure(state, cid);
+  if (g <= 0) return 0;
+  const skills = state.skills[cid];
+  const frac = state.frac[cid];
+  const before = skills[k];
+  const total = round6(frac[k] + g);
+  const whole = Math.floor(total);
+  skills[k] = Math.min(1000, skills[k] + whole);
+  frac[k] = skills[k] >= 1000 ? 0 : round6(total - whole);
+  return skills[k] - before;
 }
 
 export function tickDojo(game: Game, now: number) {
@@ -125,15 +139,10 @@ export function tickDojo(game: Game, now: number) {
     const minutes = Math.min(elapsed, gm - person.cur!.since);
     if (minutes <= 0) continue;
     const skills = state.skills[person.cid];
-    const frac = state.frac[person.cid];
     const withCoach = coach && person.cid !== COACH_ID;
     for (const k of SKILL_KEYS) {
       const g = gainPerMinute(act, k, skills[k], withCoach, person.needs.fatigue) * minutes;
-      if (g <= 0) continue;
-      const total = round6(frac[k] + g);
-      const whole = Math.floor(total);
-      skills[k] = Math.min(1000, skills[k] + whole);
-      frac[k] = skills[k] >= 1000 ? 0 : round6(total - whole);
+      addGain(state, person.cid, k, g);
     }
   }
   // 打樁：頭上 emoji 依拳腳分階、標籤是每分鐘打樁數（數字跟著成長變）

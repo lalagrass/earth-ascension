@@ -1,6 +1,6 @@
 // 武俠小鎮 W0：元素清單與掛鉤（#549 第 2 節）。
 // Game.tick 在內建 tick 跑完後呼叫 runElements(game, now)，依本清單順序執行已開啟的元素。
-// W0 是空清單；W1 起每一步在這裡加一個元素（W1 w01-skin、W2 w02-folk、W3 w03-life、W4 w04-dojo、W5 w05-mind）。
+// W0 是空清單；W1 起每一步在這裡加一個元素（W1 w01-skin、W2 w02-folk、W3 w03-life、W4 w04-dojo、W5 w05-mind、W6 w06-spar）。
 import type { Game } from '../aiTown/game';
 import type { WuxiaState } from './state';
 import { skinElement } from './w01_skin';
@@ -8,6 +8,7 @@ import { folkElement } from './w02_folk';
 import { lifeElement } from './w03_life';
 import { dojoElement } from './w04_dojo';
 import { mindElement } from './w05_mind';
+import { sparElement } from './w06_spar';
 
 export type WuxiaElement = {
   id: string;
@@ -17,7 +18,14 @@ export type WuxiaElement = {
   handleInput?: Record<string, (game: Game, now: number, args: any) => unknown>;
 };
 
-export const ELEMENTS: WuxiaElement[] = [skinElement, folkElement, lifeElement, dojoElement, mindElement];
+export const ELEMENTS: WuxiaElement[] = [
+  skinElement,
+  folkElement,
+  lifeElement,
+  dojoElement,
+  mindElement,
+  sparElement,
+];
 
 export function isEnabled(
   state: WuxiaState,
@@ -29,8 +37,9 @@ export function isEnabled(
   const element = elements.find((e) => e.id === id);
   if (!element) return false;
   if (seen.has(id)) throw new Error(`Circular wuxia element requirement at ${id}`);
-  seen.add(id);
-  return (element.requires ?? []).every((r) => isEnabled(state, r, elements, seen));
+  // W6：seen 只記「目前這條路徑」上的元素，菱形相依（w06 → w04、w05 → w03）不算循環
+  const path = new Set(seen).add(id);
+  return (element.requires ?? []).every((r) => isEnabled(state, r, elements, path));
 }
 
 export function enabledElements(

@@ -21,7 +21,11 @@ export type MemoryKind =
   | 'loiter_seen'
   | 'gaze_home'
   | 'newcomer'
-  | 'spar_lost';
+  | 'spar_lost'
+  // W6（#558）：切磋贏／平手、旁觀（other＝贏家，what＝輸家人物 id，n＝0 表示平手）
+  | 'spar_won'
+  | 'spar_draw'
+  | 'spar_seen';
 
 /** #557：`{t, kind, other?, place?, weight}`；另加 id（全世界唯一、遞增，給 --drop-memory 用）與 n（數量，例如練功分鐘）。 */
 export type Memory = {
@@ -298,6 +302,9 @@ const KIND_TEXT: Record<MemoryKind, string> = {
   gaze_home: '在城門外張望',
   newcomer: '{other}到鎮上',
   spar_lost: '切磋輸給{other}',
+  spar_won: '切磋贏了{other}',
+  spar_draw: '跟{other}切磋打平',
+  spar_seen: '看到{other}{seen}',
 };
 
 /** 記憶的說明文字（畫面「因為…」與報告共用）。names：cid → 名字；places：地點 id → 名字。 */
@@ -312,6 +319,7 @@ export function describeMemory(
     .replace('{place}', m.place ? places(m.place) : '某處')
     .replace('{n}', String(m.n ?? ''))
     .replace('{what}', m.what ?? '')
+    .replace('{seen}', m.kind === 'spar_seen' ? `${m.n === 0 ? '與' : '勝'}${m.what ? names(m.what) : '某人'}${m.n === 0 ? '打平' : ''}` : '')
     .replace('{times}', m.kind === 'listen' && (m.n ?? 1) > 1 ? ` ${m.n} 場` : '');
   const where = m.place && m.kind !== 'first_visit' ? `（${places(m.place)}）` : '';
   return `第 ${day} 日 ${body}${where}`;

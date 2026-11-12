@@ -312,6 +312,10 @@ export async function runAgentOperation(ctx: MutationCtx, operation: string, arg
     case 'agentDoSomething':
       reference = internal.aiTown.agentOperations.agentDoSomething;
       break;
+    // WUXIA-PATCH(W6): 切磋旁白（convex/wuxia/w06_spar/narrate.ts）
+    case 'wuxiaSparNarrate':
+      reference = internal.wuxia.w06_spar.narrate.sparNarrate;
+      break;
     default:
       throw new Error(`Unknown operation: ${operation}`);
   }

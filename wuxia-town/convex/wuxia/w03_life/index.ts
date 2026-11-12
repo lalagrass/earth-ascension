@@ -13,6 +13,7 @@ import { movePlayer, stopPlayer } from '../../aiTown/movement';
 import { Conversation } from '../../aiTown/conversation';
 import { movementSpeed } from '../../../data/characters';
 import { inviteMultiplier, mindOf, newcomers, prefersNewcomer } from '../w05_mind/data';
+import { W06_SPAR, beginSpar, sparCandidate } from '../w06_spar/data';
 import {
   ACTIVITY_BY_ID,
   ActivityDef,
@@ -67,7 +68,8 @@ export const LIFE_RULES = {
   lowStockWeight: 1.5,
 } as const;
 
-export type Phase = 'walk' | 'do' | 'talk';
+/** W6：'spar'＝切磋中（雙方）、'watch'＝旁觀切磋；這兩種由 w06-spar 管，本元素不替他們做決定 */
+export type Phase = 'walk' | 'do' | 'talk' | 'spar' | 'watch';
 export type Current = {
   act: string;
   obj: string;
@@ -152,7 +154,7 @@ export function urgency(v: number): number {
   return 0;
 }
 
-function pushLog(state: LifeState, e: LifeEvent) {
+export function pushLog(state: LifeState, e: LifeEvent) {
   state.log.push(e);
   if (state.log.length > LIFE_RULES.logSize) state.log.splice(0, state.log.length - LIFE_RULES.logSize);
 }
@@ -338,6 +340,24 @@ function finish(state: LifeState, playerId: string, person: Person, gm: number, 
   delete person.cur;
 }
 
+/**
+ * W6：切磋把人從手上的事拉走（被邀的對方、旁觀者）。跟對話打斷同一套：做到 leisureMinFraction 以上的閒暇活動算做完，
+ * 其他按比例套用需求；走路中的放掉預約。結束後 cur 清空，由呼叫端設新的 cur。
+ */
+export function interruptActivity(state: LifeState, playerId: string, person: Person, gm: number, player: Player) {
+  const cur = person.cur;
+  if (!cur) return;
+  if (cur.phase === 'do') {
+    const act = ACTIVITY_BY_ID[cur.act];
+    const fraction = Math.min(1, (gm - cur.since) / act.minutes);
+    finish(state, playerId, person, gm, LEISURE.has(cur.act) && fraction >= LIFE_RULES.leisureMinFraction ? 1 : fraction);
+  } else {
+    release(state, playerId, cur);
+    delete person.cur;
+  }
+  stopPlayer(player);
+}
+
 function abandon(state: LifeState, playerId: string, person: Person, gm: number, player: Player) {
   const cur = person.cur!;
   release(state, playerId, cur);
@@ -383,8 +403,8 @@ export function tickLife(game: Game, now: number) {
       state.people[pid] = person;
       stockOf(state, person.home);
     }
-    // 需求隨時間增加（每遊戲小時固定量）
-    if (elapsed > 0) {
+    // 需求隨時間增加（每遊戲小時固定量）。W6：切磋中（30 遊戲分鐘）雙方需求暫停（#558）
+    if (elapsed > 0 && person.cur?.phase !== 'spar') {
       for (const k of NEED_KEYS) {
         person.needs[k] = round2(clamp(person.needs[k] + (NEEDS_CONFIG.perHour[k] * elapsed) / 60));
       }
@@ -395,6 +415,9 @@ export function tickLife(game: Game, now: number) {
       person.blockKey = blockKey;
       person.blockDone = [];
     }
+
+    // W6：切磋中／旁觀中由 w06-spar 管（打完才放回來）
+    if (person.cur?.phase === 'spar' || person.cur?.phase === 'watch') continue;
 
     const conversation = game.world.playerConversation(player);
     if (conversation) {
@@ -460,6 +483,34 @@ export function tickLife(game: Game, now: number) {
 
     if (!person.cur) {
       const pick = chooseNext(person, mod, blockKey, state, () => game.rng(), ctx);
+      // W6：候選活動「切磋」（#558）。w06-spar 關閉時不算、不耗亂數，跟 W5 相同
+      if (w.enabled[W06_SPAR]) {
+        const spar = sparCandidate(
+          game,
+          gm,
+          clock.day,
+          pid,
+          person,
+          state.people,
+          (id) => personPlace(state!.people[id], game.world.players.get(id as any)!),
+          () => game.rng(),
+          LIFE_RULES.noise,
+        );
+        if (spar && (!pick || spar.score > pick.score)) {
+          delete person.idleSince;
+          const other = state.people[spar.target];
+          const otherPlayer = game.world.players.get(spar.target as any)!;
+          const place = personPlace(person, player);
+          interruptActivity(state, spar.target, other, gm, otherPlayer);
+          stopPlayer(player);
+          person.cur = { act: 'spar', obj: '', slot: -1, phase: 'spar', since: gm, retries: 0 };
+          other.cur = { act: 'spar', obj: '', slot: -1, phase: 'spar', since: gm, retries: 0 };
+          delete other.idleSince;
+          beginSpar(game, now, gm, clock.day, pid, spar.target, person.cid, other.cid, place);
+          pushLog(state, { t: gm, who: person.cid, act: 'spar', obj: other.cid, place });
+          continue;
+        }
+      }
       if (!pick) {
         if (person.idleSince === undefined) person.idleSince = gm;
         continue;

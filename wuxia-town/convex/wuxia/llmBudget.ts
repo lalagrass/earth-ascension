@@ -12,7 +12,9 @@ export type BudgetKind =
   | 'conversation.leave'
   | 'memory.summary'
   | 'memory.importance'
-  | 'memory.reflection';
+  | 'memory.reflection'
+  // W6：切磋旁白
+  | 'spar.narration';
 
 /** 未設定、空字串、非正數 → 不設上限（跟上游行為一致）。 */
 export function parseTokenCap(raw: string | undefined): number | null {
