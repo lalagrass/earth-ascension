@@ -191,6 +191,19 @@ describe('心念的效果', () => {
     expect(currentBlock('a-qing', 630, ctx)?.do).toEqual(['hit_dummy', 'hit_sandbag']);
     expect(currentBlock('a-qing', 8 * 60, ctx)?.do).toEqual(['hit_dummy']);
   });
+  test('W6: stronger adds 1 hour right after the dojo training (10-11 alone, 11-12 when learn holds 10-11)', () => {
+    const alone = world(withThought('a-qing', 'stronger'), 100);
+    const ctxA = schedCtx(alone.enabled, 3, { blocks: mindBlocks(alone), closed: closedOverlays(alone) });
+    expect(currentBlock('a-qing', 630, ctxA)?.label).toBe('武館加練（想變強）');
+    expect(currentBlock('a-qing', 690, ctxA)).toBeUndefined();
+    const m = withThought('a-qing', 'learn');
+    m.people.p.thoughts.push({ id: 'stronger', s: 50, since: 1, causes: [] });
+    const both = world(m, 100);
+    const ctxB = schedCtx(both.enabled, 3, { blocks: mindBlocks(both), closed: closedOverlays(both) });
+    expect(currentBlock('a-qing', 630, ctxB)?.do).toEqual(['hit_dummy', 'hit_sandbag']);
+    expect(currentBlock('a-qing', 690, ctxB)?.label).toBe('武館加練（想變強）');
+    expect(mindBlocks(both)!['a-qing'].length).toBe(2);
+  });
   test('想學武：對周教頭邀請機率 ×2；其他人 ×1', () => {
     const m = withThought('a-qing', 'learn');
     expect(inviteMultiplier(m, 'p', 'zhou-jiaotou', false)).toBe(2);

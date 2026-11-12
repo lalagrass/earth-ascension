@@ -15,6 +15,8 @@
 //    W5 起用預設設定（w05-mind 開，武館由心念重開）仍須通過
 // 14.（W5）mind-diff A/B/C/D：關＝W4、開 14 日練功多 30%／重開由事件決定、不同 seed 不同日、丟記憶心念延後
 //    （WUXIA_CHECK_MIND_DAYS=0 可略過，CI 不略過）
+// 15.（W6）spar-diff A/B/C：關＝W5、判定勝率（教頭對新手 > 90%、相近 40–60%）、30 日切磋報告（輸了 → 想變強，追得到記憶 id）
+//    第 13 項 W6 起改用「關掉切磋」的世界量 W4 的練功曲線（切磋另有成長，見 docs/wuxia/W6.md），那個 run 在這裡當對照組共用
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
@@ -25,6 +27,8 @@ import { folkDiff } from './folk-diff';
 import { lifeDiff } from './life-diff';
 import { dojoDiff } from './dojo-diff';
 import { mindDiff } from './mind-diff';
+import { sparDiffA, sparDiffB, sparDiffC } from './spar-diff';
+import { W06_SPAR } from '../../convex/wuxia/w06_spar/data';
 import { skillReport } from './skill-report';
 import { runHeadless } from './headless';
 import { quietConsole } from './sim';
@@ -213,12 +217,16 @@ else fail('prompts.gen.ts 不同步：請執行 npm run wuxia:gen-prompts');
 }
 
 // 13
+let skillRunOff: any;
 {
   const days = Number(process.env.WUXIA_CHECK_SKILL_DAYS ?? 30);
   if (days > 0) {
-    const run = runHeadless({ seed: 7, minutes: 0, untilGameMinute: days * 1440, trace: true });
+    // W6：W4 的驗收量的是「練功」的成長曲線；切磋另有成長（#558「雙方 fist + 打樁 2 小時的量」），所以關掉 w06-spar 量。
+    // 開著切磋的 30 日拳腳寫在第 15 項（資訊）與 docs/wuxia/W6.md。
+    const run = runHeadless({ seed: 7, minutes: 0, untilGameMinute: days * 1440, trace: true, elements: { [W06_SPAR]: false } });
+    skillRunOff = run.summary;
     const r = skillReport(run.summary.dojo!, 'a-qing');
-    for (const v of r.verdicts) (v.ok ? ok : fail)(`skill-report ${days} 日（hash ${run.finalHash.slice(0, 16)}…）${v.rule}：${v.value}`);
+    for (const v of r.verdicts) (v.ok ? ok : fail)(`skill-report ${days} 日（--off w06-spar，hash ${run.finalHash.slice(0, 16)}…）${v.rule}：${v.value}`);
   } else ok('（WUXIA_CHECK_SKILL_DAYS=0，略過 30 日技能報告）');
 }
 
@@ -236,6 +244,27 @@ else fail('prompts.gen.ts 不同步：請執行 npm run wuxia:gen-prompts');
     (r.resultC.ok ? ok : fail)(`mind-diff C：武館重開的日子 ${JSON.stringify(r.resultC.openDays)}`);
     (r.resultD.ok ? ok : fail)(`mind-diff D：丟掉記憶 #${r.resultD.dropped}，阿青「想學武」第 ${r.resultD.firstDay} 日 → ${r.resultD.againDay ?? '沒出現'}`);
   } else ok('（WUXIA_CHECK_MIND_DAYS=0，略過 mind-diff）');
+}
+
+// 15
+{
+  const a = sparDiffA(7, Number(MINUTES));
+  (a.ok ? ok : fail)(`spar-diff A：w06-spar 關＝W5 世界 hash ${a.hash}（3 日 ${a.hash3.slice(0, 16)}…）`);
+  const b = sparDiffB(7);
+  (b.strongOk ? ok : fail)(`spar-diff B：周教頭對阿青 200 場勝率 ${(b.strong * 100).toFixed(1)}% > 90%`);
+  (b.closeOk ? ok : fail)(
+    `spar-diff B：相近（拳腳差 0–49，其他相同）弱方勝率 ${b.rows.map((r) => `${r.gap}:${(r.lowAsA * 100).toFixed(0)}/${(r.lowAsB * 100).toFixed(0)}%`).join(' ')}（40–60%）`,
+  );
+  const days = Number(process.env.WUXIA_CHECK_SPAR_DAYS ?? 30);
+  if (days > 0) {
+    const on = runHeadless({ seed: 7, minutes: 0, untilGameMinute: days * 1440, trace: true });
+    const off =
+      skillRunOff && Number(process.env.WUXIA_CHECK_SKILL_DAYS ?? 30) === days
+        ? skillRunOff
+        : runHeadless({ seed: 7, minutes: 0, untilGameMinute: days * 1440, trace: true, elements: { [W06_SPAR]: false } }).summary;
+    for (const v of sparDiffC(on.summary, off)) (v.ok ? ok : fail)(`spar-report ${days} 日（hash ${on.finalHash.slice(0, 16)}…）${v.rule}：${v.value}`);
+    ok(`（資訊）切磋開著時阿青第 ${days} 日拳腳 ${on.summary.dojo?.final?.['a-qing']?.fist}，關掉 ${off.dojo?.final?.['a-qing']?.fist}`);
+  } else ok('（WUXIA_CHECK_SPAR_DAYS=0，略過 30 日切磋報告）');
 }
 
 if (failures) {

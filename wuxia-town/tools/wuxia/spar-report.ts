@@ -157,11 +157,20 @@ export function sparReport(run: any, who: string, off?: any) {
       value: `第 ${first.day}–${lastDay} 日想變強時段練功 ${slotOn} 分、全日 ${dayOn} 分`,
     });
     if (off) {
+      // 因果：關掉切磋時「想變強」只靠升階，7 日後就開始減弱；開著時切磋輸讓它維持
+      const sOn = Number(has(run, lastDay)) || 0;
+      const sOff = Number(has(off, lastDay)) || 0;
       verdicts.push({
-        rule: `對照關掉切磋（同 seed）：第 ${first.day}–${lastDay} 日想變強時段練功開比關多`,
-        ok: slotOn > slotOff,
-        value: `開 ${slotOn} 分 vs 關 ${slotOff} 分（全日 開 ${dayOn} vs 關 ${dayOff}）`,
+        rule: `對照關掉切磋（同 seed）：第 ${lastDay} 日「想變強」強度 開 > 關（輸了才維持得住）`,
+        ok: sOn > sOff,
+        value: `開 ${sOn} vs 關 ${sOff}`,
       });
+      const fOn = run.dojo?.final?.[cid]?.fist;
+      const fOff = off.dojo?.final?.[cid]?.fist;
+      say('');
+      say(`資訊：第 ${first.day}–${lastDay} 日練功 開 ${dayOn} 分 vs 關 ${dayOff} 分（想變強時段 開 ${slotOn} vs 關 ${slotOff}）。` +
+        `切磋本身佔掉練功時間（每場 30 遊戲分鐘，多半在早上練功時段裡），所以總分鐘開比關少；` +
+        `切磋的成長（每場拳腳 + 打樁 2 小時的量）補回來：第 ${lastDay} 日拳腳 開 ${fOn} vs 關 ${fOff}。`);
     }
   }
   say('');

@@ -7,6 +7,9 @@ import type { WuxiaState } from '../state';
 import { readClock } from '../clock';
 
 export const W05_MIND = 'w05-mind';
+
+/** 心念加的日程時段。W6：ifThought／unlessThought＝只在這個人有／沒有某心念時才加。 */
+export type ThoughtBlock = ScheduleBlock & { ifThought?: string; unlessThought?: string };
 /** 跟 w04_dojo 相同的 id（避免 import w04_dojo/index 造成循環） */
 const W04_DOJO_ID = 'w04-dojo';
 
@@ -99,7 +102,7 @@ export type ThoughtDef = {
     reopenDojo?: boolean;
     schedule?: Record<
       string,
-      { dojoClosed?: ScheduleBlock[]; dojoOpen?: ScheduleBlock[]; always?: ScheduleBlock[] }
+      { dojoClosed?: ThoughtBlock[]; dojoOpen?: ThoughtBlock[]; always?: ThoughtBlock[] }
     >;
   };
 };
@@ -242,10 +245,16 @@ export function mindBlocks(w: WuxiaState): Record<string, ScheduleBlock[]> | und
     for (const t of p.thoughts) {
       const sched = THOUGHT_BY_ID[t.id]?.effects.schedule?.[p.cid];
       if (!sched) continue;
+      const ids = p.thoughts.map((x) => x.id);
+      // W6：時段可以只在「有／沒有」另一個心念時才加（ifThought／unlessThought，見 thoughts.json 想變強）
       const blocks = [
         ...(sched.always ?? []),
         ...(hasDojo ? ((open ? sched.dojoOpen : sched.dojoClosed) ?? []) : []),
-      ];
+      ].filter(
+        (b: ThoughtBlock) =>
+          (b.ifThought === undefined || ids.includes(b.ifThought)) &&
+          (b.unlessThought === undefined || !ids.includes(b.unlessThought)),
+      );
       if (blocks.length) (out[p.cid] ??= []).push(...blocks);
     }
   }
