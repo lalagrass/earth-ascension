@@ -88,6 +88,12 @@
 | W7 | `src/components/Game.tsx` | 右側加武館面板 `DojoPanel`（名號、師父、弟子名單） | #559「武館頁顯示名號、師父、弟子名單」 |
 | W7 | `src/components/PlayerDetails.tsx` | 人物詳情分成「概況／關係」兩個分頁（`DetailTabs`） | #559「人物詳情新增『關係』分頁」 |
 | W7 | `package.json`（JSON 無法加註解） | `wuxia:bond-report`、`wuxia:bond-trace`、`wuxia:bond-diff` 指令 | #559 驗收工具 |
+| W8 | `convex/agent/conversation.ts` | `queryPromptData` 多回傳 `wuxiaRumors`（這個人最近聽說的傳聞，最多 3 則）；start／continue／leave 三處把它傳給繁中 prompt（「你最近聽說：…」） | #560「對話 prompt 加入『你最近聽說：…』」；傳聞只決定說什麼 |
+| W8 | `convex/aiTown/agent.ts` | `runAgentOperation` 多一個 `wuxiaChronicleRewrite`（亥時鎮誌改寫，`convex/wuxia/w08_jianghu/rewrite.ts`） | #560「每遊戲日亥時用一個 operation 把當日事件改寫」 |
+| W8 | `convex/_generated/api.d.ts`（產生檔） | 加上 `wuxia/w08_jianghu/*` 模組（`npx convex dev` 會重新產生同樣內容） | Convex 產生檔 |
+| W8 | `src/components/Game.tsx` | 畫面左下加「山腳鎮誌」面板 `ChroniclePanel` | #560「畫面加『山腳鎮誌』面板，依日期列出」 |
+| W8 | `src/components/PixiGame.tsx` | 疊上外人圖層 `JianghuLayer`（行商、俠客、山賊） | 外人不是 AI Town 玩家，另外畫（DEVIATIONS W8-2） |
+| W8 | `package.json`（JSON 無法加註解） | `wuxia:chronicle`、`wuxia:rumor-trace`、`wuxia:jianghu-report`、`wuxia:jianghu-diff` 指令 | #560 驗收工具 |
 
 ## 上游刻意保留不改的隨機／時間
 
