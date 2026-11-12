@@ -36,6 +36,10 @@
     "wuxia:bond-report": "tsx tools/wuxia/bond-report.ts",
     "wuxia:bond-trace": "tsx tools/wuxia/bond-trace.ts",
     "wuxia:bond-diff": "tsx tools/wuxia/bond-diff.ts",
+    "wuxia:chronicle": "tsx tools/wuxia/chronicle.ts",
+    "wuxia:rumor-trace": "tsx tools/wuxia/rumor-trace.ts",
+    "wuxia:jianghu-report": "tsx tools/wuxia/jianghu-report.ts",
+    "wuxia:jianghu-diff": "tsx tools/wuxia/jianghu-diff.ts",
     "wuxia:check": "npm test && tsx tools/wuxia/check.ts"
   },
   "dependencies": {
