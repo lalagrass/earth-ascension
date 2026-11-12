@@ -19,6 +19,8 @@ import { dayTint } from '../../convex/wuxia/clock.ts';
 import { TownStatus } from '../wuxia/TownStatus.tsx';
 // WUXIA-PATCH(W7): 武館面板
 import { DojoPanel } from '../wuxia/DojoPanel.tsx';
+// WUXIA-PATCH(W8): 山腳鎮誌面板
+import { ChroniclePanel } from '../wuxia/ChroniclePanel.tsx';
 import { lifeOf } from '../wuxia/life.ts';
 
 export const SHOW_DEBUG_UI = !!import.meta.env.VITE_SHOW_DEBUG_UI;
@@ -74,6 +76,8 @@ export default function Game() {
           />
           {/* WUXIA-PATCH(W7): 武館面板（館名、師父、弟子、入門日；w07-bond 開啟且武館已開時） */}
           <DojoPanel wuxia={game.world.wuxia} />
+          {/* WUXIA-PATCH(W8): 山腳鎮誌面板（w08-jianghu 開啟時） */}
+          <ChroniclePanel world={game.world} />
           <div className="absolute inset-0">
             <div className="container">
               {/* WUXIA-PATCH(W1): 換皮時底色改紙色 */}

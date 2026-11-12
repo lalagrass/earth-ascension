@@ -245,3 +245,8 @@ body.wuxia-skin .button img {
 .wuxia-dojo-panel { position: absolute; right: 0.5rem; bottom: 0.5rem; z-index: 10; max-width: 46%; background: rgba(245, 236, 214, 0.92); color: #3b2a1a; border: 2px solid #8a6a43; font-size: 0.8rem; line-height: 1.3; padding: 0.3rem 0.5rem; }
 .wuxia-dojo-name { font-size: 1rem; font-weight: bold; color: #7a2a20; letter-spacing: 0.1em; }
 @media (max-width: 640px) { .wuxia-dojo-panel { font-size: 0.7rem; max-width: 60%; } }
+/* W8（#560）：山腳鎮誌面板（左下）＋外人圖層 */
+.wuxia-chronicle-panel { position: absolute; left: 0.5rem; bottom: 0.5rem; z-index: 10; max-width: 46%; max-height: 42%; overflow-y: auto; background: rgba(245, 236, 214, 0.94); color: #3b2a1a; border: 2px solid #8a6a43; font-size: 0.8rem; line-height: 1.35; padding: 0.3rem 0.5rem; pointer-events: auto; }
+.wuxia-chronicle-body p { margin: 0.2rem 0; }
+.wuxia-chronicle-now { color: #7a2a20; font-weight: bold; }
+@media (max-width: 640px) { .wuxia-chronicle-panel { font-size: 0.7rem; max-width: 60%; max-height: 35%; } }

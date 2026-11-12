@@ -22,6 +22,8 @@ import { DojoLayer } from '../wuxia/DojoLayer.tsx';
 import { plaqueName } from '../wuxia/bond.ts';
 // WUXIA-PATCH(W6): 切磋的勢點、擊中白光、旁白框
 import { SparLayer } from '../wuxia/SparLayer.tsx';
+// WUXIA-PATCH(W8): 外人（行商、俠客、山賊）圖層
+import { JianghuLayer } from '../wuxia/JianghuLayer.tsx';
 // WUXIA-PATCH(W5): 武館改由心念重開，畫面看 openedAt（dojoOpened）
 import { dojoOpened } from '../wuxia/dojo.ts';
 import { skinEnabled, worldClock } from '../wuxia/skin.ts';
@@ -146,6 +148,8 @@ export const PixiGame = (props: {
           historicalTime={props.historicalTime}
         />
       ))}
+      {/* WUXIA-PATCH(W8): 外人畫在人物旁（w08-jianghu 關閉或沒有外人時不畫） */}
+      {skin && <JianghuLayer world={props.game.world} tileDim={tileDim} time={props.historicalTime ?? Date.now()} />}
       {/* WUXIA-PATCH(W6): 切磋畫面層疊在人物上面（w06-spar 關閉時不畫） */}
       {skin && (
         <SparLayer
