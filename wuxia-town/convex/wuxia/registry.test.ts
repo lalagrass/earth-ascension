@@ -1,5 +1,5 @@
 import { enabledElements, initElements, runElements, WuxiaElement } from './registry';
-import { initWuxiaState } from './state';
+import { defaultWuxiaConfig, initWuxiaState } from './state';
 
 describe('wuxia element registry', () => {
   const calls: string[] = [];
@@ -27,12 +27,13 @@ describe('wuxia element registry', () => {
     expect(enabledElements(state).map((e) => e.id)).toEqual(['w01-skin']);
     expect(initWuxiaState({ elements: { 'w01-skin': false }, seed: 7, timeScale: 60 }).enabled).toEqual({});
   });
-  test('W7 default config enables w01-skin to w06-spar and w07-bond', () => {
+  test('W8 default config enables w01-skin to w07-bond and w08-jianghu', () => {
     // W3 刻意改變：預設開 w03-life（W2 時是 ['w01-skin', 'w02-folk']）
     // W4 刻意改變：預設開 w04-dojo（W3 時是 ['w01-skin', 'w02-folk', 'w03-life']，見 docs/wuxia/W4.md）
     // W5 刻意改變：預設開 w05-mind（W4 時是 [..., 'w04-dojo']，見 docs/wuxia/W5.md）
     // W6 刻意改變：預設開 w06-spar（W5 時是 [..., 'w05-mind']，見 docs/wuxia/W6.md）
     // W7 刻意改變：預設開 w07-bond（W6 時是 [..., 'w06-spar']，見 docs/wuxia/W7.md）
+    // W8 刻意改變：預設開 w08-jianghu（W7 時是 [..., 'w07-bond']，見 docs/wuxia/W8.md）
     expect(enabledElements(initWuxiaState()).map((e) => e.id)).toEqual([
       'w01-skin',
       'w02-folk',
@@ -41,7 +42,12 @@ describe('wuxia element registry', () => {
       'w05-mind',
       'w06-spar',
       'w07-bond',
+      'w08-jianghu',
     ]);
+  });
+  test('w08-jianghu requires w07-bond（關掉 w07-bond 時 w08-jianghu 不凍結進 enabled）', () => {
+    const st = initWuxiaState({ elements: { ...defaultWuxiaConfig.elements, 'w07-bond': false }, seed: 7, timeScale: 60 });
+    expect(st.enabled['w08-jianghu']).toBeUndefined();
   });
   test('w06-spar requires w04-dojo and w05-mind (diamond requires is not a cycle)', () => {
     const all = {
