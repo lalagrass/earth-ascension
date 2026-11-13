@@ -3,6 +3,7 @@
 // 改由本元素在引擎 tick 內（規則、確定性、只用 game.rng()）替每個閒下來的人選下一件事、預約物件座位、
 // 走過去、計時、套用效果、釋放預約。另含 #562 W3 補充：每戶物資（水／飯／柴）、日程留白、對話 90 遊戲分鐘上限。
 // 狀態存在 world.wuxia.elements['w03-life']（#549 §2 慣例；#562 寫的 wuxia.life.* 即此處）。
+import { a1On } from '../a1_base';
 import type { Game } from '../../aiTown/game';
 import type { Player } from '../../aiTown/player';
 import type { WuxiaElement } from '../registry';
@@ -100,6 +101,8 @@ export type Person = {
   blockDone: string[];
   /** 有 requires.minGap 的活動上次做完的遊戲分鐘 */
   lastDone?: Record<string, number>;
+  /** A1（#564 第 8 項）：最近連續開始的同一活動與次數（[活動, 次數]）；超過 needs.json repeat.after 次後日程權重遞減 */
+  streak?: [string, number];
   /** W9：玩家角色（w09-player 在加入時建立；AI 鎮民沒有這個欄位） */
   player?: 1;
 };
@@ -245,6 +248,14 @@ export function missedBlockStart(
   return undefined;
 }
 
+/** A1（#564 第 8 項）：連做第 n 次（n > after）時日程權重 × factor^(n − after)；沒連做＝1。 */
+export function repeatFactor(person: Person, actId: string): number {
+  const st = person.streak;
+  if (!st || st[0] !== actId || NEEDS_CONFIG.repeat.exempt.includes(actId)) return 1;
+  const over = st[1] + 1 - NEEDS_CONFIG.repeat.after;
+  return over > 0 ? Math.pow(NEEDS_CONFIG.repeat.factor, over) : 1;
+}
+
 export type Candidate = { obj: string; act: string; slot: number; score: number; parts: string };
 
 /** 規則決策（#555「決策」）：分數＝日程權重＋需求急迫度＋小擾動。r 是 game.rng。 */
@@ -281,7 +292,7 @@ export function chooseNext(
     if (slot < 0) continue;
     for (const act of obj.activities) {
       if (!allowed(person, obj, act, minuteOfDay, state, ctx)) continue;
-      let score = sched(act.id);
+      let score = sched(act.id) * repeatFactor(person, act.id);
       for (const k of NEED_KEYS) {
         // 急迫度乘上這個活動能紓解多少（扣 20 以上算滿），喝茶順便止一點餓不會被當成吃飯
         const relief = -(act.needs?.[k] ?? 0);
@@ -325,6 +336,9 @@ function startDoing(game: Game, now: number, gm: number, state: LifeState, playe
     until: now + act.minutes * msPerGameMinute(game),
   };
   pushLog(state, { t: gm, who: person.cid, act: cur.act, obj: cur.obj });
+  // A1（a1-base 開啟時才記；關閉時 person 沒有 streak，repeatFactor＝1，跟 W9 相同）
+  if (a1On(game.world.wuxia))
+    person.streak = person.streak && person.streak[0] === cur.act ? [cur.act, person.streak[1] + 1] : [cur.act, 1];
 }
 
 function finish(state: LifeState, playerId: string, person: Person, gm: number, fraction: number) {

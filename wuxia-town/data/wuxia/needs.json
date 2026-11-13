@@ -12,6 +12,8 @@
   "talk_src": "旋鈕：一段對話結束悶 −15（聊天解悶，比喝茶 −25 少）",
   "urgency": {"soft": 70, "hard": 90, "softMax": 3, "hardBase": 3.5, "hardSlope": 0.1},
   "urgency_src": "推導＋旋鈕：soft 70／hard 90 是旋鈕；hardBase 3.5 推導自『> hard 一定壓過日程權重 3＋擾動 0.3』（3.5 > 3.3）；softMax 3＝日程權重；hardSlope 0.1 旋鈕",
+  "repeat": {"after": 3, "factor": 0.5, "exempt": ["sleep"]},
+  "repeat_src": "量測＋旋鈕：#564 第 8 項「同一活動連做超過 3 次時意願遞減」（after 3 是量測）；第 4 次起每多一次，該活動的日程權重 ×0.5（factor 是旋鈕；只降日程權重，需求急迫度不變，所以餓、累時照樣去吃、去睡）。exempt：睡覺是一小時一段接著睡，不算「重複」（旋鈕）",
   "stock": {"initial": {"water": 2, "meal": 2, "wood": 2}, "max": {"water": 8, "meal": 8, "wood": 8}},
   "stock_src": "量測＋旋鈕：#562 W3-4「每戶一份物資」是量測；開局 2、上限 8 是旋鈕（一戶一天吃 3 份飯，煮一次 4 份）"
 }

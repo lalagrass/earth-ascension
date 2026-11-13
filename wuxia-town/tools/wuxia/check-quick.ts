@@ -3,7 +3,7 @@
 // 項目：
 //   q1 型別檢查 tsc --noEmit
 //   q2 單元測試 npm test（jest，含各步 A 類規則測試）
-//   q3 headless seed 7 跑 3 遊戲日兩次（兩個子行程）hash 相同；seed 8 不同；seed 7 的 3 日 hash 等於釘住的值
+//   q3 headless seed 7 跑 3 遊戲日兩次（兩個子行程）hash 相同；seed 8 不同；seed 7 的 3 日 hash 等於釘住的值；--off a1-base 等於 W9 的值
 //   q4 引擎內不得用 Math.random／randomUUID／Date.now（convex/aiTown、convex/engine 只容許 action 檔；convex/wuxia、src/wuxia/engine 全禁）
 //   q5 git 追蹤的 public/assets 為空（上游美術不進 repo）；public/wuxia/ 每個檔都登記在 CREDITS.md
 //   q6 docs/wuxia/ 單檔 ≤1 MB、GIF ≤3 MB
@@ -19,7 +19,7 @@ import { promptsInSync } from './gen-prompts';
 
 const ROOT = new URL('../..', import.meta.url).pathname;
 // seed 7、預設設定、3 遊戲日的 hash（W8／W9 起不變；W8.md「hash 與報告變化」）。引擎刻意改變 hash 時更新這裡並在 An.md 記一行
-export const QUICK_HASH_SEED7_3D = '4bc77029e423be2d377d12a2cab10ed5fc06ebcb28185258cf3ec07c5075d644';
+export const QUICK_HASH_SEED7_3D = '51df021fb6ee5c7835266bc814bea47e65162226e730ae51e9e0fcc4d7b5325a';
 
 let failures = 0;
 const lines: string[] = [];
@@ -42,7 +42,9 @@ function run(cmd: string, args: string[]): Promise<{ code: number | null; out: s
   });
 }
 const tsx = join(ROOT, 'node_modules/.bin/tsx');
-const headless = (seed: number) => run(tsx, [join(ROOT, 'tools/wuxia/headless.ts'), '--seed', String(seed), '--days', '3']);
+const headless = (seed: number, ...extra: string[]) => run(tsx, [join(ROOT, 'tools/wuxia/headless.ts'), '--seed', String(seed), '--days', '3', ...extra]);
+/** W9 的 seed 7 3 日 hash（A1 之前）：--off a1-base 必須還是這個值（a1-base 關掉跟 W9 逐位元組相同） */
+export const W9_HASH_SEED7_3D = '4bc77029e423be2d377d12a2cab10ed5fc06ebcb28185258cf3ec07c5075d644';
 const hashOf = (out: string) => out.match(/^hash ([0-9a-f]{64})$/m)?.[1];
 
 function walk(dir: string): string[] {
@@ -128,8 +130,7 @@ export function staticChecks(): void {
 async function main() {
   const t0 = performance.now();
   // 重的子行程同時起跑
-  const tsx = join(ROOT, 'node_modules/.bin/tsx');
-  const [tsc, jest, h7a, h7b, h8, par, audit] = await Promise.all([
+  const [tsc, jest, h7a, h7b, h8, par, audit, h7off] = await Promise.all([
     run(join(ROOT, 'node_modules/.bin/tsc'), ['--noEmit', '-p', '.']),
     run('npm', ['test', '--', '--silent']),
     headless(7),
@@ -137,6 +138,7 @@ async function main() {
     headless(8),
     run(tsx, ['tools/wuxia/parity.ts', '--seed', '7', '--days', '1']),
     run(tsx, ['tools/wuxia/const-audit.ts']),
+    headless(7, '--off', 'a1-base'),
   ]);
   staticChecks();
   // q1
@@ -156,6 +158,9 @@ async function main() {
   else fail(`q3 headless seed 8 hash 與 seed 7 相同或沒跑完 ${c}`);
   if (a === QUICK_HASH_SEED7_3D) ok('q3 seed 7 3 日 hash 等於釘住的值（tools/wuxia/check-quick.ts QUICK_HASH_SEED7_3D）');
   else fail(`q3 seed 7 3 日 hash ${a} ≠ 釘住的 ${QUICK_HASH_SEED7_3D}（刻意改變請更新並在 An.md 記錄）`);
+  const off = hashOf(h7off.out);
+  if (off === W9_HASH_SEED7_3D) ok(`q3 --off a1-base seed 7 3 日 hash ＝ W9 的 ${W9_HASH_SEED7_3D.slice(0, 16)}…（A1 修補可關）`);
+  else fail(`q3 --off a1-base seed 7 3 日 hash ${off} ≠ W9 的 ${W9_HASH_SEED7_3D}`);
   // q8
   if (par.code === 0 && /parity OK/.test(par.out)) ok(`q8 wuxia:parity seed 7 1 日 headless ＝ local 直接跑／1×／4×／16×／64×（${(par.ms / 1000).toFixed(1)} 秒）`);
   else fail(`q8 wuxia:parity 不一致或沒跑完\n${par.out.slice(-2000)}`);

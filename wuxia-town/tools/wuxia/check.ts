@@ -213,9 +213,11 @@ function playerChild(tag: string): Promise<{ report?: any; journal: string; erro
   });
 }
 const playerRuns = GROUP('player') ? [playerChild('a'), playerChild('b')] : [];
-// W8 的 hash（docs/wuxia/W8.md「hash 與報告變化」；CI 43445035091）：玩家不加入時必須一樣
-const W8_HASH_SEED7_30M = '47c2308e3633c9a35df9993d67fe6ed78ac6c7532c5ec804a87f837052c4b7cf';
-const W8_HASH_SEED7_3D_PREFIX = '4bc77029e423be2d';
+// W8 的 hash（docs/wuxia/W8.md「hash 與報告變化」；CI 43445035091）：玩家不加入時必須一樣。
+// A1（#564 第 8 項，docs/wuxia/A1.md）：元素 a1-base（林嫂連做遞減、違規每日一次）開啟時刻意改變 hash，
+// 30 分 47c2308e… → 2169cc18…、3 日 4bc77029… → 51df021f…（變數名沿用，值是 A1 的；--off a1-base 時仍是 W8／W9 的值，見 check:quick q3）
+const W8_HASH_SEED7_30M = '2169cc18da2c304aa8ba100c5b1972d34510bd8db71ef97b34403d137a90122a';
+const W8_HASH_SEED7_3D_PREFIX = '51df021fb6ee5c78';
 
 let failures = 0;
 const ok = (msg: string) => process.stdout.write(`ok   ${msg}\n`);

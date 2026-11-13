@@ -8,6 +8,7 @@
 //      尊師（師父邀請必接受）是硬規則，在 agent.ts 的接受邀請那裡（hooks.ts）。
 //   5. 師父日程的「指點徒弟」時段（弟子練功的時候師父去武館指點）：心念評估或收徒後重算，w03-life 的日程讀它。
 // 只用規則與 tick 的 now，不耗 game.rng()、不等 LLM。狀態存在 world.wuxia.elements['w07-bond']。
+import { a1On } from '../a1_base';
 import type { Game } from '../../aiTown/game';
 import type { Player } from '../../aiTown/player';
 import type { WuxiaElement } from '../registry';
@@ -137,6 +138,7 @@ export function tickBond(game: Game, now: number) {
   if (state.evalDay === 0) state.evalDay = clock.day;
   if (clock.day > state.evalDay && mod >= BONDS.evalMinuteOfDay) {
     state.evalDay = clock.day;
+    if (a1On(w)) state.violationPerDay = 1;
     state.bonds = computeBonds(mind, state, gm);
   }
 

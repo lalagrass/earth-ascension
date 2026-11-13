@@ -78,6 +78,8 @@ export const NEEDS_CONFIG = needsJson as {
   talk: Partial<Needs>;
   urgency: { soft: number; hard: number; softMax: number; hardBase: number; hardSlope: number };
   stock: { initial: Stock; max: Stock };
+  /** A1（#564 第 8 項）：同一活動連做超過 after 次，日程權重每多一次 ×factor */
+  repeat: { after: number; factor: number; exempt: string[] };
 };
 export const NEED_KEYS: Need[] = NEEDS_CONFIG.needs;
 export const RESOURCES: Resource[] = ['water', 'meal', 'wood'];

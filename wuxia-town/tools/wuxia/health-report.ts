@@ -205,7 +205,7 @@ export function health(opts: { seed: number; days: number; agents?: number; onWi
           linKinds.add(p.cur.act);
           if (p.cur.act === 'brew_tea') lin.brew++;
           linRun = linRun.act === p.cur.act ? { act: p.cur.act, n: linRun.n + 1 } : { act: p.cur.act, n: 1 };
-          lin.maxRepeat = Math.max(lin.maxRepeat, linRun.n);
+          if (p.cur.act !== 'sleep') lin.maxRepeat = Math.max(lin.maxRepeat, linRun.n);
         }
       }
       for (const k of NEED_KEYS) {
@@ -253,7 +253,7 @@ function main() {
       const lines = [`## 第 ${w.fromDay}–${w.toDay} 日`];
       lines.push(`對話 ${w.conversations}、切磋 ${w.spars}、事件 ${JSON.stringify(w.events)}、關係變動 ≥10 的對數 ${w.bondsChanged}、連續 3 日時間表相同 ${w.sameScheduleRuns} 人`);
       lines.push(`拳腳 ${JSON.stringify(w.skills)}、心念數 ${JSON.stringify(w.thoughts)}`);
-      lines.push(`教頭對徒弟敬重 ${JSON.stringify(w.coachRespect)}；林嫂每日活動 ${w.linSao.kindsPerDay} 種、煮茶 ${w.linSao.brewPerDay} 次／日、同一活動最多連 ${w.linSao.maxRepeat} 次`);
+      lines.push(`教頭對徒弟敬重 ${JSON.stringify(w.coachRespect)}；林嫂每日活動 ${w.linSao.kindsPerDay} 種、煮茶 ${w.linSao.brewPerDay} 次／日、同一活動（睡覺除外）最多連 ${w.linSao.maxRepeat} 次`);
       lines.push(`每 step ${w.msPerStep.toFixed(3)} ms、狀態 ${(w.stateBytes / 1024).toFixed(0)} KB`);
       for (const [who, m] of Object.entries(w.activityShare)) {
         const o = w.overHours[who];

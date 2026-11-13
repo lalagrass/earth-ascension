@@ -8,6 +8,7 @@ import rulesJson from '../../../data/wuxia/rules.json';
 import type { WuxiaState } from '../state';
 import type { BondEvalCtx, Memory, MindPerson, MindState } from '../w05_mind/data';
 import { initialSkills, Skills } from '../w04_dojo/data';
+import { readClock } from '../clock';
 
 export const W07_BOND = 'w07-bond';
 
@@ -88,6 +89,8 @@ export type BondState = {
   evalDay: number;
   /** bonds[A][B]＝A 對 B 的三軸（#559「快取在 wuxia.bonds」；放在元素狀態裡，見 DEVIATIONS W7-1） */
   bonds: Record<string, Record<string, Bond>>;
+  /** A1（a1-base）：1＝「徒弟違規」每遊戲日最多算一次（關閉時沒有這個欄位，跟 W9 相同） */
+  violationPerDay?: 1;
   disciples: Record<string, Disciple>;
   /** 日程加的時段（人物 id → 時段）：弟子的「辰時練功（門規）」、師父的「指點徒弟」；w03-life 的日程讀它 */
   masterBlocks: Record<string, Array<{ from: number; to: number; label: string; do: string[] }>>;
@@ -195,9 +198,16 @@ export function contributions(
   const since = gm - BONDS.windowDays * 1440;
   let won = 0;
   let lost = 0;
+  // A1（#564 第 8 項，a1-base）：師父對同一個徒弟的「徒弟違規」每個遊戲日最多算一次（記憶照記，敬重只扣一次）
+  const violatedDays = new Set<number>();
   for (const m of person.memories) {
     if (m.t < since || m.t > gm) continue;
     if (aboutWhom(m) !== cb) continue;
+    if (m.kind === 'disciple_violated' && state?.violationPerDay) {
+      const d = readClock(m.t).day;
+      if (violatedDays.has(d)) continue;
+      violatedDays.add(d);
+    }
     if (m.kind === 'spar_won') won++;
     if (m.kind === 'spar_lost') lost++;
     const key = effectKey(m);
