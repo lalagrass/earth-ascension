@@ -9,7 +9,7 @@
 import { readFileSync } from 'node:fs';
 import { parseArgs, quietConsole } from './sim';
 import { runHeadless } from './headless';
-import { EVENT_KINDS, JIANGHU, JianghuState } from '../../convex/wuxia/w08_jianghu/data';
+import { EVENT_KINDS, JIANGHU, JianghuState, cidName } from '../../convex/wuxia/w08_jianghu/data';
 import { rumorTrace } from './rumor-trace';
 
 export type Verdict = { rule: string; ok: boolean; value: string };
@@ -31,11 +31,11 @@ export function jianghuReport(summaries: any[]) {
       const o = h.outcome;
       const brief =
         h.kind === 'bandit'
-          ? `${o.count} 名山賊，${o.outcome === 'fled' ? `被 ${o.heroes.join('、')} 打跑` : `搶走 ${o.loot} 箱`}`
+          ? `${o.count} 名山賊，${o.outcome === 'fled' ? `被 ${o.heroes.map(cidName).join('、')} 打跑` : `搶走 ${o.loot} 箱`}`
           : h.kind === 'xiake'
             ? `${o.name} 住 ${o.stay} 日，切磋 ${o.bouts.filter((b: any) => b.opp).length} 場`
             : h.kind === 'xiaobi'
-              ? `${o.mode ?? ''} ${o.results?.length ?? 0} 場，頭籌 ${o.winner ?? '-'}`
+              ? `${o.mode ?? ''} ${o.results?.length ?? 0} 場，頭籌 ${o.winner ? cidName(o.winner) : '-'}`
               : `說「${o.tale}」，${o.listeners.length} 人聽`;
       rows.push(`  第 ${String(h.day).padStart(2)}–${Math.floor((h.endGm + 360) / 1440) + 1} 日 #${h.id} ${h.name}：${brief}；來因 ${h.causes.length ? h.causes.map((x) => `#${x}`).join(' ') : '-'}${h.forced ? '（強制）' : ''}`);
       if ((h.kind === 'xiake' || h.kind === 'bandit') && !h.forced) {

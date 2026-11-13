@@ -32,7 +32,7 @@ export function rumorTrace(st: JianghuState, rid: number) {
 export function rumorTraceText(st: JianghuState, rid: number): string {
   const { rumor, trail, problems } = rumorTrace(st, rid);
   const lines = [
-    `傳聞 #${rumor.id}（${rumor.about}，第 ${rumor.day} 日 ${readClock(rumor.gm).label}${rumor.event ? `，事件 #${rumor.event}` : ''}）`,
+    `傳聞 #${rumor.id}（${rumor.about}，${readClock(rumor.gm).label}${rumor.event ? `，事件 #${rumor.event}` : ''}）`,
     `真版本：${rumor.text}`,
     '',
   ];

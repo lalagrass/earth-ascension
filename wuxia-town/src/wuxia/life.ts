@@ -32,7 +32,19 @@ export const NEED_LABELS: Record<string, string> = {
 const hhmm = (m: number) =>
   `${String(Math.floor(m / 60) % 24).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
 
+// W8：江湖事件接手鎮民時的動作（w08-jianghu events/*.ts 的 enlist／setAct），不在活動表裡
+const EVENT_ACTS: Record<string, [string, string]> = {
+  flee: ['😨', '躲山賊'],
+  confront: ['🛡️', '迎戰山賊'],
+  fight: ['🤜', '交手'],
+  retreat: ['🤕', '敗退'],
+  duel: ['🤛', '應戰外地俠客'],
+  xiaobi: ['🥋', '小比'],
+};
+
 export function actLabel(act: string): string {
+  if (act.startsWith('event:')) act = act.slice(6);
+  if (EVENT_ACTS[act]) return EVENT_ACTS[act][1];
   if (act === 'talk') return '聊天';
   if (act === 'abandon') return '放棄';
   // W6：切磋與旁觀不在活動表裡
@@ -49,6 +61,7 @@ export function describeCurrent(person: Person): string {
   if (cur.phase === 'talk') return '💬 聊天中';
   if (cur.phase === 'spar') return '🤜 切磋中';
   if (cur.phase === 'watch') return '👀 看切磋';
+  if (cur.phase === 'event') return EVENT_ACTS[cur.act] ? EVENT_ACTS[cur.act].join(' ') : actLabel(cur.act);
   const act = ACTIVITY_BY_ID[cur.act];
   const obj = OBJECT_BY_ID[cur.obj];
   if (cur.phase === 'walk') return `走去${obj?.name ?? ''}${act ? `${act.label}` : ''}`;
