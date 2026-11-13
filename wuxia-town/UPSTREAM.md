@@ -94,6 +94,15 @@
 | W8 | `src/components/Game.tsx` | 畫面左下加「山腳鎮誌」面板 `ChroniclePanel` | #560「畫面加『山腳鎮誌』面板，依日期列出」 |
 | W8 | `src/components/PixiGame.tsx` | 疊上外人圖層 `JianghuLayer`（行商、俠客、山賊） | 外人不是 AI Town 玩家，另外畫（DEVIATIONS W8-2） |
 | W8 | `package.json`（JSON 無法加註解） | `wuxia:chronicle`、`wuxia:rumor-trace`、`wuxia:jianghu-report`、`wuxia:jianghu-diff` 指令 | #560 驗收工具 |
+| W9 | `convex/aiTown/player.ts` | `join` input 多一個可選的 `wuxiaRole`，有給且 w09-player 開放時呼叫 `joinPlayer`（建玩家的需求、技能、床位）；閒置踢人跳過用角色進鎮的玩家（`isManagedHuman`），改由 w09-player 閒置 30 實分鐘代管 | #561「加入時選外地少年／少女」「閒置超過 30 實分鐘交給規則代管」；不帶 `wuxiaRole` 時跟上游完全一樣 |
+| W9 | `convex/aiTown/game.ts` | `handleInput` 先呼叫 `touchPlayer`（玩家有 input＝接手代管的角色）；`tick` 在單人暫停時直接返回 | #561 代管／接手；#562 W9 單人暫停（DEVIATIONS W9-8） |
+| W9 | `convex/world.ts` | `joinWorld` 多一個可選參數 `wuxiaRole`：選了角色就用角色的名字、人物圖、身分並帶給 `join` | #561 選角色進鎮 |
+| W9 | `convex/_generated/api.d.ts`（產生檔） | 加上 `wuxia/w09_player/*`、`wuxia/journalFormat` 模組 | Convex 產生檔 |
+| W9 | `src/components/PixiGame.tsx` | 用角色進鎮的玩家點到物件格 → 開活動選單（不走路）；其他點擊照上游走路 | #561「點物件 → 選它提供的活動」 |
+| W9 | `src/components/Game.tsx` | 右側加玩家面板 `PlayerPanel`（選角色、模式、活動選單、暫停、匯出 journal、最近紀錄） | #561 |
+| W9 | `src/components/PlayerDetails.tsx` | 選到別人時加「請教／切磋／拜師」三個鈕（`PersonActions`），結果顯示在鈕下 | #561「對人請教、切磋、拜師」 |
+| W9 | `src/components/buttons/InteractButton.tsx` | w09-player 開放時「進鎮」換成「以外地少年進鎮」「以外地少女進鎮」兩個鈕 | #561 選角色 |
+| W9 | `package.json`（JSON 無法加註解） | `wuxia:player-script` 指令 | #561 驗收工具 |
 
 ## 上游刻意保留不改的隨機／時間
 

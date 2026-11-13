@@ -56,6 +56,7 @@ import type * as wuxia_clock from "../wuxia/clock.js";
 import type * as wuxia_hash from "../wuxia/hash.js";
 import type * as wuxia_inputs from "../wuxia/inputs.js";
 import type * as wuxia_journal from "../wuxia/journal.js";
+import type * as wuxia_journalFormat from "../wuxia/journalFormat.js";
 import type * as wuxia_llmBudget from "../wuxia/llmBudget.js";
 import type * as wuxia_registry from "../wuxia/registry.js";
 import type * as wuxia_rng from "../wuxia/rng.js";
@@ -87,6 +88,8 @@ import type * as wuxia_w08_jianghu_events_xiake from "../wuxia/w08_jianghu/event
 import type * as wuxia_w08_jianghu_events_xiaobi from "../wuxia/w08_jianghu/events/xiaobi.js";
 import type * as wuxia_w08_jianghu_index from "../wuxia/w08_jianghu/index.js";
 import type * as wuxia_w08_jianghu_rewrite from "../wuxia/w08_jianghu/rewrite.js";
+import type * as wuxia_w09_player_data from "../wuxia/w09_player/data.js";
+import type * as wuxia_w09_player_index from "../wuxia/w09_player/index.js";
 
 import type {
   ApiFromModules,
@@ -143,6 +146,7 @@ declare const fullApi: ApiFromModules<{
   "wuxia/hash": typeof wuxia_hash;
   "wuxia/inputs": typeof wuxia_inputs;
   "wuxia/journal": typeof wuxia_journal;
+  "wuxia/journalFormat": typeof wuxia_journalFormat;
   "wuxia/llmBudget": typeof wuxia_llmBudget;
   "wuxia/registry": typeof wuxia_registry;
   "wuxia/rng": typeof wuxia_rng;
@@ -174,6 +178,8 @@ declare const fullApi: ApiFromModules<{
   "wuxia/w08_jianghu/events/xiaobi": typeof wuxia_w08_jianghu_events_xiaobi;
   "wuxia/w08_jianghu/index": typeof wuxia_w08_jianghu_index;
   "wuxia/w08_jianghu/rewrite": typeof wuxia_w08_jianghu_rewrite;
+  "wuxia/w09_player/data": typeof wuxia_w09_player_data;
+  "wuxia/w09_player/index": typeof wuxia_w09_player_index;
 }>;
 
 /**
