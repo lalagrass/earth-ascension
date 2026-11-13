@@ -33,19 +33,12 @@ import { BondTracer } from './bond-tracer';
 import { W05_MIND } from '../../convex/wuxia/w05_mind/data';
 import { W08_JIANGHU, JianghuState, EventKind } from '../../convex/wuxia/w08_jianghu/data';
 import { W03_LIFE, LifeState } from '../../convex/wuxia/w03_life';
-import {
-  JournalInput,
-  JournalStep,
-  Snapshot,
-  createGame,
-  parseArgs,
-  quietConsole,
-  runOneStep,
-  selectInputs,
-} from './sim';
+import { JournalInput, JournalStep, Snapshot, createGame, parseArgs, quietConsole } from './sim';
+import { Session, initialSnapshot, STEP_MS, HEADLESS_EPOCH, HeadlessMessage } from '../../src/wuxia/engine/session';
 
-export const HEADLESS_EPOCH = Date.UTC(2026, 0, 1, 0, 0, 0); // 固定起點，不讀系統時鐘
-export const STEP_MS = 1000;
+// A1：世界建立與每 step 的規則替身搬到 src/wuxia/engine/session.ts（瀏覽器 Worker 共用同一份），這裡轉出
+export { HEADLESS_EPOCH, STEP_MS, initialSnapshot } from '../../src/wuxia/engine/session';
+export type { HeadlessMessage } from '../../src/wuxia/engine/session';
 
 export type HeadlessOptions = {
   seed: number;
@@ -80,100 +73,16 @@ export type HeadlessOptions = {
   stepHashes?: boolean;
 };
 
-export function initialSnapshot(opts: HeadlessOptions): Snapshot {
-  const wuxia = initWuxiaState({
-    ...defaultWuxiaConfig,
-    seed: opts.seed,
-    elements: { ...defaultWuxiaConfig.elements, ...(opts.elements ?? {}) },
-  });
-  initElements(wuxia);
-  // W5：因果對照實驗（mind-trace --drop-memory）；不給就不寫這個欄位，hash 不變
-  if (opts.dropMemories?.length && wuxia.elements[W05_MIND])
-    (wuxia.elements[W05_MIND] as any).drop = [...opts.dropMemories];
-  // W8：對照實驗（--force-event、--no-rumor-out）；不給就不寫，hash 不變
-  const jh = wuxia.elements[W08_JIANGHU] as JianghuState | undefined;
-  if (jh && opts.forceEvent) jh.force = { ...opts.forceEvent };
-  if (jh && opts.noRumorOut) jh.noRumorOut = true;
-  const worldMap =
-    opts.map === undefined
-      ? serializedMapFor(wuxia.enabled)
-      : serializedMapFor({ 'w01-skin': opts.map === 'town' });
-  return {
-    worldId: 'headless-world',
-    engineId: 'headless-engine',
-    generation: 0,
-    engine: { currentTime: HEADLESS_EPOCH, generationNumber: 0, running: true },
-    gameState: {
-      world: { nextId: 0, agents: [], conversations: [], players: [], wuxia },
-      playerDescriptions: [],
-      agentDescriptions: [],
-      worldMap,
-    },
-  };
-}
-
-export type HeadlessMessage = {
-  t: number;
-  conversationId: string;
-  author: string;
-  to: string;
-  stage: 'start' | 'continue' | 'leave';
-  text: string;
-  /** W2：跟 live 訊息的 metadata 同形狀；無頭模擬一律是模板句 */
-  metadata: { guard: 'template'; reasons: string[][]; attempts: number; cause: 'headless' };
-};
-
-type Pending = { received: number; seq: number; name: string; args: any };
-
 export function runHeadless(opts: HeadlessOptions) {
   const snapshot = initialSnapshot(opts);
-  const game = createGame(snapshot);
-  // A1：無頭模擬不需要畫面用的位置緩衝（不進 hash）
-  game.wuxiaRecordHistory = false;
-  // W2：w02-folk 開時人物用 data/wuxia/characters.json、模板句依人物口吻（data/wuxia/templates/）
+  // A1：世界與規則替身在 Session（src/wuxia/engine/session.ts）；單機 Worker 跑同一份
+  const session = new Session(snapshot, { seed: opts.seed, agents: opts.agents });
+  const game = session.game;
   const folkOn = isEnabled(snapshot.gameState.world.wuxia, W02_FOLK);
-  const descriptions = descriptionsFor(folkOn);
-  const agents = opts.agents ?? descriptions.length;
-  // 規則替身（取代 action）自己的亂數，跟引擎的 game.rng() 分開。
-  const actionRng = makeRng(opts.seed * 7919 + 1);
-  const delay = (min: number, max: number) => Math.floor(min + actionRng() * (max - min));
-
-  const queue: JournalInput[] = [];
-  const future: Pending[] = [];
-  let seq = 0;
-  let nextNumber = 0;
-  const schedule = (received: number, name: string, args: any) =>
-    future.push({ received, seq: seq++, name, args });
-  const admit = (upTo: number) => {
-    future.sort((a, b) => a.received - b.received || a.seq - b.seq);
-    while (future.length && future[0].received <= upTo) {
-      const p = future.shift()!;
-      queue.push({ number: nextNumber++, name: p.name, args: p.args, received: p.received });
-    }
-  };
-
-  // 跟 init.ts 一樣：世界建好後送 createAgent。
-  for (let i = 0; i < agents; i++) {
-    schedule(HEADLESS_EPOCH, 'createAgent', { descriptionIndex: i % descriptions.length });
-  }
-
-  // participatedTogether 的替身（findConversationCandidate 要用）
-  const lastTogether = new Map<string, number>();
-  const messages: HeadlessMessage[] = [];
-  const lastLine = new Map<string, string>();
-  const stats = {
-    inputs: 0,
-    operations: {} as Record<string, number>,
-    conversationsStarted: 0,
-    conversationsEnded: 0,
-    messages: 0,
-    activities: 0,
-    wanders: 0,
-    /** W6：切磋旁白 operation 次數（＝打完的場次） */
-    spars: undefined as number | undefined,
-    /** W8：亥時鎮誌改寫 operation 次數 */
-    chronicles: undefined as number | undefined,
-  };
+  const agents = opts.agents ?? descriptionsFor(folkOn).length;
+  const queue = session.queue;
+  const messages = session.messages;
+  const stats = session.stats;
   const steps: JournalStep[] = [];
   const checkpoints: Array<{ step: number; t: number; hash: string }> = [];
   const traces = new Map<string, Array<{ x: number; y: number }>>();
@@ -187,6 +96,7 @@ export function runHeadless(opts: HeadlessOptions) {
 
   const nameOf = (playerId: string) =>
     game.playerDescriptions.get(playerId as any)?.name ?? playerId;
+  void nameOf;
 
   const totalSteps =
     opts.untilGameMinute === undefined ? Math.round((opts.minutes * 60_000) / STEP_MS) : Infinity;
@@ -198,18 +108,12 @@ export function runHeadless(opts: HeadlessOptions) {
     );
   };
   const tapQ = [...(opts.taps ?? [])].sort((a, b) => a - b);
-  const clockNow = () => {
-    const w = game.world.wuxia!;
-    return w.clockEpoch === undefined ? -1 : gameMinutes(game.engine.currentTime!, w.clockEpoch, w.timeScale);
-  };
+  const clockNow = () => session.gameMinute();
   for (let k = 1; k <= totalSteps; k++) {
-    const now = HEADLESS_EPOCH + k * STEP_MS;
-    if (opts.inject) for (const i of opts.inject(game, now)) schedule(now, i.name, i.args);
-    admit(now);
-    const inputs = selectInputs(game, queue, undefined, now);
-    const result = runOneStep(game, inputs, now, { hash: false, light: true });
+    const extra = opts.inject ? opts.inject(game, session.nextNow) : [];
+    const { now, inputs, result } = session.step(extra);
     {
-      // A1：hash 只在需要的步驟算（算的時機在 agent operation 處理之前＝跟 runOneStep 內算的同一刻，值相同）
+      // A1：hash 只在需要的步驟算（世界在下一步之前不變，值跟每步都算時相同）
       const need =
         opts.stepHashes ||
         opts.onStep ||
@@ -225,123 +129,6 @@ export function runHeadless(opts: HeadlessOptions) {
         if (input) opts.onInputResult(input, c.returnValue);
       }
     steps.push(result.step);
-    const stepEnd = result.step.endTs;
-
-    for (const c of result.endedConversations) {
-      stats.conversationsEnded++;
-      for (const a of c.participants) {
-        for (const b of c.participants) {
-          if (a !== b) lastTogether.set(`${a}|${b}`, stepEnd);
-        }
-      }
-    }
-
-    for (const op of result.agentOperations) {
-      stats.operations[op.name] = (stats.operations[op.name] ?? 0) + 1;
-      const args = op.args;
-      if (op.name === 'agentDoSomething') {
-        // 對應 agentOperations.ts 的 agentDoSomething（規則不變，只把隨機換成 actionRng）
-        const actionNow = now + delay(20, 300);
-        const { player, agent } = args;
-        const worldMap = new WorldMap(args.map);
-        const justLeftConversation =
-          agent.lastConversation && actionNow < agent.lastConversation + CONVERSATION_COOLDOWN;
-        const recentlyAttemptedInvite =
-          agent.lastInviteAttempt && actionNow < agent.lastInviteAttempt + CONVERSATION_COOLDOWN;
-        const recentActivity =
-          player.activity && actionNow < player.activity.until + ACTIVITY_COOLDOWN;
-        const sent = actionNow + delay(0, 1000);
-        if (!player.pathfinding) {
-          if (recentActivity || justLeftConversation) {
-            stats.wanders++;
-            schedule(sent, 'finishDoSomething', {
-              operationId: args.operationId,
-              agentId: agent.id,
-              destination: {
-                x: 1 + Math.floor(actionRng() * (worldMap.width - 2)),
-                y: 1 + Math.floor(actionRng() * (worldMap.height - 2)),
-              },
-            });
-          } else {
-            stats.activities++;
-            const activity = ACTIVITIES[Math.floor(actionRng() * ACTIVITIES.length)];
-            schedule(sent, 'finishDoSomething', {
-              operationId: args.operationId,
-              agentId: agent.id,
-              activity: {
-                description: activity.description,
-                emoji: activity.emoji,
-                until: sent + activity.duration,
-              },
-            });
-          }
-          continue;
-        }
-        let invitee: string | undefined;
-        if (!(justLeftConversation || recentlyAttemptedInvite)) {
-          // 對應 findConversationCandidate（含上游「都用自己位置排序」的行為）
-          const candidates: Array<{ id: string; position: any }> = [];
-          for (const other of args.otherFreePlayers) {
-            const ended = lastTogether.get(`${player.id}|${other.id}`);
-            if (ended !== undefined && actionNow < ended + PLAYER_CONVERSATION_COOLDOWN) continue;
-            candidates.push({ id: other.id, position: player.position });
-          }
-          candidates.sort(
-            (a, b) => distance(a.position, player.position) - distance(b.position, player.position),
-          );
-          invitee = candidates[0]?.id;
-        }
-        if (invitee) stats.conversationsStarted++;
-        schedule(sent, 'finishDoSomething', {
-          operationId: args.operationId,
-          agentId: agent.id,
-          invitee,
-        });
-      } else if (op.name === 'agentGenerateMessage') {
-        // LLM 的替身：模板句，延遲 1～3 秒
-        const sent = now + delay(1000, 3000);
-        const speaker = nameOf(args.playerId);
-        const other = nameOf(args.otherPlayerId);
-        // 每則訊息只抽一次 actionRng()（開關不改 rng 消耗，見 folk-diff）
-        const r = actionRng();
-        const prev = lastLine.get(`${args.conversationId}|${speaker}`);
-        const text = folkOn
-          ? folkTemplate(speaker, args.type, r, { other }, prev)
-          : conversationTemplate(args.type, r, { other });
-        lastLine.set(`${args.conversationId}|${speaker}`, text);
-        messages.push({
-          t: sent,
-          conversationId: args.conversationId,
-          author: speaker,
-          to: other,
-          stage: args.type,
-          text,
-          metadata: { guard: 'template', reasons: [], attempts: 0, cause: 'headless' },
-        });
-        stats.messages++;
-        schedule(sent, 'agentFinishSendingMessage', {
-          conversationId: args.conversationId,
-          agentId: args.agentId,
-          timestamp: sent,
-          leaveConversation: args.type === 'leave',
-          operationId: args.operationId,
-        });
-      } else if (op.name === 'agentRememberConversation') {
-        const sent = now + delay(300, 1300) + delay(0, 1000);
-        schedule(sent, 'finishRememberConversation', {
-          agentId: args.agentId,
-          operationId: args.operationId,
-        });
-      } else if (op.name === 'wuxiaChronicleRewrite') {
-        // W8：亥時鎮誌改寫。無頭模擬不打 LLM：引擎已放了模板段落，不送 input（等同 LLM 失敗）
-        stats.chronicles = (stats.chronicles ?? 0) + 1;
-      } else if (op.name === 'wuxiaSparNarrate') {
-        // W6：切磋旁白。無頭模擬不打 LLM：引擎打完那一刻已放了模板句，不送 input（等同 LLM 失敗）
-        stats.spars = (stats.spars ?? 0) + 1;
-      } else {
-        throw new Error(`headless: unknown operation ${op.name}`);
-      }
-    }
     tracer?.sample(game, now);
     dojoTracer?.sample(game, now);
     mindTracer?.sample(game, now);
