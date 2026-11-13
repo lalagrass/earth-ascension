@@ -8,8 +8,9 @@ import { Session, SessionOptions, WorldOptions, initialSnapshot, HeadlessMessage
 import { SaveFile, loadSave, makeSave } from './save';
 import { EventMarks, KeyEvent, eventMarks, keyEventsBetween } from './events';
 
-export const SPEEDS = [0, 1, 4, 16, 64] as const;
-export type Speed = (typeof SPEEDS)[number];
+import { SPEEDS, Speed } from './constants';
+export { SPEEDS };
+export type { Speed };
 /** 1× 時每實秒跑幾個 step（timeScale 60：1 step＝1 遊戲分＝1 實秒） */
 const STEPS_PER_SECOND_AT_1X = 1;
 /** 每次 frame 最多跑幾個 step（避免卡住 Worker） */
@@ -82,6 +83,8 @@ export class LocalCore {
   }
 
   setSpeed(s: Speed) {
+    // 選倍速＝不跳了
+    this.skip = undefined;
     this.speed = s;
     this.owed = 0;
     this.dirty = true;
@@ -204,6 +207,10 @@ export class LocalCore {
   resendDescriptions() {
     this.descSent = -1;
     this.dirty = true;
+  }
+
+  get skipping(): boolean {
+    return !!this.skip;
   }
 
   hash(): string {

@@ -42,8 +42,7 @@ import { PlayerPanel, PersonActions } from '../PlayerPanel';
 import { PLAYER_ROLES, myRec, objectAtTile, playerStateOfWorld, rolesOffered } from '../player';
 import { LocalEngine } from '../engine/local';
 import type { EngineView, KeyEvent, SaveFile, Speed } from '../engine';
-import { SPEEDS } from '../engine/core';
-import { RULE_VERSION } from '../engine/save';
+import { SPEEDS, RULE_VERSION } from '../engine/constants';
 import { SaveSlot, listSlots, putSlot, slotOf, deleteSlot } from '../engine/idb';
 
 const LOCAL_TOKEN = 'local-player';

@@ -55,12 +55,12 @@ self.onmessage = (e: MessageEvent<ToWorker>) => {
         post({ t: 'reply', id: m.id, value: core.save(m.label) });
         break;
       case 'hash':
-        post({ t: 'reply', id: m.id, value: { hash: core.hash(), steps: core.session.k, gameMinute: core.session.gameMinute() } });
+        post({ t: 'reply', id: m.id, value: { hash: core.hash(), steps: core.session.k, gameMinute: core.session.gameMinute(), skipping: core.skipping } });
         break;
       case 'advance': {
         const out = core.advance(m.steps);
         if (out.view) post({ t: 'view', view: out.view, events: out.events });
-        post({ t: 'reply', id: m.id, value: { hash: core.hash(), steps: core.session.k, gameMinute: core.session.gameMinute() } });
+        post({ t: 'reply', id: m.id, value: { hash: core.hash(), steps: core.session.k, gameMinute: core.session.gameMinute(), skipping: core.skipping } });
         break;
       }
       case 'resend':

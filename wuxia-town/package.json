@@ -42,6 +42,7 @@
     "wuxia:jianghu-diff": "tsx tools/wuxia/jianghu-diff.ts",
     "wuxia:player-script": "tsx tools/wuxia/player-script.ts",
     "wuxia:parity": "tsx tools/wuxia/parity.ts",
+    "wuxia:local-check": "tsx tools/wuxia/local-check.ts",
     "wuxia:check": "npm run wuxia:check:full",
     "build:local": "vite build --config vite.local.config.ts",
     "dev:local": "vite --config vite.local.config.ts",

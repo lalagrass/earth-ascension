@@ -4,12 +4,8 @@
 import { JournalInput, Snapshot, createGame, runOneStep } from '../../../tools/wuxia/sim';
 import { HEADLESS_EPOCH, STEP_MS, Session, SessionAux, HeadlessMessage, snapshotOf } from './session';
 
-/**
- * 規則版本：引擎規則或 data/wuxia 的數值改了（同一個存檔續跑結果會不同）就要改這個字串。
- * 格式：步驟-序號。A1 起算。
- */
-export const RULE_VERSION = 'a1-1';
-export const SAVE_FORMAT = 'wuxia-town-save';
+import { RULE_VERSION, SAVE_FORMAT } from './constants';
+export { RULE_VERSION, SAVE_FORMAT };
 
 export type SaveFile = {
   format: typeof SAVE_FORMAT;

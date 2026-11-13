@@ -1,4 +1,5 @@
 // 武俠小鎮 A1：單機版入口（src/wuxia/local/index.html）。
+import './allowConvexDefs';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import '../../index.css';
