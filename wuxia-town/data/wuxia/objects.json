@@ -17,6 +17,7 @@
     {"id": "bed-lao-han", "name": "床（老韓）", "place": "home-west-1", "owner": "lao-han", "tile": [4, 19], "capacity": 1, "slots": [[4, 19]], "activities": "@bed"},
     {"id": "bed-a-qing", "name": "床（阿青）", "place": "home-west-2", "owner": "a-qing", "tile": [4, 30], "capacity": 1, "slots": [[4, 30]], "activities": "@bed"},
     {"id": "bed-zhou-jiaotou", "name": "床（周教頭）", "place": "dojo", "owner": "zhou-jiaotou", "tile": [38, 28], "capacity": 1, "slots": [[38, 28]], "activities": "@bed"},
+    {"id": "bed-guest", "name": "床（茶館客房，玩家）", "place": "teahouse", "owner": "@player", "element": "w09-player", "tile": [14, 20], "capacity": 1, "slots": [[14, 20]], "activities": "@bed"},
     {"id": "tea-table-1", "name": "茶館桌一", "place": "teahouse", "tile": [21, 14], "capacity": 2, "slots": [[21, 14], [21, 15]], "activities": "@teatable"},
     {"id": "tea-table-2", "name": "茶館桌二", "place": "teahouse", "tile": [21, 18], "capacity": 2, "slots": [[21, 18], [21, 19]], "activities": "@teatable"},
     {"id": "tea-table-3", "name": "茶館桌三", "place": "teahouse", "tile": [15, 20], "capacity": 2, "slots": [[15, 20], [16, 20]], "activities": "@teatable"},

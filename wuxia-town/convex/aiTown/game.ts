@@ -26,6 +26,8 @@ import { internal } from '../_generated/api';
 import { HistoricalObject } from '../engine/historicalObject';
 import { AgentDescription, serializedAgentDescription } from './agentDescription';
 import { parseMap, serializeMap } from '../util/object';
+// WUXIA-PATCH(W9): 玩家角色（input 接手、單人暫停）
+import { isPaused, touchPlayer } from '../wuxia/w09_player';
 // WUXIA-PATCH(W0): 種子亂數、元素掛鉤、step 紀錄與狀態 hash
 import { nextFloat, rngUuid } from '../wuxia/rng';
 import { initWuxiaState } from '../wuxia/state';
@@ -187,6 +189,8 @@ export class Game extends AbstractGame {
     if (!handler) {
       throw new Error(`Invalid input: ${name}`);
     }
+    // WUXIA-PATCH(W9): 玩家角色的任何 input 都算「回來了」（記 lastInput、代管中就接手）；沒有玩家角色時不做事
+    touchPlayer(this, now, (args as any)?.playerId);
     return handler(this, now, args as any);
   }
 
@@ -203,6 +207,8 @@ export class Game extends AbstractGame {
   }
 
   tick(now: number) {
+    // WUXIA-PATCH(W9): 單人世界暫停中：整個 tick 不跑（遊戲時鐘不走；繼續時 w09-player 把時間戳記往後平移）
+    if (isPaused(this)) return;
     for (const player of this.world.players.values()) {
       player.tick(this, now);
     }

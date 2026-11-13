@@ -1,0 +1,58 @@
+{
+  "_doc": "武俠小鎮 W9（#561，元素 id w09-player）：玩家角色。兩種身分都用 W1 的人物圖（w5 少年、w3 布衣女；本專案自製，見 public/wuxia/CREDITS.md）。玩家住茶館客房（客床 bed-guest，只在有玩家加入時才出現），跟林嫂搭伙（共用茶館的水／飯／柴）。數值旁 _src：量測／推導／旋鈕（#562 W4-8）。",
+  "roles": [
+    {
+      "id": "youth-m",
+      "label": "外地少年",
+      "sprite": "w5",
+      "defaultName": "外地少年",
+      "identity": "從外地來到山腳鎮的少年，借住在茶館客房，想在鎮上找點事做。"
+    },
+    {
+      "id": "youth-f",
+      "label": "外地少女",
+      "sprite": "w3",
+      "defaultName": "外地少女",
+      "identity": "從外地來到山腳鎮的少女，借住在茶館客房，想在鎮上找點事做。"
+    }
+  ],
+  "home": "teahouse",
+  "home_src": "旋鈕：鎮上沒有客棧，茶館最熱鬧、林嫂又開門做生意",
+  "acts": [
+    "draw_water",
+    "wash_clothes",
+    "daydream",
+    "chop_bamboo",
+    "cook",
+    "eat",
+    "sleep",
+    "drink_tea",
+    "listen_story",
+    "hit_dummy",
+    "lift_stone",
+    "gaze_dojo",
+    "gaze_home"
+  ],
+  "acts_src": "旋鈕：玩家能做的活動＝所有人都能做的（roles *）＋武館的打樁、舉石鎖（#561「挑水、練功…」）；說書、打鐵、抓藥、指點是鎮民的本業，不開放",
+  "startSkills": {
+    "fist": 10,
+    "power": 15,
+    "stance": 10,
+    "stamina": 20
+  },
+  "startSkills_src": "旋鈕：#562 W4-7「其他人 0–20」",
+  "idleToAutoMinutes": 30,
+  "idleToAutoMinutes_src": "#561「玩家閒置超過 30 實分鐘：角色交給規則代管」（實分鐘＝引擎時間）",
+  "ask": {
+    "minutes": 30,
+    "minutes_src": "旋鈕：請教一次 30 遊戲分鐘（同切磋）",
+    "minGap": 50,
+    "minGap_src": "推導：bonds.json skillGap.rival＝50，對方拳腳至少高這麼多才有東西可教",
+    "maxNeed": 90,
+    "maxNeed_src": "推導：bonds.json bowMaxNeed",
+    "act": "hit_dummy",
+    "act_src": "旋鈕：請教的成長按「打樁、教頭在場」算（training.json），只是不用佔樁"
+  },
+  "logSize": 200,
+  "logSize_src": "旋鈕：操作結果紀錄保留最近 200 筆"
+}

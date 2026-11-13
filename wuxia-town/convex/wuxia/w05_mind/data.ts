@@ -42,7 +42,10 @@ export type MemoryKind =
   // 跟外人交手（what＝外人名字，n＝1 贏／−1 輸／0 平）、藥鋪被搶（何郎中記，n＝箱數）
   | 'rumor'
   | 'fought_outsider'
-  | 'robbed';
+  | 'robbed'
+  // W9（#561）：玩家向人請教（請教的人記 asked，other＝被請教的人；被請教的人記 taught，other＝玩家）
+  | 'asked'
+  | 'taught';
 
 /** #557：`{t, kind, other?, place?, weight}`；另加 id（全世界唯一、遞增，給 --drop-memory 用）與 n（數量，例如練功分鐘）。 */
 export type Memory = {
@@ -379,6 +382,8 @@ const KIND_TEXT: Record<MemoryKind, string> = {
   rumor: '{rumor}',
   fought_outsider: '跟{what}交手{won}',
   robbed: '藥鋪被山賊搶走 {n} 箱{what}',
+  asked: '向{other}請教',
+  taught: '指點了{other}',
 };
 
 /** 記憶的說明文字（畫面「因為…」與報告共用）。names：cid → 名字；places：地點 id → 名字。 */

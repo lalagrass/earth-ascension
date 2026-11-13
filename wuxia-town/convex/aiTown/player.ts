@@ -14,6 +14,8 @@ import { Game } from './game';
 import { stopPlayer, findRoute, blocked, movePlayer } from './movement';
 import { inputHandler } from './inputHandler';
 import { characters } from '../../data/characters';
+// WUXIA-PATCH(W9): 玩家角色（加入、閒置代管）
+import { isManagedHuman, joinPlayer } from '../wuxia/w09_player';
 // WUXIA-PATCH(W2): w02-folk 的人物直接用古裝人物圖名（w1–w8）
 import { folkCharacters } from '../../data/wuxia/characters';
 import { PlayerDescription } from './playerDescription';
@@ -84,7 +86,8 @@ export class Player {
   }
 
   tick(game: Game, now: number) {
-    if (this.human && this.lastInput < now - HUMAN_IDLE_TOO_LONG) {
+    // WUXIA-PATCH(W9): 武俠小鎮的玩家角色閒置不移除，改由 w09-player 交給規則代管（#562 W9-14）
+    if (this.human && this.lastInput < now - HUMAN_IDLE_TOO_LONG && !isManagedHuman(game, this.id)) {
       this.leave(game, now);
     }
   }
@@ -279,9 +282,13 @@ export const playerInputs = {
       character: v.string(),
       description: v.string(),
       tokenIdentifier: v.optional(v.string()),
+      // WUXIA-PATCH(W9): 選「外地少年／少女」（data/wuxia/player.json 的 roles）；有帶才建立武俠小鎮的玩家角色
+      wuxiaRole: v.optional(v.string()),
     },
     handler: (game, now, args) => {
-      Player.join(game, now, args.name, args.character, args.description, args.tokenIdentifier);
+      // WUXIA-PATCH(W9): 取得新玩家的 id，交給 w09-player 建角色
+      const playerId = Player.join(game, now, args.name, args.character, args.description, args.tokenIdentifier);
+      if (args.wuxiaRole) joinPlayer(game, now, playerId as string, args.wuxiaRole);
       return null;
     },
   }),

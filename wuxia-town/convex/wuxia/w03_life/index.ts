@@ -14,6 +14,7 @@ import { Conversation } from '../../aiTown/conversation';
 import { movementSpeed } from '../../../data/characters';
 import { inviteMultiplier, mindOf, newcomers, prefersNewcomer } from '../w05_mind/data';
 import { W06_SPAR, beginSpar, sparCandidate } from '../w06_spar/data';
+import { PLAYER_ACTS, PLAYER_OWNER, humanPlayers, playerSchedCtx } from '../w09_player/data';
 import {
   ACTIVITY_BY_ID,
   ActivityDef,
@@ -69,7 +70,8 @@ export const LIFE_RULES = {
 } as const;
 
 /** W6：'spar'＝切磋中（雙方）、'watch'＝旁觀切磋；這兩種由 w06-spar 管，本元素不替他們做決定。W7：'bow'＝拜師（弟子與師父），由 w07-bond 管。W8：'event'＝被江湖事件接手（迎戰山賊、逃回家、應戰俠客、小比、圍觀），由 w08-jianghu 管 */
-export type Phase = 'walk' | 'do' | 'talk' | 'spar' | 'watch' | 'bow' | 'event';
+export type Phase = 'walk' | 'do' | 'talk' | 'spar' | 'watch' | 'bow' | 'event' | 'player';
+// W9：'player'＝玩家發起的「請教」（玩家與被請教的人），由 w09-player 管
 export type Current = {
   act: string;
   obj: string;
@@ -98,6 +100,8 @@ export type Person = {
   blockDone: string[];
   /** 有 requires.minGap 的活動上次做完的遊戲分鐘 */
   lastDone?: Record<string, number>;
+  /** W9：玩家角色（w09-player 在加入時建立；AI 鎮民沒有這個欄位） */
+  player?: 1;
 };
 
 /** obj：物件 id（invite 時是被邀的人）；place：invite 時兩人所在的地點 */
@@ -187,8 +191,10 @@ export function allowed(
   state: LifeState,
   ctx?: SchedCtx,
 ): boolean {
-  if (!act.roles.includes('*') && !act.roles.includes(person.cid)) return false;
-  if (obj.owner && obj.owner !== person.cid) return false;
+  // W9：玩家角色能做的活動列在 data/wuxia/player.json 的 acts；客床 owner '@player'＝玩家專用
+  if (!act.roles.includes('*') && !act.roles.includes(person.cid) && !(person.player && PLAYER_ACTS.has(act.id)))
+    return false;
+  if (obj.owner && obj.owner !== person.cid && !(obj.owner === PLAYER_OWNER && person.player)) return false;
   if (obj.household && obj.household !== person.home) return false;
   if (act.requires?.timeOfDay && !inRange(minuteOfDay, act.requires.timeOfDay)) return false;
   if (act.requires?.scheduledOnly) {
@@ -366,6 +372,41 @@ function abandon(state: LifeState, playerId: string, person: Person, gm: number,
   delete person.cur;
 }
 
+/** 預約座位、走過去（到了就開始做）。W9 抽出來給玩家的「點物件 → 選活動」共用同一套規則與預約。 */
+export function walkTo(
+  game: Game,
+  now: number,
+  gm: number,
+  state: LifeState,
+  pid: string,
+  player: Player,
+  person: Person,
+  objId: string,
+  actId: string,
+  slot: number,
+) {
+  const w = game.world.wuxia!;
+  state.res[objId][slot] = pid;
+  const [sx, sy] = OBJECT_BY_ID[objId].slots[slot];
+  const walkTiles = Math.abs(player.position.x - sx) + Math.abs(player.position.y - sy);
+  const tilesPerGameMinute = (movementSpeed * 60) / w.timeScale;
+  person.cur = {
+    act: actId,
+    obj: objId,
+    slot,
+    phase: 'walk',
+    since: gm,
+    deadline: gm + Math.ceil((walkTiles / tilesPerGameMinute) * 1.5) + LIFE_RULES.waitSlack,
+    retries: 0,
+  };
+  if (Math.hypot(player.position.x - sx, player.position.y - sy) <= 0.01) {
+    stopPlayer(player);
+    startDoing(game, now, gm, state, player, person);
+  } else {
+    movePlayer(game, now, player, { x: sx, y: sy });
+  }
+}
+
 export function tickLife(game: Game, now: number) {
   const w = game.world.wuxia!;
   if (w.clockEpoch === undefined) return;
@@ -383,10 +424,15 @@ export function tickLife(game: Game, now: number) {
   // W5：w05-mind 開時，心念加的日程時段與「武館還沒重開」擋下的覆蓋（關閉時兩者 undefined，跟 W4 相同）
   const ctx = lifeSchedCtx(w, clock.day);
 
-  // 依 agents 的加入順序處理（確定性）
-  for (const agent of game.world.agents.values()) {
-    const player = game.world.players.get(agent.playerId);
-    if (!player || player.human) continue;
+  // 依 agents 的加入順序處理（確定性）。W9：接著處理玩家角色（w09-player 依加入順序登記；沒有玩家時清單跟 W8 相同）
+  const order: string[] = [...game.world.agents.values()].map((a) => a.playerId as string);
+  const humans = humanPlayers(w);
+  for (const h of humans) order.push(h.pid);
+  for (const orderPid of order) {
+    const player = game.world.players.get(orderPid as any);
+    if (!player) continue;
+    const human = player.human ? humans.find((h) => h.pid === orderPid) : undefined;
+    if (player.human && (!human || !state.people[orderPid])) continue;
     const pid = player.id as string;
     let person = state.people[pid];
     if (!person) {
@@ -409,7 +455,9 @@ export function tickLife(game: Game, now: number) {
         person.needs[k] = round2(clamp(person.needs[k] + (NEEDS_CONFIG.perHour[k] * elapsed) / 60));
       }
     }
-    const block = currentBlock(person.cid, mod, ctx);
+    // W9：玩家角色的日程情境不含心念加的時段（#561「玩家的心念只顯示，不改玩家行為」），門規時段照算
+    const pctx = human ? playerSchedCtx(w, clock.day) : ctx;
+    const block = currentBlock(person.cid, mod, pctx);
     const blockKey = block ? `${clock.day}:${block.from}` : undefined;
     if (person.blockKey !== blockKey) {
       person.blockKey = blockKey;
@@ -419,7 +467,8 @@ export function tickLife(game: Game, now: number) {
     // W6：切磋中／旁觀中由 w06-spar 管（打完才放回來）
     // W7：拜師中（走到師父面前、跪拜）由 w07-bond 管
     // W8：被江湖事件接手（phase 'event'）由 w08-jianghu 管
-    if (person.cur?.phase === 'spar' || person.cur?.phase === 'watch' || person.cur?.phase === 'bow' || person.cur?.phase === 'event') continue;
+    // W9：玩家的「請教」（phase 'player'）由 w09-player 管
+    if (person.cur?.phase === 'spar' || person.cur?.phase === 'watch' || person.cur?.phase === 'bow' || person.cur?.phase === 'event' || person.cur?.phase === 'player') continue;
 
     const conversation = game.world.playerConversation(player);
     if (conversation) {
@@ -439,6 +488,8 @@ export function tickLife(game: Game, now: number) {
         pushLog(state, { t: gm, who: person.cid, act: 'talk', obj: placeAt(player.position.x, player.position.y) });
       }
       delete person.idleSince;
+      // W9：玩家自己決定什麼時候離開對話（對方 AI 照 90 遊戲分鐘的規則離開）
+      if (human) continue;
       // #562 W3-6：對話最長 90 遊戲分鐘；餓或累 > 90 直接離開
       const talked = gameMinutes(now, conversation.created, w.timeScale);
       const tooLong = talked >= LIFE_RULES.maxConversationMinutes;
@@ -483,8 +534,13 @@ export function tickLife(game: Game, now: number) {
       finish(state, pid, person, gm, 1);
     }
 
+    // W9：玩家自己操作時（manual）不替他選事；閒置 30 實分鐘後（auto）交給規則代管，跟 AI 一樣選
+    if (!person.cur && human && human.mode !== 'auto') {
+      if (person.idleSince === undefined) person.idleSince = gm;
+      continue;
+    }
     if (!person.cur) {
-      const pick = chooseNext(person, mod, blockKey, state, () => game.rng(), ctx);
+      const pick = chooseNext(person, mod, blockKey, state, () => game.rng(), pctx);
       // W6：候選活動「切磋」（#558）。w06-spar 關閉時不算、不耗亂數，跟 W5 相同
       if (w.enabled[W06_SPAR]) {
         const spar = sparCandidate(
@@ -518,25 +574,7 @@ export function tickLife(game: Game, now: number) {
         continue;
       }
       delete person.idleSince;
-      state.res[pick.obj][pick.slot] = pid;
-      const [sx, sy] = OBJECT_BY_ID[pick.obj].slots[pick.slot];
-      const walkTiles = Math.abs(player.position.x - sx) + Math.abs(player.position.y - sy);
-      const tilesPerGameMinute = (movementSpeed * 60) / w.timeScale;
-      person.cur = {
-        act: pick.act,
-        obj: pick.obj,
-        slot: pick.slot,
-        phase: 'walk',
-        since: gm,
-        deadline: gm + Math.ceil((walkTiles / tilesPerGameMinute) * 1.5) + LIFE_RULES.waitSlack,
-        retries: 0,
-      };
-      if (Math.hypot(player.position.x - sx, player.position.y - sy) <= 0.01) {
-        stopPlayer(player);
-        startDoing(game, now, gm, state, player, person);
-      } else {
-        movePlayer(game, now, player, { x: sx, y: sy });
-      }
+      walkTo(game, now, gm, state, pid, player, person, pick.obj, pick.act, pick.slot);
     }
   }
 

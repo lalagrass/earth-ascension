@@ -75,7 +75,7 @@ function rememberDaily(mind: MindState, pid: string, t: number, kind: 'saw_skill
 }
 
 /** 有空：在世界裡、不是真人、不在對話、沒在切磋／旁觀／拜師、沒在睡覺。 */
-function free(game: Game, pid: string, person: Person): boolean {
+export function free(game: Game, pid: string, person: Person): boolean {
   const player = game.world.players.get(pid as any);
   if (!player || player.human) return false;
   if (game.world.playerConversation(player)) return false;
@@ -233,6 +233,25 @@ function maybeStartBow(game: Game, now: number, gm: number, mod: number, state: 
     if (!b) continue;
     const pb = life.people[b];
     if (!free(game, b, pb)) continue;
+    startBow(game, now, gm, state, life, a, b, [...thought.causes]);
+    return;
+  }
+}
+
+/** 開始一次拜師（走到師父面前 → 跪拜 → stepBow 依規則判定）。W9 抽出來給玩家的「拜師」操作共用。 */
+export function startBow(
+  game: Game,
+  now: number,
+  gm: number,
+  state: BondState,
+  life: LifeState,
+  a: string,
+  b: string,
+  causes: number[],
+) {
+  {
+    const pa = life.people[a];
+    const pb = life.people[b];
     const playerA = game.world.players.get(a as any)!;
     const playerB = game.world.players.get(b as any)!;
     interruptActivity(life, a, pa, gm, playerA);
@@ -262,7 +281,7 @@ function maybeStartBow(game: Game, now: number, gm: number, mod: number, state: 
       phase: 'approach',
       approachUntil: gm + BONDS.approachMinutes,
       spot,
-      causes: [...thought.causes],
+      causes,
     };
     state.active = ev;
     const until = now + BONDS.approachMinutes * msPerGameMinute(game);
@@ -271,7 +290,6 @@ function maybeStartBow(game: Game, now: number, gm: number, mod: number, state: 
     if (Math.hypot(playerA.position.x - spot[0], playerA.position.y - spot[1]) > 0.01)
       movePlayer(game, now, playerA, { x: spot[0], y: spot[1] });
     pushLog(life, { t: gm, who: pa.cid, act: 'bow', obj: pb.cid, place: personPlace(pb, playerB) });
-    return;
   }
 }
 
