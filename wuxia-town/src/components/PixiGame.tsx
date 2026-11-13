@@ -41,6 +41,8 @@ export const PixiGame = (props: {
   setSelectedElement: SelectElement;
   // WUXIA-PATCH(W9): 點到物件時交給玩家面板（不給＝上游行為）
   onWuxiaObject?: (objId: string) => void;
+  // WUXIA-PATCH(A1): 選中的人（頭上才顯示活動文字）
+  wuxiaSelectedId?: string;
 }) => {
   // PIXI setup.
   const pixiApp = useApp();
@@ -158,6 +160,7 @@ export const PixiGame = (props: {
           isViewer={p.id === humanPlayerId}
           onClick={props.setSelectedElement}
           historicalTime={props.historicalTime}
+          wuxiaSelected={p.id === props.wuxiaSelectedId}
         />
       ))}
       {/* WUXIA-PATCH(W8): 外人畫在人物旁（w08-jianghu 關閉或沒有外人時不畫） */}

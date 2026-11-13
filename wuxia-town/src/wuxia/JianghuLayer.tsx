@@ -53,21 +53,44 @@ function Body(props: { kind: Figure['kind']; x: number; y: number; t: number }) 
   return <Graphics draw={draw} />;
 }
 
+/**
+ * A1（#564 審查第 3 項）：同一格（四捨五入）上同種外人合併成一個名牌「山賊 ×2」，身體錯開半格；
+ * 名牌只寫名字（活動文字不顯示，頭上 emoji 表示在做什麼），不再疊字。
+ */
+export function groupFigures(figures: Figure[]): Array<{ key: string; figures: Figure[]; label: string }> {
+  const groups = new Map<string, Figure[]>();
+  for (const f of figures) {
+    const k = `${f.kind}:${Math.round(f.x)},${Math.round(f.y)}`;
+    const g = groups.get(k) ?? [];
+    g.push(f);
+    groups.set(k, g);
+  }
+  return [...groups].map(([key, fs]) => ({
+    key,
+    figures: fs,
+    label: fs.length === 1 ? fs[0].name : `${KIND_NAME[fs[0].kind]} ×${fs.length}`,
+  }));
+}
+const KIND_NAME: Record<Figure['kind'], string> = { merchant: '行商', xiake: '俠客', bandit: '山賊' };
+
 export function JianghuLayer(props: { world: any; tileDim: number; time: number }) {
   const st = jianghuStateOf(props.world);
   if (!st || st.figures.length === 0) return null;
-  const nameStyle = new PIXI.TextStyle({ fontFamily: LABEL_FONT, fontSize: 13, fill: 0xfaf3e0, stroke: INK, strokeThickness: 3 });
+  const nameStyle = new PIXI.TextStyle({ fontFamily: LABEL_FONT, fontSize: 12, fill: 0xfaf3e0, stroke: INK, strokeThickness: 3 });
   const emojiStyle = new PIXI.TextStyle({ fontSize: 16 });
   return (
     <Container>
-      {st.figures.map((f) => {
-        const x = f.x * props.tileDim + props.tileDim / 2;
-        const y = f.y * props.tileDim + props.tileDim / 2;
+      {groupFigures(st.figures).map((g) => {
+        const f0 = g.figures[0];
+        const x = f0.x * props.tileDim + props.tileDim / 2;
+        const y = f0.y * props.tileDim + props.tileDim / 2;
         return (
-          <Container key={f.id}>
-            <Body kind={f.kind} x={x} y={y} t={props.time} />
-            <Text text={f.emoji} x={x} y={y - 30} anchor={{ x: 0.5, y: 0.5 }} style={emojiStyle} />
-            <Text text={f.activity ? `${f.name}・${f.activity}` : f.name} x={x} y={y + 22} anchor={{ x: 0.5, y: 0.5 }} style={nameStyle} />
+          <Container key={g.key}>
+            {g.figures.map((f, i) => (
+              <Body key={f.id} kind={f.kind} x={x + (i - (g.figures.length - 1) / 2) * props.tileDim * 0.5} y={y} t={props.time} />
+            ))}
+            <Text text={f0.emoji} x={x} y={y - 30} anchor={{ x: 0.5, y: 0.5 }} style={emojiStyle} />
+            <Text text={g.label} x={x} y={y + 22} anchor={{ x: 0.5, y: 0.5 }} style={nameStyle} />
           </Container>
         );
       })}

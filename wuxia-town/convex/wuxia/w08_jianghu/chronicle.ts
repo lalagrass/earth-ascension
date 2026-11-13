@@ -40,3 +40,25 @@ export function chronicleLines(st: JianghuState): Array<{ day: number; text: str
     return d ? { day, text: d.text, guard: d.guard } : { day, text: chronicleTemplateDay(day, entries), guard: 'template' };
   });
 }
+
+/**
+ * A1（#564 審查第 4 項）：記事的重要度。武館重開／掛匾、俠客、山賊、小比、說書是「大事」；藥鋪進貨、行商路過是「例行」。
+ * 只依 kind 決定（不寫進狀態，hash 不變）；鎮誌面板預設只列大事，例行的收在「全部」。
+ */
+export type ChronicleImportance = 'major' | 'routine';
+const ROUTINE_KINDS: ReadonlySet<string> = new Set(['restock', 'merchant']);
+export function chronicleImportance(e: Pick<ChronicleEntry, 'kind'>): ChronicleImportance {
+  return ROUTINE_KINDS.has(e.kind) ? 'routine' : 'major';
+}
+
+/** 只列大事的鎮誌（每天用大事條目組模板段落；當天沒有大事就不列）。 */
+export function chronicleMajorLines(st: JianghuState): Array<{ day: number; text: string }> {
+  const days = [...new Set(st.chronicle.filter((e) => chronicleImportance(e) === 'major').map((e) => e.day))].sort((a, b) => a - b);
+  return days.map((day) => ({
+    day,
+    text: chronicleTemplateDay(
+      day,
+      st.chronicle.filter((e) => e.day === day && chronicleImportance(e) === 'major'),
+    ),
+  }));
+}

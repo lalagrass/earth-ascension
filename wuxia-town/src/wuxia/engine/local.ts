@@ -74,6 +74,10 @@ export class LocalEngine implements WuxiaEngine {
   hash(): Promise<{ hash: string; steps: number; gameMinute: number }> {
     return this.call((id) => ({ t: 'hash', id }));
   }
+  /** 測試用：直接跑 n 步並回傳 hash */
+  advance(steps: number): Promise<{ hash: string; steps: number; gameMinute: number }> {
+    return this.call((id) => ({ t: 'advance', steps, id }));
+  }
   dispose() {
     this.worker.terminate();
   }

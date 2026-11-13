@@ -57,6 +57,12 @@ self.onmessage = (e: MessageEvent<ToWorker>) => {
       case 'hash':
         post({ t: 'reply', id: m.id, value: { hash: core.hash(), steps: core.session.k, gameMinute: core.session.gameMinute() } });
         break;
+      case 'advance': {
+        const out = core.advance(m.steps);
+        if (out.view) post({ t: 'view', view: out.view, events: out.events });
+        post({ t: 'reply', id: m.id, value: { hash: core.hash(), steps: core.session.k, gameMinute: core.session.gameMinute() } });
+        break;
+      }
       case 'resend':
         core.resendDescriptions();
         break;

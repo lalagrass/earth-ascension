@@ -148,6 +148,7 @@ https://github.com/michalochman/react-pixi-fiber/issues/145#issuecomment-5315492
                     height={height}
                     historicalTime={historicalTime}
                     setSelectedElement={setSelectedElement}
+                    wuxiaSelectedId={selectedElement?.id}
                     onWuxiaObject={(id) => {
                       setWuxiaObject(id);
                       setWuxiaResult(undefined);

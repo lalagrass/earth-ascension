@@ -12,7 +12,7 @@ export function TownTitle({ skin }: { skin: boolean }) {
 
 export function TownSubtitle({ skin }: { skin: boolean }) {
   if (!skin) return <>A virtual town where AI characters live, chat and socialize.</>;
-  return <span className="wuxia-subtitle">山腳下的古鎮，鎮民在街上走動、在茶館前閒聊。</span>;
+  return <span className="wuxia-subtitle">山腳下的古鎮：鎮民挑水、開店、練拳，破武館重開，有人拜師、有人切磋，外地人帶來江湖傳聞。你可以快轉看，也可以化身一位鎮民住進來。</span>;
 }
 
 export function AboutContent() {

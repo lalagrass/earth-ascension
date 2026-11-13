@@ -51,3 +51,4 @@ convex_local*
 /src/editor/tilesets/*.png
 # WUXIA-PATCH(W0): 無頭模擬輸出
 /tools/wuxia/out/
+/dist-local

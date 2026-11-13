@@ -26,6 +26,7 @@ export const Player = ({
   player,
   onClick,
   historicalTime,
+  wuxiaSelected,
 }: {
   game: ServerGame;
   isViewer: boolean;
@@ -33,6 +34,8 @@ export const Player = ({
 
   onClick: SelectElement;
   historicalTime?: number;
+  // WUXIA-PATCH(A1): 選中的人才在頭上顯示活動文字（其餘只顯示圖示；#564 審查第 3 項）
+  wuxiaSelected?: boolean;
 }) => {
   const playerCharacter = game.playerDescriptions.get(player.id)?.character;
   if (!playerCharacter) {
@@ -89,7 +92,9 @@ export const Player = ({
             : undefined
         }
         // WUXIA-PATCH(W3): w03-life 開啟時頭上顯示活動標籤（活動名稱已是繁中）
+        // WUXIA-PATCH(A1): 只有選中的人顯示文字，其餘只有 emoji 圖示（不重疊）
         label={
+          wuxiaSelected &&
           game.world.wuxia?.enabled['w03-life'] &&
           player.activity &&
           player.activity.until > (historicalTime ?? Date.now())

@@ -12,6 +12,8 @@ export type ToWorker =
   | { t: 'input'; name: string; args: any; id: number }
   | { t: 'save'; label?: string; id: number }
   | { t: 'hash'; id: number }
+  /** 測試用：暫停中直接跑 n 步，回傳 hash（wuxia:parity、dist-local 檢查） */
+  | { t: 'advance'; steps: number; id: number }
   | { t: 'resend' };
 
 export type FromWorker =
