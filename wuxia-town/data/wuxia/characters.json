@@ -1,5 +1,6 @@
 {
   "_doc": "武俠小鎮 W2（#554）起始鎮民。w02-folk 開啟時取代上游 data/characters.ts 的 Descriptions；關閉時用回上游。名字全部原創。sprite 是 data/wuxia/characters.ts 的古裝人物圖；home／workplace 是 data/wuxia/places.json 的地點 id（W3 起才會用到）。voice 只影響 LLM 的措辭與模板句，不影響規則。W4：skills＝起始技能值（w04-dojo 開啟時才用到，見 data/wuxia/training.json）。",
+  "characters_src": "旋鈕：每人的 skills 是起始技能值，出處見 skills_src（#562 W4-7）",
   "skills_src": "旋鈕（#562 W4-7）：起始技能值（0–1000）。周教頭 拳腳 620／力 480／下盤 600／耐力 450；石虎 力 420、其餘 80 以下；阿青全部 0–30；其他人 0–20。要讓 W6「教頭對新手勝率 > 90%」（教頭比阿青高 600 上下）與 W7「技能高 200 以上才拜師」（教頭 620 vs 阿青 30 日約 150）成立。W4 起由 w04-dojo 使用",
   "characters": [
     {

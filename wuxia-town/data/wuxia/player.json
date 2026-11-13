@@ -42,7 +42,7 @@
   },
   "startSkills_src": "旋鈕：#562 W4-7「其他人 0–20」",
   "idleToAutoMinutes": 30,
-  "idleToAutoMinutes_src": "#561「玩家閒置超過 30 實分鐘：角色交給規則代管」（實分鐘＝引擎時間）",
+  "idleToAutoMinutes_src": "量測：#561「玩家閒置超過 30 實分鐘：角色交給規則代管」（實分鐘＝引擎時間）",
   "ask": {
     "minutes": 30,
     "minutes_src": "旋鈕：請教一次 30 遊戲分鐘（同切磋）",

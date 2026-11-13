@@ -1,5 +1,6 @@
 {
   "_doc": "武俠小鎮 W1 地點表（#553 範圍 2）。rect=[x,y,w,h]、entry=[x,y] 皆為 tile 座標（48×36，tile 32px）。W1 只用來在畫面上標名字與人物詳情的「在○○附近」；W3 起才給規則使用。 label=[x,y] 可省略，是畫面上名牌的中心（預設在 rect 上緣正中）。",
+  "places_src": "量測：rect／entry／label 是 W1 地圖的 tile 座標（48×36，tile 32px；#553 範圍 2），照地圖上的房屋、道路、空地量出來",
   "places": [
     {"id": "mountain-path", "name": "山腳小路", "rect": [22, 0, 4, 9], "entry": [23, 6], "kind": "road", "label": [24, 4.2]},
     {"id": "bamboo", "name": "竹林", "rect": [1, 2, 16, 6], "entry": [18, 6], "kind": "nature", "label": [9, 3.6]},

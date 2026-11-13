@@ -8,6 +8,8 @@
 //   q5 git 追蹤的 public/assets 為空（上游美術不進 repo）；public/wuxia/ 每個檔都登記在 CREDITS.md
 //   q6 docs/wuxia/ 單檔 ≤1 MB、GIF ≤3 MB
 //   q7 convex/ 路徑只用英數、底線、句點；prompts.gen.ts 同步
+//   q8 wuxia:parity seed 7 1 遊戲日：headless ＝ LocalCore（Worker 同一份程式）直接跑、1×、4×、16×、64×（A1 #564）
+//   q9 wuxia:const-audit：data/wuxia/*.json 每個數值都有 _src（A1 #564）
 //   （之後的 commit 再加：單機 Worker 與無頭 hash 相同、常數盤點）
 import { spawn, execFileSync } from 'node:child_process';
 import { closeSync, existsSync, mkdtempSync, openSync, readdirSync, readFileSync, statSync } from 'node:fs';
@@ -126,12 +128,15 @@ export function staticChecks(): void {
 async function main() {
   const t0 = performance.now();
   // 重的子行程同時起跑
-  const [tsc, jest, h7a, h7b, h8] = await Promise.all([
+  const tsx = join(ROOT, 'node_modules/.bin/tsx');
+  const [tsc, jest, h7a, h7b, h8, par, audit] = await Promise.all([
     run(join(ROOT, 'node_modules/.bin/tsc'), ['--noEmit', '-p', '.']),
     run('npm', ['test', '--', '--silent']),
     headless(7),
     headless(7),
     headless(8),
+    run(tsx, ['tools/wuxia/parity.ts', '--seed', '7', '--days', '1']),
+    run(tsx, ['tools/wuxia/const-audit.ts']),
   ]);
   staticChecks();
   // q1
@@ -151,6 +156,12 @@ async function main() {
   else fail(`q3 headless seed 8 hash 與 seed 7 相同或沒跑完 ${c}`);
   if (a === QUICK_HASH_SEED7_3D) ok('q3 seed 7 3 日 hash 等於釘住的值（tools/wuxia/check-quick.ts QUICK_HASH_SEED7_3D）');
   else fail(`q3 seed 7 3 日 hash ${a} ≠ 釘住的 ${QUICK_HASH_SEED7_3D}（刻意改變請更新並在 An.md 記錄）`);
+  // q8
+  if (par.code === 0 && /parity OK/.test(par.out)) ok(`q8 wuxia:parity seed 7 1 日 headless ＝ local 直接跑／1×／4×／16×／64×（${(par.ms / 1000).toFixed(1)} 秒）`);
+  else fail(`q8 wuxia:parity 不一致或沒跑完\n${par.out.slice(-2000)}`);
+  // q9
+  if (audit.code === 0) ok(`q9 ${audit.out.trim().split('\n').pop()}`);
+  else fail(`q9 wuxia:const-audit 失敗\n${audit.out.slice(-3000)}`);
 
   process.stdout.write(lines.join('\n') + '\n');
   const sec = ((performance.now() - t0) / 1000).toFixed(1);

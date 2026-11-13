@@ -1,7 +1,10 @@
 {
   "elements": { "w01-skin": true, "w02-folk": true, "w03-life": true, "w04-dojo": true, "w05-mind": true, "w06-spar": true, "w07-bond": true, "w08-jianghu": true, "w09-player": true },
   "seed": 7,
+  "seed_src": "旋鈕：預設 seed 7（W1 起各週固定 hash 與報告都用 seed 7）",
   "timeScale": 60,
+  "timeScale_src": "旋鈕：1 實秒＝60 遊戲秒，1 步 1000 ms＝1 遊戲分鐘（W1 起的遊戲時鐘，convex/wuxia/clock.ts）",
   "keepAlive": false,
-  "embeddingDimension": 1024
+  "embeddingDimension": 1024,
+  "embeddingDimension_src": "量測：上游 convex/util/llm.ts 的 OLLAMA_EMBEDDING_DIMENSION＝1024（W0 改成讀設定檔，預設 Ollama）"
 }

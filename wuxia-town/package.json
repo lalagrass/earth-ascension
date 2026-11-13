@@ -41,6 +41,7 @@
     "wuxia:jianghu-report": "tsx tools/wuxia/jianghu-report.ts",
     "wuxia:jianghu-diff": "tsx tools/wuxia/jianghu-diff.ts",
     "wuxia:player-script": "tsx tools/wuxia/player-script.ts",
+    "wuxia:const-audit": "tsx tools/wuxia/const-audit.ts",
     "wuxia:parity": "tsx tools/wuxia/parity.ts",
     "wuxia:local-check": "tsx tools/wuxia/local-check.ts",
     "wuxia:check": "npm run wuxia:check:full",

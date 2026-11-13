@@ -27,7 +27,7 @@
       "who": "*",
       "when": {"any": [{"all": [{"count": "listen", "min": 3}, {"skill": "fist", "lt": 100}]}, {"all": [{"count": "rumor", "what": "bandit", "min": 1}, {"skill": "fist", "lt": 100}]}]},
       "when_src": "量測：#557「在茶館聽書 ≥3 次＋拳腳 < 100」。W8（#560「聽說山賊 → 想學武」）：另一條路＝近 7 日聽說（或親眼看到）山賊的事＋拳腳 < 100；w08-jianghu 關閉時沒有 rumor 記憶，跟 W7 相同",
-      "start": 40, "grow": 15,
+      "start": 40, "grow": 15, "grow_src": "旋鈕：每日條件仍成立 +15（同 start_src）",
       "start_src": "旋鈕：出現時 40、每日條件仍成立 +15（約 4 日到 100）",
       "effects": {
         "inviteX": {"with": "zhou-jiaotou", "x": 2},
@@ -46,7 +46,7 @@
       "who": "*",
       "when": {"any": [{"count": "tier_up", "min": 1}, {"count": "spar_lost", "min": 2}]},
       "when_src": "量測：#557「練功升階或（W6 後）切磋輸 ≥2」；切磋輸的記憶 W6 才會有",
-      "start": 50, "grow": 10,
+      "start": 50, "grow": 10, "grow_src": "旋鈕：每日條件仍成立 +10（同 start_src）",
       "start_src": "旋鈕",
       "effects": {
         "schedule": {
@@ -64,7 +64,7 @@
       "who": ["zhou-jiaotou"],
       "when": {"count": "loiter_seen", "min": 2},
       "when_src": "量測：#557「周教頭：有人在武館外徘徊 ≥2 次」；#562 W5-10 的「張望」就是徘徊",
-      "start": 60, "grow": 20,
+      "start": 60, "grow": 20, "grow_src": "旋鈕：每日條件仍成立 +20（同 start_src）",
       "start_src": "旋鈕",
       "effects": {"reopenDojo": true},
       "effects_src": "量測：#557「觸發武館重開（取代 W4 的固定第 1 天）」。開了就不再關（W5 不做關館）"
@@ -75,7 +75,7 @@
       "who": ["a-qing"],
       "when": {"daysSince": "talk", "min": 5},
       "when_src": "量測：#557「阿青：連續 5 日沒聊天」",
-      "start": 40, "grow": 15,
+      "start": 40, "grow": 15, "grow_src": "旋鈕：每日條件仍成立 +15（同 start_src）",
       "start_src": "旋鈕",
       "effects": {
         "schedule": {"a-qing": {"always": [{"from": 1200, "to": 1230, "label": "城門外張望", "do": ["gaze_home"]}]}}
@@ -88,7 +88,7 @@
       "who": ["lin-sao"],
       "when": {"count": "newcomer", "min": 1},
       "when_src": "量測：#557「林嫂：有新人到鎮」；W8 俠客路過、W9 真人進鎮才會有新人",
-      "start": 60, "grow": 10,
+      "start": 60, "grow": 10, "grow_src": "旋鈕：每日條件仍成立 +10（同 start_src）",
       "start_src": "旋鈕",
       "effects": {"preferNewcomer": true, "inviteX": {"with": "newcomer", "x": 2}},
       "effects_src": "量測＋旋鈕：#557「優先邀請新人聊天」：同地點有新人時先挑新人，邀請機率 ×2（旋鈕）"
@@ -101,7 +101,7 @@
       "requires_src": "旋鈕：W7 的心念，只在 w07-bond 開啟時評估（關閉時跟 W6 逐位元組相同）",
       "when": {"all": [{"bond": "respect", "min": 60, "skill": "fist", "skillGap": 200}, {"thoughtAny": ["learn", "stronger"]}, {"noMaster": true}]},
       "when_src": "量測：#559「敬重某人 ≥ 60 且對方技能 ≥ 自己 +200 且自己有『想學武／想變強』」。技能看拳腳（W6 切磋判定用的技能，旋鈕）；noMaster＝還沒拜過師（旋鈕：拜了就不再想拜）。「因為」＝對那個人敬重貢獻最大的 3 筆記憶",
-      "start": 70, "grow": 10,
+      "start": 70, "grow": 10, "grow_src": "旋鈕：每日條件仍成立 +10（同 start_src）",
       "start_src": "旋鈕：出現時 70，比想學武 40／想變強 50 高，每人最多 3 個心念時不會先被擠掉",
       "effects": {"apprentice": true},
       "effects_src": "量測：#559「拜師是一件事件：弟子走到師父面前、跪拜、師父依規則同意」（w07-bond 執行，見 convex/wuxia/w07_bond/index.ts）"
