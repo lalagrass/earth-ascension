@@ -53,7 +53,9 @@ export class World {
   }
 
   playerConversation(player: Player): Conversation | undefined {
-    return [...this.conversations.values()].find((c) => c.participants.has(player.id));
+    // WUXIA-PATCH(A1): 不每次展開成陣列（每個 tick 每人都會呼叫）；一樣回傳插入順序的第一個
+    for (const c of this.conversations.values()) if (c.participants.has(player.id)) return c;
+    return undefined;
   }
 
   serialize(): SerializedWorld {

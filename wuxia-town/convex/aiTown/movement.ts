@@ -161,11 +161,16 @@ export function findRoute(game: Game, now: number, player: Player, destination: 
   return { path: compressPath(densePath), newDestination };
 }
 
+const NO_POSITIONS: Point[] = [];
 export function blocked(game: Game, now: number, pos: Point, playerId?: GameId<'players'>) {
-  const otherPositions = [...game.world.players.values()]
-    .filter((p) => p.id !== playerId)
-    .map((p) => p.position);
-  return blockedWithPositions(pos, otherPositions, game.worldMap);
+  // WUXIA-PATCH(A1): 不每次配置「其他人位置」陣列（尋路每個候選格都會呼叫）。檢查順序與結果跟上游相同：
+  // 先界外／地圖障礙（blockedWithPositions 不帶人），再依 players 順序比距離。
+  const reason = blockedWithPositions(pos, NO_POSITIONS, game.worldMap);
+  if (reason !== null) return reason;
+  for (const p of game.world.players.values()) {
+    if (p.id !== playerId && distance(p.position, pos) < COLLISION_THRESHOLD) return 'player';
+  }
+  return null;
 }
 
 export function blockedWithPositions(position: Point, otherPositions: Point[], map: WorldMap) {
