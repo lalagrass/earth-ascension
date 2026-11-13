@@ -542,7 +542,8 @@ export function setPaused(game: Game, now: number, args: { playerId?: string; hu
   shiftEngineTimes(game, dt);
   const player = game.world.players.get(rec.pid as any);
   if (player) player.lastInput = now;
-  log(st, { t: gm, who: rec.cid, op: 'resume', ok: true, reason: `繼續（暫停了 ${Math.round(dt / 1000)} 實秒）` });
+  // 平移後的時鐘＝暫停那一刻（暫停期間遊戲時間不走）
+  log(st, { t: gmOf(game, now) ?? gm, who: rec.cid, op: 'resume', ok: true, reason: `繼續（暫停了 ${Math.round(dt / 1000)} 實秒）` });
   return { ok: true, reason: '繼續' };
 }
 

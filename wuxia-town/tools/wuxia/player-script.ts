@@ -11,7 +11,7 @@ import { runHeadless, journalLines, HeadlessOptions } from './headless';
 import { parseArgs, quietConsole } from './sim';
 import { defaultWuxiaConfig } from '../../convex/wuxia/state';
 import { gameMinutes, readClock } from '../../convex/wuxia/clock';
-import { PLACES, OBJECT_BY_ID } from '../../convex/wuxia/w03_life/data';
+import { PLACES, OBJECT_BY_ID, placeName } from '../../convex/wuxia/w03_life/data';
 import { PLAYER_ROLES, PlayerState, W09_PLAYER } from '../../convex/wuxia/w09_player/data';
 import type { LifeState } from '../../convex/wuxia/w03_life';
 import type { DojoState } from '../../convex/wuxia/w04_dojo';
@@ -83,6 +83,7 @@ export function runPlayerScript(script: Script, seed: number, opts: { playerOff?
     | { kind: 'pause'; i: number; resumeAtStep: number; gmBefore: number }
     | { kind: 'ask'; i: number };
   const watches: Watch[] = [];
+  const pendingWatch = new Map<number, Watch>();
   // 送出的 input（args 物件本身）→ outcome index；不把標記寫進 args（journal 跟 live 的 input 同形狀）
   const pendingResult = new WeakMap<object, number>();
   let stepNo = 0;
@@ -97,7 +98,9 @@ export function runPlayerScript(script: Script, seed: number, opts: { playerOff?
     const out: Array<{ name: string; args: any }> = [];
     const w = game.world.wuxia!;
     if (w.clockEpoch === undefined) return out;
-    const gm = gameMinutes(now, w.clockEpoch, w.timeScale);
+    // 暫停中：引擎時間照走、遊戲時鐘停在暫停那一刻（繼續時引擎才把時鐘起點往後平移）
+    const pausedSince = (w.elements[W09_PLAYER] as PlayerState | undefined)?.paused?.since;
+    const gm = gameMinutes(pausedSince ?? now, w.clockEpoch, w.timeScale);
     const c = readClock(gm);
     const me = [...game.world.players.values()].find((p) => p.human === script.token);
     const life = w.elements['w03-life'] as LifeState | undefined;
@@ -112,6 +115,7 @@ export function runPlayerScript(script: Script, seed: number, opts: { playerOff?
     // 進行中的觀察：活動做了沒、聊天輪到誰、暫停多久
     for (const wch of [...watches]) {
       const o = outcomes[wch.i];
+      if (pausedSince !== undefined && wch.kind !== 'pause') continue;
       if (wch.kind === 'activity') {
         const person = me && life?.people[me.id];
         if (person?.cur?.act === wch.act && person.cur.phase === 'do' && wch.started === undefined) {
@@ -160,19 +164,13 @@ export function runPlayerScript(script: Script, seed: number, opts: { playerOff?
         }
       } else if (wch.kind === 'pause' && me && stepNo >= wch.resumeAtStep) {
         send(wch.i, 'wuxiaPlayerPause', { human: script.token, paused: false });
-        o.detail.gmBefore = wch.gmBefore;
-        o.detail.resumedAtStep = stepNo;
-        watches.splice(watches.indexOf(wch), 1);
-        // 暫停結束後一步讀遊戲分鐘（應該跟暫停前相同）
-        watches.push({ kind: 'ask', i: wch.i });
-      } else if (wch.kind === 'ask' && outcomes[wch.i].op === 'pause' && outcomes[wch.i].detail.resumedAtStep !== undefined && stepNo > (outcomes[wch.i].detail.resumedAtStep as number)) {
-        o.detail.gmAfter = gm;
-        o.detail.clockFrozen = gm === o.detail.gmBefore;
+        o.detail.pausedSteps = stepNo - (wch.resumeAtStep - (script.steps[wch.i].steps ?? 600));
         watches.splice(watches.indexOf(wch), 1);
       }
     }
 
-    // 下一個腳本操作
+    // 下一個腳本操作（暫停中不按別的）
+    if (pausedSince !== undefined) return out;
     if (cursor >= script.steps.length) return out;
     const s = script.steps[cursor];
     const due = c.day > s.day || (c.day === s.day && c.minuteOfDay >= minuteOf(s.at));
@@ -210,15 +208,16 @@ export function runPlayerScript(script: Script, seed: number, opts: { playerOff?
       if (!target) o.attempts[o.attempts.length - 1] = { at: label(gm), ok: false, reason: `找不到 ${s.target}` };
       else {
         send(i, 'startConversation', { playerId: me.id, invitee: target });
-        watches.push({ kind: 'talk', i, target, sent: 0, got: 0, until: gm + 120 });
+        pendingWatch.set(i, { kind: 'talk', i, target, sent: 0, got: 0, until: gm + 120 });
       }
     } else if (s.op === 'pause') {
       send(i, 'wuxiaPlayerPause', { human: script.token, paused: true });
-      watches.push({ kind: 'pause', i, resumeAtStep: stepNo + (s.steps ?? 600), gmBefore: gm });
+      pendingWatch.set(i, { kind: 'pause', i, resumeAtStep: stepNo + (s.steps ?? 600), gmBefore: gm });
     } else {
       const kind = s.op === 'activity' ? 'activity' : s.op;
       send(i, 'wuxiaPlayerAct', { human: script.token, kind, obj: s.obj, act: s.act, target: s.target });
-      if (s.op === 'activity') watches.push({ kind: 'activity', i, act: s.act! });
+      // 被拒絕的嘗試不看（不然之後碰巧做到同一個活動會被算進來）；回傳 ok 才開始觀察
+      if (s.op === 'activity') pendingWatch.set(i, { kind: 'activity', i, act: s.act! });
     }
     return out;
   };
@@ -245,6 +244,9 @@ export function runPlayerScript(script: Script, seed: number, opts: { playerOff?
       last.reason = input.name === 'startConversation' ? `邀請送出（${v}）` : input.name === 'join' ? '加入' : 'ok';
     }
     if (last.ok) o.ok = true;
+    const pw = pendingWatch.get(i);
+    pendingWatch.delete(i);
+    if (pw && last.ok) watches.push(pw);
     void lastGm;
   };
 
@@ -277,7 +279,7 @@ export function runPlayerScript(script: Script, seed: number, opts: { playerOff?
         needs: me && life?.people[me.id]?.needs,
         skills: dojo?.skills[cid],
         master: bond?.disciples[cid],
-        memories: (mind?.people[me!.id as string]?.memories ?? []).map((m) => `#${m.id} ${describeMemory(m, nameOf)}`),
+        memories: (mind?.people[me!.id as string]?.memories ?? []).map((m) => `#${m.id} ${describeMemory(m, nameOf, placeName)}`),
         thoughts: mind?.people[me!.id as string]?.thoughts.map((t) => `${t.id}(${t.s})`),
         bonds: bond?.bonds[cid],
         bondsToPlayer: Object.fromEntries(
@@ -289,6 +291,16 @@ export function runPlayerScript(script: Script, seed: number, opts: { playerOff?
         lifeLogTail: lifeLog.slice(-40),
       }
     : undefined;
+  // 暫停驗證：w09-player 紀錄裡的「暫停」與「繼續」遊戲分鐘相同＝暫停期間遊戲時鐘沒走
+  for (const o of outcomes) {
+    if (o.op !== 'pause' || !o.ok) continue;
+    const p = (st?.log ?? []).find((l) => l.who === cid && l.op === 'pause' && l.ok);
+    const r = (st?.log ?? []).find((l) => l.who === cid && l.op === 'resume');
+    o.detail.pausedAt = p ? label(p.t) : undefined;
+    o.detail.resumedAt = r ? label(r.t) : undefined;
+    o.detail.resumeNote = r?.reason;
+    o.detail.clockFrozen = !!p && !!r && p.t === r.t;
+  }
   const autoSpans = (st?.log ?? []).filter((l) => l.who === cid && (l.op === 'auto' || l.op === 'takeover'));
   const report = {
     tool: 'wuxia-town player-script',
