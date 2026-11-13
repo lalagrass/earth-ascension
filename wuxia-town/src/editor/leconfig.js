@@ -6,7 +6,7 @@ export const DEFAULTTILESETPATH = "./tilesets/gentle.png";
 //export const DEFAULTTILESETPATH = "./tilesets/Modern.png";
 //export const DEFAULTTILESETPATH = "./tilesets/phantasy2.png";
 
-export const tilesetpadding = 0; 
+export const tilesetpadding = 0;
 
 
 export const DEFAULTILEDIMX = 32; // px

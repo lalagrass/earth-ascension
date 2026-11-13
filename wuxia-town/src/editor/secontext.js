@@ -16,7 +16,7 @@ var ContextCreate = (function(){
         this.dimlog = Math.log2(this.tileDim);  //log2(TileDim)
         this.dkey = false;   // is 'd' key depressed? (for delete)
         this.tiles32  = [];  // all tiles from tilemap (32x32)
-        this.tiles16  = []; 
+        this.tiles16  = [];
         this.fudgetiles = [];
         this.g_layers = []; // level layers
 

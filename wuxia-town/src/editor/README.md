@@ -53,7 +53,7 @@ Explanation of each property
 - `bgtiles`: A 2D array storing the background layer (no collision).
 - `objmap`: A 2D array storing the object layer (with collision). Each entry is a number referencing the tile coordinate in your tileset.
 
-To use the new map go to init.js and replace the map composite file path with the new one. and clear the map table in convex with 
+To use the new map go to init.js and replace the map composite file path with the new one. and clear the map table in convex with
 
 ```bash
 just convex run testing:wipeAllTables

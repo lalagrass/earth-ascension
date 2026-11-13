@@ -1,4 +1,4 @@
-import * as CONFIG from './leconfig.js' 
+import * as CONFIG from './leconfig.js'
 import * as UTIL   from './eutils.js'
 import { g_ctx }  from './lecontext.js' // global context
 
@@ -15,7 +15,7 @@ function generate_preamble() {
         'export const tilesetpxw = ' + g_ctx.tilesetpxw + '\n' +
         'export const tilesetpxh = ' + g_ctx.tilesetpxh + '\n\n'
 
-       return mapfile_preamble; 
+       return mapfile_preamble;
 }
 
 const bgtile_string_start = '' +
@@ -23,7 +23,7 @@ const bgtile_string_start = '' +
     '   [\n'
 
 function write_map_file(bg_tiles_0, bg_tiles_1, obj_tiles_1, obj_tiles_2, animated_tiles){
-    let text = generate_preamble(); 
+    let text = generate_preamble();
     text += bgtile_string_start;
 
     for(let row = 0; row < bg_tiles_0.length; row++) {
@@ -85,7 +85,7 @@ function write_map_file(bg_tiles_0, bg_tiles_1, obj_tiles_1, obj_tiles_2, animat
 
     for(let x = 0 ; x < animated_tiles.length; x++){
         let atile = animated_tiles[x];
-        text += '{ x: '+atile.x+", y: "+ atile.y+ ", w: "+ atile.width+ ", h: "+ atile.height ; 
+        text += '{ x: '+atile.x+", y: "+ atile.y+ ", w: "+ atile.width+ ", h: "+ atile.height ;
         text += ', layer: '+atile.layer;
         text += ', sheet: "'+ atile.spritesheetname+ '", animation: "'+ atile.animationname+'" },\n';
     }
@@ -106,7 +106,7 @@ export function generate_level_file() {
 
     let animated_tiles = [];
 
-    // level0 
+    // level0
     var tile_array0 = Array.from(Array(CONFIG.leveltilewidth), () => new Array(CONFIG.leveltileheight));
     for (let x = 0; x < CONFIG.leveltilewidth; x++) {
         for (let y = 0; y < CONFIG.leveltileheight; y++) {
@@ -140,7 +140,7 @@ export function generate_level_file() {
         }
     }
 
-    // level1 
+    // level1
     var tile_array1 = Array.from(Array(CONFIG.leveltilewidth), () => new Array(CONFIG.leveltileheight));
     for (let x = 0; x < CONFIG.leveltilewidth; x++) {
         for (let y = 0; y < CONFIG.leveltileheight; y++) {

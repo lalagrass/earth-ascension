@@ -1,24 +1,24 @@
 import * as PIXI from 'pixi.js'
 import { g_ctx }  from './secontext.js' // global context
-import * as CONFIG from './seconfig.js' 
+import * as CONFIG from './seconfig.js'
 
 // --
 //  Set sizes and limits for HTML in main UI
 // --
 
 export function initMainHTMLWindow() {
-    document.getElementById("layer0pane").style.maxWidth  = ""+CONFIG.htmlLayerPaneW+"px"; 
-    document.getElementById("layer0pane").style.maxHeight = ""+CONFIG.htmlLayerPaneH+"px"; 
-    document.getElementById("layer1pane").style.maxWidth  = ""+CONFIG.htmlLayerPaneW+"px"; 
-    document.getElementById("layer1pane").style.maxHeight = ""+CONFIG.htmlLayerPaneH+"px"; 
-    document.getElementById("layer2pane").style.maxWidth  = ""+CONFIG.htmlLayerPaneW+"px"; 
-    document.getElementById("layer2pane").style.maxHeight = ""+CONFIG.htmlLayerPaneH+"px"; 
-    document.getElementById("layer3pane").style.maxWidth  = ""+CONFIG.htmlLayerPaneW+"px"; 
-    document.getElementById("layer3pane").style.maxHeight = ""+CONFIG.htmlLayerPaneH+"px"; 
+    document.getElementById("layer0pane").style.maxWidth  = ""+CONFIG.htmlLayerPaneW+"px";
+    document.getElementById("layer0pane").style.maxHeight = ""+CONFIG.htmlLayerPaneH+"px";
+    document.getElementById("layer1pane").style.maxWidth  = ""+CONFIG.htmlLayerPaneW+"px";
+    document.getElementById("layer1pane").style.maxHeight = ""+CONFIG.htmlLayerPaneH+"px";
+    document.getElementById("layer2pane").style.maxWidth  = ""+CONFIG.htmlLayerPaneW+"px";
+    document.getElementById("layer2pane").style.maxHeight = ""+CONFIG.htmlLayerPaneH+"px";
+    document.getElementById("layer3pane").style.maxWidth  = ""+CONFIG.htmlLayerPaneW+"px";
+    document.getElementById("layer3pane").style.maxHeight = ""+CONFIG.htmlLayerPaneH+"px";
 
-    document.getElementById("tilesetpane").style.maxWidth  = ""+CONFIG.htmlTilesetPaneW+"px"; 
+    document.getElementById("tilesetpane").style.maxWidth  = ""+CONFIG.htmlTilesetPaneW+"px";
     document.getElementById("tilesetpane").style.maxHeight = ""+CONFIG.htmlTilesetPaneH+"px";
-    document.getElementById("compositepane").style.maxWidth  = ""+CONFIG.htmlCompositePaneW+"px"; 
+    document.getElementById("compositepane").style.maxWidth  = ""+CONFIG.htmlCompositePaneW+"px";
     document.getElementById("compositepane").style.maxHeight = ""+CONFIG.htmlCompositePaneH+"px";
 
     // hide map tab
@@ -27,7 +27,7 @@ export function initMainHTMLWindow() {
 }
 
 // --
-// Initialize handlers loading a PNG file into the composite window 
+// Initialize handlers loading a PNG file into the composite window
 // --
 
 export function initCompositePNGLoader() {
@@ -45,8 +45,8 @@ export function initCompositePNGLoader() {
         g_ctx.composite.container.addChild(bg);
     }
 }
-// -- 
-// initailized handler to load a new tileset 
+// --
+// initailized handler to load a new tileset
 // --
 
 export function initTilesetLoader(callme) {

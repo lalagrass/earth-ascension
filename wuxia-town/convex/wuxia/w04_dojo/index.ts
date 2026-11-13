@@ -167,4 +167,3 @@ export function tickDojo(game: Game, now: number) {
     }
   }
 }
-

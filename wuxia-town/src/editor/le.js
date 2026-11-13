@@ -1,29 +1,29 @@
 // --
-// Simple level editer. 
+// Simple level editer.
 //
 // TODO:
 //  -- right now if plaxing a sprite, will place based on selected tiles. So need to clear that when
 //     loading a sprite
 //  -- fix hardcoded animations, hack of putting spritesheet into g_ctx etc
-//  -- create tab that contains all animations for a given json file 
+//  -- create tab that contains all animations for a given json file
 //  -- add portals to level for character start positions
 //  -- if you load an animated sprite and then load a level, it just puts the sprite everywhere
-// 
-// 
+//
+//
 // Done:
 //  -- fix level load bug where texture doesn't fit (load, mage, serene and then gentle)
 //  -- write maps with sprites
 //  - <esc> clear selected_tiles
 //  - Delete tiles
 //  - move magic numbers to context / initialization (zIndex, pane size etc.)
-//  - todo fudge factor on g_ctx.tileset 
+//  - todo fudge factor on g_ctx.tileset
 //  - get rid of dangerous CONFIG.tiledim (use g_ctx.tileDim instead)
 //  - XXX create tilesetpadding for tilesets whos tiles are spaced (e.g. phantasy star II)
 //  - only use fudge to pick sprites rather than fudge and non
-//  - use g_ctx for g_ctx.tileset parameters instead of CONFIG (starting with initTilesetConfig) 
+//  - use g_ctx for g_ctx.tileset parameters instead of CONFIG (starting with initTilesetConfig)
 //  - todo print locations on screen
 //
-// 
+//
 // Keybindings:
 // f - fill level 0 with current tile
 // <ctl>-z - undo
@@ -31,15 +31,15 @@
 // s - generate .js file to move over to convex/maps/
 // m - place a semi-transparent red mask over all tiles. This helps find invisible tiles
 // d - hold while clicking a tile to delete
-// p - toggle between 16pixel and 32 pixel. 
-// 
+// p - toggle between 16pixel and 32 pixel.
+//
 // Known bugs and annoyances
 //  - if deleting a tile while filter is on, filter isn't refreshed so need to toggle with "m"
 // --
 
 import * as PIXI from 'pixi.js'
 import { g_ctx }  from './lecontext.js' // global context
-import * as CONFIG from './leconfig.js' 
+import * as CONFIG from './leconfig.js'
 import * as UNDO from './undo.js'
 import * as MAPFILE from './mapfile.js'
 import * as UI from './lehtmlui.js'
@@ -51,12 +51,12 @@ g_ctx.debug_flag2 = false; // really verbose output
 function tileset_index_from_coords(x, y) {
     let retme = x + (y*g_ctx.tilesettilew);
     console.log("tileset_index_from_coord ",retme, x, y);
-    return retme; 
+    return retme;
 }
 function level_index_from_coords(x, y) {
     // place 16px tiles in separate index space
     let offset = (g_ctx.tiledimx == 16)? CONFIG.MAXTILEINDEX : 0;
-    let retme = x + (y*CONFIG.leveltilewidth) + offset; 
+    let retme = x + (y*CONFIG.leveltilewidth) + offset;
     return retme;
 }
 function tileset_index_from_px(x, y) {
@@ -65,12 +65,12 @@ function tileset_index_from_px(x, y) {
 
     console.log("tileset_index_from_px ",x, y);
 
-    return tileset_index_from_coords(coord_x, coord_y); 
+    return tileset_index_from_coords(coord_x, coord_y);
 }
 function level_index_from_px(x, y) {
     let coord_x = Math.floor(x / g_ctx.tiledimx);
     let coord_y = Math.floor(y / g_ctx.tiledimx);
-    return level_index_from_coords(coord_x, coord_y); 
+    return level_index_from_coords(coord_x, coord_y);
 }
 
 function tileset_coords_from_index(index) {
@@ -82,7 +82,7 @@ function tileset_coords_from_index(index) {
 }
 
 function tileset_px_from_index(index) {
-        let ret = tileset_coords_from_index(index); 
+        let ret = tileset_coords_from_index(index);
         return [ret[0] * (g_ctx.tiledimx+CONFIG.tilesetpadding), ret[1] * (g_ctx.tiledimx+CONFIG.tilesetpadding)] ;
 }
 
@@ -130,8 +130,8 @@ class LayerContext {
 
         app.stage.addChild(this.container);
 
-        this.mouseshadow    = new PIXI.Container(); 
-        this.mouseshadow.zIndex = CONFIG.zIndexMouseShadow; 
+        this.mouseshadow    = new PIXI.Container();
+        this.mouseshadow.zIndex = CONFIG.zIndexMouseShadow;
 
         this.lasttileindex  = -1;  // current tileset index
         this.curanimatedtile = null;
@@ -182,7 +182,7 @@ class LayerContext {
         }
     }
 
-    //  this will create a rectangle with an alpha channel for every square that has a sprite. This helps find 
+    //  this will create a rectangle with an alpha channel for every square that has a sprite. This helps find
     //  sprites that are purely transparent
     drawFilter() {
 
@@ -220,7 +220,7 @@ class LayerContext {
         if (x > CONFIG.levelwidth || y > CONFIG.levelheight){
             console.log("tile placed outside of level boundary, ignoring",x,y)
             return -1;
-        } 
+        }
 
         let xPx = x;
         let yPx = y;
@@ -240,7 +240,7 @@ class LayerContext {
 
             // HACK for now just stuff animated sprite details into the sprite
             ctile.animationname   = 'row0';
-            ctile.spritesheetname = g_ctx.spritesheetname; 
+            ctile.spritesheetname = g_ctx.spritesheetname;
 
         } else {
             let pxloc = tileset_px_from_index(index);
@@ -252,11 +252,11 @@ class LayerContext {
         // snap to grid
         const dx = g_ctx.tiledimx;
         const dy = g_ctx.tiledimy;
-        ctile.x  = Math.floor(xPx / dx) * dx; 
-        ctile2.x = Math.floor(xPx / dx) * dx; 
+        ctile.x  = Math.floor(xPx / dx) * dx;
+        ctile2.x = Math.floor(xPx / dx) * dx;
         ctile.y  = Math.floor(yPx / dy) * dy;
         ctile2.y = Math.floor(yPx / dy) * dy;
-        ctile2.zIndex = this.num; 
+        ctile2.zIndex = this.num;
 
         // console.log(xPx,yPx,ctile.x,ctile.y);
 
@@ -269,7 +269,7 @@ class LayerContext {
         if (!g_ctx.dkey) {
             this.container.addChild(ctile);
             g_ctx.composite.container.addChild(ctile2);
-        } 
+        }
 
 
         if (this.sprites.hasOwnProperty(new_index)) {
@@ -316,7 +316,7 @@ class TilesetContext {
         this.square.eventMode = 'static';
         this.container.addChild(this.square);
         this.container.addChild(bg);
-        
+
         this.app.stage.addChild(this.container);
 
         this.fudgex = 0; // offset from 0,0
@@ -327,16 +327,16 @@ class TilesetContext {
         this.square.on('mousedown', function (e) {
 
             // if a spritesheet has been loaded from a file, delete
-            // FIXME, we should be able to add animated tiles to the 
-            // tileset ... 
+            // FIXME, we should be able to add animated tiles to the
+            // tileset ...
             if(g_ctx.spritesheet != null){
                 // FIXME .. creating a leak here. But animatedsprites are still on the map so
-                // cannot destroy. In the future these should be part of the UI 
+                // cannot destroy. In the future these should be part of the UI
                 // g_ctx.spritesheet.destroy();
                 g_ctx.spritesheet = null;
             }
 
-            g_ctx.tile_index = tileset_index_from_px(e.global.x, e.global.y); 
+            g_ctx.tile_index = tileset_index_from_px(e.global.x, e.global.y);
 
             if(g_ctx.debug_flag) {
                 console.log("g_ctx.tileset mouse down. index "+g_ctx.tile_index);
@@ -383,9 +383,9 @@ class CompositeContext {
         this.fudgex = 0; // offset from 0,0
         this.fudgey = 0;
 
-        this.mouseshadow    = new PIXI.Container(); 
-        this.mouseshadow.zIndex = CONFIG.zIndexMouseShadow; 
-        this.lasttileindex  = -1; 
+        this.mouseshadow    = new PIXI.Container();
+        this.mouseshadow.zIndex = CONFIG.zIndexMouseShadow;
+        this.lasttileindex  = -1;
 
         this.square = new PIXI.Graphics();
         this.square.beginFill(0x2980b9);
@@ -517,7 +517,7 @@ window.onTab = (evt, tabName) => {
     }
 }
 
-// fill base level with currentIndex tile 
+// fill base level with currentIndex tile
 window.fill0 = () => {
     UNDO.undo_mark_task_start(g_ctx.g_layers[0]);
     for(let i = 0; i < CONFIG.levelwidth / g_ctx.tiledimx; i++){
@@ -564,8 +564,8 @@ window.addEventListener(
         }
         else if (event.code == 'KeyG'){
             g_ctx.g_layers.map((l) => redrawGrid (l, false) );
-            redrawGrid(g_ctx.tileset, false); 
-            redrawGrid(g_ctx.composite, false); 
+            redrawGrid(g_ctx.tileset, false);
+            redrawGrid(g_ctx.composite, false);
         }
         else if (event.ctrlKey && event.code === 'KeyZ'){
             let undome = UNDO.undo_pop();
@@ -580,13 +580,13 @@ window.addEventListener(
                 // Remove current tile
                 layer.container.removeChild(layer.sprites[undome[i][0]]);
                 g_ctx.composite.container.removeChild(layer.composite_sprites[undome[i][0]]);
-                
+
                 // Restore original tile if it existed
                 if (undome[i][1] !== -1) {
                     let pxloc = tileset_px_from_index(undome[i][1]);
                     let originalTile = sprite_from_px(pxloc[0] + g_ctx.tileset.fudgex, pxloc[1] + g_ctx.tileset.fudgey);
                     let originalTile2 = sprite_from_px(pxloc[0] + g_ctx.tileset.fudgex, pxloc[1] + g_ctx.tileset.fudgey);
-                    
+
                     // Position tiles at the correct location
                     let x = Math.floor(undome[i][0] % CONFIG.leveltilewidth) * g_ctx.tiledimx;
                     let y = Math.floor(undome[i][0] / CONFIG.leveltilewidth) * g_ctx.tiledimx;
@@ -595,11 +595,11 @@ window.addEventListener(
                     originalTile2.x = x;
                     originalTile2.y = y;
                     originalTile2.zIndex = layer.num;
-                    
+
                     // Add tiles back to containers
                     layer.container.addChild(originalTile);
                     g_ctx.composite.container.addChild(originalTile2);
-                    
+
                     // Update sprite references
                     layer.sprites[undome[i][0]] = originalTile;
                     layer.composite_sprites[undome[i][0]] = originalTile2;
@@ -638,7 +638,7 @@ function onTilesetDragStart(e)
     }
     g_ctx.tileset.app.stage.eventMode = 'static';
     g_ctx.tileset.app.stage.addEventListener('pointermove', onTilesetDrag);
-    
+
     g_ctx.tileset.dragctx.startx = e.data.global.x;
     g_ctx.tileset.dragctx.starty = e.data.global.y;
     g_ctx.tileset.dragctx.endx = e.data.global.x;
@@ -689,7 +689,7 @@ function onTilesetDragEnd(e)
 
 //    g_ctx.tile_index = (starttiley * g_ctx.tilesettilew) + starttilex;
 
-    g_ctx.tile_index = tileset_index_from_px(e.global.x, e.global.y); 
+    g_ctx.tile_index = tileset_index_from_px(e.global.x, e.global.y);
 
     let origx = starttilex;
     let origy = starttiley;
@@ -710,7 +710,7 @@ function onTilesetDrag(e)
     }
     g_ctx.tileset.dragctx.endx = e.global.x;
     g_ctx.tileset.dragctx.endy = e.global.y;
-    
+
     g_ctx.tileset.dragctx.square.clear();
     g_ctx.tileset.dragctx.square.beginFill(0xFF3300, 0.3);
     g_ctx.tileset.dragctx.square.lineStyle(2, 0xffd900, 1);
@@ -956,7 +956,7 @@ function levelPlaceNoVariable(layer, e) {
             let x = xorig + index[0] * g_ctx.tiledimx;
             let y = yorig + index[1] * g_ctx.tiledimx;
             let oldValue = getOldTileValue(layer, x, y);
-            
+
             let ti = layer.addTileLevelPx(x, y, index[2]);
             UNDO.undo_add_index_to_task(ti, oldValue);
         }
@@ -998,7 +998,7 @@ function onLevelDrag(layer, e)
     if (g_ctx.debug_flag) {
         console.log("onLevelDrag()");
     }
-    
+
     layer.dragctx.square.clear();
     layer.dragctx.square.beginFill(0xFF3300, 0.3);
     layer.dragctx.square.lineStyle(2, 0xffd900, 1);
@@ -1061,7 +1061,7 @@ function onLevelDragEnd(layer, e)
         console.log("sy ", starttiley, " ey ", endtiley);
     }
 
-    // no variable placement. 
+    // no variable placement.
     if(starttilex === endtilex && starttiley == endtiley ){
         levelPlaceNoVariable(layer, e);
         layer.dragctx.startx = -1;
@@ -1112,7 +1112,7 @@ function onLevelDragEnd(layer, e)
                 let y = j * g_ctx.tiledimx;
                 let oldValue = getOldTileValue(layer, x, y);
 
-                if (j === starttiley) { // first row 
+                if (j === starttiley) { // first row
                     if (i === starttilex) { // top left corner
                         ti = layer.addTileLevelPx(x, y, selected_grid[0][0][2]);
                     }
@@ -1131,10 +1131,10 @@ function onLevelDragEnd(layer, e)
                         ti = layer.addTileLevelPx(x, y, selected_grid[1][row][2]);
                     }
                 } else { // middle row
-                    if (i === starttilex) { // middle left 
+                    if (i === starttilex) { // middle left
                         ti = layer.addTileLevelPx(x, y, selected_grid[0][(row > 0)? 1 : 0][2]);
                     }
-                    else if (i === endtilex) { // middle end 
+                    else if (i === endtilex) { // middle end
                         ti = layer.addTileLevelPx(x, y, selected_grid[column - 1][(row > 0)? 1 : 0][2]);
                     } else { // middle middle
                         ti = layer.addTileLevelPx(x, y, selected_grid[1][(row > 0)? 1 : 0][2]);
@@ -1165,7 +1165,7 @@ function initPixiApps() {
     const level_app0 = new PIXI.Application({ backgroundColor: 0x2980b9, width: CONFIG.levelwidth, height: CONFIG.levelheight, view: document.getElementById('level0') });
     let layer0 = new LayerContext(level_app0, document.getElementById("layer0pane"), 0);
 
-    // second layer of level 
+    // second layer of level
     const level_app1 = new PIXI.Application({ backgroundColor: 0x2980b9, width: CONFIG.levelwidth, height: CONFIG.levelheight, view: document.getElementById('level1') });
     let layer1 = new LayerContext(level_app1, document.getElementById("layer1pane"), 1);
 
@@ -1191,11 +1191,11 @@ function initPixiApps() {
     g_ctx.g_layers.push(layer2);
     g_ctx.g_layers.push(layer3);
 
-    // g_ctx.composite view 
+    // g_ctx.composite view
     g_ctx.composite_app = new PIXI.Application({ backgroundAlpha: 0, width: CONFIG.levelwidth, height: CONFIG.levelheight, view: document.getElementById('composite') });
     g_ctx.composite = new CompositeContext(g_ctx.composite_app);
 
-    //  map tab 
+    //  map tab
     g_ctx.map_app = new PIXI.Application({ backgroundColor: 0x2980b9, width: CONFIG.levelwidth, height: CONFIG.levelheight, view: document.getElementById('mapcanvas') });
 
     // g_ctx.tileset
@@ -1293,7 +1293,7 @@ const initTilesConfig = async () => {
     g_ctx.tilesetpath = CONFIG.DEFAULTTILESETPATH;
 
     return new Promise((resolve, reject) => {
-        
+
     const texture = new PIXI.BaseTexture(g_ctx.tilesetpath);
     if (g_ctx.debug_flag) {
         console.log("initTilessConfi: Loading texture ",g_ctx.tilesetpath);
@@ -1323,7 +1323,7 @@ const initTilesConfig = async () => {
         resolve();
     });
 
-  
+
       });
   };
 
@@ -1356,8 +1356,8 @@ async function init() {
 
     UI.initMainHTMLWindow();
 
-    // We need to load the Tileset to know how to size things. So we block until done. 
-    await initTilesConfig(); 
+    // We need to load the Tileset to know how to size things. So we block until done.
+    await initTilesConfig();
 
     initPixiApps();
     initRadios();

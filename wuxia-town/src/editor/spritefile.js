@@ -1,4 +1,4 @@
-import * as CONFIG from './seconfig.js' 
+import * as CONFIG from './seconfig.js'
 import * as UTIL from './eutils.js'
 import { g_ctx }  from './secontext.js' // global context
 
@@ -7,7 +7,7 @@ function generate_preamble() {
     const preamble = '' +
         '{"frames": {\n' +
         '\n';
-       return preamble; 
+       return preamble;
 }
 
 // Function to download data to a file
@@ -24,8 +24,8 @@ function download(data, filename, type) {
         a.click();
         setTimeout(function() {
             document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);  
-        }, 0); 
+            window.URL.revokeObjectURL(url);
+        }, 0);
     }
 }
 
@@ -36,12 +36,12 @@ export function generate_sprite_file() {
 
     let text = generate_preamble();
 
-    let animations = Array.from(Array(CONFIG.leveltileheight), () => new Array().fill(null)); 
+    let animations = Array.from(Array(CONFIG.leveltileheight), () => new Array().fill(null));
 
     for (let row = 0; row < CONFIG.leveltileheight; row++) {
         if (!layer0.tilearray[row][0]) {
             // FIXME
-            // Assume row is empty if first tile is. 
+            // Assume row is empty if first tile is.
             continue;
         }
 

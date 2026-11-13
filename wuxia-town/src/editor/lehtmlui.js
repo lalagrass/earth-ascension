@@ -1,24 +1,24 @@
 import * as PIXI from 'pixi.js'
 import { g_ctx }  from './lecontext.js' // global context
-import * as CONFIG from './leconfig.js' 
+import * as CONFIG from './leconfig.js'
 
 // --
 //  Set sizes and limits for HTML in main UI
 // --
 
 export function initMainHTMLWindow() {
-    document.getElementById("layer0pane").style.maxWidth  = ""+CONFIG.htmlLayerPaneW+"px"; 
-    document.getElementById("layer0pane").style.maxHeight = ""+CONFIG.htmlLayerPaneH+"px"; 
-    document.getElementById("layer1pane").style.maxWidth  = ""+CONFIG.htmlLayerPaneW+"px"; 
-    document.getElementById("layer1pane").style.maxHeight = ""+CONFIG.htmlLayerPaneH+"px"; 
-    document.getElementById("layer2pane").style.maxWidth  = ""+CONFIG.htmlLayerPaneW+"px"; 
-    document.getElementById("layer2pane").style.maxHeight = ""+CONFIG.htmlLayerPaneH+"px"; 
-    document.getElementById("layer3pane").style.maxWidth  = ""+CONFIG.htmlLayerPaneW+"px"; 
-    document.getElementById("layer3pane").style.maxHeight = ""+CONFIG.htmlLayerPaneH+"px"; 
+    document.getElementById("layer0pane").style.maxWidth  = ""+CONFIG.htmlLayerPaneW+"px";
+    document.getElementById("layer0pane").style.maxHeight = ""+CONFIG.htmlLayerPaneH+"px";
+    document.getElementById("layer1pane").style.maxWidth  = ""+CONFIG.htmlLayerPaneW+"px";
+    document.getElementById("layer1pane").style.maxHeight = ""+CONFIG.htmlLayerPaneH+"px";
+    document.getElementById("layer2pane").style.maxWidth  = ""+CONFIG.htmlLayerPaneW+"px";
+    document.getElementById("layer2pane").style.maxHeight = ""+CONFIG.htmlLayerPaneH+"px";
+    document.getElementById("layer3pane").style.maxWidth  = ""+CONFIG.htmlLayerPaneW+"px";
+    document.getElementById("layer3pane").style.maxHeight = ""+CONFIG.htmlLayerPaneH+"px";
 
-    document.getElementById("tilesetpane").style.maxWidth  = ""+CONFIG.htmlTilesetPaneW+"px"; 
+    document.getElementById("tilesetpane").style.maxWidth  = ""+CONFIG.htmlTilesetPaneW+"px";
     document.getElementById("tilesetpane").style.maxHeight = ""+CONFIG.htmlTilesetPaneH+"px";
-    document.getElementById("compositepane").style.maxWidth  = ""+CONFIG.htmlCompositePaneW+"px"; 
+    document.getElementById("compositepane").style.maxWidth  = ""+CONFIG.htmlCompositePaneW+"px";
     document.getElementById("compositepane").style.maxHeight = ""+CONFIG.htmlCompositePaneH+"px";
 
     // hide map tab
@@ -35,7 +35,7 @@ export function initMainHTMLWindow() {
 
 
 // --
-// Initialize handlers loading a PNG file into the composite window 
+// Initialize handlers loading a PNG file into the composite window
 // --
 
 export function initCompositePNGLoader() {
@@ -54,7 +54,7 @@ export function initCompositePNGLoader() {
     }
 }
 
-// -- 
+// --
 // initailized handler to load a spriteSheet into current working tile
 // --
 
@@ -74,8 +74,8 @@ export function initSpriteSheetLoader() {
     }
 }
 
-// -- 
-// initailized handler to load a new tileset 
+// --
+// initailized handler to load a new tileset
 // --
 
 export function initTilesetLoader(callme) {
@@ -92,8 +92,8 @@ export function initTilesetLoader(callme) {
 }
 
 
-// -- 
-// initailized handler to load a level from a file 
+// --
+// initailized handler to load a level from a file
 // --
 
 function doimport (str) {
@@ -104,7 +104,7 @@ function doimport (str) {
       URL.revokeObjectURL(url) // GC objectURLs
       return module
     }
-    
+
     const url = "data:text/javascript;base64," + btoa(moduleData)
     return import(url)
   }

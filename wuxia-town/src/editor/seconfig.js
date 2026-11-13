@@ -21,7 +21,7 @@ export const DEFAULTILEDIMY = 16; // px
 
 
 // If there is padding between tilesets, set this to the pixel size
-export const tilesetpadding = 0; 
+export const tilesetpadding = 0;
 
 
 // width / height of layer panes

@@ -103,6 +103,7 @@
 | W9 | `src/components/PlayerDetails.tsx` | 選到別人時加「請教／切磋／拜師」三個鈕（`PersonActions`），結果顯示在鈕下 | #561「對人請教、切磋、拜師」 |
 | W9 | `src/components/buttons/InteractButton.tsx` | w09-player 開放時「進鎮」換成「以外地少年進鎮」「以外地少女進鎮」兩個鈕 | #561 選角色 |
 | W9 | `package.json`（JSON 無法加註解） | `wuxia:player-script` 指令 | #561 驗收工具 |
+| FINAL | `src/editor/*`（上游地圖編輯器，14 檔） | 只刪除行尾空白（沒有任何語意改動，`git diff -w` 為空），所以沒有加 WUXIA-PATCH 註解 | 本 repo 的 `test` workflow 在 PR 上跑 `git diff --check origin/dev...HEAD`，上游原檔的行尾空白會讓它失敗 |
 
 ## 上游刻意保留不改的隨機／時間
 
