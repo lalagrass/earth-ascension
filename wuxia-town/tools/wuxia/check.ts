@@ -22,8 +22,10 @@
 // 17.（W8）jianghu-diff A/B/C/D：關＝W7、山賊第 5 日 vs 第 40 日結局不同、--no-rumor-out 60 日沒有俠客與山賊、
 //    seed 7 跑 60 日：俠客／山賊有來因、大事件後 5 日平靜、連續 10 日無事加倍、每則傳聞路徑可追溯、鎮誌有內容
 //    （WUXIA_CHECK_JIANGHU_DAYS=0 可略過 C、D，CI 不略過；seed 7、8、9 合計 4 種事件的判定見 W8.md 的 jianghu-report）
-import { execFileSync } from 'node:child_process';
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+//    B／C／D 在開頭就各起一個子行程平行跑（jianghu-diff --part），跟第 1–16 項同時進行，結果在這一項收
+import { execFileSync, spawn } from 'node:child_process';
+import { closeSync, existsSync, mkdtempSync, openSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join, relative } from 'node:path';
 import { readJournal, replayJournal } from './replay';
 import { skinDiff } from './skin-diff';
@@ -34,7 +36,7 @@ import { dojoDiff } from './dojo-diff';
 import { mindDiff } from './mind-diff';
 import { sparDiffA, sparDiffB, sparDiffC } from './spar-diff';
 import { bondDiffA, bondDiffB } from './bond-diff';
-import { describeBandit, jianghuDiffA, jianghuDiffB, jianghuDiffC, jianghuDiffD } from './jianghu-diff';
+import { jianghuDiffA } from './jianghu-diff';
 import { W06_SPAR } from '../../convex/wuxia/w06_spar/data';
 import { skillReport } from './skill-report';
 import { runHeadless } from './headless';
@@ -42,6 +44,32 @@ import { quietConsole } from './sim';
 
 const ROOT = new URL('../..', import.meta.url).pathname;
 const MINUTES = process.env.WUXIA_CHECK_MINUTES ?? '30';
+
+// 第 17 項的長跑（強制山賊兩次、60 日 --no-rumor-out、60 日預設）各自一個子行程，一開始就平行起跑，
+// 跟第 1–16 項同時進行（CI 的 job 上限 20 分鐘；W8 前已用掉約 16 分鐘）。判定與單行程的 wuxia:jianghu-diff 相同。
+const JIANGHU_DAYS = Number(process.env.WUXIA_CHECK_JIANGHU_DAYS ?? 60);
+function jianghuChild(part: string): Promise<any> {
+  // 輸出寫到暫存檔而不是 pipe：主行程在跑第 1–16 項時是同步的，pipe 滿了子行程會卡住
+  const dir = mkdtempSync(join(tmpdir(), 'wuxia-check-'));
+  const outPath = join(dir, `jianghu-${part}.out`);
+  const fd = openSync(outPath, 'w');
+  return new Promise((resolve) => {
+    const child = spawn(join(ROOT, 'node_modules/.bin/tsx'), [join(ROOT, 'tools/wuxia/jianghu-diff.ts'), '--part', part, '--seed', '7', '--days', String(JIANGHU_DAYS)], {
+      cwd: ROOT,
+      stdio: ['ignore', fd, fd],
+    });
+    child.on('close', (code) => {
+      closeSync(fd);
+      const out = readFileSync(outPath, 'utf8');
+      const line = out.split('\n').find((l) => l.startsWith('@@JSON '));
+      resolve(line ? JSON.parse(line.slice(7)) : { error: `jianghu-diff --part ${part} exit ${code}: ${out.slice(-2000)}` });
+    });
+  });
+}
+const jianghuParts = {
+  B: jianghuChild('B'),
+  ...(JIANGHU_DAYS > 0 ? { C: jianghuChild('C'), D: jianghuChild('D') } : {}),
+} as Record<string, Promise<any>>;
 let failures = 0;
 const ok = (msg: string) => process.stdout.write(`ok   ${msg}\n`);
 const fail = (msg: string) => {
@@ -291,26 +319,30 @@ let skillRunOff: any;
   } else ok('（WUXIA_CHECK_BOND_DAYS=0，略過 45 日關係報告）');
 }
 
-// 17
-{
+// 17（等平行的子行程；用 async 包起來，tsconfig 不允許頂層 await）
+(async () => {
   const a = jianghuDiffA(7, Number(MINUTES));
   (a.ok ? ok : fail)(`jianghu-diff A：w08-jianghu 關＝W7 世界 hash ${a.hash}（3 日 ${a.hash3.slice(0, 16)}…）`);
-  const b = jianghuDiffB(7);
-  (b.ok ? ok : fail)(
-    `jianghu-diff B：--force-event bandit 第 5 日「${describeBandit(b.a).slice(-2, -1)[0]}」vs 第 40 日「${describeBandit(b.b).slice(-2, -1)[0]}」`,
-  );
-  const days = Number(process.env.WUXIA_CHECK_JIANGHU_DAYS ?? 60);
-  if (days > 0) {
-    const c = jianghuDiffC(7, days);
-    (c.ok ? ok : fail)(`jianghu-diff C：--no-rumor-out ${days} 日沒有俠客與山賊（事件：${c.kinds.join('、') || '無'}；hash ${c.hash.slice(0, 16)}…）`);
-    const d = jianghuDiffD(7, days);
-    for (const v of d.report.verdicts.slice(1)) (v.ok ? ok : fail)(`jianghu-report ${days} 日（hash ${d.hash.slice(0, 16)}…）${v.rule}：${v.value}`);
-    (d.summary.jianghu.chronicle.length > 0 ? ok : fail)(`鎮誌 ${d.summary.jianghu.chronicle.length} 條；事件 ${d.report.verdicts[0].value}`);
+  const b = await jianghuParts.B;
+  if (b.error) fail(b.error);
+  else
+    (b.ok ? ok : fail)(
+      `jianghu-diff B：--force-event bandit 第 5 日「${b.a.slice(-2, -1)[0]}」vs 第 40 日「${b.b.slice(-2, -1)[0]}」`,
+    );
+  if (JIANGHU_DAYS > 0) {
+    const c = await jianghuParts.C;
+    if (c.error) fail(c.error);
+    else (c.ok ? ok : fail)(`jianghu-diff C：--no-rumor-out ${JIANGHU_DAYS} 日沒有俠客與山賊（事件：${c.kinds.join('、') || '無'}；hash ${c.hash.slice(0, 16)}…）`);
+    const d = await jianghuParts.D;
+    if (d.error) fail(d.error);
+    else {
+      for (const v of d.verdicts.slice(1)) (v.ok ? ok : fail)(`jianghu-report ${JIANGHU_DAYS} 日（hash ${d.hash.slice(0, 16)}…）${v.rule}：${v.value}`);
+      (d.chronicle > 0 ? ok : fail)(`鎮誌 ${d.chronicle} 條；事件 ${d.verdicts[0].value}`);
+    }
   } else ok('（WUXIA_CHECK_JIANGHU_DAYS=0，略過 60 日江湖報告）');
-}
-
-if (failures) {
-  process.stdout.write(`wuxia:check FAILED (${failures})\n`);
-  process.exit(1);
-}
-process.stdout.write('wuxia:check passed\n');
+  if (failures) {
+    process.stdout.write(`wuxia:check FAILED (${failures})\n`);
+    process.exit(1);
+  }
+  process.stdout.write('wuxia:check passed\n');
+})();

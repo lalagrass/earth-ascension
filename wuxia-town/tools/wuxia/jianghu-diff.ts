@@ -84,12 +84,36 @@ export function jianghuDiffD(seed: number, days: number) {
   return { hash: run.finalHash, report, text, summary: run.summary };
 }
 
+/**
+ * wuxia:check 第 17 項用：只跑 B／C／D 其中一段，最後一行印 JSON（check.ts 開頭就平行起這幾個子行程，
+ * 跟第 1–16 項同時跑，CI 才不會超過 20 分鐘；判定內容跟單行程完全一樣）。
+ */
+export function jianghuPart(part: string, seed: number, days: number) {
+  if (part === 'B') {
+    const b = jianghuDiffB(seed);
+    return { ok: b.ok, a: describeBandit(b.a), b: describeBandit(b.b), oa: b.a.ev?.outcome?.outcome, ob: b.b.ev?.outcome?.outcome };
+  }
+  if (part === 'C') {
+    const c = jianghuDiffC(seed, days);
+    return { ok: c.ok, hash: c.hash, kinds: c.kinds, carried: c.carried };
+  }
+  if (part === 'D') {
+    const d = jianghuDiffD(seed, days);
+    return { hash: d.hash, verdicts: d.report.verdicts, chronicle: d.summary.jianghu.chronicle.length };
+  }
+  throw new Error(`unknown part ${part}`);
+}
+
 function main() {
   const args = parseArgs(process.argv.slice(2));
   quietConsole(!!args.verbose);
   const seed = Number(args.seed ?? 7);
   const minutes = Number(args.minutes ?? 30);
   const days = Number(args.days ?? 60);
+  if (args.part) {
+    process.stdout.write(`\n@@JSON ${JSON.stringify(jianghuPart(String(args.part), seed, days))}\n`);
+    return;
+  }
   let fails = 0;
   const out = (ok: boolean, msg: string) => {
     if (!ok) fails++;
