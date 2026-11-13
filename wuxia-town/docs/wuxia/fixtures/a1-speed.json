@@ -1,0 +1,22 @@
+{
+  "_doc": "A1（#564 驗收）wuxia:player-script 的單機引擎腳本：用瀏覽器 Worker 同一個 LocalCore、16 ms 假畫面更新，依序變速、暫停、跳到明早、存檔、讀檔、跳到下一件事。最後的 hash 必須等於無頭不中斷跑到同一步的 hash，跑兩次 hash 相同。minutes＝遊戲分（＝步數）。",
+  "engine": "local",
+  "seed": 7,
+  "frameMs": 16,
+  "steps": [
+    { "op": "speed", "speed": 1, "minutes": 30 },
+    { "op": "speed", "speed": 4, "minutes": 120 },
+    { "op": "pause", "frames": 60 },
+    { "op": "speed", "speed": 16, "minutes": 240 },
+    { "op": "skip", "kind": "morning" },
+    { "op": "save", "slot": "a" },
+    { "op": "speed", "speed": 64, "minutes": 600 },
+    { "op": "load", "slot": "a" },
+    { "op": "speed", "speed": 64, "minutes": 300 },
+    { "op": "skip", "kind": "next-event" },
+    { "op": "save", "slot": "b" },
+    { "op": "load", "slot": "b" },
+    { "op": "skip", "kind": "morning" },
+    { "op": "run", "minutes": 60 }
+  ]
+}

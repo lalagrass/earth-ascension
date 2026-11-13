@@ -2,6 +2,7 @@
 // 用法：npm run wuxia:player-script -- --script docs/wuxia/fixtures/w09-script.json --seed 7 --out /tmp/p.json
 //        [--journal /tmp/p.jsonl]（匯出 journal，可用 wuxia:replay 重播）[--off w09-player]（玩家照上游真人加入，對照用）
 //        [--days N]（覆寫腳本的天數）
+// A1：腳本有 "engine": "local" 時改跑單機引擎（倍速、跳到明早、存讀檔），例 docs/wuxia/fixtures/a1-speed.json
 // 腳本的每個操作都變成引擎 input（join／wuxiaPlayerAct／moveTo／startConversation／finishSendingMessage／
 // leaveConversation／wuxiaPlayerPause），跟 AI 的回應 input 一起記進 journal，所以同 script 同 seed 兩次 hash 相同、
 // 匯出的 journal 重播 hash 相符。腳本只決定「什麼時候按什麼」，做不做得成由引擎規則決定（結果從 input 回傳值與 w09-player 紀錄讀）。
@@ -19,6 +20,7 @@ import type { MindState } from '../../convex/wuxia/w05_mind/data';
 import { describeMemory } from '../../convex/wuxia/w05_mind/data';
 import type { BondState } from '../../convex/wuxia/w07_bond/data';
 import { FOLK_CHARACTERS } from '../../convex/wuxia/w02_folk';
+import { runLocalScript } from './local-script';
 
 export type ScriptStep = {
   day: number;
@@ -329,6 +331,18 @@ function main() {
   const args = parseArgs(process.argv.slice(2));
   quietConsole(!!args.verbose);
   const script = JSON.parse(readFileSync(String(args.script ?? 'docs/wuxia/fixtures/w09-script.json'), 'utf8')) as Script;
+  // A1：單機引擎腳本（倍速、跳到明早、存讀檔），見 tools/wuxia/local-script.ts
+  if ((script as any).engine === 'local') {
+    const r = runLocalScript(script as any, args.seed === undefined ? undefined : Number(args.seed));
+    for (const l of r.log) process.stdout.write(`${l}\n`);
+    if (args.out) {
+      mkdirSync(dirname(String(args.out)), { recursive: true });
+      writeFileSync(String(args.out), JSON.stringify(r, null, 2) + '\n');
+    }
+    process.stdout.write(`${r.ok ? 'OK  ' : 'FAIL'} 最後 hash ＝ 無頭不中斷跑到第 ${r.steps} 步 ${r.reference.slice(0, 16)}…\nhash ${r.finalHash}\n`);
+    if (!r.ok) process.exit(1);
+    return;
+  }
   const seed = Number(args.seed ?? defaultWuxiaConfig.seed);
   const playerOff = String(args.off ?? '').split(',').includes(W09_PLAYER);
   const { run, report } = runPlayerScript(script, seed, {

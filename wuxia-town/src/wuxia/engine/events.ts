@@ -16,7 +16,9 @@ export function eventMarks(world: W): EventMarks {
   const spar = el[W06_SPAR] as SparState | undefined;
   const bond = el[W07_BOND] as BondState | undefined;
   const jh = el[W08_JIANGHU] as JianghuState | undefined;
-  return { spar: spar?.seq ?? 0, bow: bond?.seq ?? 0, jianghu: jh?.seq ?? 0 };
+  // 拜師：bond.seq 也被門規違規用掉，所以看「進行中／最後一次」拜師的 id（新的拜師開始才會變）
+  const bow = bond ? (bond.active?.id ?? bond.events[bond.events.length - 1]?.id ?? 0) : 0;
+  return { spar: spar?.seq ?? 0, bow, jianghu: jh?.seq ?? 0 };
 }
 
 const JIANGHU_LABEL: Record<string, string> = { xiake: '外地俠客進鎮', bandit: '山賊進鎮', xiaobi: '武館小比', story: '說書人來了' };
