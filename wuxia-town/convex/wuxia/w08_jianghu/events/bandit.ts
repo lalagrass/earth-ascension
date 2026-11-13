@@ -44,8 +44,8 @@ export function steppers(c: Ctx): string[] {
     .map((r) => r.pid);
 }
 
-export const banditEvent: EventImpl = {
-  start(c, ev) {
+/** 山賊巳正（arriveMinuteOfDay）才從山路下來：導演卯時抽中只是「定下今天會來」，在那之前大家多半還睡著。 */
+function arrive(c: Ctx, ev: ActiveEvent) {
     const count = rollInt(() => c.game.rng(), DEF.count);
     const ids: string[] = [];
     for (let i = 0; i < count; i++) {
@@ -63,8 +63,23 @@ export const banditEvent: EventImpl = {
     }
     ev.phase = 'approach';
     ev.data = { count, bandits: ids, left: [...ids], fled: [], queue: [], heroes: [], beaten: [], witnesses: [], fights: [], loot: 0, until: c.gm + 60 };
+}
+
+export const banditEvent: EventImpl = {
+  start(c, ev) {
+    // WUXIA W8：導演卯時抽中，山賊巳正才進鎮（events.json bandit.arriveMinuteOfDay；之前漏接，卯時就下山、全鎮還在睡）
+    if (c.mod < DEF.arriveMinuteOfDay) {
+      ev.phase = 'wait';
+      ev.data = {};
+      return;
+    }
+    arrive(c, ev);
   },
   tick(c, ev) {
+    if (ev.phase === 'wait') {
+      if (c.mod >= DEF.arriveMinuteOfDay) arrive(c, ev);
+      return false;
+    }
     const d = ev.data;
     if (ev.phase === 'approach') {
       const all = d.bandits.every((id: string) => !figure(c, id)?.to);

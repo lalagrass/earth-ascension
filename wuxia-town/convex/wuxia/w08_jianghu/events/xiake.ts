@@ -1,6 +1,6 @@
 // 武俠小鎮 W8 事件「外地俠客路過」（#560）：一位外地俠客（暫時人物，最多 1 位）從城門進鎮、住茶館 2–4 日，
 // 每天去武館找人切磋（W6 判定），最後一天離開。每場切磋產生一則傳聞，旁觀的人親眼看到。
-import { JIANGHU, cidName, rollInt, rollSkills } from '../data';
+import { JIANGHU, cidName, rollInt, rollSkills, ActiveEvent } from '../data';
 import { zhCount } from '../data';
 import {
   Ctx,
@@ -29,8 +29,8 @@ import {
 const DEF = JIANGHU.events.xiake;
 const P = JIANGHU.places;
 
-export const xiakeEvent: EventImpl = {
-  start(c, ev) {
+/** 俠客辰初（arriveMinuteOfDay）才從城門進鎮。 */
+function arrive(c: Ctx, ev: ActiveEvent) {
     // 沒來過的人優先（名字都用過了才重複）
     const used = new Set(c.st.history.filter((h) => h.kind === 'xiake').map((h) => h.outcome.name));
     const pool = DEF.names.filter((n: string) => !used.has(n));
@@ -51,8 +51,23 @@ export const xiakeEvent: EventImpl = {
     ev.data = { name, fid: f.id, stay, leaveDay: c.day + stay - 1, lastTry: 0, bouts: [], rumors: [] };
     // 新人到鎮上（W5 記憶 newcomer；林嫂的心念「想打聽」讀這個）
     for (const r of people(c)) memo(c, r.pid, 'newcomer', { other: name });
+}
+
+export const xiakeEvent: EventImpl = {
+  start(c, ev) {
+    // WUXIA W8：導演卯時抽中，俠客辰初才進鎮（events.json xiake.arriveMinuteOfDay；之前漏接）
+    if (c.mod < DEF.arriveMinuteOfDay) {
+      ev.phase = 'wait';
+      ev.data = {};
+      return;
+    }
+    arrive(c, ev);
   },
   tick(c, ev) {
+    if (ev.phase === 'wait') {
+      if (c.mod >= DEF.arriveMinuteOfDay) arrive(c, ev);
+      return false;
+    }
     const d = ev.data;
     const f = figure(c, d.fid)!;
     if (ev.phase === 'stay') {
