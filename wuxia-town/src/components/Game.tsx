@@ -148,6 +148,7 @@ https://github.com/michalochman/react-pixi-fiber/issues/145#issuecomment-5315492
                     height={height}
                     historicalTime={historicalTime}
                     setSelectedElement={setSelectedElement}
+                    // WUXIA-PATCH(A1): 只有選中的人頭上顯示名字與活動文字
                     wuxiaSelectedId={selectedElement?.id}
                     onWuxiaObject={(id) => {
                       setWuxiaObject(id);

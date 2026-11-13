@@ -178,6 +178,19 @@
 | W9-12 | 「點物件 → 選它提供的活動」 | 點地圖上物件的格子（物件格或使用格）開選單，只列玩家能做的活動（`player.json` 的 `acts`，鎮民本業如煎藥、打鐵不列）；做不做得成照規則判斷，不行就顯示理由（例如「武館還沒重開」「沒有空位」「這個時辰不能…」）。玩家照自己的時間做事，所以不看「日程排到才做」 | 玩家沒有日程。回退：無 |
 | W9-13 | 「匯出 journal」按鈕（W0 工具） | W0 的匯出查詢是 internal（要 admin key），按鈕需要公開版：`convex/wuxia/journal.ts` 加 `export*` 五個公開查詢（內容與 internal 版相同，w09-player 關閉時拒絕）；組裝抽成 `convex/wuxia/journalFormat.ts`，命令列與按鈕共用，輸出格式不變 | **見 D11**。回退：拿掉五個 `export*` 查詢與按鈕 |
 
+## A1（#564）
+
+| # | 原規格 | 實際做法 | 理由／回退方式 |
+|---|---|---|---|
+| A1-1 | `npm run wuxia:check` | 拆成 `wuxia:check:quick`（≤3 分，CI push 跑）與 `wuxia:check:full`（原本的全部，`workflow_dispatch suite=full`）；`wuxia:check` 仍是 full | #564 審查第 1 項、#563 輕量驗收；沒有刪或放寬任何項目 |
+| A1-2 | `npm run build:local` 產出 `dist-local/` | 網站在 `dist-local/ai-town/`（vite `base` 沿用上游 `/ai-town/`），`dist-local/index.html` 轉址過去 | 上游的資源路徑寫死 `/ai-town/`；`npx serve dist-local` 打開根目錄即可 |
+| A1-3 | 三方（local／headless／convex）hash 相同 | 只比 local（Worker 與 Node worker_threads）與 headless（`wuxia:parity`、`wuxia:local-check`）；Convex 第三方沒有環境，列在 A1.md 待補驗收。`convex` 實作只讀狀態與送 input，不支援倍速、存檔 | #564「有 Convex 環境時加比第三者」 |
+| A1-4 | 第一系列修補 | 做成元素 `a1-base`（requires w03-life）：`--off a1-base` 與 W9 逐位元組相同（quick q3 檢查 `4bc77029…`）；預設開，seed 7 3 日 hash 刻意改成 `51df021f…` | #549 每步一個元素；w03 的 live fixture 照舊重播相符 |
+| A1-5 | 「違規改成每日最多記一次」 | 記憶照記，算關係時師父對同一徒弟的「徒弟違規」每遊戲日只算一筆。實測幾乎沒效果：違規幾乎都是「辰時練功」，本來就一天最多一次（360 日 seed 7，教頭對阿青敬重修補前 −36～+4、修補後 −43～+11） | 照規格字面做，沒有調數值（C 類只報告）。真正原因是阿青常錯過辰時練功；要改善得動 `disciple_violated` 的 −5 或練功時段，待 owner 決定 |
+| A1-6 | 「同一活動連做超過 3 次時意願遞減」 | 第 4 次起該活動的**日程權重** ×0.5^(n−3)，需求急迫度不變；睡覺除外（一小時一段接著睡）。林嫂煮茶 9.20 → 8.94 次／日、每日活動種類 5.89 → 5.93（360 日平均），同一活動（睡覺除外）最長連做仍是 6 次 | 只降日程權重才不會讓餓、累的人不去吃、不去睡；效果小是因為茶館時段裡沒有別的高分活動。加大 factor 屬調數值，待 owner 決定 |
+| A1-7 | 截圖：首頁、時間控制列、存檔選單（1400×820 與 390 寬） | 3 張：`a01-home.png`（首頁）、`a01-game.png`（遊戲畫面＝時間控制列＋存檔選單）、`a01-390.png`（390 寬）；PNG 減色到 128 色，好放進 repo（單檔 ≤1 MB） | #563「截圖最多 3 張」 |
+| A1-8 | 360 日 A4「狀態大小有上限」 | **沒通過**：狀態 127 KB（30 日）→ 707 KB（360 日），w08-jianghu 的 history／rolls／rumors／known／trail 與 w06-spar 的 history 一直長 | 改成環形紀錄會改規則行為（例如傳聞被遺忘），列在 A1.md 待補驗收，沒有放寬判定 |
+
 ## 待 owner 決定
 
 - **D1 預設雲端模型**：W0 沒有雲端金鑰（W2 的 20 分鐘實跑也因此改用本機 `qwen2.5:3b`，見 W2-2；有金鑰後兩份實跑都要用雲端模型重錄）。建議：先以 `gpt-4o-mini`（OpenAI，$0.15／$0.60 每百萬 token）當預設，W2 之前由 owner 提供金鑰（`npx convex env set OPENAI_API_KEY …`，把 `data/wuxia/world.config.json` 的 `embeddingDimension` 改為 1536）後重跑 `tools/wuxia/live-run.sh` 補兩個雲端模型的比較。目前程式維持上游預設（Ollama），可隨時切換、可回退。

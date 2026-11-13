@@ -104,6 +104,13 @@
 | W9 | `src/components/buttons/InteractButton.tsx` | w09-player 開放時「進鎮」換成「以外地少年進鎮」「以外地少女進鎮」兩個鈕 | #561 選角色 |
 | W9 | `package.json`（JSON 無法加註解） | `wuxia:player-script` 指令 | #561 驗收工具 |
 | FINAL | `src/editor/*`（上游地圖編輯器，14 檔） | 只刪除行尾空白（沒有任何語意改動，`git diff -w` 為空），所以沒有加 WUXIA-PATCH 註解 | 本 repo 的 `test` workflow 在 PR 上跑 `git diff --check origin/dev...HEAD`，上游原檔的行尾空白會讓它失敗 |
+| A1 | `convex/aiTown/game.ts` | `wuxiaRecordHistory` 開關（無頭／Worker 不記位置緩衝，不進 hash）；`tick`、`handleInput` 開頭換元素開關快取的世代（`bumpEnabledEpoch`） | #564 審查第 2 項效能；Convex 模式預設照舊記位置緩衝 |
+| A1 | `convex/aiTown/movement.ts` | `blocked` 不再每次配置「其他人位置」陣列（檢查順序與結果相同） | #564 效能；hash 不變 |
+| A1 | `convex/aiTown/world.ts` | `playerConversation` 不再每次展開成陣列（一樣回傳插入順序的第一個） | #564 效能；hash 不變 |
+| A1 | `src/components/Player.tsx`、`src/components/PixiGame.tsx`、`src/components/Game.tsx` | `wuxiaSelected`／`wuxiaSelectedId`：頭上只顯示圖示，選中的人才顯示名字與活動文字 | #564 第 8 項「頭上的活動文字縮小」 |
+| A1 | `package.json`（JSON 無法加註解） | `wuxia:check:quick`／`wuxia:check:full`（`wuxia:check`＝full）、`build:local`、`dev:local`、`wuxia:parity`、`wuxia:local-check`、`wuxia:const-audit`、`wuxia:perf`、`wuxia:health` | #564 驗收工具、#563 輕量驗收 |
+| A1 | `.gitignore` | 加 `/dist-local` | `npm run build:local` 的產出 |
+| A1 | `.github/workflows/wuxia-town.yml`（repo 根目錄，t208u 允許的例外） | push／PR 跑 `wuxia:check:quick`；`workflow_dispatch` 可選 `suite=full` | #563 輕量驗收；用 GitHub MCP 寫入（f803b82b） |
 
 ## 上游刻意保留不改的隨機／時間
 
