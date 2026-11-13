@@ -1,5 +1,5 @@
 {
-  "elements": { "w01-skin": true, "w02-folk": true, "w03-life": true, "w04-dojo": true, "w05-mind": true, "w06-spar": true, "w07-bond": true, "w08-jianghu": true },
+  "elements": { "w01-skin": true, "w02-folk": true, "w03-life": true, "w04-dojo": true, "w05-mind": true, "w06-spar": true, "w07-bond": true, "w08-jianghu": true, "w09-player": true },
   "seed": 7,
   "timeScale": 60,
   "keepAlive": false,

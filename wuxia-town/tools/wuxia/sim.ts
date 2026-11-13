@@ -63,6 +63,8 @@ export type StepResult = {
   step: JournalStep;
   agentOperations: Array<{ name: string; args: any }>;
   endedConversations: Array<{ id: string; participants: string[] }>;
+  /** W9：每個 input 的回傳值（跟 live 的 completedInputs 同形狀） */
+  completedInputs: Array<{ inputId: string; returnValue: any }>;
 };
 
 /** 跑一個 step：simulateStep → 取 diff（清掉 pendingOperations 與位置緩衝），回傳 step 紀錄。 */
@@ -76,7 +78,8 @@ export function runOneStep(game: Game, inputs: JournalInput[], now: number): Ste
     ...structuredClone(i),
     _id: i._id ?? `input:${i.number}`,
   }));
-  const { stepRecord } = game.simulateStep(withIds as any, now);
+  const { stepRecord, engineUpdate } = game.simulateStep(withIds as any, now);
+  const completedInputs = engineUpdate.completedInputs as Array<{ inputId: string; returnValue: any }>;
   const hash = game.wuxiaHash();
   const diff = game.takeDiff();
   const endedConversations = [];
@@ -89,6 +92,7 @@ export function runOneStep(game: Game, inputs: JournalInput[], now: number): Ste
     step: { ...stepRecord, hash },
     agentOperations: diff.agentOperations,
     endedConversations,
+    completedInputs: completedInputs ?? [],
   };
 }
 

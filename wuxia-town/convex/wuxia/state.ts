@@ -30,6 +30,14 @@ export type WuxiaState = {
 
 export const defaultWuxiaConfig: WuxiaConfig = worldConfig as WuxiaConfig;
 
+/** W9：建立世界時不凍結進 enabled、由 input 啟用的元素。 */
+export const LAZY_ELEMENTS = ['w09-player'];
+
+/** W9：設定檔是否允許玩家以武俠小鎮角色加入（world.config.json 的 elements['w09-player']）。 */
+export function playerJoinAllowed(config: WuxiaConfig = defaultWuxiaConfig): boolean {
+  return config.elements['w09-player'] === true;
+}
+
 /** keepAlive：設定檔 keepAlive=true，或 Convex 環境變數 WUXIA_KEEP_ALIVE=1。 */
 export function keepAliveEnabled(config: WuxiaConfig = defaultWuxiaConfig): boolean {
   return config.keepAlive === true || process.env.WUXIA_KEEP_ALIVE === '1';
@@ -41,8 +49,12 @@ export function initWuxiaState(config: WuxiaConfig = defaultWuxiaConfig): WuxiaS
     seed: config.seed,
     timeScale: config.timeScale,
     // W1：只記開啟的元素（沒列到＝關閉）。關掉 w01-skin 的世界因此跟 W0 的世界逐位元組相同。
+    // W9：w09-player 是「加入時才啟用」的元素（LAZY_ELEMENTS），建立世界時不凍結，第一個玩家加入時才寫進 enabled，
+    // 所以沒有玩家加入的世界跟 W8 逐位元組相同。設定檔的開關改由 playerJoinAllowed 讀（加入時把結果帶在 join input 裡）。
     enabled: pruneUnmetRequires(
-      Object.fromEntries(Object.entries(config.elements).filter(([, on]) => on === true)),
+      Object.fromEntries(
+        Object.entries(config.elements).filter(([id, on]) => on === true && !LAZY_ELEMENTS.includes(id)),
+      ),
     ),
     rng: seedRng(config.seed),
     elements: {},

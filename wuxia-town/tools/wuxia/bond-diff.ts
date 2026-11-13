@@ -31,9 +31,14 @@ export function bondDiffA(seed: number, minutes: number) {
 /** B：一個 seed 跑 days 日，回傳報告判定與 trace。 */
 export function bondDiffB(seed: number, days: number) {
   const run = runHeadless({ seed, minutes: 0, untilGameMinute: days * 1440, trace: true });
-  const report = bondReport(run.summary, days);
-  const trace = bondTrace(run.summary, '阿青', '周教頭', 'respect', days);
-  return { hash: run.finalHash, report, trace, summary: run.summary };
+  return bondDiffBFrom(run.summary, run.finalHash, days);
+}
+
+/** W9：判定部分抽出來（wuxia:check 用共用長跑在第 days 日取樣的 summary，判定不變）。 */
+export function bondDiffBFrom(summary: any, hash: string, days: number) {
+  const report = bondReport(summary, days);
+  const trace = bondTrace(summary, '阿青', '周教頭', 'respect', days);
+  return { hash, report, trace, summary };
 }
 
 function main() {

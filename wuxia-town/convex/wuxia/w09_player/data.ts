@@ -30,7 +30,7 @@ export const PLAYER_ACTS = new Set(PLAYER.acts);
 /** objects.json 的 owner 寫這個＝玩家專用（茶館客床） */
 export const PLAYER_OWNER = '@player';
 /** 只在有玩家加入時才放進 w03-life 預約表的物件 */
-export const PLAYER_OBJECTS = ['bed-guest'];
+export const PLAYER_OBJECTS = ['guest-bed'];
 /** 閒置多久（引擎毫秒＝實時間）交給規則代管 */
 export const IDLE_TO_AUTO_MS = PLAYER.idleToAutoMinutes * 60_000;
 /** 請教：走到對方身邊的期限（遊戲分鐘） */

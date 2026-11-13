@@ -68,6 +68,13 @@ export type HeadlessOptions = {
   forceEvent?: { kind: EventKind; day: number };
   /** W8：行商聽到的傳聞不算出鎮（#562 W8-12 驗收 --no-rumor-out） */
   noRumorOut?: boolean;
+  /** W9：每一步開始前呼叫，回傳要在這一步送進引擎的 input（wuxia:player-script 模擬玩家）。不給時行為與 hash 不變 */
+  inject?: (game: ReturnType<typeof createGame>, now: number) => Array<{ name: string; args: any }>;
+  /** W9：每個 input 處理完的結果（wuxia:player-script 讀上游 input 的回傳值／錯誤） */
+  onInputResult?: (input: JournalInput, result: { kind: 'ok'; value: any } | { kind: 'error'; message: string }) => void;
+  /** W9：途中取樣的遊戲分鐘（wuxia:check 共用長跑）。到了就呼叫 onTap，給的 summary／hash 跟「單獨跑到那一刻」逐位元組相同 */
+  taps?: number[];
+  onTap?: (gm: number, tap: { summary: any; finalHash: string }) => void;
 };
 
 export function initialSnapshot(opts: HeadlessOptions): Snapshot {
@@ -185,11 +192,22 @@ export function runHeadless(opts: HeadlessOptions) {
       gameMinutes(game.engine.currentTime!, w.clockEpoch, w.timeScale) >= opts.untilGameMinute!
     );
   };
+  const tapQ = [...(opts.taps ?? [])].sort((a, b) => a - b);
+  const clockNow = () => {
+    const w = game.world.wuxia!;
+    return w.clockEpoch === undefined ? -1 : gameMinutes(game.engine.currentTime!, w.clockEpoch, w.timeScale);
+  };
   for (let k = 1; k <= totalSteps; k++) {
     const now = HEADLESS_EPOCH + k * STEP_MS;
+    if (opts.inject) for (const i of opts.inject(game, now)) schedule(now, i.name, i.args);
     admit(now);
     const inputs = selectInputs(game, queue, undefined, now);
     const result = runOneStep(game, inputs, now);
+    if (opts.onInputResult)
+      for (const c of result.completedInputs) {
+        const input = inputs.find((i) => (i._id ?? `input:${i.number}`) === c.inputId);
+        if (input) opts.onInputResult(input, c.returnValue);
+      }
     steps.push(result.step);
     const stepEnd = result.step.endTs;
 
@@ -322,17 +340,34 @@ export function runHeadless(opts: HeadlessOptions) {
     if (k % 60 === 0 || k === totalSteps || done) {
       checkpoints.push({ step: k, t: now, hash: result.step.hash });
     }
+    // W9：取樣＝假裝這一步就是最後一步（單獨跑到 T 會在這一步停、補 checkpoint、收尾），取完把臨時 checkpoint 拿掉繼續跑
+    while (tapQ.length && clockNow() >= tapQ[0]) {
+      const T = tapQ.shift()!;
+      const extra = !(k % 60 === 0 || k === totalSteps || done);
+      if (extra) checkpoints.push({ step: k, t: now, hash: result.step.hash });
+      mindTracer?.finish(game);
+      bondTracer?.finish(game);
+      const s = JSON.parse(JSON.stringify(buildSummary(result.step.hash, T / 1440)));
+      if (extra) checkpoints.pop();
+      opts.onTap?.(T, { summary: s, finalHash: result.step.hash });
+    }
     if (done) break;
     // W4：365 日（525600 分）也要能跑，安全上限改成目標分鐘數的 2 倍＋10 萬
     if (opts.untilGameMinute !== undefined && k > opts.untilGameMinute * 2 + 100_000) {
       throw new Error('headless: game clock never reached target (no element enabled?)');
     }
   }
-  stats.inputs = queue.length;
   mindTracer?.finish(game);
   bondTracer?.finish(game);
-
   const finalHash = steps[steps.length - 1].hash;
+  const summary = buildSummary(
+    finalHash,
+    opts.untilGameMinute === undefined ? undefined : opts.untilGameMinute / 1440,
+  );
+  return { snapshot, queue, steps, summary, finalHash, traces, game, messages };
+
+  function buildSummary(finalHash: string, lifeDays: number | undefined) {
+  stats.inputs = queue.length;
   const players = [...game.world.players.values()].map((p) => ({
     id: p.id,
     name: nameOf(p.id),
@@ -370,7 +405,7 @@ export function runHeadless(opts: HeadlessOptions) {
     life: tracer
       ? {
           on: !!game.world.wuxia!.enabled[W03_LIFE],
-          days: opts.untilGameMinute === undefined ? undefined : opts.untilGameMinute / 1440,
+          days: lifeDays,
           checks: tracer.checks,
           timeline: tracer.timeline,
           finalNeeds: lifeSummary(game),
@@ -389,7 +424,8 @@ export function runHeadless(opts: HeadlessOptions) {
     // W8：江湖事件、傳聞與鎮誌（--days 或 trace 且 w08-jianghu 開時才有）
     jianghu: opts.trace ? jianghuSummary(game) : undefined,
   };
-  return { snapshot, queue, steps, summary, finalHash, traces, game, messages };
+  return summary;
+  }
 }
 
 /** W6：打完的場次（最近 200 場）與還在進行的場次。 */

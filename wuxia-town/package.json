@@ -40,6 +40,7 @@
     "wuxia:rumor-trace": "tsx tools/wuxia/rumor-trace.ts",
     "wuxia:jianghu-report": "tsx tools/wuxia/jianghu-report.ts",
     "wuxia:jianghu-diff": "tsx tools/wuxia/jianghu-diff.ts",
+    "wuxia:player-script": "tsx tools/wuxia/player-script.ts",
     "wuxia:check": "npm test && tsx tools/wuxia/check.ts"
   },
   "dependencies": {

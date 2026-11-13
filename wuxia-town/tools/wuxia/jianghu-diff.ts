@@ -79,9 +79,14 @@ export function jianghuDiffC(seed: number, days: number) {
 
 export function jianghuDiffD(seed: number, days: number) {
   const run = runHeadless({ seed, minutes: 0, untilGameMinute: days * 1440, trace: true });
-  const report = jianghuReport([run.summary]);
-  const text = chronicleText(run.summary);
-  return { hash: run.finalHash, report, text, summary: run.summary };
+  return jianghuDiffDFrom(run.summary, run.finalHash);
+}
+
+/** W9：判定部分抽出來（wuxia:check 用共用長跑在第 days 日取樣的 summary，判定不變）。 */
+export function jianghuDiffDFrom(summary: any, hash: string) {
+  const report = jianghuReport([summary]);
+  const text = chronicleText(summary);
+  return { hash, report, text, summary };
 }
 
 /**

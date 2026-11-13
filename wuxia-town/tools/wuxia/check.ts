@@ -23,6 +23,11 @@
 //    seed 7 跑 60 日：俠客／山賊有來因、大事件後 5 日平靜、連續 10 日無事加倍、每則傳聞路徑可追溯、鎮誌有內容
 //    （WUXIA_CHECK_JIANGHU_DAYS=0 可略過 C、D，CI 不略過；seed 7、8、9 合計 4 種事件的判定見 W8.md 的 jianghu-report）
 //    B／C／D 在開頭就各起一個子行程平行跑（jianghu-diff --part），跟第 1–16 項同時進行，結果在這一項收
+// 18.（W9）player-script：同 script 同 seed 跑兩次（兩個子行程）hash 相同、第 1 日挑水／第 2 日去武館／第 5 日請教／第 10 日拜師
+//    都成功、匯出的 journal 重播 hash 相符；玩家不加入時 seed 7 30 分鐘、3 日 hash 與 W8 相同，--off w09-player 也相同
+// W9：第 15 項的 30 日（開切磋）、第 16 項的 45 日、第 17 項 D 的 60 日是同一個世界（seed 7、預設設定、trace），
+//    改成 long 組只跑一次 60 日、途中在第 30／45 日取樣（tools/wuxia/shared-run.ts；取樣結果跟單獨跑逐位元組相同，
+//    headless.test.ts 有測），判定完全不變。第 15 項的開切磋 30 日結果由 long 組寫到暫存檔、skill 組讀
 import { execFileSync, spawn } from 'node:child_process';
 import {
   closeSync,
@@ -43,8 +48,10 @@ import { lifeDiff } from './life-diff';
 import { dojoDiff } from './dojo-diff';
 import { mindDiff } from './mind-diff';
 import { sparDiffA, sparDiffB, sparDiffC } from './spar-diff';
-import { bondDiffA, bondDiffB } from './bond-diff';
-import { jianghuDiffA } from './jianghu-diff';
+import { bondDiffA, bondDiffB, bondDiffBFrom } from './bond-diff';
+import { jianghuDiffA, jianghuDiffDFrom, jianghuPart } from './jianghu-diff';
+import { sharedDefaultRun } from './shared-run';
+import { writeFileSync, renameSync } from 'node:fs';
 import { W06_SPAR } from '../../convex/wuxia/w06_spar/data';
 import { skillReport } from './skill-report';
 import { runHeadless } from './headless';
@@ -56,7 +63,8 @@ const MINUTES = process.env.WUXIA_CHECK_MINUTES ?? '30';
 // W8：整份檢查單行程要 25 分鐘以上，CI job 上限 20 分鐘。預設把各項分成 5 組、各一個子行程平行跑
 // （base＝第 1–12 項、skill＝第 13＋15 項（共用關掉切磋的 30 日 run）、mind＝第 14 項、bond＝第 16 項、jianghu＝第 17 項），
 // 全部跑完再依組別順序印出結果；判定內容完全不變。WUXIA_CHECK_SERIAL=1＝舊的單行程依序跑。
-const GROUPS = ['base', 'skill', 'mind', 'bond', 'jianghu'] as const;
+// W9：bond 組併進 long 組（共用長跑），另加 player 組（第 18 項）
+const GROUPS = ['base', 'skill', 'mind', 'long', 'jianghu', 'player'] as const;
 const groupArg = process.argv.indexOf('--group');
 const ONLY = groupArg >= 0 ? process.argv[groupArg + 1] : undefined;
 const SERIAL = !!process.env.WUXIA_CHECK_SERIAL;
@@ -73,7 +81,7 @@ function runGroup(g: string): Promise<{ g: string; code: number | null; out: str
       {
         cwd: ROOT,
         stdio: ['ignore', fd, fd],
-        env: process.env,
+        env: { ...process.env, WUXIA_CHECK_SHARE: SHARE },
       },
     );
     child.on('close', (code) => {
@@ -82,6 +90,10 @@ function runGroup(g: string): Promise<{ g: string; code: number | null; out: str
     });
   });
 }
+
+// W9：long 組把共用長跑在第 30 日的結果寫到這個暫存目錄，skill 組讀（第 15 項 C）
+const SHARE =
+  process.env.WUXIA_CHECK_SHARE ?? (!SERIAL && !ONLY ? mkdtempSync(join(tmpdir(), 'wuxia-share-')) : '');
 
 if (!SERIAL && !ONLY) {
   const t0 = Date.now(); // 只在檢查工具計時用，不在引擎內
@@ -100,7 +112,7 @@ if (!SERIAL && !ONLY) {
           );
       }
     }
-    process.stdout.write(`（5 組平行，共 ${Math.round((Date.now() - t0) / 1000)} 秒）\n`);
+    process.stdout.write(`（${GROUPS.length} 組平行，共 ${Math.round((Date.now() - t0) / 1000)} 秒）\n`);
     if (bad) {
       process.stdout.write(`wuxia:check FAILED (${bad} 組)\n`);
       process.exit(1);
@@ -150,10 +162,61 @@ const jianghuParts = (
   GROUP('jianghu')
     ? {
         B: jianghuChild('B'),
-        ...(JIANGHU_DAYS > 0 ? { C: jianghuChild('C'), D: jianghuChild('D') } : {}),
+        // W9：D（預設 60 日）改在 long 組用共用長跑算
+        ...(JIANGHU_DAYS > 0 ? { C: jianghuChild('C') } : {}),
       }
     : {}
 ) as Record<string, Promise<any>>;
+const SPAR_DAYS = Number(process.env.WUXIA_CHECK_SPAR_DAYS ?? 30);
+const BOND_DAYS = Number(process.env.WUXIA_CHECK_BOND_DAYS ?? 45);
+
+/** W9：等 long 組把共用長跑的取樣寫好（最多等 40 分鐘；long 組失敗時 skill 組自己跑）。 */
+async function waitShared(name: string): Promise<{ summary: any; finalHash: string } | undefined> {
+  const p = join(SHARE, name);
+  for (let i = 0; i < 1200; i++) {
+    if (existsSync(p)) return JSON.parse(readFileSync(p, 'utf8'));
+    await new Promise((r) => setTimeout(r, 2000));
+  }
+  return undefined;
+}
+
+/** 第 17 項 D 的輸出（判定與 W8 相同） */
+function reportJianghuD(d: { hash: string; verdicts: Array<{ ok: boolean; rule: string; value: string }>; chronicle: number; error?: string }) {
+  if (d.error) return fail(d.error);
+  for (const v of d.verdicts.slice(1))
+    (v.ok ? ok : fail)(
+      `jianghu-report ${JIANGHU_DAYS} 日（hash ${d.hash.slice(0, 16)}…）${v.rule}：${v.value}`,
+    );
+  (d.chronicle > 0 ? ok : fail)(`鎮誌 ${d.chronicle} 條；事件 ${d.verdicts[0].value}`);
+}
+
+// 18：player-script 同 script 同 seed 跑兩次（兩個子行程，一開始就平行起跑）
+const PLAYER_SCRIPT = 'docs/wuxia/fixtures/w09-script.json';
+function playerChild(tag: string): Promise<{ report?: any; journal: string; error?: string }> {
+  const dir = mkdtempSync(join(tmpdir(), 'wuxia-check-'));
+  const outPath = join(dir, `player-${tag}.out`);
+  const json = join(dir, `p-${tag}.json`);
+  const journal = join(dir, `p-${tag}.jsonl`);
+  const fd = openSync(outPath, 'w');
+  return new Promise((resolve) => {
+    const child = spawn(
+      join(ROOT, 'node_modules/.bin/tsx'),
+      [join(ROOT, 'tools/wuxia/player-script.ts'), '--script', PLAYER_SCRIPT, '--seed', '7', '--out', json, '--journal', journal],
+      { cwd: ROOT, stdio: ['ignore', fd, fd] },
+    );
+    child.on('close', (code) => {
+      closeSync(fd);
+      if (code !== 0 || !existsSync(json))
+        resolve({ journal, error: `player-script ${tag} exit ${code}: ${readFileSync(outPath, 'utf8').slice(-2000)}` });
+      else resolve({ report: JSON.parse(readFileSync(json, 'utf8')), journal });
+    });
+  });
+}
+const playerRuns = GROUP('player') ? [playerChild('a'), playerChild('b')] : [];
+// W8 的 hash（docs/wuxia/W8.md「hash 與報告變化」；CI 43445035091）：玩家不加入時必須一樣
+const W8_HASH_SEED7_30M = '47c2308e3633c9a35df9993d67fe6ed78ac6c7532c5ec804a87f837052c4b7cf';
+const W8_HASH_SEED7_3D_PREFIX = '4bc77029e423be2d';
+
 let failures = 0;
 const ok = (msg: string) => process.stdout.write(`ok   ${msg}\n`);
 const fail = (msg: string) => {
@@ -413,38 +476,29 @@ if (GROUP('skill')) {
   (b.strongRowsOk ? ok : fail)(
     `spar-diff B：強對弱（拳腳差 300／400／600，其他相同）強方勝率 ${b.strongRows.map((r) => `${r.gap}:${(r.highAsA * 100).toFixed(1)}/${(r.highAsB * 100).toFixed(1)}%`).join(' ')}（> 90%）`,
   );
-  const days = Number(process.env.WUXIA_CHECK_SPAR_DAYS ?? 30);
-  if (days > 0) {
-    const on = runHeadless({ seed: 7, minutes: 0, untilGameMinute: days * 1440, trace: true });
-    const off =
-      skillRunOff && Number(process.env.WUXIA_CHECK_SKILL_DAYS ?? 30) === days
-        ? skillRunOff
-        : runHeadless({
-            seed: 7,
-            minutes: 0,
-            untilGameMinute: days * 1440,
-            trace: true,
-            elements: { [W06_SPAR]: false },
-          }).summary;
-    for (const v of sparDiffC(on.summary, off))
-      (v.ok ? ok : fail)(
-        `spar-report ${days} 日（hash ${on.finalHash.slice(0, 16)}…）${v.rule}：${v.value}`,
-      );
-    ok(
-      `（資訊）切磋開著時阿青第 ${days} 日拳腳 ${on.summary.dojo?.final?.['a-qing']?.fist}，關掉 ${off.dojo?.final?.['a-qing']?.fist}`,
-    );
-  } else ok('（WUXIA_CHECK_SPAR_DAYS=0，略過 30 日切磋報告）');
+  // 15 C（30 日切磋報告）在檔尾的 async 段落（要等 long 組的共用長跑取樣）
 }
 
-// 16
-if (GROUP('bond')) {
+// 16（＋第 15 項 C、第 17 項 D 的共用長跑）
+if (GROUP('long')) {
   const a = bondDiffA(7, Number(MINUTES));
   (a.ok ? ok : fail)(
     `bond-diff A：w07-bond 關＝W6 世界 hash ${a.hash}（3 日 ${a.hash3.slice(0, 16)}…）`,
   );
-  const days = Number(process.env.WUXIA_CHECK_BOND_DAYS ?? 45);
+  // W9：seed 7 預設設定跑一次到最長天數，途中取樣（第 15 項 C 的 30 日寫到暫存檔給 skill 組）
+  const shared = SERIAL
+    ? new Map()
+    : sharedDefaultRun(7, [SPAR_DAYS, BOND_DAYS, JIANGHU_DAYS], (day, tap) => {
+        if (day === SPAR_DAYS && SHARE) {
+          const tmp = join(SHARE, `spar-on-${day}.json.tmp`);
+          writeFileSync(tmp, JSON.stringify({ summary: tap.summary, finalHash: tap.finalHash }));
+          renameSync(tmp, join(SHARE, `spar-on-${day}.json`));
+        }
+      });
+  const days = BOND_DAYS;
   if (days > 0) {
-    const b = bondDiffB(7, days);
+    const tap = shared.get(days);
+    const b = tap ? bondDiffBFrom(tap.summary, tap.finalHash, days) : bondDiffB(7, days);
     for (const v of b.report.verdicts)
       (v.ok ? ok : fail)(
         `bond-report ${days} 日（hash ${b.hash.slice(0, 16)}…）${v.rule}：${v.value}`,
@@ -453,11 +507,48 @@ if (GROUP('bond')) {
       `bond-trace 第 ${days} 日 阿青→周教頭 敬重 ${b.trace.bond.respect}（引擎快取 ${b.trace.cached?.respect ?? '-'}），貢獻最大 ${b.trace.top.length} 筆：${b.trace.top.map((c) => `#${c.memory!.id}`).join(' ')}`,
     );
   } else ok('（WUXIA_CHECK_BOND_DAYS=0，略過 45 日關係報告）');
+  // 17 D（W9 起在這裡算；單行程模式在第 17 項自己跑）
+  if (JIANGHU_DAYS > 0 && shared.get(JIANGHU_DAYS)) {
+    const tap = shared.get(JIANGHU_DAYS)!;
+    const d = jianghuDiffDFrom(tap.summary, tap.finalHash);
+    reportJianghuD({
+      hash: d.hash,
+      verdicts: d.report.verdicts,
+      chronicle: d.summary.jianghu.chronicle.length,
+    });
+  }
 }
 
 // 17（等平行的子行程；用 async 包起來，tsconfig 不允許頂層 await）
 (async () => {
   if (!SERIAL && !ONLY) return; // 調度行程：結果由上面的 Promise.all 收
+  // 15 C
+  if (GROUP('skill')) {
+    const days = SPAR_DAYS;
+    if (days > 0) {
+      // W9：平行模式讀 long 組共用長跑在第 days 日的取樣；單行程（WUXIA_CHECK_SERIAL）或單獨跑這一組時照舊自己跑
+      const on = (SHARE && !SERIAL ? await waitShared(`spar-on-${days}.json`) : undefined) ??
+        runHeadless({ seed: 7, minutes: 0, untilGameMinute: days * 1440, trace: true });
+      const off =
+        skillRunOff && Number(process.env.WUXIA_CHECK_SKILL_DAYS ?? 30) === days
+          ? skillRunOff
+          : runHeadless({
+              seed: 7,
+              minutes: 0,
+              untilGameMinute: days * 1440,
+              trace: true,
+              elements: { [W06_SPAR]: false },
+            }).summary;
+      for (const v of sparDiffC(on.summary, off))
+        (v.ok ? ok : fail)(
+          `spar-report ${days} 日（hash ${on.finalHash.slice(0, 16)}…）${v.rule}：${v.value}`,
+        );
+      ok(
+        `（資訊）切磋開著時阿青第 ${days} 日拳腳 ${on.summary.dojo?.final?.['a-qing']?.fist}，關掉 ${off.dojo?.final?.['a-qing']?.fist}`,
+      );
+    } else ok('（WUXIA_CHECK_SPAR_DAYS=0，略過 30 日切磋報告）');
+
+  }
   if (GROUP('jianghu')) {
     const a = jianghuDiffA(7, Number(MINUTES));
     (a.ok ? ok : fail)(
@@ -476,16 +567,59 @@ if (GROUP('bond')) {
         (c.ok ? ok : fail)(
           `jianghu-diff C：--no-rumor-out ${JIANGHU_DAYS} 日沒有俠客與山賊（事件：${c.kinds.join('、') || '無'}；hash ${c.hash.slice(0, 16)}…）`,
         );
-      const d = await jianghuParts.D;
-      if (d.error) fail(d.error);
-      else {
-        for (const v of d.verdicts.slice(1))
-          (v.ok ? ok : fail)(
-            `jianghu-report ${JIANGHU_DAYS} 日（hash ${d.hash.slice(0, 16)}…）${v.rule}：${v.value}`,
-          );
-        (d.chronicle > 0 ? ok : fail)(`鎮誌 ${d.chronicle} 條；事件 ${d.verdicts[0].value}`);
-      }
+      // D：平行模式在 long 組（共用長跑）；單行程模式在這裡自己跑
+      if (SERIAL || !process.env.WUXIA_CHECK_SHARE) reportJianghuD(jianghuPart('D', 7, JIANGHU_DAYS) as any);
     } else ok('（WUXIA_CHECK_JIANGHU_DAYS=0，略過 60 日江湖報告）');
+  }
+  // 18
+  if (GROUP('player')) {
+    // 玩家不加入：w09-player 不寫任何狀態，世界跟 W8 逐位元組相同；--off w09-player 也一樣
+    const none = runHeadless({ seed: 7, minutes: Number(MINUTES) });
+    const off = runHeadless({ seed: 7, minutes: Number(MINUTES), elements: { 'w09-player': false } });
+    const three = runHeadless({ seed: 7, minutes: 0, untilGameMinute: 3 * 1440, trace: true });
+    if (MINUTES === '30')
+      (none.finalHash === W8_HASH_SEED7_30M && off.finalHash === none.finalHash ? ok : fail)(
+        `player：玩家不加入 seed 7 30 分鐘 hash ${none.finalHash.slice(0, 16)}…＝W8 ${W8_HASH_SEED7_30M.slice(0, 16)}…；--off w09-player ${off.finalHash.slice(0, 16)}…`,
+      );
+    else
+      (off.finalHash === none.finalHash ? ok : fail)(
+        `player：玩家不加入 seed 7 ${MINUTES} 分鐘 hash ${none.finalHash.slice(0, 16)}…＝--off w09-player ${off.finalHash.slice(0, 16)}…`,
+      );
+    (three.finalHash.startsWith(W8_HASH_SEED7_3D_PREFIX) ? ok : fail)(
+      `player：玩家不加入 seed 7 3 日 hash ${three.finalHash.slice(0, 16)}…＝W8 ${W8_HASH_SEED7_3D_PREFIX}…（enabled 沒有 w09-player：${!three.summary.enabledElements.includes('w09-player')}）`,
+    );
+    const [a, b] = await Promise.all(playerRuns);
+    if (a.error || b.error) fail(a.error ?? b.error!);
+    else {
+      (a.report.finalHash === b.report.finalHash ? ok : fail)(
+        `player-script 同 script 同 seed 兩次 hash 相同 ${a.report.finalHash}`,
+      );
+      const o = a.report.outcomes as Array<{ planned: string; op: string; what: string; ok: boolean; attempts: any[]; detail: any }>;
+      const find = (day: number, op: string) => o.find((x) => x.op === op && x.planned.startsWith(`第 ${day} 日`));
+      const last = (x: any) => (x?.attempts.length ? `${x.attempts[x.attempts.length - 1].at} ${x.attempts[x.attempts.length - 1].reason}` : '沒有執行');
+      const water = find(1, 'activity');
+      (water?.ok && water.detail.finished ? ok : fail)(
+        `player-script 第 1 日挑水：${last(water)}；${water?.detail.started ?? '-'} 開始、${water?.detail.finished ?? '-'} 做完`,
+      );
+      const gaze = o.find((x) => x.planned.startsWith('第 2 日') && x.ok && (x.op === 'goto' || x.what.startsWith('dojo-gate')));
+      (gaze ? ok : fail)(`player-script 第 2 日去武館：${gaze ? `${gaze.op} ${gaze.what} → ${last(gaze)}` : '沒有成功'}`);
+      const ask = find(5, 'ask');
+      const askDone = (a.report.player?.log ?? []).find((l: any) => l.op === 'ask-done');
+      (ask?.ok && askDone ? ok : fail)(`player-script 第 5 日請教：${last(ask)}；${askDone ? askDone.reason : '沒有請教完'}`);
+      const ap = find(10, 'apprentice');
+      const master = a.report.player?.master?.master;
+      (ap?.ok && master === 'zhou-jiaotou' ? ok : fail)(
+        `player-script 第 10 日拜師：${last(ap)}；師父 ${master ?? '無'}（第 ${a.report.player?.master?.day ?? '-'} 日）`,
+      );
+      ok(
+        `（資訊）player-script 其他操作：${o
+          .filter((x) => ![water, ask, ap, gaze].includes(x))
+          .map((x) => `${x.planned} ${x.op}${x.ok ? '成功' : `未成（${x.attempts[x.attempts.length - 1]?.reason ?? '沒有執行'}）`}`)
+          .join('；')}；代管／接手 ${a.report.autoSpans.length} 次`,
+      );
+      const r = replayJournal(readJournal(a.journal));
+      (r.ok ? ok : fail)(`player-script 匯出的 journal 重播 steps=${r.steps} hash ${r.finalHash.slice(0, 16)}…（記錄 ${r.expectedHash.slice(0, 16)}…）`);
+    }
   }
   if (ONLY) process.stdout.write(`@@GROUP-DONE ${ONLY}\n`);
   if (failures) {
