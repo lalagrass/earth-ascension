@@ -75,6 +75,9 @@ export type HeadlessOptions = {
   /** W9：途中取樣的遊戲分鐘（wuxia:check 共用長跑）。到了就呼叫 onTap，給的 summary／hash 跟「單獨跑到那一刻」逐位元組相同 */
   taps?: number[];
   onTap?: (gm: number, tap: { summary: any; finalHash: string }) => void;
+  /** A1：每一步都算 hash（寫 journal 時要，重播逐步比對）。不給時只在 checkpoint（每 60 步）、取樣、最後一步與 onStep 時算；
+   *  世界狀態與這些 hash 都不變，只是中間步驟的 steps[i].hash 留空（#564 審查第 2 項，效能） */
+  stepHashes?: boolean;
 };
 
 export function initialSnapshot(opts: HeadlessOptions): Snapshot {
@@ -125,6 +128,8 @@ type Pending = { received: number; seq: number; name: string; args: any };
 export function runHeadless(opts: HeadlessOptions) {
   const snapshot = initialSnapshot(opts);
   const game = createGame(snapshot);
+  // A1：無頭模擬不需要畫面用的位置緩衝（不進 hash）
+  game.wuxiaRecordHistory = false;
   // W2：w02-folk 開時人物用 data/wuxia/characters.json、模板句依人物口吻（data/wuxia/templates/）
   const folkOn = isEnabled(snapshot.gameState.world.wuxia, W02_FOLK);
   const descriptions = descriptionsFor(folkOn);
@@ -202,7 +207,18 @@ export function runHeadless(opts: HeadlessOptions) {
     if (opts.inject) for (const i of opts.inject(game, now)) schedule(now, i.name, i.args);
     admit(now);
     const inputs = selectInputs(game, queue, undefined, now);
-    const result = runOneStep(game, inputs, now);
+    const result = runOneStep(game, inputs, now, { hash: false, light: true });
+    {
+      // A1：hash 只在需要的步驟算（算的時機在 agent operation 處理之前＝跟 runOneStep 內算的同一刻，值相同）
+      const need =
+        opts.stepHashes ||
+        opts.onStep ||
+        k % 60 === 0 ||
+        k === totalSteps ||
+        (opts.untilGameMinute !== undefined && clockReached()) ||
+        (tapQ.length > 0 && clockNow() >= tapQ[0]);
+      if (need) result.step.hash = game.wuxiaHash();
+    }
     if (opts.onInputResult)
       for (const c of result.completedInputs) {
         const input = inputs.find((i) => (i._id ?? `input:${i.number}`) === c.inputId);
@@ -585,7 +601,7 @@ function main() {
   ) {
     throw new Error('usage: headless --seed N --minutes M [--agents K] --out run.json');
   }
-  const run = runHeadless(opts);
+  const run = runHeadless({ ...opts, stepHashes: !!args.journal });
   const { snapshot, queue, steps, summary, finalHash } = run;
   if (args.svg) {
     mkdirSync(dirname(args.svg), { recursive: true });

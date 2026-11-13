@@ -32,6 +32,8 @@ import { isPaused, touchPlayer } from '../wuxia/w09_player';
 import { nextFloat, rngUuid } from '../wuxia/rng';
 import { initWuxiaState } from '../wuxia/state';
 import { initElements, runElements } from '../wuxia/registry';
+// WUXIA-PATCH(A1): 元素開關快取的世代
+import { bumpEnabledEpoch } from '../wuxia/enabledEpoch';
 import { stateHash } from '../wuxia/hash';
 import { recordWuxiaStep } from '../wuxia/steps';
 import { wuxiaStep } from '../wuxia/schema';
@@ -69,6 +71,8 @@ export class Game extends AbstractGame {
   agentDescriptions: Map<GameId<'agents'>, AgentDescription>;
 
   pendingOperations: Array<{ name: string; args: any }> = [];
+  // WUXIA-PATCH(A1): 無頭模擬與單機 Worker 不需要畫面用的位置緩衝（historicalLocations 不進 hash），可關掉省下每 tick 的記錄
+  wuxiaRecordHistory = true;
 
   numPathfinds: number;
 
@@ -190,6 +194,8 @@ export class Game extends AbstractGame {
       throw new Error(`Invalid input: ${name}`);
     }
     // WUXIA-PATCH(W9): 玩家角色的任何 input 都算「回來了」（記 lastInput、代管中就接手）；沒有玩家角色時不做事
+    // WUXIA-PATCH(A1): 元素開關快取換世代（input 可能改開關）
+    bumpEnabledEpoch();
     touchPlayer(this, now, (args as any)?.playerId);
     return handler(this, now, args as any);
   }
@@ -197,7 +203,8 @@ export class Game extends AbstractGame {
   beginStep(_now: number) {
     // Store the current location of all players in the history tracking buffer.
     this.historicalLocations.clear();
-    for (const player of this.world.players.values()) {
+    // WUXIA-PATCH(A1): 關掉位置緩衝時不建
+    if (this.wuxiaRecordHistory) for (const player of this.world.players.values()) {
       this.historicalLocations.set(
         player.id,
         new HistoricalObject(locationFields, playerLocation(player)),
@@ -207,6 +214,8 @@ export class Game extends AbstractGame {
   }
 
   tick(now: number) {
+    // WUXIA-PATCH(A1): 元素開關快取換世代
+    bumpEnabledEpoch();
     // WUXIA-PATCH(W9): 單人世界暫停中：整個 tick 不跑（遊戲時鐘不走；繼續時 w09-player 把時間戳記往後平移）
     if (isPaused(this)) return;
     for (const player of this.world.players.values()) {
@@ -229,6 +238,8 @@ export class Game extends AbstractGame {
 
     // Save each player's location into the history buffer at the end of
     // each tick.
+    // WUXIA-PATCH(A1): 關掉位置緩衝時不記
+    if (!this.wuxiaRecordHistory) return;
     for (const player of this.world.players.values()) {
       let historicalObject = this.historicalLocations.get(player.id);
       if (!historicalObject) {

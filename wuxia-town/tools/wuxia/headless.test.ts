@@ -15,7 +15,7 @@ describe('headless simulation and replay', () => {
     expect(a.summary.stats.messages).toBeGreaterThan(0);
   });
   test('journal of a headless run replays to the same per-step hashes', () => {
-    const run = runHeadless({ seed: 11, minutes: 2, agents: 5 });
+    const run = runHeadless({ seed: 11, minutes: 2, agents: 5, stepHashes: true });
     const journal = {
       header: {},
       snapshot: run.snapshot,

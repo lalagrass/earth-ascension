@@ -263,6 +263,8 @@ export function runPlayerScript(
     elements: opts.playerOff ? { [W09_PLAYER]: false } : {},
     inject,
     onInputResult,
+    // A1：會匯出 journal（重播逐步比對），每步都算 hash
+    stepHashes: true,
   });
   const game = run.game;
   const w = game.world.wuxia!;

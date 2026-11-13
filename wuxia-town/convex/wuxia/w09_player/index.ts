@@ -12,6 +12,7 @@ import type { Game } from '../../aiTown/game';
 import type { Player } from '../../aiTown/player';
 import type { WuxiaElement } from '../registry';
 import { gameMinutes, readClock } from '../clock';
+import { bumpEnabledEpoch } from '../enabledEpoch';
 import { movePlayer, stopPlayer, blocked } from '../../aiTown/movement';
 import {
   W03_LIFE,
@@ -82,6 +83,7 @@ export function joinPlayer(game: Game, now: number, pid: string, roleId: string)
   const role = PLAYER_ROLES.find((r) => r.id === roleId);
   if (!role) return undefined;
   w.enabled[W09_PLAYER] = true;
+  bumpEnabledEpoch(); // A1：開關快取重看
   let st = w.elements[W09_PLAYER] as PlayerState | undefined;
   if (!st) {
     st = initPlayerState();

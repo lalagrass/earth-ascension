@@ -68,7 +68,28 @@ export type StepResult = {
 };
 
 /** 跑一個 step：simulateStep → 取 diff（清掉 pendingOperations 與位置緩衝），回傳 step 紀錄。 */
-export function runOneStep(game: Game, inputs: JournalInput[], now: number): StepResult {
+export type StepOptions = {
+  /** A1：false＝這一步不算 hash（step.hash 留空字串，呼叫端需要時自己算 game.wuxiaHash()）。預設 true（重播逐步比對） */
+  hash?: boolean;
+  /** A1：true＝不做 takeDiff 的整個世界序列化（無頭模擬用不到 diff 的 world），只取 pendingOperations。預設 false */
+  light?: boolean;
+};
+
+/** A1：takeDiff 的輕量版：只交出 pendingOperations、清掉位置緩衝；世界狀態不變（hash 不變）。 */
+export function takeOperations(game: Game): Array<{ name: string; args: any }> {
+  const ops = game.pendingOperations;
+  game.pendingOperations = [];
+  game.historicalLocations.clear();
+  (game as any).descriptionsModified = false;
+  return ops as any;
+}
+
+export function runOneStep(
+  game: Game,
+  inputs: JournalInput[],
+  now: number,
+  opts: StepOptions = {},
+): StepResult {
   const before = new Map(
     [...game.world.conversations.values()].map((c) => [c.id as string, [...c.participants.keys()]]),
   );
@@ -80,8 +101,8 @@ export function runOneStep(game: Game, inputs: JournalInput[], now: number): Ste
   }));
   const { stepRecord, engineUpdate } = game.simulateStep(withIds as any, now);
   const completedInputs = engineUpdate.completedInputs as Array<{ inputId: string; returnValue: any }>;
-  const hash = game.wuxiaHash();
-  const diff = game.takeDiff();
+  const hash = opts.hash === false ? '' : game.wuxiaHash();
+  const diff = opts.light ? { agentOperations: takeOperations(game) } : game.takeDiff();
   const endedConversations = [];
   for (const [id, participants] of before) {
     if (!game.world.conversations.has(id as any)) {
