@@ -223,6 +223,10 @@ OK   第 12 日 09:00 spar 周教頭 → 第 12 日 09:00 周教頭答應切磋
 玩家 player-1（manual）技能 {"fist":17,"power":15,"stance":10,"stamina":20}；師父 周教頭；記憶 26 筆；代管／接手 6 次
 clock 第 13 日 卯正
 hash ae10e2a0dc73b793f78c7be72df20d1d556b372a874228805dde7fafa99c78b7
+$ npm run wuxia:replay -- /tmp/p.jsonl
+hash ae10e2a0dc73b793f78c7be72df20d1d556b372a874228805dde7fafa99c78b7
+expected ae10e2a0dc73b793f78c7be72df20d1d556b372a874228805dde7fafa99c78b7
+MATCH
 ```
 
 - 第一次照 W8 原指令只給 seed 7 跑 jianghu-report，得到 `FAIL 4 種事件合計各至少一次：xiake×3、bandit×0、…`（其他 4 條 PASS）；這一條是三個 seed 合計的判定（W8.md 也是三個 seed 一起跑），上表已改成三個 seed。
