@@ -22,6 +22,14 @@ import { DojoPanel } from '../wuxia/DojoPanel.tsx';
 // WUXIA-PATCH(W8): 山腳鎮誌面板
 import { ChroniclePanel } from '../wuxia/ChroniclePanel.tsx';
 import { lifeOf } from '../wuxia/life.ts';
+// WUXIA-PATCH(W9): 玩家面板（選角色進鎮、點物件選活動、暫停、匯出 journal）
+import { PlayerPanel } from '../wuxia/PlayerPanel.tsx';
+import { myRec, playerStateOfWorld, rolesOffered } from '../wuxia/player.ts';
+import { exportJournalFile } from '../wuxia/exportJournal.ts';
+import { OBJECT_BY_ID } from '../../convex/wuxia/w03_life/data.ts';
+import { useMutation } from 'convex/react';
+import { useSendInput, waitForInput } from '../hooks/sendInput.ts';
+import { toastOnError } from '../toasts.ts';
 
 export const SHOW_DEBUG_UI = !!import.meta.env.VITE_SHOW_DEBUG_UI;
 
@@ -46,6 +54,14 @@ export default function Game() {
   const { historicalTime, timeManager } = useHistoricalTime(worldState?.engine);
 
   const scrollViewRef = useRef<HTMLDivElement>(null);
+  // WUXIA-PATCH(W9): 玩家面板的狀態與 input
+  const [wuxiaObject, setWuxiaObject] = useState<string>();
+  const [wuxiaResult, setWuxiaResult] = useState<{ ok: boolean; reason: string }>();
+  const [exporting, setExporting] = useState(false);
+  const humanToken = useQuery(api.world.userStatus, worldId ? { worldId } : 'skip');
+  const joinWorld = useMutation(api.world.joinWorld);
+  const wuxiaAct = useSendInput(engineId!, 'wuxiaPlayerAct');
+  const wuxiaPause = useSendInput(engineId!, 'wuxiaPlayerPause');
 
   if (!worldId || !engineId || !game) {
     return null;
@@ -53,6 +69,45 @@ export default function Game() {
   // WUXIA-PATCH(W1): w01-skin 的時辰（依遊戲時鐘）
   const skin = skinEnabled(game.world);
   const clock = skin ? worldClock(game.world, historicalTime ?? worldState?.engine.currentTime) : null;
+  // WUXIA-PATCH(W9)
+  const humanId = [...game.world.players.values()].find((p) => p.human === humanToken)?.id;
+  const me = myRec(game.world, humanId);
+  const wuxiaPanel = (
+    <PlayerPanel
+      offered={rolesOffered()}
+      joined={!!humanId}
+      state={playerStateOfWorld(game.world)}
+      me={me}
+      object={wuxiaObject ? OBJECT_BY_ID[wuxiaObject] : undefined}
+      lastResult={wuxiaResult}
+      exporting={exporting}
+      onJoin={(role) =>
+        void toastOnError(joinWorld({ worldId, wuxiaRole: role }).then((id) => waitForInput(convex, id)))
+      }
+      onAct={(obj, act) => {
+        if (!humanId) return;
+        void toastOnError(
+          wuxiaAct({ playerId: humanId, kind: 'activity', obj, act }).then((r: any) => {
+            setWuxiaResult(r);
+            if (r?.ok) setWuxiaObject(undefined);
+          }),
+        );
+      }}
+      onCloseObject={() => setWuxiaObject(undefined)}
+      onPause={(paused) => {
+        if (!humanId) return;
+        void toastOnError(wuxiaPause({ playerId: humanId, paused }).then((r: any) => setWuxiaResult(r)));
+      }}
+      onExport={() => {
+        setExporting(true);
+        void toastOnError(
+          exportJournalFile(convex, worldId).then((r) =>
+            setWuxiaResult({ ok: true, reason: `已匯出 ${r.steps} 步（hash ${r.hash.slice(0, 12)}…）` }),
+          ),
+        ).finally(() => setExporting(false));
+      }}
+    />
+  );
   return (
     <>
       {SHOW_DEBUG_UI && <DebugTimeManager timeManager={timeManager} width={200} height={100} />}
@@ -93,6 +148,10 @@ https://github.com/michalochman/react-pixi-fiber/issues/145#issuecomment-5315492
                     height={height}
                     historicalTime={historicalTime}
                     setSelectedElement={setSelectedElement}
+                    onWuxiaObject={(id) => {
+                      setWuxiaObject(id);
+                      setWuxiaResult(undefined);
+                    }}
                   />
                 </ConvexProvider>
               </Stage>
@@ -104,6 +163,8 @@ https://github.com/michalochman/react-pixi-fiber/issues/145#issuecomment-5315492
           className="flex flex-col overflow-y-auto shrink-0 px-4 py-6 sm:px-6 lg:w-96 xl:pr-6 border-t-8 sm:border-t-0 sm:border-l-8 border-brown-900  bg-brown-800 text-brown-100"
           ref={scrollViewRef}
         >
+          {/* WUXIA-PATCH(W9): 玩家面板（w09-player 開放時） */}
+          {wuxiaPanel}
           <PlayerDetails
             worldId={worldId}
             engineId={engineId}

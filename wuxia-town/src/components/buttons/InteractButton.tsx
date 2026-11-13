@@ -10,6 +10,8 @@ import { Id } from '../../../convex/_generated/dataModel';
 import { useCallback } from 'react';
 import { waitForInput } from '../../hooks/sendInput';
 import { useServerGame } from '../../hooks/serverGame';
+// WUXIA-PATCH(W9): 進鎮時選「外地少年／外地少女」（#561）
+import { PLAYER_ROLES, rolesOffered } from '../../wuxia/player';
 
 export default function InteractButton() {
   // const { isAuthenticated } = useConvexAuth();
@@ -25,10 +27,10 @@ export default function InteractButton() {
 
   const convex = useConvex();
   const joinInput = useCallback(
-    async (worldId: Id<'worlds'>) => {
+    async (worldId: Id<'worlds'>, wuxiaRole?: string) => {
       let inputId;
       try {
-        inputId = await join({ worldId });
+        inputId = await join({ worldId, wuxiaRole });
       } catch (e: any) {
         if (e instanceof ConvexError) {
           toast.error(e.data);
@@ -68,6 +70,22 @@ export default function InteractButton() {
   //     </SignInButton>
   //   );
   // }
+  // WUXIA-PATCH(W9): w09-player 開放時，「進鎮」換成兩個角色鈕
+  if (!isPlaying && rolesOffered()) {
+    return (
+      <>
+        {PLAYER_ROLES.map((r) => (
+          <Button
+            key={r.id}
+            imgUrl={interactImg}
+            onClick={() => worldId && game !== undefined && void joinInput(worldId, r.id)}
+          >
+            {`以${r.label}進鎮`}
+          </Button>
+        ))}
+      </>
+    );
+  }
   return (
     <Button imgUrl={interactImg} onClick={joinOrLeaveGame}>
       {/* WUXIA-PATCH(W1): 介面繁中 */}

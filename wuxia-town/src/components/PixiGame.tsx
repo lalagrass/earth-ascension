@@ -28,6 +28,8 @@ import { JianghuLayer } from '../wuxia/JianghuLayer.tsx';
 import { dojoOpened } from '../wuxia/dojo.ts';
 import { skinEnabled, worldClock } from '../wuxia/skin.ts';
 import { useViewportZoom, wholeMapScale } from '../wuxia/viewport.ts';
+// WUXIA-PATCH(W9): 玩家點物件選活動（#561）
+import { myRec, objectAtTile } from '../wuxia/player.ts';
 
 export const PixiGame = (props: {
   worldId: Id<'worlds'>;
@@ -37,6 +39,8 @@ export const PixiGame = (props: {
   width: number;
   height: number;
   setSelectedElement: SelectElement;
+  // WUXIA-PATCH(W9): 點到物件時交給玩家面板（不給＝上游行為）
+  onWuxiaObject?: (objId: string) => void;
 }) => {
   // PIXI setup.
   const pixiApp = useApp();
@@ -90,6 +94,14 @@ export const PixiGame = (props: {
       x: Math.floor(gameSpaceTiles.x),
       y: Math.floor(gameSpaceTiles.y),
     };
+    // WUXIA-PATCH(W9): 用角色進鎮的玩家點到物件 → 開活動選單（不走路；選了活動才走過去做）
+    if (props.onWuxiaObject && myRec(props.game.world, humanPlayerId)) {
+      const obj = objectAtTile(props.game.world, gameSpaceTiles.x, gameSpaceTiles.y);
+      if (obj) {
+        props.onWuxiaObject(obj.id);
+        return;
+      }
+    }
     console.log(`Moving to ${JSON.stringify(roundedTiles)}`);
     await toastOnError(moveTo({ playerId: humanPlayerId, destination: roundedTiles }));
   };

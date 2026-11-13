@@ -250,3 +250,113 @@ body.wuxia-skin .button img {
 .wuxia-chronicle-body p { margin: 0.2rem 0; }
 .wuxia-chronicle-now { color: #7a2a20; font-weight: bold; }
 @media (max-width: 640px) { .wuxia-chronicle-panel { font-size: 0.7rem; max-width: 60%; max-height: 35%; } }
+
+/* 武俠小鎮 W9（#561）：玩家面板、活動選單、對人操作。手機 390 寬時按鈕至少 40px 高，好點。 */
+.wuxia-player-panel {
+  margin-bottom: 0.9rem;
+  padding: 0.6rem 0.7rem;
+  border: 2px solid #2b2119;
+  background: #efe6cf;
+  color: #2b2119;
+  font-size: 0.95rem;
+}
+.wuxia-player-panel h3 {
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+.wuxia-player-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.wuxia-player-mode {
+  font-weight: 700;
+}
+.wuxia-player-paused {
+  color: #fbf3e2;
+  background: #b3342a;
+  padding: 0 0.4em;
+  border-radius: 3px;
+}
+.wuxia-player-tools {
+  margin-left: auto;
+  display: flex;
+  gap: 0.4rem;
+}
+.wuxia-player-roles,
+.wuxia-player-menu,
+.wuxia-person-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.5rem;
+}
+.wuxia-person-actions {
+  margin: 0.6rem 0;
+}
+.wuxia-player-menu-title {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  border-bottom: 1px solid #5a4a3c;
+}
+.wuxia-player-btn {
+  min-height: 40px;
+  padding: 0.35rem 0.75rem;
+  border: 2px solid #2b2119;
+  background: #fbf3e2;
+  color: #2b2119;
+  font-weight: 700;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  pointer-events: auto;
+}
+.wuxia-player-btn small {
+  font-weight: 400;
+  font-size: 0.75rem;
+  opacity: 0.75;
+}
+.wuxia-player-btn.small {
+  min-height: 32px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.85rem;
+}
+.wuxia-player-btn:active {
+  background: #e2d5b4;
+}
+.wuxia-player-x {
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0 0.4rem;
+}
+.wuxia-player-note {
+  margin-top: 0.4rem;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+.wuxia-player-ok,
+.wuxia-player-no {
+  width: 100%;
+  margin-top: 0.4rem;
+  font-size: 0.9rem;
+}
+.wuxia-player-no {
+  color: #b3342a;
+}
+.wuxia-player-log {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  border-top: 1px dashed #5a4a3c;
+  padding-top: 0.3rem;
+}
+.wuxia-player-log li.no {
+  color: #b3342a;
+}
+.wuxia-player-log span {
+  opacity: 0.7;
+  margin-right: 0.3em;
+}

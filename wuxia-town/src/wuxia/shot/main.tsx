@@ -39,6 +39,9 @@ import { DojoPanel } from '../DojoPanel';
 import { plaqueName } from '../bond';
 import { ChroniclePanel } from '../ChroniclePanel';
 import { JianghuLayer } from '../JianghuLayer';
+import { PlayerPanel, PersonActions } from '../PlayerPanel';
+import { myRec, playerStateOfWorld, rolesOffered } from '../player';
+import { OBJECT_BY_ID } from '../../../convex/wuxia/w03_life/data';
 
 type ShotState = {
   engineTime: number;
@@ -57,6 +60,9 @@ type ShotOptions = {
   gif?: boolean;
   /** W7：人物詳情開哪個分頁（'bond'＝關係） */
   tab?: 'main' | 'bond';
+  /** W9：玩家自己的 player id（玩家面板顯示他）；menu＝開著哪個物件的活動選單 */
+  me?: string;
+  menu?: string;
 };
 
 declare global {
@@ -203,6 +209,20 @@ function ShotApp({ state: initial, opts }: { state: ShotState; opts: ShotOptions
             </div>
           </div>
           <div className="flex flex-col overflow-y-auto shrink-0 px-4 py-6 sm:px-6 lg:w-96 xl:pr-6 border-t-8 sm:border-t-0 sm:border-l-8 border-brown-900 bg-brown-800 text-brown-100">
+            {opts.me !== undefined && (
+              <PlayerPanel
+                offered={rolesOffered()}
+                joined={!!opts.me}
+                state={playerStateOfWorld(game.world)}
+                me={myRec(game.world, opts.me)}
+                object={opts.menu ? OBJECT_BY_ID[opts.menu] : undefined}
+                onJoin={() => {}}
+                onAct={() => {}}
+                onCloseObject={() => {}}
+                onPause={() => {}}
+                onExport={() => {}}
+              />
+            )}
             {selected && (
               <>
                 <div className="box w-full">
@@ -215,6 +235,9 @@ function ShotApp({ state: initial, opts }: { state: ShotState; opts: ShotOptions
                   position={selected.position}
                   activity={activityLabel(selected.activity?.description, skin)}
                 />
+                {opts.me && selected.id !== opts.me && myRec(game.world, opts.me) && (
+                  <PersonActions name={desc?.name ?? ''} onAct={() => {}} />
+                )}
                 <DetailTabs
                   wuxia={game.world.wuxia}
                   tab={opts.tab ?? 'main'}

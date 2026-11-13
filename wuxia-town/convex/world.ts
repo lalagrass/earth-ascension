@@ -12,7 +12,9 @@ import { playerId } from './aiTown/ids';
 import { kickEngine, startEngine, stopEngine } from './aiTown/main';
 import { engineInsertInput } from './engine/abstractGame';
 // WUXIA-PATCH(W0): keepAlive（#562 W0-2）
-import { keepAliveEnabled } from './wuxia/state';
+import { keepAliveEnabled, playerJoinAllowed } from './wuxia/state';
+// WUXIA-PATCH(W9): 玩家角色（#561）
+import { PLAYER_ROLES } from './wuxia/w09_player/data';
 
 export const defaultWorldStatus = query({
   handler: async (ctx) => {
@@ -117,6 +119,8 @@ export const userStatus = query({
 export const joinWorld = mutation({
   args: {
     worldId: v.id('worlds'),
+    // WUXIA-PATCH(W9): 加入時選鎮上的玩家角色（外地少年／外地少女，#561）；不給或 w09-player 關時照上游
+    wuxiaRole: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     // const identity = await ctx.auth.getUserIdentity();
@@ -135,6 +139,20 @@ export const joinWorld = mutation({
       throw new ConvexError(`Invalid world ID: ${args.worldId}`);
     }
     // const { tokenIdentifier } = identity;
+    // WUXIA-PATCH(W9): 選了角色就用角色的名字、人物圖與身分，並帶 wuxiaRole 給引擎（#561）
+    const role =
+      args.wuxiaRole && playerJoinAllowed()
+        ? PLAYER_ROLES.find((r) => r.id === args.wuxiaRole)
+        : undefined;
+    if (role) {
+      return await insertInput(ctx, world._id, 'join', {
+        name: role.defaultName,
+        character: role.sprite,
+        description: role.identity,
+        tokenIdentifier: DEFAULT_NAME,
+        wuxiaRole: role.id,
+      });
+    }
     return await insertInput(ctx, world._id, 'join', {
       name,
       character: characters[Math.floor(Math.random() * characters.length)].name,

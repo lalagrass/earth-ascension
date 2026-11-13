@@ -8,10 +8,14 @@
 //       檔名前綴預設是「輸出資料夾名-seedN」（docs/wuxia/w04/ → w04-seed7）。
 //   W6：--gif --match 周教頭,阿青 [--stage 石虎,林嫂]＝切磋短 GIF（見 tools/wuxia/shot-gif.ts）。
 //   W7：--tab bond＝人物詳情開「關係」分頁（預設「概況」）。
+//   W9：--script docs/wuxia/fixtures/w09-script.json＝照玩家腳本送 input 跑到 --at（世界裡有玩家角色）；
+//       玩家面板顯示這位玩家；--menu 物件 id＝面板開著這個物件的活動選單（＝點了這個物件）；
+//       --who 別人＝人物詳情顯示他，下面有「請教／切磋／拜師」（＝點了這個人）。
 // 流程：每個 --at（遊戲分鐘）各跑一次無頭模擬到那個遊戲分鐘 → 匯出狀態 → 用 Vite 開截圖頁
 //      （src/wuxia/shot/index.html，跟 live 同一批元件，不連 Convex）→ Playwright 截圖。1400 寬截可視範圍，390 寬截整頁。
 // 需要本機有 Chrome／Chromium（預設 /usr/bin/google-chrome，或設 WUXIA_CHROME），不需要 Docker、Convex、LLM。
-import { existsSync, mkdirSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
+import { runPlayerScript } from './player-script';
 import { join, relative, resolve } from 'node:path';
 import { createServer } from 'vite';
 import { chromium } from 'playwright-core';
@@ -57,6 +61,8 @@ async function main() {
   const who = args.who === undefined ? undefined : String(args.who);
   const blind = !!args.blind;
   const tab = args.tab === 'bond' ? ('bond' as const) : undefined;
+  const script = args.script ? JSON.parse(readFileSync(resolve(ROOT, String(args.script)), 'utf8')) : undefined;
+  const menu = args.menu === undefined ? undefined : String(args.menu);
   const sizes = String(args.sizes ?? '1400x820,390x844')
     .split(',')
     .map((s) => s.split('x').map(Number) as [number, number]);
@@ -102,9 +108,11 @@ async function main() {
             elements: { ...defaultWuxiaConfig.elements, ...elements },
           }),
         ).length === 0;
-      const run = clockless
-        ? runHeadless({ seed, minutes: Math.max(at, 1) / 60, elements })
-        : runHeadless({ seed, minutes: 0, untilGameMinute: at, elements });
+      const run = script
+        ? runPlayerScript(script, seed, { untilGameMinute: at }).run
+        : clockless
+          ? runHeadless({ seed, minutes: Math.max(at, 1) / 60, elements })
+          : runHeadless({ seed, minutes: 0, untilGameMinute: at, elements });
       const state = exportState(run);
       const clock = run.summary.clock;
       for (const [w, h] of sizes) {
@@ -119,7 +127,15 @@ async function main() {
             (window as any).__WUXIA_STATE__ = s;
             (window as any).__WUXIA_SHOT__ = o;
           },
-          [state, { ...shotOptions(state, focus, who, blind), ...(tab ? { tab } : {}) }] as const,
+          [
+            state,
+            {
+              ...shotOptions(state, focus, who, blind),
+              ...(tab ? { tab } : {}),
+              ...(script ? { me: state.world.players.find((p: any) => p.human === script.token)?.id } : {}),
+              ...(menu ? { menu } : {}),
+            },
+          ] as const,
         );
         await page.goto(url, { waitUntil: 'networkidle' });
         await page.waitForFunction(() => (window as any).__WUXIA_READY__ === true, null, {

@@ -14,6 +14,9 @@ import { MindPanel } from '../wuxia/MindPanel';
 // WUXIA-PATCH(W7): 「關係」分頁
 import { BondPanel, DetailTabs } from '../wuxia/BondPanel';
 import { useState as useWuxiaState } from 'react';
+// WUXIA-PATCH(W9): 對人「請教／切磋／拜師」（#561）
+import { PersonActions } from '../wuxia/PlayerPanel';
+import { myRec } from '../wuxia/player';
 import { dojoOf } from '../wuxia/dojo';
 import { lifeOf } from '../wuxia/life';
 import { SelectElement } from './Player';
@@ -71,6 +74,9 @@ export default function PlayerDetails({
   const acceptInvite = useSendInput(engineId, 'acceptInvite');
   const rejectInvite = useSendInput(engineId, 'rejectInvite');
   const leaveConversation = useSendInput(engineId, 'leaveConversation');
+  // WUXIA-PATCH(W9): 玩家對人的操作（走 W6／W7 的同意規則，結果顯示在按鈕下）
+  const wuxiaAct = useSendInput(engineId, 'wuxiaPlayerAct');
+  const [wuxiaResult, setWuxiaResult] = useWuxiaState<{ ok: boolean; reason: string }>();
 
   if (!playerId) {
     return (
@@ -170,6 +176,18 @@ export default function PlayerDetails({
       </div>
       {/* WUXIA-PATCH(W1): 「在茶館附近」（w01-skin 開啟時，依 data/wuxia/places.json） */}
       <PlayerCard skin={skinEnabled(game.world)} position={player.position} />
+      {/* WUXIA-PATCH(W9): 玩家已用角色進鎮、選的是別人時：請教／切磋／拜師 */}
+      {humanPlayer && !isMe && myRec(game.world, humanPlayer.id) && (
+        <PersonActions
+          name={playerDescription?.name ?? ''}
+          lastResult={wuxiaResult}
+          onAct={(kind) =>
+            void toastOnError(
+              wuxiaAct({ playerId: humanPlayer.id, kind, target: player.id }).then((r: any) => setWuxiaResult(r)),
+            )
+          }
+        />
+      )}
       {/* WUXIA-PATCH(W7): 分頁「概況」（W3–W5 的面板）／「關係」（w07-bond 開啟時才有分頁鈕） */}
       <DetailTabs
         wuxia={game.world.wuxia}

@@ -62,7 +62,11 @@ function minuteOf(at: string): number {
 
 const cidName = (cid: string) => FOLK_CHARACTERS.find((c) => c.id === cid)?.name ?? cid;
 
-export function runPlayerScript(script: Script, seed: number, opts: { playerOff?: boolean; days?: number } = {}) {
+export function runPlayerScript(
+  script: Script,
+  seed: number,
+  opts: { playerOff?: boolean; days?: number; untilGameMinute?: number } = {},
+) {
   const days = opts.days ?? script.days;
   const outcomes: StepOutcome[] = script.steps.map((s, i) => ({
     i,
@@ -253,7 +257,8 @@ export function runPlayerScript(script: Script, seed: number, opts: { playerOff?
   const run = runHeadless({
     seed,
     minutes: 0,
-    untilGameMinute: days * 1440,
+    // W9 截圖（wuxia:shot --script）停在指定遊戲分鐘
+    untilGameMinute: opts.untilGameMinute ?? days * 1440,
     trace: true,
     elements: opts.playerOff ? { [W09_PLAYER]: false } : {},
     inject,
