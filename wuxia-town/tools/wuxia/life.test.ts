@@ -24,10 +24,14 @@ describe('w03-life 無頭模擬', () => {
     expect(c.maxConversationMinutes).toBeLessThanOrEqual(91);
   });
   test('有人聊天，而且只在閒暇地點開始', () => {
-    const conv = run.summary.life!.conversations;
+    // A3（#574）刻意改變：a3-silent 預設開，AI 之間不再發起 AI Town 對話（改成無言互動，見 docs/wuxia/A3.md）；
+    // 這裡改用 a3-silent 關閉的世界檢查 W3 的聊天規則，並確認開著時一場對話都沒有
+    expect(run.summary.life!.conversations.total).toBe(0);
+    const talk = runHeadless({ seed: 7, minutes: 0, untilGameMinute: 1440, trace: true, elements: { 'a3-silent': false } });
+    const conv = talk.summary.life!.conversations;
     expect(conv.total).toBeGreaterThan(0);
     // A2（#575）：a2-master 預設開，鎮東民宅多了灶（飯桌），閒暇地點多一個 home-east；元素關閉時仍只有茶館、河邊
-    const leisure = ['teahouse', 'river', ...(run.summary.a2 ? ['home-east'] : [])];
+    const leisure = ['teahouse', 'river', ...(talk.summary.a2 ? ['home-east'] : [])];
     for (const place of Object.keys(conv.byPlace)) expect(leisure).toContain(place);
     expect(conv.ratio!).toBeGreaterThanOrEqual(0.8);
   });

@@ -205,7 +205,8 @@ function finishFight(game: Game, now: number, gm: number, life: LifeState, state
     text: sparNarrationTemplate(match.id, { winner, loser, a: match.ca, b: match.cb, rounds: out.rounds, move: lastMove }, names),
     source: 'template',
   };
-  game.scheduleOperation('wuxiaSparNarrate', {
+  // A3（#574）：無言互動開著時預設不呼叫 LLM，旁白留模板句
+  if (!w.enabled['a3-silent']) game.scheduleOperation('wuxiaSparNarrate', {
     worldId: game.worldId,
     matchId: match.id,
     place: match.place,

@@ -59,6 +59,8 @@ import {
   prereqOk,
 } from './data';
 import { hasMisdeed } from './hooks';
+import { a3Of, inSession } from '../a3_silent/data';
+import { a2HintText } from '../a3_silent/grammar';
 
 export { A2_MASTER } from './data';
 
@@ -87,7 +89,9 @@ type P = { pid: string; cid: string; person: Person; x: number; y: number; act?:
 
 const nameOf = (cid: string) => profileById(cid)?.name ?? cid;
 
-function pushHint(st: A2State, h: Omit<Hint, 'id'>) {
+function pushHint(st: A2State, h: Omit<Hint, 'id'>, w?: WuxiaState, kind?: string, vars?: Record<string, string>) {
+  // A3（#574 留言第 1 項）：a3-silent 開著時事件提示改走文法模板（data/wuxia/grammar/social.json 的 a2），依序號輪換句型
+  if (w && kind && vars && a3Of(w)) h = { ...h, text: a2HintText(kind, vars, st.seq) ?? h.text };
   st.hints.push({ id: st.seq++, ...h });
   if (st.hints.length > MASTER.hintSize) st.hints.splice(0, st.hints.length - MASTER.hintSize);
 }
@@ -209,7 +213,7 @@ function spawnMaster(game: Game, now: number, gm: number, st: A2State, w: WuxiaS
   st.masterPid = playerId as string;
   const day = readClock(gm).day;
   st.know[MASTER_CID] = originKnow(MASTER_CID, day);
-  pushHint(st, { gm, kind: 'arrive', text: `${prof.name}從城門走進鎮上，在茶館後院租了間小屋`, who: MASTER_CID });
+  pushHint(st, { gm, kind: 'arrive', text: `${prof.name}從城門走進鎮上，在茶館後院租了間小屋`, who: MASTER_CID }, w, 'arrive', { m: prof.name });
   // 進鎮的消息：每人興趣 +20×好武（小鎮消息傳得快，旋鈕）
   for (const pid of Object.keys(life.people).sort()) {
     const cid = life.people[pid].cid;
@@ -304,7 +308,7 @@ function daily(game: Game, now: number, gm: number, day: number, st: A2State, w:
         if (cp) remember(mind, cp, gm, 'disciple_left', { other: MASTER_CID, what: cid });
       }
       st.switches.push({ day, gm, disciple: cid, fromMaster: COACH_CID, toMaster: MASTER_CID, respectNew: rNew, respectOld: rOld });
-      pushHint(st, { gm, kind: 'switch', text: `${nameOf(cid)}離開${nameOf(COACH_CID)}，改投${MASTER_PROFILE.name}門下`, who: cid });
+      pushHint(st, { gm, kind: 'switch', text: `${nameOf(cid)}離開${nameOf(COACH_CID)}，改投${MASTER_PROFILE.name}門下`, who: cid }, w, 'switch', { s: nameOf(cid), c: nameOf(COACH_CID), m: MASTER_PROFILE.name });
       const jh = w.enabled[W08_JIANGHU] ? (w.elements[W08_JIANGHU] as JianghuState | undefined) : undefined;
       if (jh) {
         const c = { game, now, gm, day, mod: readClock(gm).minuteOfDay, w, st: jh, life, mind };
@@ -446,7 +450,7 @@ export function tickA2(game: Game, now: number) {
         if (mind) remember(mind, q.pid, gm, 'saw_form', { other: MASTER_CID, n: Math.round(hw * 100), place: 'plaza' });
         if (q.cid === COACH_CID && !coachCalm(mind, gm) && mind) {
           remember(mind, q.pid, gm, 'rival_master', { other: MASTER_CID });
-          pushHint(st, { gm, kind: 'rival', text: `${nameOf(COACH_CID)}遠遠看著${MASTER_PROFILE.name}打拳，臉色不太好看`, who: COACH_CID });
+          pushHint(st, { gm, kind: 'rival', text: `${nameOf(COACH_CID)}遠遠看著${MASTER_PROFILE.name}打拳，臉色不太好看`, who: COACH_CID }, w, 'rival', { c: nameOf(COACH_CID), m: MASTER_PROFILE.name });
         }
       }
       if (!segEnd || m.difficulty > W.maxDifficulty || st.know[q.cid]?.[move]) continue;
@@ -458,17 +462,21 @@ export function tickA2(game: Game, now: number) {
       delete wq[move];
       const r = pushRecord(st, rec);
       if (mind) remember(mind, q.pid, gm, 'learned_move', { other: p.cid, what: m.name, n: 0 });
-      pushHint(st, { gm, kind: 'watch', text: `${nameOf(q.cid)}偷學到『${m.name}』的皮毛`, who: q.cid, record: r.id });
+      pushHint(st, { gm, kind: 'watch', text: `${nameOf(q.cid)}偷學到『${m.name}』的皮毛`, who: q.cid, record: r.id }, w, 'watch', { s: nameOf(q.cid), move: m.name });
     }
   }
 
   // 教／再傳：教的人與學的人同在一處（同地點、6 格內），累計 60 遊戲分鐘教一招；一次最多 3 人
+  // A3（#574 留言第 1 項）：a3-silent 開著時「教」＝指點——只在請教／指點開出的時段裡、老師與那幾個學生之間累計（不看活動）
+  const a3 = a3Of(w);
   if (elapsed > 0) {
     for (const t of ps) {
-      if (!t.act || !TEACH_ACTS.has(t.act) || !st.know[t.cid]) continue;
+      if (!st.know[t.cid]) continue;
+      if (a3 ? !a3.sessions.some((x) => x.teacher === t.cid && x.start <= gm && x.until > gm) : !t.act || !TEACH_ACTS.has(t.act)) continue;
       const cands: Array<{ s: P; m: MoveDef; key: string; tog: number }> = [];
       for (const s of ps) {
-        if (s === t || !s.act || !LEARN_ACTS.has(s.act) || s.place !== t.place || dist(s, t) > T.radius) continue;
+        if (s === t || s.place !== t.place || dist(s, t) > T.radius) continue;
+        if (a3 ? !inSession(a3, t.cid, s.cid, gm) : !s.act || !LEARN_ACTS.has(s.act)) continue;
         const m = pickTeach(w, st, mind, t.cid, s.cid, dojo.skills[s.cid]);
         if (!m) continue;
         const key = `${t.cid}|${s.cid}`;
@@ -490,7 +498,7 @@ export function tickA2(game: Game, now: number) {
           text: rec.again ? `${nameOf(t.cid)}重新指點${nameOf(c.s.cid)}『${c.m.name}』` : `${nameOf(c.s.cid)}向${nameOf(t.cid)}學了『${c.m.name}』`,
           who: c.s.cid,
           record: rec.id,
-        });
+        }, w, rec.again ? 'again' : 'teach', { t: nameOf(t.cid), s: nameOf(c.s.cid), move: c.m.name });
       }
     }
   }

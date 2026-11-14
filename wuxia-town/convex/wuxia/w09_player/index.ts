@@ -46,6 +46,7 @@ import {
   playerRec,
   playerSchedCtx,
   playerStateOf,
+  SOCIAL_HOOK,
 } from './data';
 
 export { W09_PLAYER } from './data';
@@ -259,9 +260,19 @@ export function playerAct(game: Game, now: number, args: ActArgs): ActResult {
   if (args.kind === 'activity') return done(doActivity(game, now, gm, life, rec, player, person, args));
   if (args.kind === 'ask') return done(doAsk(game, now, gm, st, life, rec, player, person, args.target ?? ''));
   if (args.kind === 'spar') return done(doSpar(game, now, gm, life, rec, player, person, args.target ?? ''));
+  // A3（#574）：無言互動（act＝互動 id，target＝對方）；同一套規則
+  if (args.kind === 'social') return done(doSocial(game, now, life, rec, args.target ?? '', args.act ?? ''));
   if (args.kind === 'apprentice')
     return done(doApprentice(game, now, gm, life, rec, player, person, args.target ?? ''));
   return done({ ok: false, reason: `不認得的操作 ${args.kind}` });
+}
+
+function doSocial(game: Game, now: number, life: LifeState, rec: PlayerRec, target: string, kind: string): ActResult {
+  const t = targetOf(game, life, target);
+  if (!t) return { ok: false, reason: `找不到 ${target}` };
+  if (!SOCIAL_HOOK.act) return { ok: false, reason: '無言互動沒開' };
+  const r = SOCIAL_HOOK.act(game, now, rec.cid, t.person.cid, kind);
+  return { ok: r.ok, reason: r.reason };
 }
 
 function doActivity(

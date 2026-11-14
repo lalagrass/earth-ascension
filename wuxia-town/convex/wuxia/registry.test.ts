@@ -36,6 +36,7 @@ describe('wuxia element registry', () => {
     // W8 刻意改變：預設開 w08-jianghu（W7 時是 [..., 'w07-bond']，見 docs/wuxia/W8.md）
     // A1 刻意改變：預設開 a1-base（W9 時是 [..., 'w08-jianghu']；w09-player 要玩家加入才開，見 docs/wuxia/A1.md）
     // A2 刻意改變：預設開 a2-master（A1 時是 [..., 'a1-base']，見 docs/wuxia/A2.md）
+    // A3 刻意改變：預設開 a3-silent（A2 時是 [..., 'a2-master']，見 docs/wuxia/A3.md）
     expect(enabledElements(initWuxiaState()).map((e) => e.id)).toEqual([
       'w01-skin',
       'w02-folk',
@@ -47,6 +48,7 @@ describe('wuxia element registry', () => {
       'w08-jianghu',
       'a1-base',
       'a2-master',
+      'a3-silent',
     ]);
   });
   test('w08-jianghu requires w07-bond（關掉 w07-bond 時 w08-jianghu 不凍結進 enabled）', () => {

@@ -350,7 +350,8 @@ function nightChronicle(c: Ctx) {
   if (entries.length === 0) return;
   const template = chronicleTemplateDay(c.day, entries);
   c.st.chronicleDays.push({ day: c.day, text: template, guard: 'template' });
-  c.game.scheduleOperation('wuxiaChronicleRewrite', {
+  // A3（#574）：無言互動開著時預設不呼叫 LLM，編年留模板句
+  if (!c.w.enabled['a3-silent']) c.game.scheduleOperation('wuxiaChronicleRewrite', {
     worldId: c.game.worldId,
     day: c.day,
     entries: entries.map((e) => e.text),

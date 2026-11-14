@@ -66,6 +66,8 @@ export type HeadlessOptions = {
   scenario?: string;
   /** A2：大師第幾日進鎮 */
   arriveDay?: number;
+  /** A3：覆寫人格（--trait lin-sao.ext=-1） */
+  traits?: Record<string, Record<string, number>>;
   /** W9：每一步開始前呼叫，回傳要在這一步送進引擎的 input（wuxia:player-script 模擬玩家）。不給時行為與 hash 不變 */
   inject?: (game: ReturnType<typeof createGame>, now: number) => Array<{ name: string; args: any }>;
   /** W9：每個 input 處理完的結果（wuxia:player-script 讀上游 input 的回傳值／錯誤） */
@@ -233,6 +235,8 @@ export function runHeadless(opts: HeadlessOptions) {
     jianghu: opts.trace ? jianghuSummary(game) : undefined,
     // A2：大師與傳承（a2-master 開時才有；wuxia:lineage／diffusion／art-trace 讀這份）
     a2: game.world.wuxia?.enabled['a2-master'] ? a2Summary(game) : undefined,
+    // A3：無言互動（a3-silent 開時才有；wuxia:social-report／social-log 讀這份）
+    a3: game.world.wuxia?.enabled['a3-silent'] ? structuredClone(game.world.wuxia.elements['a3-silent']) : undefined,
   };
   return summary;
   }
@@ -400,6 +404,7 @@ function main() {
     noRumorOut: !!args['no-rumor-out'],
     scenario: args.scenario === undefined ? undefined : String(args.scenario),
     arriveDay: args['arrive-day'] === undefined ? undefined : Number(args['arrive-day']),
+    traits: parseTraits(args.trait),
     dropMemories:
       args['drop-memory'] === undefined
         ? undefined
@@ -462,4 +467,16 @@ function main() {
 
 if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith('headless.ts')) {
   main();
+}
+
+/** A3：--trait lin-sao.ext=-1[,a-qing.calm=0.5] → { 'lin-sao': { ext: -1 } }；不給回 undefined */
+export function parseTraits(v: unknown): Record<string, Record<string, number>> | undefined {
+  if (v === undefined || v === true) return undefined;
+  const out: Record<string, Record<string, number>> = {};
+  for (const part of String(v).split(',').filter(Boolean)) {
+    const m = /^([\w-]+)\.(ext|calm|disc|caut)=(-?[\d.]+)$/.exec(part);
+    if (!m) throw new Error(`--trait 格式：cid.ext=-1（收到 ${part}）`);
+    (out[m[1]] ??= {})[m[2]] = Number(m[3]);
+  }
+  return out;
 }

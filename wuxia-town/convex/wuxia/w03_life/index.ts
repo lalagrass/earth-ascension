@@ -649,6 +649,8 @@ function canChat(game: Game, gm: number, pid: string, person: Person, ctx: Sched
 /** #555「對話怎麼接」：只有閒暇活動中或剛結束、且兩人在同一地點，才會邀請；工作中不聊。 */
 function inviteToTalk(game: Game, now: number, gm: number, state: LifeState) {
   const w = game.world.wuxia!;
+  // A3（#574）：無言互動開著時 AI 之間不發起 AI Town 對話（不跑 agentGenerateMessage／agentRememberConversation）
+  if (w.enabled['a3-silent']) return;
   const ctx = lifeSchedCtx(w, readClock(gm).day);
   // W5：心念的邀請倍率（想學武→周教頭 ×2）與「想打聽」優先挑新人；w05-mind 關閉時 mind＝undefined，跟 W4 相同
   const mind = mindOf(w);

@@ -56,7 +56,9 @@ export type MemoryKind =
   | 'taught_move'
   | 'switched_master'
   | 'disciple_left'
-  | 'rival_master';
+  | 'rival_master'
+  // A3（#574）：無言互動（other＝對方，what＝互動.ok|fail.a|b（a＝發起方），n＝wuxia.social.log 的紀錄 id；三軸效果見 interactions.json）
+  | 'social';
 
 /** #557：`{t, kind, other?, place?, weight}`；另加 id（全世界唯一、遞增，給 --drop-memory 用）與 n（數量，例如練功分鐘）。 */
 export type Memory = {
@@ -221,7 +223,10 @@ export function evalCond(
     return { ok: v < cond.lt, causes: [] };
   }
   // daysSince：距最後一筆某種記憶 ≥ min 日（沒有就從開局算）
-  const last = [...person.memories].reverse().find((m) => m.kind === cond.daysSince);
+  // A3：無言互動成功也算「聊過天」（a3-silent 開著時 AI Town 對話不再發生）
+  const last = [...person.memories]
+    .reverse()
+    .find((m) => m.kind === cond.daysSince || (cond.daysSince === 'talk' && m.kind === 'social' && !!m.what?.includes('.ok.')));
   const from = last ? last.t : 0;
   return { ok: ctx.gm - from >= cond.min * 1440, causes: last ? [last] : [] };
 }
@@ -402,6 +407,7 @@ const KIND_TEXT: Record<MemoryKind, string> = {
   switched_master: '改投{other}門下（原本跟{what}）',
   disciple_left: '徒弟{what}改投{other}門下',
   rival_master: '暗暗跟{other}較勁',
+  social: '{social}',
 };
 
 /** 記憶的說明文字（畫面「因為…」與報告共用）。names：cid → 名字；places：地點 id → 名字。 */
@@ -421,7 +427,20 @@ export function describeMemory(
     .replace('{rej}', m.kind === 'rejected' ? (m.what ? `想拜${m.other ? names(m.other) : '某人'}為師被拒` : `邀${m.other ? names(m.other) : '某人'}聊天被拒`) : '')
     .replace('{rumor}', m.kind === 'rumor' ? `${m.other ? `聽${names(m.other)}說` : '親眼看到'}${RUMOR_LABEL[m.what ?? ''] ?? '一件事'}` : '')
     .replace('{won}', m.kind === 'fought_outsider' ? (m.n === 1 ? '，贏了' : m.n === -1 ? '，輸了' : '，打平') : '')
+    .replace('{social}', m.kind === 'social' ? socialText(m, names) : '')
     .replace('{times}', m.kind === 'listen' && (m.n ?? 1) > 1 ? ` ${m.n} 場` : '');
   const where = m.place && m.kind !== 'first_visit' ? `（${places(m.place)}）` : '';
   return `第 ${day} 日 ${body}${where}`;
+}
+
+/** A3 social 記憶的說明：「向某人請教（成）」 */
+const SOCIAL_LABEL: Record<string, string> = {
+  greet: '寒暄', chat: '閒聊', inquire: '打聽', rumor: '說傳聞', boast: '吹噓', ask_advice: '請教',
+  instruct: '指點', complain: '抱怨', comfort: '安慰', thank: '道謝', apologize: '道歉', provoke: '挑釁',
+};
+function socialText(m: Memory, names: (cid: string) => string): string {
+  const [kind, res, role] = (m.what ?? '').split('.');
+  const who = m.other ? names(m.other) : '某人';
+  const label = SOCIAL_LABEL[kind] ?? kind;
+  return role === 'a' ? `向${who}${label}（${res === 'ok' ? '成' : '不成'}）` : `${who}來${label}（${res === 'ok' ? '成' : '不成'}）`;
 }

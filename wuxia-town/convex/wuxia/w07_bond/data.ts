@@ -9,6 +9,7 @@ import type { WuxiaState } from '../state';
 import type { BondEvalCtx, Memory, MindPerson, MindState } from '../w05_mind/data';
 import { initialSkills, Skills } from '../w04_dojo/data';
 import { readClock } from '../clock';
+import { socialEffect } from '../a3_silent/data';
 
 export const W07_BOND = 'w07-bond';
 
@@ -210,8 +211,9 @@ export function contributions(
     }
     if (m.kind === 'spar_won') won++;
     if (m.kind === 'spar_lost') lost++;
-    const key = effectKey(m);
-    const eff = key ? BONDS.effects[key] : undefined;
+    // A3（#574）：無言互動的記憶自帶三軸效果（interactions.json），每筆可追到互動紀錄 id（m.n）
+    const key = m.kind === 'social' ? undefined : effectKey(m);
+    const eff = m.kind === 'social' ? socialEffect(m) : key ? BONDS.effects[key] : undefined;
     if (!eff) continue;
     const f = Math.pow(BONDS.decayPerDay, (gm - m.t) / 1440);
     const delta: Partial<Bond> = {};

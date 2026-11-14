@@ -25,6 +25,8 @@ import { W08_JIANGHU, JianghuState, EventKind } from '../../../convex/wuxia/w08_
 import type { Game } from '../../../convex/aiTown/game';
 import { A2_MASTER, A2State } from '../../../convex/wuxia/a2_master/data';
 import { applyScenario } from '../../../convex/wuxia/a2_master';
+import { A3_SILENT, traitsOf } from '../../../convex/wuxia/a3_silent/data';
+import type { A3State, Traits } from '../../../convex/wuxia/a3_silent/data';
 import {
   JournalInput,
   Snapshot,
@@ -54,6 +56,8 @@ export type WorldOptions = {
   scenario?: string;
   /** A2：大師第幾日進鎮（對照實驗；不給就是 master.json 的預設） */
   arriveDay?: number;
+  /** A3：覆寫人格（例 { 'lin-sao': { ext: -1 } }，#574 驗收 C）；不給就不寫，hash 不變 */
+  traits?: Record<string, Partial<Traits>>;
 };
 
 export function initialSnapshot(opts: WorldOptions & Record<string, unknown>): Snapshot {
@@ -74,6 +78,8 @@ export function initialSnapshot(opts: WorldOptions & Record<string, unknown>): S
   const a2 = wuxia.elements[A2_MASTER] as A2State | undefined;
   if (a2 && opts.scenario) applyScenario(a2, opts.scenario);
   if (a2 && opts.arriveDay !== undefined) a2.arriveDay = opts.arriveDay;
+  const a3 = wuxia.elements[A3_SILENT] as A3State | undefined;
+  if (a3 && opts.traits) for (const [cid, t] of Object.entries(opts.traits)) a3.traits[cid] = { ...traitsOf(a3, cid), ...t };
   const worldMap =
     opts.map === undefined
       ? serializedMapFor(wuxia.enabled)

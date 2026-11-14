@@ -124,3 +124,11 @@ export function playerSchedCtx(w: WuxiaState, day?: number): SchedCtx {
   }
   return ctx;
 }
+
+/**
+ * A3（#574）：玩家發起無言互動的掛鉤。a3-silent 模組載入時填入（避免 w09 → a3 → a2 → registry 的循環 import）；
+ * 只放函式、不放狀態，不影響 hash。
+ */
+export const SOCIAL_HOOK: {
+  act?: (game: any, now: number, a: string, b: string, kind: string) => { ok: boolean; reason: string };
+} = {};
