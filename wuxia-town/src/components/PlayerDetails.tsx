@@ -18,6 +18,8 @@ import { ArtPanel } from '../wuxia/A2Panels';
 import { useState as useWuxiaState } from 'react';
 // WUXIA-PATCH(W9): 對人「請教／切磋／拜師」（#561）
 import { PersonActions } from '../wuxia/PlayerPanel';
+// WUXIA-PATCH(A3): 無言互動選單（同一套規則、標難度）
+import { SocialMenu, cidOfPid } from '../wuxia/A3Panels';
 import { myRec } from '../wuxia/player';
 import { dojoOf } from '../wuxia/dojo';
 import { lifeOf } from '../wuxia/life';
@@ -187,6 +189,20 @@ export default function PlayerDetails({
           onAct={(kind) =>
             void toastOnError(
               wuxiaAct({ playerId: humanPlayer.id, kind, target: player.id }).then((r: any) => setWuxiaResult(r)),
+            )
+          }
+        />
+      )}
+      {/* WUXIA-PATCH(A3): 玩家對人的無言互動（a3-silent 開啟時） */}
+      {humanPlayer && !isMe && myRec(game.world, humanPlayer.id) && (
+        <SocialMenu
+          wuxia={game.world.wuxia}
+          me={myRec(game.world, humanPlayer.id)!.cid}
+          target={cidOfPid(game.world.wuxia, player.id)}
+          lastResult={wuxiaResult}
+          onAct={(kind) =>
+            void toastOnError(
+              wuxiaAct({ playerId: humanPlayer.id, kind: 'social', act: kind, target: player.id }).then((r: any) => setWuxiaResult(r)),
             )
           }
         />

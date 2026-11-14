@@ -32,6 +32,9 @@ import { useViewportZoom, wholeMapScale } from '../wuxia/viewport.ts';
 import { myRec, objectAtTile } from '../wuxia/player.ts';
 // WUXIA-PATCH(A2): 太極圖層（顯示太極的圈、起勢動畫）
 import { A2Layer } from '../wuxia/A2Layer.tsx';
+// WUXIA-PATCH(A3): 無言互動泡泡圖層
+import { SocialLayer } from '../wuxia/SocialLayer.tsx';
+import type { SocialEntry } from '../../convex/wuxia/a3_silent/data.ts';
 
 export const PixiGame = (props: {
   worldId: Id<'worlds'>;
@@ -47,6 +50,8 @@ export const PixiGame = (props: {
   wuxiaSelectedId?: string;
   // WUXIA-PATCH(A2): 「顯示太極」
   wuxiaTaiji?: boolean;
+  // WUXIA-PATCH(A3): 點無言互動泡泡（翻成一句話）
+  onWuxiaSocial?: (e: SocialEntry) => void;
 }) => {
   // PIXI setup.
   const pixiApp = useApp();
@@ -174,6 +179,15 @@ export const PixiGame = (props: {
           tileDim={tileDim}
           showTaiji={!!props.wuxiaTaiji}
           pos={(id) => props.game.world.players.get(id as any)?.position}
+        />
+      )}
+      {/* WUXIA-PATCH(A3): 無言互動泡泡（a3-silent 關閉時不畫） */}
+      {skin && (
+        <SocialLayer
+          wuxia={props.game.world.wuxia}
+          tileDim={tileDim}
+          pos={(id) => props.game.world.players.get(id as any)?.position}
+          onPick={props.onWuxiaSocial}
         />
       )}
       {/* WUXIA-PATCH(W8): 外人畫在人物旁（w08-jianghu 關閉或沒有外人時不畫） */}

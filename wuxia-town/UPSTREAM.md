@@ -118,6 +118,10 @@
 | A2 | `src/components/PixiGame.tsx` | 太極圖層 `A2Layer`（顯示太極的圈、起勢 2 格動畫）、`wuxiaTaiji` 參數 | 同上 |
 | A2 | `src/components/PlayerDetails.tsx` | 人物詳情多一個「武學」分頁（`ArtPanel`） | 同上 |
 | A2 | `package.json`（JSON 無法加註解） | `wuxia:lineage`、`wuxia:diffusion`、`wuxia:art-trace`、`wuxia:a2-shots` | #575 工具與「build:local＋Playwright 看一眼」 |
+| A3 | `src/components/Game.tsx` | 「動靜」鈕＋鎮上動靜面板、點泡泡「翻成一句話」小窗（`A3Corner`） | #574 第 5、6 節；Convex 版與本機版共用 `src/wuxia/A3Panels.tsx` |
+| A3 | `src/components/PixiGame.tsx` | 無言互動泡泡圖層 `SocialLayer`、`onWuxiaSocial` 參數 | #574 第 5 節 |
+| A3 | `src/components/PlayerDetails.tsx` | 玩家點人時的互動選單（`SocialMenu`：做得到的互動＋容易／普通／難，送 `wuxiaPlayerAct` kind `social`） | #574 第 7 節 |
+| A3 | `package.json`（JSON 無法加註解） | `wuxia:social-report`、`wuxia:social-log`、`wuxia:llm-usage`、`wuxia:a3-shots` | #574 工具 |
 
 ## 上游刻意保留不改的隨機／時間
 

@@ -29,6 +29,9 @@ import { exportJournalFile } from '../wuxia/exportJournal.ts';
 import { OBJECT_BY_ID } from '../../convex/wuxia/w03_life/data.ts';
 // WUXIA-PATCH(A2): 傳承面板、顯示太極、角落提示
 import { A2Corner } from '../wuxia/A2Panels.tsx';
+// WUXIA-PATCH(A3): 鎮上動靜、翻成一句話
+import { A3Corner, pidOfCid } from '../wuxia/A3Panels.tsx';
+import type { SocialEntry } from '../../convex/wuxia/a3_silent/data.ts';
 import { useMutation } from 'convex/react';
 import { useSendInput, waitForInput } from '../hooks/sendInput.ts';
 import { toastOnError } from '../toasts.ts';
@@ -44,6 +47,8 @@ export default function Game() {
   const [gameWrapperRef, { width, height }] = useElementSize();
   // WUXIA-PATCH(A2): 「顯示太極」開關（地圖圈圈）
   const [wuxiaTaiji, setWuxiaTaiji] = useState(false);
+  // WUXIA-PATCH(A3): 點到的互動泡泡（翻成一句話）
+  const [wuxiaSocial, setWuxiaSocial] = useState<SocialEntry>();
 
   const worldStatus = useQuery(api.world.defaultWorldStatus);
   const worldId = worldStatus?.worldId;
@@ -144,6 +149,16 @@ export default function Game() {
             onTaiji={setWuxiaTaiji}
             onPick={(pid) => setSelectedElement({ kind: 'player', id: pid as GameId<'players'> })}
           />
+          {/* WUXIA-PATCH(A3): 鎮上動靜面板與翻譯小窗（a3-silent 開啟時） */}
+          <A3Corner
+            wuxia={game.world.wuxia}
+            pick={wuxiaSocial}
+            onPick={setWuxiaSocial}
+            onWho={(cid) => {
+              const pid = pidOfCid(game.world.wuxia, cid);
+              if (pid) setSelectedElement({ kind: 'player', id: pid as GameId<'players'> });
+            }}
+          />
           <div className="absolute inset-0">
             <div className="container">
               {/* WUXIA-PATCH(W1): 換皮時底色改紙色 */}
@@ -163,6 +178,8 @@ https://github.com/michalochman/react-pixi-fiber/issues/145#issuecomment-5315492
                     wuxiaSelectedId={selectedElement?.id}
                     // WUXIA-PATCH(A2): 顯示太極
                     wuxiaTaiji={wuxiaTaiji}
+                    // WUXIA-PATCH(A3): 點泡泡
+                    onWuxiaSocial={setWuxiaSocial}
                     onWuxiaObject={(id) => {
                       setWuxiaObject(id);
                       setWuxiaResult(undefined);

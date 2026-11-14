@@ -53,6 +53,7 @@
     "wuxia:social-report": "tsx tools/wuxia/social-report.ts",
     "wuxia:social-log": "tsx tools/wuxia/social-log.ts",
     "wuxia:llm-usage": "tsx tools/wuxia/llm-usage.ts",
+    "wuxia:a3-shots": "tsx tools/wuxia/a3-shots.ts",
     "wuxia:check": "npm run wuxia:check:full",
     "build:local": "vite build --config vite.local.config.ts",
     "dev:local": "vite --config vite.local.config.ts",

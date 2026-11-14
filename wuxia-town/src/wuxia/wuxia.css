@@ -396,3 +396,26 @@ body.wuxia-skin .button img {
 .wuxia-a2-corner > .wuxia-a2-lineage { flex-basis: 100%; background: rgba(247, 240, 222, 0.97); border: 2px solid #2b2119; padding: 0.3rem 0.5rem; max-height: 60vh; overflow-y: auto; }
 .wuxia-a2-corner > .wuxia-a2-hints { position: static; flex-basis: 100%; align-items: flex-end; }
 @media (max-width: 640px) { .wuxia-a2-hints { top: 2.6rem; font-size: 0.7rem; } .wuxia-a2-move { grid-template-columns: 5rem 1fr; } }
+/* A3（#574）：無言互動——鎮上動靜、互動選單、翻譯小窗 */
+.wuxia-a3-icon { display: inline-block; vertical-align: -3px; image-rendering: pixelated; flex: none; }
+.wuxia-a3-feed { display: flex; flex-direction: column; gap: 0.15rem; max-height: 60vh; overflow-y: auto; min-width: 16rem; }
+.wuxia-a3-line { text-align: left; background: none; border: none; border-bottom: 1px dotted #b9a98a; padding: 0.15rem 0.1rem; font-size: 0.85rem; color: #2b2119; display: flex; gap: 0.3rem; align-items: baseline; }
+.wuxia-a3-line .t { color: #7a6a52; font-size: 0.75rem; white-space: nowrap; }
+.wuxia-a3-line.fail { color: #6b5d4c; }
+.wuxia-a3-line:hover { background: rgba(43, 33, 25, 0.06); }
+.wuxia-a3-menu { margin: 0.4rem 0; }
+.wuxia-a3-opts { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.2rem; }
+.wuxia-a3-opts button { display: flex; align-items: center; gap: 0.25rem; border: 2px solid #2b2119; background: #faf4e4; padding: 0.1rem 0.4rem; font-size: 0.85rem; color: #2b2119; }
+.wuxia-a3-opts button small { font-size: 0.7rem; padding: 0 0.2rem; border-radius: 2px; color: #fff; background: #7a6a52; }
+.wuxia-a3-opts button.d-容易 small { background: #2f7d73; }
+.wuxia-a3-opts button.d-難 small { background: #b3342a; }
+.wuxia-a3-translate { position: absolute; left: 50%; bottom: 4.2rem; transform: translateX(-50%); z-index: 30; background: rgba(250, 244, 228, 0.98); border: 2px solid #2b2119; padding: 0.4rem 0.7rem; min-width: 16rem; max-width: min(28rem, 90vw); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25); }
+.wuxia-a3-translate .head { display: flex; align-items: center; gap: 0.3rem; font-size: 0.85rem; }
+.wuxia-a3-translate .head button.x { margin-left: auto; background: none; border: none; font-size: 1.1rem; }
+.wuxia-a3-translate .head button.who { background: none; border: none; border-bottom: 1px dotted #2b2119; padding: 0; color: #2b2119; font-size: 0.85rem; }
+.wuxia-a3-translate .say { margin: 0.3rem 0 0.1rem; font-size: 1rem; color: #2b2119; }
+.wuxia-a3-translate .src { margin: 0; font-size: 0.7rem; color: #7a6a52; }
+.wuxia-a3-corner { position: absolute; right: 0.5rem; top: 5.4rem; z-index: 12; display: flex; flex-direction: column; align-items: flex-end; gap: 0.3rem; }
+.wuxia-a3-corner > button { background: rgba(247, 240, 222, 0.94); border: 2px solid #2b2119; padding: 0.1rem 0.5rem; font-size: 0.85rem; color: #2b2119; }
+.wuxia-a3-corner > button.on { background: #2b2119; color: #f7f0de; }
+.wuxia-a3-corner > .wuxia-a3-feed { background: rgba(247, 240, 222, 0.97); border: 2px solid #2b2119; padding: 0.3rem 0.5rem; max-width: min(26rem, 80vw); }

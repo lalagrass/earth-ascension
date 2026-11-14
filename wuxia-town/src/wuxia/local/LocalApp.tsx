@@ -36,6 +36,10 @@ import { SparLayer } from '../SparLayer';
 import { BondPanel, DetailTab, DetailTabs } from '../BondPanel';
 import { A2Hints, ArtPanel, LineagePanel, TaijiToggle } from '../A2Panels';
 import { A2Layer } from '../A2Layer';
+import { SocialLayer } from '../SocialLayer';
+import { SocialFeed, SocialMenu, TranslatePop, cidOfPid, pidOfCid as pidOfCidA3 } from '../A3Panels';
+import { a3StateOf, cidName } from '../a3';
+import type { SocialEntry } from '../../../convex/wuxia/a3_silent/data';
 import { a2StateOf } from '../a2';
 import { DojoPanel } from '../DojoPanel';
 import { plaqueName } from '../bond';
@@ -195,6 +199,7 @@ function Scene(props: {
   showTaiji: boolean;
   onSelect: (id: string) => void;
   onTile: (x: number, y: number) => void;
+  onSocial?: (e: SocialEntry) => void;
 }) {
   const app = useApp();
   const viewportRef = useRef<Viewport | undefined>();
@@ -249,6 +254,9 @@ function Scene(props: {
       {skin && (
         <A2Layer wuxia={props.game.world.wuxia} tileDim={tileDim} showTaiji={props.showTaiji} pos={(id) => props.game.world.players.get(id as any)?.position} />
       )}
+      {skin && (
+        <SocialLayer wuxia={props.game.world.wuxia} tileDim={tileDim} pos={(id) => props.game.world.players.get(id as any)?.position} onPick={props.onSocial} />
+      )}
       {skin && <JianghuLayer world={props.game.world} tileDim={tileDim} time={props.time} />}
       {skin && (
         <SparLayer
@@ -271,7 +279,8 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
   const [toast, setToast] = useState<string>();
   const [selected, setSelected] = useState<string>();
   const [detailOpen, setDetailOpen] = useState(true);
-  const [panel, setPanel] = useState<'status' | 'chronicle' | 'dojo' | 'lineage' | 'me' | 'save'>();
+  const [panel, setPanel] = useState<'status' | 'chronicle' | 'dojo' | 'lineage' | 'social' | 'me' | 'save'>();
+  const [social, setSocial] = useState<SocialEntry>();
   const [tab, setTab] = useState<DetailTab>('main');
   const [taiji, setTaiji] = useState(false);
   const [obj, setObj] = useState<string>();
@@ -330,6 +339,18 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
     const p = game.world.players.get(pid as any);
     if (p) setFocus((f) => ({ x: p.position.x, y: p.position.y, n: (f?.n ?? 0) + 1 }));
   };
+  // A3：人物 id → 名字（玩家角色用進鎮時的名字）
+  const nameOfCid = (cid: string) => {
+    const pid = Object.keys(lifeOf(game.world)?.people ?? {}).find((k) => lifeOf(game.world)!.people[k].cid === cid);
+    return (pid && game.playerDescriptions.get(pid as any)?.name) || cidName(cid);
+  };
+  // A3：點動靜的一行＝翻成一句話，鏡頭移到發起的人（不開人物詳情）
+  const pickSocial = (e: SocialEntry) => {
+    setSocial(e);
+    const pid = pidOfCidA3(game.world.wuxia, e.a);
+    const p = pid ? game.world.players.get(pid as any) : undefined;
+    if (p) setFocus((f) => ({ x: p.position.x, y: p.position.y, n: (f?.n ?? 0) + 1 }));
+  };
   const togglePanel = (p: typeof panel) => setPanel((x) => (x === p ? undefined : p));
   const manualSave = async () => {
     const s = await engine.save('手動存檔');
@@ -353,6 +374,7 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
                 setSelected(id);
                 setDetailOpen(true);
               }}
+              onSocial={setSocial}
               onTile={(x, y) => {
                 if (!me) return;
                 const o = myRecord ? objectAtTile(game.world, x, y) : undefined;
@@ -391,6 +413,11 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
             傳承
           </button>
         )}
+        {a3StateOf(game.world) && (
+          <button className={panel === 'social' ? 'on' : ''} onClick={() => togglePanel('social')} data-testid="wuxia-btn-social">
+            動靜
+          </button>
+        )}
         {a2StateOf(game.world) && <TaijiToggle on={taiji} onChange={setTaiji} />}
         {rolesOffered() && (
           <button className={panel === 'me' ? 'on' : ''} onClick={() => togglePanel('me')} data-testid="wuxia-btn-me">
@@ -408,6 +435,7 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
           )}
           {panel === 'chronicle' && <ChroniclePanel world={game.world} />}
           {panel === 'lineage' && <LineagePanel wuxia={game.world.wuxia} onPick={pickPerson} />}
+          {panel === 'social' && <SocialFeed wuxia={game.world.wuxia} nameOf={nameOfCid} onPick={pickSocial} />}
           {panel === 'dojo' && (dojoOpened(game.world) ? <DojoPanel wuxia={game.world.wuxia} /> : <p className="wuxia-a1-note">武館還沒重開。</p>)}
           {panel === 'me' && (
             <PlayerPanel
@@ -473,6 +501,14 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
               {me && sel.id !== me.id && myRecord && (
                 <PersonActions name={desc?.name ?? ''} lastResult={result} onAct={(kind) => act({ kind, target: sel.id })} />
               )}
+              {me && sel.id !== me.id && myRecord && (
+                <SocialMenu
+                  wuxia={game.world.wuxia}
+                  me={myRecord.cid}
+                  target={cidOfPid(game.world.wuxia, sel.id)}
+                  onAct={(kind) => act({ kind: 'social', act: kind, target: sel.id })}
+                />
+              )}
               <DetailTabs
                 wuxia={game.world.wuxia}
                 tab={tab}
@@ -518,6 +554,16 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
         </label>
       </div>
       <A2Hints wuxia={game.world.wuxia} onPick={pickPerson} />
+      <TranslatePop
+        entry={social}
+        wuxia={game.world.wuxia}
+        nameOf={nameOfCid}
+        onClose={() => setSocial(undefined)}
+        onWho={(cid) => {
+          const pid = pidOfCidA3(game.world.wuxia, cid);
+          if (pid) pickPerson(pid);
+        }}
+      />
       {toast && <div className="wuxia-a1-toast">{toast}</div>}
       {props.error && <div className="wuxia-a1-error floating">{props.error}</div>}
     </div>
