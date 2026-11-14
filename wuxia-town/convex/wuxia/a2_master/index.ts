@@ -6,6 +6,7 @@
 // - 拳腳改由招推導（#575）：每分鐘把 w04 的 skills.fist 改寫成「體能分＋Σ(prof×難度權重)」，W6 切磋／W7 拜師自動跟著變
 // - 關閉時：本元素不存在、物件不存在、人物表沒有新的 6 位，世界跟 A1 逐位元組相同
 // 狀態存在 world.wuxia.elements['a2-master']。本元素排在 registry 最後（在 w03–w09、a1 之後）。
+import { a5On } from '../a5_robust';
 import type { Game } from '../../aiTown/game';
 import { Player } from '../../aiTown/player';
 import { Agent } from '../../aiTown/agent';
@@ -172,6 +173,9 @@ export function pickTeach(
       if (s) {
         const better = (s.flawed && !t.flawed) || Math.floor(t.prof * T.capFactor) > capOf(s) + T.reteachMargin;
         if (!better) continue;
+        // A5（a5-robust，#577 補驗收 A2-2）：看會的招再被教（again）時也要過前置招與身體門檻；A4 以前只在第一次教時檢查，
+        // 林嫂看會單鞭後身體不夠仍被大師「再教」（9 日 open 劇本第 7、8 日）。a5-robust 關掉時照 A4
+        if (a5On(w) && (!prereqOk(sk, m) || !bodyOk(skills, m))) continue;
       } else if (!prereqOk(sk, m) || !bodyOk(skills, m)) continue;
       if (chainOf(st.know, teacher, m.id).includes(student)) continue;
       if (!willing(w, st, mind, teacher, student, m)) continue;

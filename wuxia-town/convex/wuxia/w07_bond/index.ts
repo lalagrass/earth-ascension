@@ -9,6 +9,7 @@
 //   5. 師父日程的「指點徒弟」時段（弟子練功的時候師父去武館指點）：心念評估或收徒後重算，w03-life 的日程讀它。
 // 只用規則與 tick 的 now，不耗 game.rng()、不等 LLM。狀態存在 world.wuxia.elements['w07-bond']。
 import { a1On } from '../a1_base';
+import { a5On } from '../a5_robust';
 import { a2BowVerdict, a2DrillDo, a2Practising } from '../a2_master/hooks';
 import type { Game } from '../../aiTown/game';
 import type { Player } from '../../aiTown/player';
@@ -372,6 +373,8 @@ function stepBow(game: Game, now: number, gm: number, state: BondState, life: Li
     if (m1 !== undefined) memories[ev.ca] = m1;
   }
   state.events.push({ id: ev.id, day, gm, disciple: ev.ca, master: ev.cb, accepted, reason, causes: ev.causes, respect, close, memories });
+  // A5（a5-robust）：拜師紀錄只留最近 200 筆（#577 補 360 日體檢；360 日自然局約 110 筆，不影響現有判定）
+  if (a5On(game.world.wuxia) && state.events.length > 200) state.events.splice(0, state.events.length - 200);
   pushLog(life, { t: gm, who: ev.ca, act: accepted ? 'bow_ok' : 'bow_refused', obj: ev.cb });
   release(game, life, ev.a);
   release(game, life, ev.b);

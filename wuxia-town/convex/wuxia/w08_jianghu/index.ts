@@ -8,6 +8,7 @@
 //   6. 亥正：把當日編年交給 operation 讓 LLM 改寫成 80 字內的古風段落（只換文字；失敗用模板句）。
 // 導演只丟事件、不替人做決定：鎮民上前、逃跑、圍觀都由規則（技能、在哪裡、有沒有空）決定。只用 game.rng() 與 tick 的 now。
 // 狀態存在 world.wuxia.elements['w08-jianghu']。
+import { a5On } from '../a5_robust';
 import type { Game } from '../../aiTown/game';
 import type { WuxiaElement } from '../registry';
 import type { WuxiaState } from '../state';
@@ -263,10 +264,32 @@ export function eventWeights(c: Ctx): Array<{ kind: EventKind; w: number; causes
   return out;
 }
 
+/** A5：紀錄有上限（#577 補 A1 的 360 日體檢）。每日導演擲骰前做一次：太舊的傳聞全鎮淡忘、紀錄只留最近一段。 */
+function trimLogs(c: Ctx) {
+  const L = JIANGHU.logs;
+  const st = c.st;
+  if (!st.active) {
+    const old = new Set(st.rumors.filter((r) => c.day - r.day > L.rumorDays).map((r) => r.id));
+    if (old.size) {
+      st.rumors = st.rumors.filter((r) => !old.has(r.id));
+      for (const cid of Object.keys(st.known)) st.known[cid] = st.known[cid].filter((h) => !old.has(h.rid));
+      st.trail = st.trail.filter((t) => !old.has(t.rid));
+      st.out = st.out.filter((o) => !old.has(o.rid));
+      st.told = st.told.filter((rid) => !old.has(rid));
+    }
+  }
+  if (st.history.length > L.historyMax) st.history.splice(0, st.history.length - L.historyMax);
+  if (st.rolls.length >= L.rollsMax) st.rolls.splice(0, st.rolls.length - L.rollsMax + 1);
+  const keep = c.day - L.chronicleDays;
+  if (st.chronicle.length && st.chronicle[0].day < keep) st.chronicle = st.chronicle.filter((e) => e.day >= keep);
+  if (st.chronicleDays.length && st.chronicleDays[0].day < keep) st.chronicleDays = st.chronicleDays.filter((d) => d.day >= keep);
+}
+
 function director(c: Ctx) {
   const D = JIANGHU.director;
   if (c.mod < D.rollMinuteOfDay || c.st.rollDay >= c.day) return;
   c.st.rollDay = c.day;
+  if (a5On(c.w)) trimLogs(c);
   const roll: DirectorRoll = { day: c.day, p: 0, candidates: [] };
   c.st.rolls.push(roll);
   const force = c.st.force;

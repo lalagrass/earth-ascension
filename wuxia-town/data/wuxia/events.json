@@ -58,6 +58,16 @@
       "endMinuteOfDay": 1260, "end_src": "旋鈕：說到戌時結束（21:00），老韓那天沒說書就沒人聽到"
     }
   },
+  "logs": {
+    "rumorDays": 60,
+    "rumorDays_src": "旋鈕：A5（#577 補 A1 的 360 日體檢）傳聞 60 日後全鎮淡忘：從傳聞表、每人聽過的、傳遞軌跡、出鎮表一起拿掉（進行中的大事件那天不忘）；60 日＞W8 最長的 45 日對照，3 日與 30 分 hash 不變",
+    "historyMax": 60,
+    "historyMax_src": "旋鈕：A5 大事件紀錄只留最近 60 件（360 日自然局約 100 件；俠客「沒來過的優先」只看這 60 件）",
+    "rollsMax": 90,
+    "rollsMax_src": "旋鈕：A5 導演擲骰紀錄只留最近 90 次（每日一次＝90 日，報告工具最長跑 90 日）",
+    "chronicleDays": 60,
+    "chronicleDays_src": "旋鈕：A5 鎮誌條目與每日段落只留最近 60 日（同 rumorDays）"
+  },
   "rumor": {
     "distort": 0.2,
     "distort_src": "量測：#560「每傳一手有 20% 機率走樣」",

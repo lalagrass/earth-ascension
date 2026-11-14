@@ -55,6 +55,7 @@ export function health(opts: { seed: number; days: number; agents?: number; onWi
   // 全程
   const overRun: Record<string, Record<string, number>> = {};
   const maxOver: Record<string, Record<string, number>> = {};
+  const maxOverAt: Record<string, Record<string, number>> = {};
   const idleRun: Record<string, number> = {};
   const maxIdleDays: Record<string, number> = {};
   const windows: Window[] = [];
@@ -215,7 +216,10 @@ export function health(opts: { seed: number; days: number; agents?: number; onWi
           const ov = (over[pid] ??= {});
           ov[k] = (ov[k] ?? 0) + 1;
           const mx = (maxOver[pid] ??= {});
-          mx[k] = Math.max(mx[k] ?? 0, o[k]);
+          if (o[k] > (mx[k] ?? 0)) {
+            mx[k] = o[k];
+            (maxOverAt[pid] ??= {})[k] = gm;
+          }
         } else o[k] = 0;
       }
     }
@@ -226,12 +230,12 @@ export function health(opts: { seed: number; days: number; agents?: number; onWi
   const half = opts.days / 2;
   const firstMax = Math.max(0, ...stateSizes.filter(([d]) => d <= half).map(([, b]) => b));
   const secondMax = Math.max(0, ...stateSizes.filter(([d]) => d > half).map(([, b]) => b));
-  const worstOver = Object.entries(maxOver).flatMap(([pid, m]) => Object.entries(m).map(([k, v]) => ({ who: name(pid), need: k, minutes: v })))
+  const worstOver = Object.entries(maxOver).flatMap(([pid, m]) => Object.entries(m).map(([k, v]) => ({ who: name(pid), need: k, minutes: v, at: maxOverAt[pid]?.[k] ?? 0 })))
     .sort((a, b) => b.minutes - a.minutes)[0];
   const worstIdle = Object.entries(maxIdleDays).map(([pid, d]) => ({ who: name(pid), days: d })).sort((a, b) => b.days - a.days)[0];
   const verdicts = [
     { rule: `A4 沒有人需求連續超標（> ${HARD}）${OVER_LIMIT_MIN / 60} 遊戲小時`, ok: !worstOver || worstOver.minutes < OVER_LIMIT_MIN,
-      value: worstOver ? `最長 ${worstOver.who} ${worstOver.need} ${(worstOver.minutes / 60).toFixed(1)} 小時` : '沒有超標' },
+      value: worstOver ? `最長 ${worstOver.who} ${worstOver.need} ${(worstOver.minutes / 60).toFixed(1)} 小時（到第 ${Math.floor(worstOver.at / 1440) + 1} 日 ${String(Math.floor(((worstOver.at % 1440) + 1440) % 1440 / 60 + 6) % 24).padStart(2, '0')} 時）` : '沒有超標' },
     { rule: `A4 沒有人連續 ${IDLE_DAYS_LIMIT} 日無事可做`, ok: !worstIdle || worstIdle.days < IDLE_DAYS_LIMIT,
       value: worstIdle ? `最長 ${worstIdle.who} ${worstIdle.days} 日` : '—' },
     { rule: `A4 狀態大小有上限（後半最大 ≤ 前半最大 × ${STATE_GROWTH_LIMIT}）`, ok: !firstMax || secondMax <= firstMax * STATE_GROWTH_LIMIT,

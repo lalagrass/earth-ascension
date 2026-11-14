@@ -38,6 +38,7 @@ describe('wuxia element registry', () => {
     // A2 刻意改變：預設開 a2-master（A1 時是 [..., 'a1-base']，見 docs/wuxia/A2.md）
     // A3 刻意改變：預設開 a3-silent（A2 時是 [..., 'a2-master']，見 docs/wuxia/A3.md）
     // A4 刻意改變：預設開 a4-play（A3 時是 [..., 'a3-silent']，見 docs/wuxia/A4.md）
+    // A5 刻意改變：預設開 a5-robust（A4 時是 [..., 'a4-play']，見 docs/wuxia/A5.md）
     expect(enabledElements(initWuxiaState()).map((e) => e.id)).toEqual([
       'w01-skin',
       'w02-folk',
@@ -51,6 +52,7 @@ describe('wuxia element registry', () => {
       'a2-master',
       'a3-silent',
       'a4-play',
+      'a5-robust',
     ]);
   });
   test('w08-jianghu requires w07-bond（關掉 w07-bond 時 w08-jianghu 不凍結進 enabled）', () => {

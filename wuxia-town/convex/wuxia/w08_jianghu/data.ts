@@ -27,6 +27,7 @@ export type EventDef = {
 export const JIANGHU = eventsJson as unknown as {
   director: { rollMinuteOfDay: number; chance: number; quietDays: number; boostAfterDays: number; boost: number };
   events: Record<EventKind, EventDef>;
+  logs: { rumorDays: number; historyMax: number; rollsMax: number; chronicleDays: number };
   rumor: {
     distort: number;
     spreadBase: number;

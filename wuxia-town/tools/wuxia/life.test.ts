@@ -31,7 +31,14 @@ describe('w03-life 無頭模擬', () => {
     const conv = talk.summary.life!.conversations;
     expect(conv.total).toBeGreaterThan(0);
     // A2（#575）：a2-master 預設開，鎮東民宅多了灶（飯桌），閒暇地點多一個 home-east；元素關閉時仍只有茶館、河邊
-    const leisure = ['teahouse', 'river', ...(talk.summary.a2 ? ['home-east'] : [])];
+    // A5（#577）：名單改成從物件表算（有閒暇活動的物件所在地點；element 物件只在該元素開著時算），跟 w03-life leisurePlaces 同一條規則。
+    // 原本手寫的名單漏了各家的灶（飯桌：吃飯是閒暇活動），a5-robust 開著的世界第一次有人在西邊民居的灶旁開口（home-west-1）
+    const leisure = [
+      ...new Set(
+        OBJECTS.filter((o) => o.activities.some((a) => a.leisure) && (!o.element || (o.element === 'a2-master' && talk.summary.a2))).map((o) => o.place),
+      ),
+    ];
+    expect(leisure).toEqual(expect.arrayContaining(['teahouse', 'river', ...(talk.summary.a2 ? ['home-east'] : [])]));
     for (const place of Object.keys(conv.byPlace)) expect(leisure).toContain(place);
     expect(conv.ratio!).toBeGreaterThanOrEqual(0.8);
   });

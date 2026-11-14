@@ -4,13 +4,14 @@
 // 走過去、計時、套用效果、釋放預約。另含 #562 W3 補充：每戶物資（水／飯／柴）、日程留白、對話 90 遊戲分鐘上限。
 // 狀態存在 world.wuxia.elements['w03-life']（#549 §2 慣例；#562 寫的 wuxia.life.* 即此處）。
 import { a1On } from '../a1_base';
+import { a5On } from '../a5_robust';
 import type { Game } from '../../aiTown/game';
 import type { Player } from '../../aiTown/player';
 import type { WuxiaElement } from '../registry';
 import type { WuxiaState } from '../state';
 import { gameMinutes, readClock } from '../clock';
 import { profileByName } from '../w02_folk';
-import { movePlayer, stopPlayer } from '../../aiTown/movement';
+import { blocked, movePlayer, stopPlayer } from '../../aiTown/movement';
 import { Conversation } from '../../aiTown/conversation';
 import { movementSpeed } from '../../../data/characters';
 import { inviteMultiplier, mindOf, newcomers, prefersNewcomer } from '../w05_mind/data';
@@ -86,6 +87,8 @@ export type Current = {
   /** walk：最晚抵達的遊戲分鐘 */
   deadline?: number;
   retries: number;
+  /** A5：被擋住、重試用完時先往旁邊讓一格（每段路一次），再重新找路 */
+  sidestep?: boolean;
 };
 
 export type Person = {
@@ -385,6 +388,26 @@ export function interruptActivity(state: LifeState, playerId: string, person: Pe
   stopPlayer(player);
 }
 
+const SIDESTEPS: Array<[number, number]> = [
+  [0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, 1], [1, -1], [-1, -1], [0, 2], [0, -2], [2, 0], [-2, 0],
+];
+/** 讓到旁邊最近的空格（不是障礙、離別人 ≥ 1 格）；找不到回 false。
+ *  上游的移動只要下一個位置離別人 < 1 格就停下等待，已經貼著別人時（例如夾在兩個睡在路邊的人中間）往哪走都算碰撞，
+ *  尋路也只試左右兩個被占的格點，所以永遠走不出去。這裡直接把人放到最近的空格（≤ 2 格），再從那裡重新找路。 */
+function sidestep(game: Game, now: number, player: Player): boolean {
+  const bx = Math.round(player.position.x);
+  const by = Math.round(player.position.y);
+  for (const [dx, dy] of SIDESTEPS) {
+    const p = { x: bx + dx, y: by + dy };
+    if (blocked(game, now, p, player.id) === null) {
+      stopPlayer(player);
+      player.position = p;
+      return true;
+    }
+  }
+  return false;
+}
+
 function abandon(state: LifeState, playerId: string, person: Person, gm: number, player: Player) {
   const cur = person.cur!;
   release(state, playerId, cur);
@@ -545,6 +568,11 @@ export function tickLife(game: Game, now: number) {
         } else if (cur.retries < LIFE_RULES.maxRetries && gm <= cur.deadline!) {
           cur.retries++;
           movePlayer(game, now, player, { x: sx, y: sy });
+        } else if (a5On(w) && !cur.sidestep && gm <= cur.deadline! && sidestep(game, now, player)) {
+          // A5（#577 補 360 日體檢）：夾在兩個睡在路邊的人中間時，重新找路一直失敗、放棄後又挑同一張床，整晚走不到（周教頭第 258 日）。
+          // 重試用完先讓到旁邊空格，再從那裡重新找路；每段路只讓一次。a5-robust 關掉時照 A4（直接放棄）
+          cur.sidestep = true;
+          cur.retries = 0;
         } else {
           abandon(state, pid, person, gm, player);
         }

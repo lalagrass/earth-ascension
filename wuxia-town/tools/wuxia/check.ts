@@ -54,7 +54,7 @@ import { sharedDefaultRun } from './shared-run';
 import { writeFileSync, renameSync } from 'node:fs';
 import { W06_SPAR } from '../../convex/wuxia/w06_spar/data';
 import { skillReport } from './skill-report';
-import { runHeadless } from './headless';
+import { runHeadless, A_PHASE_ELEMENTS } from './headless';
 import { quietConsole } from './sim';
 
 const ROOT = new URL('../..', import.meta.url).pathname;
@@ -65,6 +65,11 @@ const MINUTES = process.env.WUXIA_CHECK_MINUTES ?? '30';
 // 全部跑完再依組別順序印出結果；判定內容完全不變。WUXIA_CHECK_SERIAL=1＝舊的單行程依序跑。
 // W9：bond 組併進 long 組（共用長跑），另加 player 組（第 18 項）
 const GROUPS = ['base', 'skill', 'mind', 'long', 'jianghu', 'player'] as const;
+// A5（#577，DEVIATIONS A5-2）：第 7–17 項是 W1–W8 的回歸（「關掉 wN＝W(N−1) 的世界」與 W 的報告），在 W9 設定下跑：
+// A 階段的元素（a1-base…a4-play）預設關（WUXIA_ELEMENTS_OFF，呼叫端明寫的 elements 優先）。第 1、2、18 項用預設設定（A4）。
+const W9_OFF = A_PHASE_ELEMENTS.join(',');
+const W_GROUPS = new Set(['skill', 'mind', 'long', 'jianghu']);
+const phase = (w9: boolean) => (process.env.WUXIA_ELEMENTS_OFF = w9 ? W9_OFF : '');
 const groupArg = process.argv.indexOf('--group');
 const ONLY = groupArg >= 0 ? process.argv[groupArg + 1] : undefined;
 const SERIAL = !!process.env.WUXIA_CHECK_SERIAL;
@@ -81,7 +86,7 @@ function runGroup(g: string): Promise<{ g: string; code: number | null; out: str
       {
         cwd: ROOT,
         stdio: ['ignore', fd, fd],
-        env: { ...process.env, WUXIA_CHECK_SHARE: SHARE },
+        env: { ...process.env, WUXIA_CHECK_SHARE: SHARE, WUXIA_ELEMENTS_OFF: W_GROUPS.has(g) ? W9_OFF : '' },
       },
     );
     child.on('close', (code) => {
@@ -222,8 +227,10 @@ const playerRuns = GROUP('player') ? [playerChild('a'), playerChild('b')] : [];
 // 30 分 e609df34… → b44fdc07…、3 日 7699618b… → a1762e45…（--off a3-silent 時仍是 A2 的值，見 check:quick q3）
 // A4（#576，docs/wuxia/A4.md）：元素 a4-play（緣分點、干預、劇本）預設開，再刻意改變一次：
 // 30 分 b44fdc07… → affde96b…、3 日 a1762e45… → 14abe2fc…（--off a4-play 時仍是 A3 的值，見 check:quick q3）
-const W8_HASH_SEED7_30M = 'affde96bfa84849402e93755f2aa2eb9d03d352257376c1c9030e1c029ac882a';
-const W8_HASH_SEED7_3D_PREFIX = '14abe2fcb0292a6f';
+// A5（#577，docs/wuxia/A5.md）：元素 a5-robust（卡路讓步、再教的門檻、紀錄上限）預設開，再刻意改變一次：
+// 30 分 affde96b… → bd608abf…、3 日 14abe2fc… → bdb2107b…（--off a5-robust 時仍是 A4 的值，見 check:quick q3）
+const W8_HASH_SEED7_30M = 'bd608abfbcdcc8d189bdb4d0dfaa60d744e503342aff20cb4008b02a23dd4e6f';
+const W8_HASH_SEED7_3D_PREFIX = 'bdb2107be9fc4908';
 
 let failures = 0;
 const ok = (msg: string) => process.stdout.write(`ok   ${msg}\n`);
@@ -335,7 +342,8 @@ if (GROUP('base')) {
   if (big.length === 0) ok('docs/wuxia/ 檔案大小在上限內（單檔 ≤1 MB，GIF ≤3 MB）');
   else fail(`docs/wuxia/ 檔案過大：${big.map((f) => relative(ROOT, f)).join(', ')}`);
 
-  // 7
+  // 7（A5：起在 W9 設定下跑）
+  phase(true);
   {
     const restore = console.log;
     console.log = () => {};
@@ -421,6 +429,7 @@ if (GROUP('base')) {
 // 13
 let skillRunOff: any;
 if (GROUP('skill')) {
+  phase(true);
   const days = Number(process.env.WUXIA_CHECK_SKILL_DAYS ?? 30);
   if (days > 0) {
     // W6：W4 的驗收量的是「練功」的成長曲線；切磋另有成長（#558「雙方 fist + 打樁 2 小時的量」），所以關掉 w06-spar 量。
@@ -443,6 +452,7 @@ if (GROUP('skill')) {
 
 // 14
 if (GROUP('mind')) {
+  phase(true);
   const days = Number(process.env.WUXIA_CHECK_MIND_DAYS ?? 14);
   if (days > 0) {
     const r = mindDiff(7, Number(MINUTES), days, [2, 3]);
@@ -470,6 +480,7 @@ if (GROUP('mind')) {
 
 // 15
 if (GROUP('skill')) {
+  phase(true);
   const a = sparDiffA(7, Number(MINUTES));
   (a.ok ? ok : fail)(
     `spar-diff A：w06-spar 關＝W5 世界 hash ${a.hash}（3 日 ${a.hash3.slice(0, 16)}…）`,
@@ -489,6 +500,7 @@ if (GROUP('skill')) {
 
 // 16（＋第 15 項 C、第 17 項 D 的共用長跑）
 if (GROUP('long')) {
+  phase(true);
   const a = bondDiffA(7, Number(MINUTES));
   (a.ok ? ok : fail)(
     `bond-diff A：w07-bond 關＝W6 世界 hash ${a.hash}（3 日 ${a.hash3.slice(0, 16)}…）`,
@@ -532,6 +544,7 @@ if (GROUP('long')) {
   if (!SERIAL && !ONLY) return; // 調度行程：結果由上面的 Promise.all 收
   // 15 C
   if (GROUP('skill')) {
+  phase(true);
     const days = SPAR_DAYS;
     if (days > 0) {
       // W9：平行模式讀 long 組共用長跑在第 days 日的取樣；單行程（WUXIA_CHECK_SERIAL）或單獨跑這一組時照舊自己跑
@@ -558,6 +571,7 @@ if (GROUP('long')) {
 
   }
   if (GROUP('jianghu')) {
+    phase(true);
     const a = jianghuDiffA(7, Number(MINUTES));
     (a.ok ? ok : fail)(
       `jianghu-diff A：w08-jianghu 關＝W7 世界 hash ${a.hash}（3 日 ${a.hash3.slice(0, 16)}…）`,
@@ -581,6 +595,7 @@ if (GROUP('long')) {
   }
   // 18
   if (GROUP('player')) {
+    phase(false);
     // 玩家不加入：w09-player 不寫任何狀態，世界跟 W8 逐位元組相同；--off w09-player 也一樣
     const none = runHeadless({ seed: 7, minutes: Number(MINUTES) });
     const off = runHeadless({ seed: 7, minutes: Number(MINUTES), elements: { 'w09-player': false } });
