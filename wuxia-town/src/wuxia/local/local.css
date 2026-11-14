@@ -83,14 +83,17 @@ body.wuxia-skin { background: #e2d5b4; color: #2b2119; font-family: "Noto Serif 
   /* 上排：印章＋時辰在左上，右上按鈕改到第二排，不重疊 */
   .wuxia-a1-corner { top: 3.4rem; left: 0.4rem; right: 0.4rem; flex-wrap: wrap; justify-content: flex-end; }
   .wuxia-a1-corner button { padding: 0.1rem 0.3rem; font-size: 0.75rem; }
-  .wuxia-a1-popover { top: auto; bottom: 3.4rem; left: 0.3rem; right: 0.3rem; width: auto; max-height: 55vh; }
+  .wuxia-a1-popover { top: auto; bottom: 6.2rem; left: 0.3rem; right: 0.3rem; width: auto; max-height: 55vh; }
   /* 選中的人：改成下方抽屜 */
-  .wuxia-a1-detail { left: 0.3rem; right: 0.3rem; top: auto; bottom: 3.4rem; width: auto; max-height: 55vh; }
+  .wuxia-a1-detail { left: 0.3rem; right: 0.3rem; top: auto; bottom: 6.2rem; width: auto; max-height: 50vh; }
   .wuxia-a1-detail.closed { max-height: none; }
   .wuxia-a1-timebar { bottom: 0.3rem; padding: 0.15rem 0.25rem; gap: 0.15rem; }
   .wuxia-a1-timebar button { min-width: 1.8rem; padding: 0.05rem 0.25rem; font-size: 0.72rem; }
   .wuxia-a1-auto { font-size: 0.7rem; }
-  .wuxia-a1-toast { top: 6.2rem; font-size: 0.85rem; max-width: 92vw; }
+  .wuxia-a1-toast { top: 8.8rem; font-size: 0.85rem; max-width: 92vw; }
+  /* 時間列在 390 寬會折成三排（約 5.6rem 高）：底部的卡片、提示、抽屜都放在它上面；說書人放到第二排按鈕下面，不蓋住按鈕 */
   .wuxia-a4-opening, .wuxia-a4-tutorial { max-width: 94vw; font-size: 0.8rem; }
-  .wuxia-a5-hint { bottom: 3rem; font-size: 0.78rem; }
+  .wuxia-a4-opening { bottom: 6.4rem; }
+  .wuxia-a4-tutorial { top: 6rem; }
+  .wuxia-a5-hint { bottom: 6.4rem; font-size: 0.78rem; }
 }

@@ -60,6 +60,7 @@
     "wuxia:e2e": "tsx tools/wuxia/e2e.ts",
     "wuxia:bundle-report": "tsx tools/wuxia/bundle-report.ts",
     "wuxia:soak": "tsx tools/wuxia/soak.ts",
+    "wuxia:a5-shots": "tsx tools/wuxia/a5-shots.ts",
     "wuxia:check": "npm run wuxia:check:full",
     "build:local": "vite build --config vite.local.config.ts",
     "dev:local": "vite --config vite.local.config.ts",

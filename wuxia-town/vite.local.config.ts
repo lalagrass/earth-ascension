@@ -7,7 +7,8 @@ import react from '@vitejs/plugin-react';
 import { resolve } from 'node:path';
 import { cpSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
 
-const OUT = resolve(__dirname, 'dist-local');
+// A5：WUXIA_DIST 可改輸出位置（掛機測試還開著舊建置時另建一份）
+const OUT = process.env.WUXIA_DIST ? resolve(process.env.WUXIA_DIST) : resolve(__dirname, 'dist-local');
 
 export default defineConfig({
   // A5：GitHub Pages 之類放在子路徑時用 WUXIA_BASE=/<repo>/ai-town/ 建置（素材網址由 src/wuxia/local/basePath.ts 轉換）

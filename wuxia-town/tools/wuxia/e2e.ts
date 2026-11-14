@@ -12,7 +12,7 @@ import { tmpdir } from 'node:os';
 import { parseArgs } from './sim';
 
 const ROOT = new URL('../..', import.meta.url).pathname;
-const DIST = join(ROOT, 'dist-local');
+const DIST = process.env.WUXIA_DIST ? resolve(process.env.WUXIA_DIST) : join(ROOT, 'dist-local');
 const CHROME = [process.env.WUXIA_CHROME, '/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser'].filter(Boolean).find((p) => existsSync(p!)) as string | undefined;
 const TYPES: Record<string, string> = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json',

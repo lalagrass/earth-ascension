@@ -163,7 +163,7 @@ function Home(props: { onStart: (i: StartInit) => void; error?: string }) {
             {slots.map((s) => (
               <div key={s.key} className="wuxia-a1-slot">
                 <button className="wuxia-a1-btn" onClick={() => props.onStart({ kind: 'load', save: s.save })}>
-                  {s.kind === 'auto' ? '自動存檔' : '手動存檔'}・第 {s.day} 日・種子 {s.seed}
+                  {s.kind === 'auto' ? '自動存檔' : s.save.label === '出錯前' ? '出錯前存檔' : '手動存檔'}・第 {s.day} 日・種子 {s.seed}
                   {s.ruleVersion !== RULE_VERSION && <small>（規則版本 {s.ruleVersion}，讀不了）</small>}
                 </button>
                 <button className="wuxia-a1-x" aria-label="刪除" onClick={() => void deleteSlot(s.key).then(() => listSlots().then(setSlots))}>
@@ -355,6 +355,8 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; onAgain: (
       setCrash(m.split('\n')[0]);
       void Promise.race([engine.save('出錯前').then((s) => putSlot(slotOf(s, 'manual', new Date().toISOString()))), new Promise((r) => setTimeout(r, 2000))]).catch(() => undefined);
     };
+    // A5 截圖工具（?test=1）才掛：讓 Worker 下一步丟例外，驗出錯提示與另存
+    if (new URLSearchParams(location.search).get('test') === '1') (window as any).__WUXIA_TEST__ = { crash: () => engine.crashForTest() };
     return () => {
       off();
       offDay();
