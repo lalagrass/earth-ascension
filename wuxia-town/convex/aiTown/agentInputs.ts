@@ -97,7 +97,10 @@ export const agentInputs = {
       const conversationId = parseGameId('conversations', args.conversationId);
       const conversation = game.world.conversations.get(conversationId);
       if (!conversation) {
-        throw new Error(`Couldn't find conversation: ${conversationId}`);
+        // WUXIA-PATCH(A2): 對話已經結束（對方先走了）才送回來的訊息：上游丟例外（console.error、世界不變），
+        // 改成記 debug、一樣不改世界（hash 相同）。12 人時這個競態一天會發生幾次，不是錯誤
+        console.debug(`Agent ${agentId} finished a message for ended conversation ${conversationId}`);
+        return null;
       }
       if (
         !agent.inProgressOperation ||

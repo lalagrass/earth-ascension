@@ -112,6 +112,7 @@
 | A1 | `.gitignore` | 加 `/dist-local` | `npm run build:local` 的產出 |
 | A1 | `.github/workflows/wuxia-town.yml`（repo 根目錄，t208u 允許的例外） | push／PR 跑 `wuxia:check:quick`；`workflow_dispatch` 可選 `suite=full` | #563 輕量驗收；用 GitHub MCP 寫入（f803b82b） |
 | A2 | `convex/aiTown/agentInputs.ts` | `descriptionsFor(folkOn, game.world.wuxia)`：a2-master 開啟時依 seed 多抽 6 位鎮民＋大師的描述 | #575 審查補充第 1 項「鎮民 12 人」 |
+| A2 | `convex/aiTown/agentInputs.ts` | `finishSendingMessage`：對話已結束才送回的訊息改成 `console.debug`＋`return null`（上游丟例外；兩者都不改世界，hash 相同） | 12 人時這個上游競態一天發生幾次，瀏覽器 console 會出現 error（`wuxia:local-check` 第 5 項） |
 | A2 | `convex/init.ts` | 建世界時把 wuxia 初始狀態交給 `descriptionsFor`（同上） | 同上；a2-master 關閉時描述與 A1 相同 |
 | A2 | `src/components/Game.tsx` | 「傳承」面板、「顯示太極」開關、角落提示（`A2Corner`；點提示選中那人） | #575「畫面」；Convex 版與本機版共用 `src/wuxia/A2Panels.tsx` |
 | A2 | `src/components/PixiGame.tsx` | 太極圖層 `A2Layer`（顯示太極的圈、起勢 2 格動畫）、`wuxiaTaiji` 參數 | 同上 |
