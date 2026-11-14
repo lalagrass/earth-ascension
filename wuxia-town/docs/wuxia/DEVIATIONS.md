@@ -241,6 +241,25 @@
 | A4-9 | 目標進度 | 達成日一旦記下就不收回；「出現第二代傳人」的現值之後可能掉回（`know.from` 會更新），面板顯示達成日 | 目標是「曾經達到」 |
 | A4-10 | （上游）回首頁的 console error | `PixiViewport` 包一層 `destroy`，Stage 先拆掉 events 時吞掉那一個 TypeError | A1 起回首頁就會丟；`wuxia:a4-shots` 檢查 console 才發現 |
 
+## A5（#577）
+
+| # | 原規格 | 實際做法 | 理由／回退方式 |
+|---|---|---|---|
+| A5-1 | 補 A1 的 360 日體檢（狀態大小） | 修補做成新元素 `a5-robust`（requires w03-life，預設開，沒有自己的狀態）；`--off a5-robust` 與 A4 逐位元組相同（quick q3 檢查 `14abe2fc…`），其餘 `--off` 鏈各加上 a5-robust 照舊對到 A3／A2／A1／W9。預設 seed 7 3 日 hash 刻意改成 `bdb2107b…`、30 分 `bd608abf…`、360 日 `0c447532…` → `a5f427bc…`；規則版本 `a5-1`（A4 存檔讀不了） | #549 每步一個元素；回退＝world.config 關 a5-robust |
+| A5-2 | 狀態大小有上限（A1-8） | w08：導演每日擲骰前，**沒有進行中的事件時**，超過 60 日的傳聞全鎮淡忘（rumors／known／trail／out／told 一起刪），history 留 60、rolls 留 90、鎮誌與鎮誌日留最近 60 日；w07 拜師紀錄留 200。數值在 `events.json` 的 `logs`（各有 `_src`）。360 日狀態前半最大 1017 KB、後半 1030 KB（判定 ≤×1.5 沒放寬） | 「傳聞被遺忘」是規則行為改變，所以放在元素裡、hash 變更記在這裡；w06 的切磋紀錄本來就有上限 |
+| A5-3 | 360 日「沒有人需求連續超標 12 小時」 | A4 起就沒過（周教頭疲勞 12.6 小時，第 258 日）：他走回床時停在兩格之間（31.24,28），兩邊是睡在路邊的鄰居（鎮東民居的床位在屋外 y=28），上游尋路只試左右兩個被占的格點、上游移動只要下一步離人 <1 格就停，走不出去，放棄後又挑同一張床。修法：重試用完後**直接放到最近的空格（≤2 格）**，再找路；每段路一次 | 「走過去」做不到（上游碰撞規則讓貼著人的玩家哪裡都不能走）；改上游碰撞會改所有世界的 hash。修後 360 日最長超標 10.4 小時 |
+| A5-4 | A2「每一筆教：前置招與身體門檻都已滿足」 | 加了 a5-robust 後 `a2.test` 抓到：看會的招再被教（again）時 A4 不檢查門檻（林嫂身體不夠仍被再教單鞭）。a5-robust 開著時再教也要過門檻 | 原本是規則漏洞，只是 A4 的 9 日局剛好沒走到；關掉元素照 A4 |
+| A5-5 | `wuxia:check:full` 第 7–17 項（W3–W9 的回歸） | 這些項在 W9 設定跑（環境變數 `WUXIA_ELEMENTS_OFF`＝a1–a5，呼叫端明寫的元素優先）；第 1、2、18 項照預設設定。A4 時用預設（A 元素全開）跑有 5 組失敗（life-diff B、dojo-diff A／C、spar-diff A、spar-report、mind-diff、bond-diff A、bond-report、jianghu-diff A），都是 A 元素改了行為、不是 W 規則壞掉 | W 的驗收門檻是照 W 世界訂的；判定沒放寬，在預設世界的數字列在 A5.md（只報告） |
+| A5-6 | `life.test`「只在閒暇地點開始聊天」 | 名單改成從物件表算（有閒暇活動的物件所在地點），原本手寫的名單漏了各家的灶（吃飯是閒暇活動）；a5-robust 世界第一次有人在西邊民居灶旁開口 | 跟 w03 `leisurePlaces` 同一條規則；比例 ≥0.8 照舊 |
+| A5-7 | （上游）tsc 前要刪 dist-local | `tsconfig.json` 排除 `dist-local`（建置出的 JS 被 allowJs 當全域腳本，蓋掉 jest 的 `it`／`test`） | UPSTREAM.md 一行 |
+| A5-8 | 靜態發佈：GitHub Actions 手動觸發 | `.github/workflows/wuxia-pages.yml`（經 MCP 建立）：只在 town/wuxia、預設只產生 artifact `wuxia-town-site`，勾 deploy 才上 Pages。用 `WUXIA_BASE=/<repo>/ai-town/` 建置，`src/wuxia/local/basePath.ts` 改寫素材網址（狀態裡的 `/ai-town/` 網址進 hash，不能改）。**沒辦法實際觸發**：GitHub 的 workflow_dispatch 要求 workflow 檔在預設分支（main）上，API 回 404 | 是否部署由 owner 決定；要觸發需把這個檔合進 main |
+| A5-9 | 掛機 2 小時記憶體 <10% | 先量到洩漏：@pixi/react 卸載時不銷毀 PIXI.Text 的貼圖，64× 每分鐘數百個 canvas 累積（renderer RSS 45 分鐘 422→2164 MB）。`src/wuxia/pixiTextFix.ts` 讓 Text 卸載時連貼圖一起銷毀 | 自家檔，不動上游；Convex 版經 SocialLayer 一起套用 |
+| A5-10 | 設定頁：語言 | 只有「繁體中文」（選單停用） | #577「僅 zh-Hant」 |
+| A5-11 | Worker 當掉的測試 | 網址 `?test=1` 才掛 `window.__WUXIA_TEST__.crash()`（讓 Worker 下一步丟例外）；`wuxia:a5-shots` 用它驗「小鎮停住了」與「出錯前存檔」 | 一般網址沒有這個鉤 |
+| A5-12 | 30 分鐘走查 | 腳本玩家只按畫面上的鈕：平時 64×、自動降速後看 3 秒按回、16:00–23:00 按「跳到明早」；在本機（8 核、SwiftShader 軟體繪圖、同時有其他工作）量的秒數，真人電腦會不同 | 秒數是 C 類，只報告 |
+| A5-13 | 「回報」 | 一個 JSON：`kind: wuxia-report`、存檔、最近 200 筆事件（a4 事件、鎮誌、傳承紀錄、切磋、拜師、無言互動，依時間排序）、userAgent；不上傳 | #577 第 7 節 |
+| A5-14 | 截圖組 | `wuxia:a5-shots` 只截 390 寬（10 張）；桌面版畫面看 GIF 與 A1–A4 的截圖 | repo 大小 |
+
 ## 待 owner 決定
 
 - **D1 預設雲端模型**：W0 沒有雲端金鑰（W2 的 20 分鐘實跑也因此改用本機 `qwen2.5:3b`，見 W2-2；有金鑰後兩份實跑都要用雲端模型重錄）。建議：先以 `gpt-4o-mini`（OpenAI，$0.15／$0.60 每百萬 token）當預設，W2 之前由 owner 提供金鑰（`npx convex env set OPENAI_API_KEY …`，把 `data/wuxia/world.config.json` 的 `embeddingDimension` 改為 1536）後重跑 `tools/wuxia/live-run.sh` 補兩個雲端模型的比較。目前程式維持上游預設（Ollama），可隨時切換、可回退。
@@ -256,3 +275,6 @@
 - **D11 「匯出 journal」按鈕要不要公開查詢**（W9-13）：按鈕在瀏覽器裡要讀 W0 的 journal（快照、每步 hash、所有 input 原文、對話），W0 只做了要 admin key 的 internal 查詢。選項：(a) **公開版查詢、w09-player 關閉時拒絕（建議，已實作）**：AI Town 的世界狀態與對話本來就是公開查詢，journal 沒有多出秘密（input 的 tokenIdentifier 是固定的 `Me`）；(b) 按鈕只顯示命令（`npx tsx tools/wuxia/journal.ts export …`），不加公開查詢——比較保守，但玩家要開終端機；(c) 公開版再加一個部署環境變數開關（預設關）。都不影響引擎與 hash。
 - **A2 練習速度與再傳門檻**（A2-8）：自然局 30 日內沒人到 400，再傳與走樣多代只在單元測試出現。選項：(a) 維持（建議先看 A5 長跑）；(b) 加大 practice.base 或降低 teach.minProf。
 - **A4 結算卡的分享**（A4）：現在只匯出 PNG 到本機。選項：(a) 維持（建議）；(b) 加「複製圖片」到剪貼簿；(c) 上傳到某個圖床（要對外連線，違反本機版不連外）。
+- **A5 靜態發佈要不要公開**（A5-8）：選項 (a) 只產生 artifact（建議，已實作，預設）；(b) 合進 main 後手動觸發勾 deploy，公開到 GitHub Pages。
+- **A5 劇本目標難度**（C 表）：劇本一 90 日內 5 seed 都沒金、劇本三多半第 5–9 日就直接金（跳過銅銀）、劇本二沒人金。選項 (a) 維持，先看 G1 試玩回饋（建議，已實作——C 類只報告、沒調）；(b) 依回饋調目標條件或天數。
+- **A5 卡路處理**（A5-3）：(a) 直接放到最近空格（建議，已實作）；(b) 改上游碰撞（離開別人時允許移動），所有 hash 會變。
