@@ -4,6 +4,7 @@
 // 點泡泡 → onPick(紀錄)（「翻成一句話」）。只看狀態，不改規則；a3-silent 關閉時不畫。
 import { Container, Graphics, Sprite, Text } from '@pixi/react';
 import * as PIXI from 'pixi.js';
+import './pixiTextFix';
 import { useCallback, useMemo } from 'react';
 import type { WuxiaState } from '../../convex/wuxia/state';
 import type { SocialEntry } from '../../convex/wuxia/a3_silent/data';

@@ -4,7 +4,7 @@
 import { chromium } from 'playwright-core';
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { parseArgs, quietConsole } from './sim';
 import { serveDist } from './e2e';
@@ -34,7 +34,7 @@ async function main() {
   quietConsole(!!args.verbose);
   const minutes = Number(args.minutes ?? 120);
   const warm = Number(args.warm ?? 10);
-  if (!existsSync(join(ROOT, 'dist-local/ai-town/index.html'))) throw new Error('先執行 npm run build:local');
+  if (!existsSync(join(process.env.WUXIA_DIST ? resolve(process.env.WUXIA_DIST) : join(ROOT, 'dist-local'), 'ai-town/index.html'))) throw new Error('先執行 npm run build:local');
   if (!CHROME) throw new Error('找不到 Chrome／Chromium');
   const srv = await serveDist();
   const browser = await chromium.launch({ executablePath: CHROME, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
