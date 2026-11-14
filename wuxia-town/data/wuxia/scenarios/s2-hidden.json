@@ -7,5 +7,11 @@
     "bronze": {"label": "有人偷學到皮毛", "all": [{"k": "knowers", "family": "taiji", "via": ["watch"], "min": 1}]},
     "silver": {"label": "大師收下第一個徒弟", "all": [{"k": "disciples", "master": "zhang-sanfeng", "min": 1}]},
     "gold": {"label": "那個徒弟再傳給第三人", "all": [{"k": "discipleTaught", "master": "zhang-sanfeng", "family": "taiji", "min": 1}]}
+  },
+  "goalsA6_src": "量測：#581 第 4 節（A6 開著時用這組；a6 關閉時用上面的 goals＝A5）。after＝銅沒達成前銀不算、銀沒達成前金不算",
+  "goalsA6": {
+    "bronze": {"label": "有人偷學到皮毛", "all": [{"k": "knowers", "family": "taiji", "via": ["watch"], "min": 1}]},
+    "silver": {"label": "大師收下第一個徒弟", "after": "bronze", "all": [{"k": "disciples", "master": "zhang-sanfeng", "min": 1}]},
+    "gold": {"label": "那個徒弟再傳給第三人", "after": "silver", "all": [{"k": "discipleTaught", "master": "zhang-sanfeng", "family": "taiji", "min": 1}]}
   }
 }

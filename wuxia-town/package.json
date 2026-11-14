@@ -61,6 +61,7 @@
     "wuxia:bundle-report": "tsx tools/wuxia/bundle-report.ts",
     "wuxia:soak": "tsx tools/wuxia/soak.ts",
     "wuxia:a5-shots": "tsx tools/wuxia/a5-shots.ts",
+    "wuxia:a6-report": "tsx tools/wuxia/a6-report.ts",
     "wuxia:serve": "tsx tools/wuxia/serve.ts",
     "wuxia:check": "npm run wuxia:check:full",
     "build:local": "vite build --config vite.local.config.ts",

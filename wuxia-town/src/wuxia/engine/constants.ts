@@ -5,5 +5,5 @@ export type Speed = (typeof SPEEDS)[number];
  * 規則版本：引擎規則或 data/wuxia 的數值改了（同一個存檔續跑結果會不同）就要改這個字串。
  * 格式：步驟-序號。A1 起算。
  */
-export const RULE_VERSION = 'a5-1'; // A5（#577）：a5-robust 預設開（卡路讓步、紀錄上限），A4 的存檔續跑結果會不同
+export const RULE_VERSION = 'a6-1'; // A6（#581）：a6-spread 預設開（看變稀有、教的門檻依難度、練招曲線、目標依序），A5 的存檔續跑結果會不同
 export const SAVE_FORMAT = 'wuxia-town-save';

@@ -14,6 +14,7 @@ import {
   TIERS,
   TIER_LABEL,
   evalGoals,
+  goalsOf,
 } from '../../convex/wuxia/a4_play/data';
 import { COACH_CID, MASTER_CID } from '../../convex/wuxia/a2_master/data';
 import { placeName } from '../../convex/wuxia/w03_life/data';
@@ -149,7 +150,8 @@ export function GoalPanel(props: { wuxia?: WuxiaState }) {
   if (!st) return null;
   if (!st.scenario) return <p className="wuxia-a1-note">自由玩：沒有目標，緣照樣可以用。回首頁選一個劇本就有目標與結算。</p>;
   const sc = SCENARIO_BY_ID[st.scenario];
-  const g = evalGoals(props.wuxia!, sc);
+  const g = evalGoals(props.wuxia!, sc, st.goals);
+  const goals = goalsOf(props.wuxia, sc);
   return (
     <div className="wuxia-a4-goals" data-testid="wuxia-a4-goals">
       <b>
@@ -159,11 +161,11 @@ export function GoalPanel(props: { wuxia?: WuxiaState }) {
       {TIERS.map((t) => (
         <div key={t} className={`tier ${t} ${st.goals[t] !== undefined ? 'got' : ''}`}>
           <span className="medal">{TIER_LABEL[t]}</span>
-          <span className="label">{sc.goals[t].label}</span>
+          <span className="label">{goals[t].label}</span>
           <span className="v">
             {st.goals[t] !== undefined
               ? `第 ${st.goals[t]} 日達成`
-              : g[t].conds.map((c, i) => <small key={i}>{fmtCond(sc.goals[t].all[i].k, c.value, c.need)}</small>)}
+              : g[t].conds.map((c, i) => <small key={i}>{fmtCond(goals[t].all[i].k, c.value, c.need)}</small>)}
           </span>
         </div>
       ))}
@@ -305,7 +307,7 @@ export function ScenarioPicker(props: { onPick: (id: string) => void }) {
         <button key={s.id} className="wuxia-a1-btn" onClick={() => props.onPick(s.id)} data-testid={`wuxia-play-${s.id}`}>
           <b>{s.name}</b>
           <small>
-            {s.days} 日・金：{s.goals.gold.label}
+            {s.days} 日・金：{(s.goalsA6 ?? s.goals).gold.label}
           </small>
         </button>
       ))}

@@ -56,13 +56,16 @@ import {
   haowuOf,
   initA2State,
   learnersOf,
+  practiceBase,
   practiceGain,
   prereqOk,
+  teachThreshold,
 } from './data';
 import { hasMisdeed } from './hooks';
 import { a3Of, inSession } from '../a3_silent/data';
 import { a2HintText } from '../a3_silent/grammar';
 import { a4Of } from '../a4_play/data';
+import { a6On, a6State, rankOf, recordWatch, watchChance, watchDayFull, watchable } from '../a6_spread';
 
 export { A2_MASTER } from './data';
 
@@ -168,7 +171,7 @@ export function pickTeach(
   for (const art of ARTS) {
     for (const m of art.moves) {
       const t = tk[m.id];
-      if (!t || t.prof < T.minTeacherProf) continue;
+      if (!t || t.prof < teachThreshold(w, m)) continue;
       const s = sk?.[m.id];
       if (s) {
         const better = (s.flawed && !t.flawed) || Math.floor(t.prof * T.capFactor) > capOf(s) + T.reteachMargin;
@@ -410,6 +413,7 @@ export function tickA2(game: Game, now: number) {
   }
   const W = MASTER.watch;
   const T = MASTER.teach;
+  const a6 = a6On(w) ? a6State(w) : undefined;
   const dist = (a: P, b: P) => Math.hypot(a.x - b.x, a.y - b.y);
   const performing: Array<{ p: P; move: string }> = [];
   for (const p of ps) {
@@ -436,7 +440,7 @@ export function tickA2(game: Game, now: number) {
       const mv = move;
       const kn = st.know;
       const teacherNear = ps.some((q) => q !== p && (q.act === 'instruct' || q.act === 'coach') && q.place === p.place && dist(p, q) <= T.radius && (kn[q.cid]?.[mv]?.prof ?? 0) > k.prof);
-      k.prof = practiceGain(k, MASTER.practice.acts[p.act], teacherNear ? MASTER.practice.teacherBonus : 1, minutes);
+      k.prof = practiceGain(k, MASTER.practice.acts[p.act], teacherNear ? MASTER.practice.teacherBonus : 1, minutes, practiceBase(w));
       k.last = day;
     }
   }
@@ -460,12 +464,22 @@ export function tickA2(game: Game, now: number) {
         }
       }
       if (!segEnd || m.difficulty > W.maxDifficulty || st.know[q.cid]?.[move]) continue;
-      const wq = (st.watch[q.cid] ??= {});
-      wq[move] = (wq[move] ?? 0) + 1;
-      if (wq[move] < W.count) continue;
-      const rec = applyWatch(st.know, p.cid, q.cid, move, day, gm);
-      if (!rec) continue;
-      delete wq[move];
+      let rec: ReturnType<typeof applyWatch>;
+      if (a6) {
+        // A6（#581）：只從正式學會的人身上看；每次成功與否擲 game.rng()（好武×(1−0.15×(難度−1))）；同一招要在 ≥3 個不同日累計看滿
+        if (!watchable(st.know, p.cid, move) || watchDayFull(a6, q.cid, move, day)) continue;
+        if (game.rng() >= watchChance(haowuOf(q.cid), m.difficulty)) continue;
+        if (!recordWatch(a6, q.cid, move, day, W.count)) continue;
+        rec = applyWatch(st.know, p.cid, q.cid, move, day, gm);
+        if (!rec) continue;
+      } else {
+        const wq = (st.watch[q.cid] ??= {});
+        wq[move] = (wq[move] ?? 0) + 1;
+        if (wq[move] < W.count) continue;
+        rec = applyWatch(st.know, p.cid, q.cid, move, day, gm);
+        if (!rec) continue;
+        delete wq[move];
+      }
       const r = pushRecord(st, rec);
       if (mind) remember(mind, q.pid, gm, 'learned_move', { other: p.cid, what: m.name, n: 0 });
       pushHint(st, { gm, kind: 'watch', text: `${nameOf(q.cid)}偷學到『${m.name}』的皮毛`, who: q.cid, record: r.id }, w, 'watch', { s: nameOf(q.cid), move: m.name });
@@ -507,6 +521,20 @@ export function tickA2(game: Game, now: number) {
         }, w, rec.again ? 'again' : 'teach', { t: nameOf(t.cid), s: nameOf(c.s.cid), move: c.m.name });
       }
     }
+  }
+
+  // A6（#581）：有人第一次「能教」某招時跳一次角落提示（每 10 遊戲分鐘檢查一次）
+  if (a6 && gm % 10 === 0) {
+    for (const cid of Object.keys(st.know).sort())
+      for (const id of Object.keys(st.know[cid]).sort()) {
+        const k = st.know[cid][id];
+        const mv = MOVE_BY_ID[id];
+        if (!mv || k.via === 'origin' || k.prof < teachThreshold(w, mv)) continue;
+        const key = `${cid}|${id}`;
+        if (a6.teachable.includes(key)) continue;
+        a6.teachable.push(key);
+        pushHint(st, { gm, kind: 'skill', text: `${nameOf(cid)}的${mv.name}${rankOf(k.prof)}了，可以教人了`, who: cid });
+      }
   }
 
   // 5. 拳腳由招推導（#575）

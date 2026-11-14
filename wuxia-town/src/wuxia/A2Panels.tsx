@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import type { WuxiaState } from '../../convex/wuxia/state';
 import { ARTS, ART_BY_ID, MOVE_BY_ID } from '../../convex/wuxia/a2_master/data';
+import type { A2State } from '../../convex/wuxia/a2_master/data';
+import { rankOf } from '../../convex/wuxia/a6_spread/data';
 import { artTrace, diffusion, generations, lineageTree } from '../../convex/wuxia/a2_master/lineage';
 import { a2StateOf, cidName, pidOfCid } from './a2';
 
@@ -25,6 +27,11 @@ function Curve(props: { points: Array<[number, number]>; max: number }) {
       </text>
     </svg>
   );
+}
+
+/** 這人這門武學最高的熟練度（段位用） */
+function bestProf(st: A2State, cid: string, art: string): number {
+  return Math.max(0, ...Object.entries(st.know[cid] ?? {}).filter(([id]) => MOVE_BY_ID[id]?.family === art).map(([, k]) => k.prof));
 }
 
 /** 傳承面板：每門武學一棵樹；點名字＝選中那人；點「←」那條邊＝看那條邊第一招的追溯 */
@@ -65,9 +72,14 @@ export function LineagePanel(props: { wuxia?: WuxiaState; onPick?: (pid: string)
               {cidName(l.cid)}
             </button>
             <span className="wuxia-a2-gen">{gens[l.cid] ? `${gens[l.cid]} 代` : '開山'}</span>
+            {!!gens[l.cid] && (
+              <span className={`wuxia-a2-rank ${rankOf(bestProf(st, l.cid, art))}`} title="熟練段位：入門＜120、小成 120–400、大成 ≥400（小成起就能教起勢）">
+                {rankOf(bestProf(st, l.cid, art))}
+              </span>
+            )}
             {l.edge && (
               <button
-                className={`wuxia-a2-edge${l.edge.flawed ? ' flawed' : ''}`}
+                className={`wuxia-a2-edge${l.edge.flawed ? ' flawed' : ''}${l.edge.watch && !l.edge.teach ? ' watch' : ''}`}
                 data-testid="wuxia-a2-edge"
                 title="看這條傳承"
                 onClick={() => setTrace({ cid: l.cid, move: l.edge!.moves[0] })}

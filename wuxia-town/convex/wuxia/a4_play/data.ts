@@ -9,7 +9,8 @@ import type { WuxiaState } from '../state';
 import type { ScheduleBlock } from '../w03_life/data';
 import { A2_MASTER, MASTER_CID, MOVE_BY_ID } from '../a2_master/data';
 import type { A2State } from '../a2_master/data';
-import { generations } from '../a2_master/lineage';
+import { formalGenerations, generations } from '../a2_master/lineage';
+import { a6On } from '../a6_spread/data';
 import type { BondState } from '../w07_bond/data';
 import type { SparState } from '../w06_spar/data';
 
@@ -45,17 +46,18 @@ export const PLAY = playJson as unknown as {
 
 export type Cond =
   | { k: 'knowers'; family: string; via: string[]; min: number }
-  | { k: 'generation'; family: string; min: number }
-  | { k: 'townShare'; family: string; min: number }
+  | { k: 'generation'; family: string; min: number; formal?: boolean }
+  | { k: 'townShare'; family: string; min: number; formal?: boolean }
   | { k: 'flawedShare'; family: string; max: number }
   | { k: 'disciples'; master: string; min: number }
   | { k: 'discipleTaught'; master: string; family: string; min: number }
   | { k: 'crossSpar'; a: string; b: string; min: number }
-  | { k: 'bothArts'; arts: string[]; min: number };
+  | { k: 'bothArts'; arts: string[]; min: number; moves?: number };
 export type Tier = 'bronze' | 'silver' | 'gold';
 export const TIERS: Tier[] = ['bronze', 'silver', 'gold'];
 export const TIER_LABEL: Record<Tier, string> = { bronze: '銅', silver: '銀', gold: '金' };
-export type Goal = { label: string; all: Cond[] };
+/** after＝A6（#581）：這一級要等 after 那一級達成後才算 */
+export type Goal = { label: string; all: Cond[]; after?: Tier };
 export type Scenario = {
   id: string;
   name: string;
@@ -65,7 +67,14 @@ export type Scenario = {
   days: number;
   intro: string;
   goals: Record<Tier, Goal>;
+  /** A6（#581）：a6-spread 開著時用的目標（依序、靠正式傳承） */
+  goalsA6?: Record<Tier, Goal>;
 };
+
+/** 這個世界此刻用的三級目標（a6 開著用 goalsA6，否則 A5 的 goals） */
+export function goalsOf(w: WuxiaState | undefined, scenario: Scenario): Record<Tier, Goal> {
+  return a6On(w) && scenario.goalsA6 ? scenario.goalsA6 : scenario.goals;
+}
 export const SCENARIOS: Scenario[] = [s1, s2, s3] as unknown as Scenario[];
 export const SCENARIO_BY_ID: Record<string, Scenario> = Object.fromEntries(SCENARIOS.map((s) => [s.id, s]));
 
@@ -204,11 +213,11 @@ export function evalCond(w: WuxiaState, c: Cond): { ok: boolean; value: number; 
     }
     case 'generation': {
       let g = 0;
-      if (v.a2) for (const x of Object.values(generations(v.a2, c.family))) if (x > g) g = x;
+      if (v.a2) for (const x of Object.values((c.formal ? formalGenerations : generations)(v.a2, c.family))) if (x > g) g = x;
       return { ok: g >= c.min, value: g, need: c.min };
     }
     case 'townShare': {
-      const n = v.town.filter((cid) => knownMoves(v, cid, c.family).some((m) => m.via !== 'origin')).length;
+      const n = v.town.filter((cid) => knownMoves(v, cid, c.family).some((m) => (c.formal ? m.via === 'teach' : m.via !== 'origin'))).length;
       const share = v.town.length ? n / v.town.length : 0;
       return { ok: share >= c.min, value: Math.round(share * 100) / 100, need: c.min };
     }
@@ -249,19 +258,29 @@ export function evalCond(w: WuxiaState, c: Cond): { ok: boolean; value: number; 
     }
     case 'bothArts': {
       const n = Object.keys(v.a2?.know ?? {}).filter((cid) =>
-        c.arts.every((a) => knownMoves(v, cid, a).some((m) => m.via === 'teach')),
+        c.arts.every((a) => knownMoves(v, cid, a).filter((m) => m.via === 'teach').length >= (c.moves ?? 1)),
       ).length;
       return { ok: n >= c.min, value: n, need: c.min };
     }
   }
 }
 
-/** 劇本三級目標此刻各自成立嗎（純函式；遊戲內每日判一次並記達成日，journal 重播後用同一個函式重算）。 */
-export function evalGoals(w: WuxiaState, scenario: Scenario): Record<Tier, { ok: boolean; conds: Array<{ ok: boolean; value: number; need: number }> }> {
+/**
+ * 劇本三級目標此刻各自成立嗎（純函式；遊戲內每日判一次並記達成日，journal 重播後用同一個函式重算）。
+ * A6（#581）：目標有 after 時，那一級要先達成（done 裡有達成日，或這次一起判到）才算——銅沒達成前銀不算、銀沒達成前金不算。
+ */
+export function evalGoals(
+  w: WuxiaState,
+  scenario: Scenario,
+  done: Partial<Record<Tier, number>> = {},
+): Record<Tier, { ok: boolean; conds: Array<{ ok: boolean; value: number; need: number }> }> {
   const out = {} as Record<Tier, { ok: boolean; conds: Array<{ ok: boolean; value: number; need: number }> }>;
+  const goals = goalsOf(w, scenario);
   for (const t of TIERS) {
-    const conds = scenario.goals[t].all.map((c) => evalCond(w, c));
-    out[t] = { ok: conds.every((c) => c.ok), conds };
+    const conds = goals[t].all.map((c) => evalCond(w, c));
+    const prev = goals[t].after;
+    const unlocked = !prev || done[prev] !== undefined || out[prev]?.ok === true;
+    out[t] = { ok: unlocked && conds.every((c) => c.ok), conds };
   }
   return out;
 }

@@ -13,6 +13,7 @@ import {
   TIER_LABEL,
   Tier,
   consequences,
+  goalsOf,
   pickStory,
   storyText,
 } from '../../convex/wuxia/a4_play/data';
@@ -55,7 +56,7 @@ export function buildCard(w: WuxiaState): Card | undefined {
     seed: w.seed,
     day,
     reason: st.ended?.reason,
-    tiers: TIERS.map((t) => ({ tier: t, label: sc.goals[t].label, day: st.goals[t] })),
+    tiers: TIERS.map((t) => ({ tier: t, label: goalsOf(w, sc)[t].label, day: st.goals[t] })),
     summary,
     story: story.map((e) => ({ id: e.id, day: e.day, text: e.text, ref: e.ref })),
     storyText: storyText(story),

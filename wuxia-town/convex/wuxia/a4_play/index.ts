@@ -36,6 +36,7 @@ import {
   TIER_LABEL,
   evalGoals,
   generationOf,
+  goalsOf,
   goalView,
   initA4State,
 } from './data';
@@ -149,11 +150,11 @@ function daily(w: WuxiaState, st: A4State, gm: number, day: number) {
   scan(w, st, gm, day);
   if (!st.scenario || st.ended) return;
   const sc = SCENARIO_BY_ID[st.scenario];
-  const g = evalGoals(w, sc);
+  const g = evalGoals(w, sc, st.goals);
   for (const t of TIERS) {
     if (!g[t].ok || st.goals[t] !== undefined) continue;
     st.goals[t] = day;
-    pushEvent(st, { day, gm, kind: 'goal', who: [], text: `達成${TIER_LABEL[t]}級——${sc.goals[t].label}` });
+    pushEvent(st, { day, gm, kind: 'goal', who: [], text: `達成${TIER_LABEL[t]}級——${goalsOf(w, sc)[t].label}` });
   }
   if (st.goals.gold !== undefined) st.ended = { day, gm, reason: 'gold' };
   else if (day >= (st.daysLimit ?? sc.days)) st.ended = { day, gm, reason: 'time' };
