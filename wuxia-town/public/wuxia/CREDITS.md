@@ -36,3 +36,5 @@ W7 的武館匾額（`src/wuxia/DojoLayer.tsx` 的 `drawPlaque`：木框、金�
 A2 的傳承面板、武學分頁、角落提示只用 CSS／SVG；「顯示太極」的圈是 Pixi Graphics 程式畫的（`src/wuxia/A2Layer.tsx`）。新鎮民與張三丰沿用 `characters/folk.png` 既有的 8 個古裝人物圖（w1–w8），沒有新增人物圖。
 
 A3 的泡泡框、鎮上動靜面板、互動選單、翻譯小窗是 Pixi Graphics／CSS；圖示只用 `a3/icons.png`。
+
+A4 的緣、目標、干預選單、結算畫面只用 CSS；結算卡是程式排的 SVG（`src/wuxia/a4card.ts`）再轉 PNG；音效（緣回滿、干預、達成目標）用 WebAudio 即時合成（`src/wuxia/a4sound.ts`），沒有新增圖檔或音檔。

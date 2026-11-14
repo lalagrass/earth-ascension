@@ -122,6 +122,10 @@
 | A3 | `src/components/PixiGame.tsx` | 無言互動泡泡圖層 `SocialLayer`、`onWuxiaSocial` 參數 | #574 第 5 節 |
 | A3 | `src/components/PlayerDetails.tsx` | 玩家點人時的互動選單（`SocialMenu`：做得到的互動＋容易／普通／難，送 `wuxiaPlayerAct` kind `social`） | #574 第 7 節 |
 | A3 | `package.json`（JSON 無法加註解） | `wuxia:social-report`、`wuxia:social-log`、`wuxia:llm-usage`、`wuxia:a3-shots` | #574 工具 |
+| A4 | `src/components/Game.tsx` | 角落「目標」鈕＋目標面板、緣、結算畫面（`A4Corner`，Convex 版） | #576；與本機版共用 `src/wuxia/A4Panels.tsx` |
+| A4 | `src/components/PlayerDetails.tsx` | 人物詳情的「推一把」干預選單（`FateMenu`，送 `wuxiaIntervene`） | #576 第 2 節 |
+| A4 | `src/components/PixiViewport.tsx` | `destroy` 包 try：Stage 先拆 events 時不丟 TypeError | 回首頁／再玩一次時的 console error（DEVIATIONS A4-10） |
+| A4 | `package.json`（JSON 無法加註解） | `wuxia:card`、`wuxia:scenario-report`、`wuxia:a4-shots` | #576 工具 |
 
 ## 上游刻意保留不改的隨機／時間
 
