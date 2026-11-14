@@ -216,8 +216,10 @@ const playerRuns = GROUP('player') ? [playerChild('a'), playerChild('b')] : [];
 // W8 的 hash（docs/wuxia/W8.md「hash 與報告變化」；CI 43445035091）：玩家不加入時必須一樣。
 // A1（#564 第 8 項，docs/wuxia/A1.md）：元素 a1-base（林嫂連做遞減、違規每日一次）開啟時刻意改變 hash，
 // 30 分 47c2308e… → 2169cc18…、3 日 4bc77029… → 51df021f…（變數名沿用，值是 A1 的；--off a1-base 時仍是 W8／W9 的值，見 check:quick q3）
-const W8_HASH_SEED7_30M = '2169cc18da2c304aa8ba100c5b1972d34510bd8db71ef97b34403d137a90122a';
-const W8_HASH_SEED7_3D_PREFIX = '51df021fb6ee5c78';
+// A2（#575，docs/wuxia/A2.md）：元素 a2-master（多 6 位鎮民＋大師）預設開，再刻意改變一次：
+// 30 分 2169cc18… → e609df34…、3 日 51df021f… → 7699618b…（--off a2-master 時仍是 A1 的值，見 check:quick q3）
+const W8_HASH_SEED7_30M = 'e609df34477056a5cfd44b8061ff8226d22ac0ea761447660ddfdef23d890119';
+const W8_HASH_SEED7_3D_PREFIX = '7699618bb488d27c';
 
 let failures = 0;
 const ok = (msg: string) => process.stdout.write(`ok   ${msg}\n`);

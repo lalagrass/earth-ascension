@@ -37,8 +37,10 @@ describe('w03-life 資料', () => {
     }
   });
   test('#555 起始物件都在：井、灶、床×6、茶館桌×4、說書台、鐵砧、藥櫃、茶爐、河邊石、竹林', () => {
-    const ids = OBJECTS.map((o) => o.id);
+    // A2（#575）：a2-master 的物件（element: 'a2-master'，元素關閉時不存在）另外驗；#555 的起始物件仍是這些
+    const ids = OBJECTS.filter((o) => o.element !== 'a2-master').map((o) => o.id);
     expect(ids.filter((i) => i.startsWith('bed-')).length).toBe(6);
+    expect(OBJECTS.filter((o) => o.element === 'a2-master' && o.id.startsWith('bed-')).map((o) => o.id)).toEqual(['bed-zhang-sanfeng']);
     expect(ids.filter((i) => i.startsWith('tea-table-')).length).toBe(4);
     for (const id of ['well', 'story-stage', 'anvil', 'medicine-chest', 'tea-stove', 'river-stones', 'bamboo-grove'])
       expect(ids).toContain(id);

@@ -16,6 +16,7 @@ import type { WuxiaState } from '../state';
 import { gameMinutes, readClock } from '../clock';
 import { W03_LIFE, LifeState, Person, personPlace } from '../w03_life';
 import type { ScheduleBlock } from '../w03_life/data';
+import { blankMinutesPerDay, currentBlock, inRange, lifeSchedCtx } from '../w03_life/data';
 import { W04_DOJO, DojoState, ensure } from '../w04_dojo';
 import { W05_MIND, remember } from '../w05_mind';
 import type { MindState } from '../w05_mind/data';
@@ -235,6 +236,10 @@ function dailyBlocks(w: WuxiaState, st: A2State, life: LifeState, mind: MindStat
   if (st.arrivedAt === undefined) return out;
   const B = MASTER.blocks;
   const I = MASTER.interest;
+  // #562 W3-5：每人每天至少 2 小時留白。先拿掉昨天的 A2 時段算出原本的日程，每加一段都要留得下 2 小時
+  st.blocks = {};
+  const ctx = lifeSchedCtx(w, readClock(gm).day);
+  const MIN_BLANK = 120;
   for (const pid of Object.keys(life.people).sort()) {
     const p = life.people[pid];
     const cid = p.cid;
@@ -255,7 +260,16 @@ function dailyBlocks(w: WuxiaState, st: A2State, life: LifeState, mind: MindStat
     } else if (st.policy === 'open') ask = disc || eff >= I.askMin;
     else if (st.policy === 'selective') ask = disc || (closeOf(w, MASTER_CID, cid) >= MASTER.selective.close && !hasMisdeed(mind, cid));
     if (ask) blocks.push({ from: B.ask[0], to: B.ask[1], label: `向${MASTER_PROFILE.name}請教`, do: ['practice_form'] });
-    if (blocks.length) out[cid] = blocks;
+    let blank = blankMinutesPerDay(cid, ctx);
+    const kept: ScheduleBlock[] = [];
+    for (const b of blocks) {
+      let take = 0;
+      for (let m = b.from; m < b.to; m++) if (!currentBlock(cid, m, ctx) && !kept.some((k) => inRange(m, [k.from, k.to]))) take++;
+      if (blank - take < MIN_BLANK) continue;
+      blank -= take;
+      kept.push(b);
+    }
+    if (kept.length) out[cid] = kept;
   }
   return out;
 }

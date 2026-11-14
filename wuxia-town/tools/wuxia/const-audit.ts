@@ -1,4 +1,4 @@
-// 武俠小鎮 A1（#564）`npm run wuxia:const-audit`：data/wuxia/*.json 的每個數值都要附 `_src`。
+// 武俠小鎮 A1（#564）`npm run wuxia:const-audit`：data/wuxia/**/*.json 的每個數值都要附 `_src`。
 // 規則：數值所在路徑上，任何一層的 key K 有同層兄弟 `K_src`（或群組前綴 `G_src`：K＝G＋大寫開頭的後綴，
 // 例如 `arrive_src` 涵蓋 `arriveMinuteOfDay`，沿用 W4–W9 的寫法），或任何一層物件自己有 `_src`，就算有出處；
 // `_src` 必須以「量測／推導／旋鈕」開頭（#562 W4-8 的三種來源）。`_` 開頭的說明欄位不算數值。
@@ -52,7 +52,11 @@ export function auditJson(file: string, json: unknown): AuditIssue[] {
 }
 
 export function auditAll(dir = DATA_DIR): { files: number; issues: AuditIssue[] } {
-  const files = fs.readdirSync(dir).filter((f) => f.endsWith('.json')).sort();
+  // A2（#575）：子資料夾（arts/ 武學表）一起盤點，檔名帶相對路徑。
+  const files = (fs.readdirSync(dir, { recursive: true }) as string[])
+    .map((f) => f.split(path.sep).join('/'))
+    .filter((f) => f.endsWith('.json'))
+    .sort();
   const issues = files.flatMap((f) => auditJson(f, JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'))));
   return { files: files.length, issues };
 }
