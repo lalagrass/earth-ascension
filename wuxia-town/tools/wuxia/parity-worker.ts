@@ -5,9 +5,9 @@ import { quietConsole } from './sim';
 
 quietConsole(false);
 
-const { seed, steps, speed, frameMs } = workerData as { seed: number; steps: number; speed: Speed; frameMs: number };
+const { seed, steps, speed, frameMs, world } = workerData as { seed: number; steps: number; speed: Speed; frameMs: number; world?: { arriveDay?: number; scenario?: string } };
 const core = new LocalCore();
-core.init({ kind: 'new', world: { seed } });
+core.init({ kind: 'new', world: { seed, ...(world ?? {}) } }); // A2：arriveDay／scenario
 core.autoSlow = false;
 if (speed === 0) core.advance(steps);
 else {
