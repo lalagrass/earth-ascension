@@ -1,0 +1,51 @@
+{
+  "_doc": "武俠小鎮 A2（#575，元素 a2-master）大師入鎮與四條傳承管道的規則常數。所有規則在引擎 tick 內執行、不耗 game.rng()（沒有隨機成分，所以 #575 B1 免）。",
+  "master": "zhang-sanfeng",
+  "master_src": "量測：#575「大師預設叫張三丰（歷史人物）」",
+  "arriveDay": 5,
+  "arriveMinute": 540,
+  "arrive_src": "量測：#575「劇本設定第幾日進鎮（預設第 5 日）」；進鎮時刻巳初 09:00（旋鈕：大家醒著、看得到他從城門走進來）",
+  "policy": "open",
+  "policy_src": "旋鈕：#575 三種授徒態度 open／selective／hidden，劇本可選；預設 open",
+  "teach": {
+    "minutes": 60, "minTeacherProf": 400, "startProf": 50, "capFactor": 0.9, "maxStudents": 3, "reteachMargin": 50, "radius": 6, "reteachClose": 20,
+    "_src": "量測：#575「教」：同在一處 60 遊戲分鐘（累計，見 DEVIATIONS A2-2）、教的人 prof ≥ 400、徒弟得 prof 50、上限＝教的人當時 prof × 0.9、一次最多教 3 人；reteachMargin 50＝師父進步到能把上限提高 50 以上才再教（旋鈕，避免每天重教）；radius 6 格＝同一處（旋鈕，同『看』）；reteachClose 20＝再傳時一般人願意教的親近門檻（旋鈕，同 selective）"
+  },
+  "watch": {
+    "radius": 6, "count": 10, "maxDifficulty": 2, "prof": 30, "cap": 150, "segmentMinutes": 5,
+    "_src": "量測：#575「看」：6 格內、累計 10 次、只限 difficulty ≤ 2、得 prof 30、flawed、上限 150；segmentMinutes 5＝打拳時每 5 遊戲分鐘換一招，看完一招算一次（旋鈕：大師晨練 60 分鐘走完 12 式）"
+  },
+  "practice": {
+    "base": 0.0335, "exponent": 2, "teacherBonus": 1.5, "decayAfterDays": 14, "decayFloor": 300, "decayRate": 0.01,
+    "acts": {"practice_form": 1.0, "hit_dummy": 0.8, "hit_sandbag": 0.6, "stand_post": 0.4, "instruct": 0.3, "taiji_form": 0.3, "coach": 0.3},
+    "_src": "推導＋量測：base、exponent 沿用 W4 training.json（『依 W4 曲線成長』，#575）；teacherBonus 1.5＝W4 coachBonus；acts＝各練功活動練招的權重（旋鈕：空地練拳 1.0、打樁 0.8、沙袋 0.6、站樁 0.4、示範 0.3）；decay：超過 300 的部分 14 日沒練每日退 1%（量測：#575「練」）"
+  },
+  "fist": {
+    "bodyFactor": 0.25, "flawedFactor": 0.7, "weights": {"1": 0.06, "2": 0.09, "3": 0.12, "4": 0.15, "5": 0.18}, "max": 1000,
+    "_src": "推導：#575「拳腳＝體能分＋Σ(prof × difficulty 權重)，flawed 打七折」。體能分＝0.25 ×（力＋下盤＋耐力）/ 3（旋鈕：石虎約 46、阿青約 5、周教頭 128）；權重 0.06–0.18（旋鈕：周教頭老槐拳 6 式 prof 900 → 486，加體能分 ≈ 614，接近 W4 起始拳腳 620）；上限 1000＝W4 技能上限"
+  },
+  "interest": {
+    "arrival": 20, "sawForm": 8, "sawWin": 10, "watchMin": 10, "askMin": 30, "reputeWeight": 0.5,
+    "_src": "旋鈕：興趣（0 起）＝大師進鎮時 +20×好武、每天看到大師晨練 +8×好武、看到會太極的人切磋贏了 +10×好武；興趣 ≥ 10 就去看晨練、≥ 30（open）就在傍晚去請教；對太極的評價（artRepute）以 0.5 倍併入"
+  },
+  "blocks": {
+    "form": [360, 420], "ask": [1050, 1140],
+    "_src": "旋鈕：看晨練／跟著練 06:00–07:00（卯正，大師晨練時段）；傍晚請教 17:30–19:00（大師 17:00–19:00 指點；多數人晚飯後；量測：17:30–18:30 時一般人吃完飯走到小廣場已近 18:00，9 日內沒有一筆教，延長半小時，跟茶館時段重疊所以不吃留白）"
+  },
+  "selective": {
+    "close": 20, "maxDisciples": 2,
+    "_src": "量測：#575 selective「只教親近 ≥ 20 且沒有『惡行』記憶的人；一次只帶 2 個徒弟」"
+  },
+  "coach": {
+    "calm": 50, "respect": 60, "maxDifficultyOpen": 2,
+    "_src": "量測＋旋鈕：#575 審查補充「周教頭去看大師晨練、放下身段請教，條件：敬重 ≥ 60 且沉穩」；沉穩＝性格 calm ≥ 50 且 14 日內沒有輸切磋／徒弟改投的記憶（旋鈕）；周教頭在武館指點時，老槐拳難度 ≤ 2 教給在場練功的人、3 只教自己徒弟（旋鈕，比照 open）"
+  },
+  "switch": {
+    "respectGap": 20, "respectMin": 60,
+    "_src": "旋鈕：周教頭的徒弟對大師的敬重 ≥ 60 且比對周教頭高 20 以上就改投（#575「徒弟會比較、會改投」）"
+  },
+  "hintSize": 40,
+  "hintSize_src": "旋鈕：角落事件提示保留最近 40 筆",
+  "recordSize": 400,
+  "recordSize_src": "旋鈕：傳承紀錄保留最近 400 筆（A1-8 狀態大小上限）"
+}

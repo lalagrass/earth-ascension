@@ -1,0 +1,62 @@
+[
+  {
+    "file": "docs/wuxia/w05/w05-seed7-d05-1140-1400x820.png",
+    "seed": 7,
+    "at": 6100,
+    "size": [
+      1400,
+      820
+    ],
+    "clock": "第 5 日 午初",
+    "gameMinute": 6100,
+    "who": "阿青",
+    "blind": false,
+    "hash": "96f2c3cf9e2a6ed7a82d6073adf926a687c7d343eb408d0acab5d20f1c2d8b5e",
+    "steps": 6101
+  },
+  {
+    "file": "docs/wuxia/w05/w05-seed7-d05-1140-390w.png",
+    "seed": 7,
+    "at": 6100,
+    "size": [
+      390,
+      844
+    ],
+    "clock": "第 5 日 午初",
+    "gameMinute": 6100,
+    "who": "阿青",
+    "blind": false,
+    "hash": "96f2c3cf9e2a6ed7a82d6073adf926a687c7d343eb408d0acab5d20f1c2d8b5e",
+    "steps": 6101
+  },
+  {
+    "file": "docs/wuxia/w05/w05-seed7-d07-1045-1400x820.png",
+    "seed": 7,
+    "at": 8925,
+    "size": [
+      1400,
+      820
+    ],
+    "clock": "第 7 日 巳正",
+    "gameMinute": 8925,
+    "who": "阿青",
+    "blind": false,
+    "hash": "72894de4c233ebc818dc93672e8b017a1fbcfa6bba0d1614763980bf48ad18ff",
+    "steps": 8926
+  },
+  {
+    "file": "docs/wuxia/w05/w05-seed7-d07-1045-390w.png",
+    "seed": 7,
+    "at": 8925,
+    "size": [
+      390,
+      844
+    ],
+    "clock": "第 7 日 巳正",
+    "gameMinute": 8925,
+    "who": "阿青",
+    "blind": false,
+    "hash": "72894de4c233ebc818dc93672e8b017a1fbcfa6bba0d1614763980bf48ad18ff",
+    "steps": 8926
+  }
+]

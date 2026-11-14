@@ -1,0 +1,457 @@
+{
+ "_doc": "武俠小鎮 A3（#574，元素 a3-silent）無言互動表。每列一種互動：minutes 佔用時間（兩人這段時間不再接新互動，原本的活動照做）；topic 預設話題（程式依情況改：抱怨、閒聊）；will 意願權重、ok 成功率權重（特徵見 convex/wuxia/a3_silent/data.ts FEATURES，大多 −1～1）；okFx／failFx 成敗效果：a／b 三軸、moodA／moodB＝[數值, 日數]、rumor（說傳聞 a→b、打聽 b→a）、teach（指點時段）。前置條件（例如說傳聞要有對方不知道的傳聞）寫在程式 FEASIBLE。",
+ "rules": {
+  "startChance": 0.06,
+  "extravertBoost": 0.6,
+  "noise": 0.3,
+  "personCooldown": 45,
+  "pairCooldown": 180,
+  "logSize": 1000,
+  "pMin": 0.05,
+  "pMax": 0.95,
+  "sessionMinutes": 90,
+  "maxStudents": 3,
+  "askedDays": 1,
+  "recentDays": 2,
+  "sadMood": 45,
+  "moodletCap": 10,
+  "needWeight": 0.5,
+  "_src": "旋鈕：每分鐘有空的人以 6% 起意（外向 +60%×外向值）；擾動 0–0.3；同一人 45 分、同一對 180 分冷卻；紀錄環形 1000 筆（#574 第 4 節）；指點時段 90 分內要累計同處 60 分（#574 留言第 1 項：60 遊戲分鐘、一對三）；請教成功 1 日內算「請教過」；最近＝2 日；心情 <45 算不好受（心情分布多在 50–60，見 A3.md）；念頭每人最多 10 個；需求平均超過 50 的部分 ×0.5 扣心情",
+  "memoryMood": {
+   "spar_lost": [
+    -8,
+    2
+   ],
+   "spar_won": [
+    5,
+    2
+   ],
+   "learned_move": [
+    6,
+    2
+   ],
+   "robbed": [
+    -10,
+    3
+   ],
+   "rejected": [
+    -4,
+    1
+   ],
+   "apprenticed": [
+    6,
+    3
+   ],
+   "_src": "旋鈕：RimWorld 式念頭（#574 第 3 節）：這幾種記憶在 [日數] 內給心情 [數值]"
+  }
+ },
+ "interactions": [
+  {
+   "id": "greet",
+   "label": "寒暄",
+   "icon": "寒",
+   "minutes": 3,
+   "topic": "home",
+   "will": {
+    "bias": 0.2
+   },
+   "ok": {
+    "bias": 3
+   },
+   "okFx": {},
+   "failFx": {},
+   "_src": "旋鈕：#574 第 1–4 節；意願 will＝bias＋Σ 權重×特徵、成功 ok＝logistic(bias＋Σ 權重×特徵)；效果 a＝發起方對回應方、b＝回應方對發起方的三軸（記憶貢獻，W7 會再乘時間衰減）、mood＝念頭（數值、日數）；沒有新鮮事、關係普通時只會寒暄（#574 第 2 節），幾乎沒效果、不寫記憶"
+  },
+  {
+   "id": "chat",
+   "label": "閒聊",
+   "icon": "聊",
+   "minutes": 10,
+   "topic": "home",
+   "will": {
+    "bias": -0.2,
+    "extA": 0.5,
+    "closeAB": 1.0,
+    "moodA": 0.3
+   },
+   "ok": {
+    "bias": 0.8,
+    "extB": 0.6,
+    "closeBA": 1.0,
+    "moodB": 0.5
+   },
+   "okFx": {
+    "a": {
+     "close": 2
+    },
+    "b": {
+     "close": 2
+    },
+    "moodA": [
+     2,
+     1
+    ],
+    "moodB": [
+     2,
+     1
+    ]
+   },
+   "failFx": {
+    "a": {
+     "close": -1
+    },
+    "moodA": [
+     -2,
+     1
+    ]
+   },
+   "_src": "旋鈕：#574 第 1–4 節；意願 will＝bias＋Σ 權重×特徵、成功 ok＝logistic(bias＋Σ 權重×特徵)；效果 a＝發起方對回應方、b＝回應方對發起方的三軸（記憶貢獻，W7 會再乘時間衰減）、mood＝念頭（數值、日數）"
+  },
+  {
+   "id": "inquire",
+   "label": "打聽",
+   "icon": "問",
+   "minutes": 10,
+   "topic": "rumor",
+   "will": {
+    "bias": -0.1,
+    "bFresh": 0.6,
+    "extA": 0.2,
+    "closeAB": 0.3,
+    "cautA": -0.2
+   },
+   "ok": {
+    "bias": 0.5,
+    "closeBA": 1.0,
+    "cautB": -0.5
+   },
+   "okFx": {
+    "a": {
+     "close": 1
+    },
+    "rumor": "ba"
+   },
+   "failFx": {
+    "a": {
+     "close": -1
+    },
+    "moodA": [
+     -2,
+     1
+    ]
+   },
+   "_src": "旋鈕：#574 第 1–4 節；意願 will＝bias＋Σ 權重×特徵、成功 ok＝logistic(bias＋Σ 權重×特徵)；效果 a＝發起方對回應方、b＝回應方對發起方的三軸（記憶貢獻，W7 會再乘時間衰減）、mood＝念頭（數值、日數）"
+  },
+  {
+   "id": "rumor",
+   "label": "說傳聞",
+   "icon": "傳",
+   "minutes": 10,
+   "topic": "rumor",
+   "will": {
+    "bias": -0.1,
+    "fresh": 0.6,
+    "extA": 0.4
+   },
+   "ok": {
+    "bias": 0.6,
+    "closeBA": 0.8,
+    "moodB": 0.3
+   },
+   "okFx": {
+    "b": {
+     "close": 1
+    },
+    "rumor": "ab"
+   },
+   "failFx": {
+    "a": {
+     "close": -1
+    },
+    "moodA": [
+     -2,
+     1
+    ]
+   },
+   "_src": "旋鈕：#574 第 1–4 節；意願 will＝bias＋Σ 權重×特徵、成功 ok＝logistic(bias＋Σ 權重×特徵)；效果 a＝發起方對回應方、b＝回應方對發起方的三軸（記憶貢獻，W7 會再乘時間衰減）、mood＝念頭（數值、日數）"
+  },
+  {
+   "id": "boast",
+   "label": "吹噓",
+   "icon": "誇",
+   "minutes": 8,
+   "topic": "art",
+   "will": {
+    "bias": -0.3,
+    "wonA": 0.5,
+    "extA": 0.3,
+    "calmA": -0.4
+   },
+   "ok": {
+    "bias": 0.0,
+    "respectBA": 1.0,
+    "calmB": -0.3
+   },
+   "okFx": {
+    "b": {
+     "respect": 3
+    },
+    "moodA": [
+     3,
+     1
+    ]
+   },
+   "failFx": {
+    "b": {
+     "rival": 3,
+     "close": -1
+    },
+    "moodA": [
+     -3,
+     1
+    ]
+   },
+   "_src": "旋鈕：#574 第 1–4 節；意願 will＝bias＋Σ 權重×特徵、成功 ok＝logistic(bias＋Σ 權重×特徵)；效果 a＝發起方對回應方、b＝回應方對發起方的三軸（記憶貢獻，W7 會再乘時間衰減）、mood＝念頭（數值、日數）"
+  },
+  {
+   "id": "ask_advice",
+   "label": "請教",
+   "icon": "請",
+   "minutes": 20,
+   "topic": "art",
+   "will": {
+    "bias": -0.2,
+    "wantsArt": 0.5,
+    "gap": 0.6,
+    "respectAB": 0.8,
+    "discA": 0.2
+   },
+   "ok": {
+    "bias": 0.3,
+    "closeBA": 0.6,
+    "calmB": 0.4,
+    "moodB": 0.4
+   },
+   "okFx": {
+    "a": {
+     "respect": 3,
+     "close": 1
+    },
+    "teach": "ask"
+   },
+   "failFx": {
+    "a": {
+     "close": -2
+    },
+    "moodA": [
+     -3,
+     1
+    ]
+   },
+   "_src": "旋鈕：#574 第 1–4 節；意願 will＝bias＋Σ 權重×特徵、成功 ok＝logistic(bias＋Σ 權重×特徵)；效果 a＝發起方對回應方、b＝回應方對發起方的三軸（記憶貢獻，W7 會再乘時間衰減）、mood＝念頭（數值、日數）；請教成功＝指點的入口（#574 留言第 1 項）"
+  },
+  {
+   "id": "instruct",
+   "label": "指點",
+   "icon": "點",
+   "minutes": 60,
+   "topic": "art",
+   "will": {
+    "bias": 0.0,
+    "disciple": 0.6,
+    "asked": 0.8,
+    "discA": 0.3
+   },
+   "ok": {
+    "bias": 1.0,
+    "respectBA": 0.8,
+    "discB": 0.4
+   },
+   "okFx": {
+    "a": {
+     "close": 2
+    },
+    "b": {
+     "respect": 2
+    },
+    "moodB": [
+     4,
+     2
+    ],
+    "teach": "session"
+   },
+   "failFx": {
+    "b": {
+     "close": -1
+    }
+   },
+   "_src": "旋鈕：#574 第 1–4 節；意願 will＝bias＋Σ 權重×特徵、成功 ok＝logistic(bias＋Σ 權重×特徵)；效果 a＝發起方對回應方、b＝回應方對發起方的三軸（記憶貢獻，W7 會再乘時間衰減）、mood＝念頭（數值、日數）；指點 60 遊戲分鐘、一次最多 3 人，取代 A2 的「教」（#574 留言第 1 項）"
+  },
+  {
+   "id": "complain",
+   "label": "抱怨",
+   "icon": "怨",
+   "minutes": 10,
+   "topic": "home",
+   "will": {
+    "bias": -0.3,
+    "sadA": 0.6,
+    "lostA": 0.5,
+    "closeAB": 0.6,
+    "calmA": -0.3
+   },
+   "ok": {
+    "bias": 0.4,
+    "closeBA": 0.8,
+    "calmB": 0.3
+   },
+   "okFx": {
+    "a": {
+     "close": 2
+    },
+    "b": {
+     "close": 1
+    },
+    "moodA": [
+     3,
+     1
+    ]
+   },
+   "failFx": {
+    "b": {
+     "close": -1
+    }
+   },
+   "_src": "旋鈕：#574 第 1–4 節；意願 will＝bias＋Σ 權重×特徵、成功 ok＝logistic(bias＋Σ 權重×特徵)；效果 a＝發起方對回應方、b＝回應方對發起方的三軸（記憶貢獻，W7 會再乘時間衰減）、mood＝念頭（數值、日數）"
+  },
+  {
+   "id": "comfort",
+   "label": "安慰",
+   "icon": "慰",
+   "minutes": 10,
+   "topic": "home",
+   "will": {
+    "bias": -0.2,
+    "sadB": 0.8,
+    "closeAB": 0.8,
+    "extA": 0.2
+   },
+   "ok": {
+    "bias": 0.6,
+    "closeBA": 0.6
+   },
+   "okFx": {
+    "b": {
+     "close": 3
+    },
+    "moodB": [
+     6,
+     2
+    ]
+   },
+   "failFx": {
+    "a": {
+     "close": -1
+    }
+   },
+   "_src": "旋鈕：#574 第 1–4 節；意願 will＝bias＋Σ 權重×特徵、成功 ok＝logistic(bias＋Σ 權重×特徵)；效果 a＝發起方對回應方、b＝回應方對發起方的三軸（記憶貢獻，W7 會再乘時間衰減）、mood＝念頭（數值、日數）"
+  },
+  {
+   "id": "thank",
+   "label": "道謝",
+   "icon": "謝",
+   "minutes": 5,
+   "topic": "person",
+   "will": {
+    "bias": 0.0,
+    "helped": 1.0,
+    "discA": 0.3
+   },
+   "ok": {
+    "bias": 1.5
+   },
+   "okFx": {
+    "b": {
+     "close": 2
+    },
+    "moodB": [
+     3,
+     1
+    ]
+   },
+   "failFx": {},
+   "_src": "旋鈕：#574 第 1–4 節；意願 will＝bias＋Σ 權重×特徵、成功 ok＝logistic(bias＋Σ 權重×特徵)；效果 a＝發起方對回應方、b＝回應方對發起方的三軸（記憶貢獻，W7 會再乘時間衰減）、mood＝念頭（數值、日數）"
+  },
+  {
+   "id": "apologize",
+   "label": "道歉",
+   "icon": "歉",
+   "minutes": 5,
+   "topic": "person",
+   "will": {
+    "bias": -0.1,
+    "hurt": 1.0,
+    "calmA": 0.3,
+    "cautA": 0.2
+   },
+   "ok": {
+    "bias": 0.2,
+    "closeBA": 0.6,
+    "calmB": 0.5
+   },
+   "okFx": {
+    "b": {
+     "rival": -3,
+     "close": 1
+    }
+   },
+   "failFx": {
+    "b": {
+     "rival": 1
+    }
+   },
+   "_src": "旋鈕：#574 第 1–4 節；意願 will＝bias＋Σ 權重×特徵、成功 ok＝logistic(bias＋Σ 權重×特徵)；效果 a＝發起方對回應方、b＝回應方對發起方的三軸（記憶貢獻，W7 會再乘時間衰減）、mood＝念頭（數值、日數）"
+  },
+  {
+   "id": "provoke",
+   "label": "挑釁",
+   "icon": "挑",
+   "minutes": 5,
+   "topic": "art",
+   "will": {
+    "bias": -0.6,
+    "rivalAB": 1.2,
+    "lostA": 0.5,
+    "calmA": -0.6,
+    "moodA": -0.3,
+    "rivalMem": 0.5
+   },
+   "ok": {
+    "bias": 0.0,
+    "calmB": -1.0
+   },
+   "okFx": {
+    "a": {
+     "rival": 2
+    },
+    "b": {
+     "rival": 4
+    },
+    "moodB": [
+     -6,
+     3
+    ]
+   },
+   "failFx": {
+    "a": {
+     "rival": 1
+    },
+    "moodA": [
+     -3,
+     1
+    ]
+   },
+   "_src": "旋鈕：#574 第 1–4 節；意願 will＝bias＋Σ 權重×特徵、成功 ok＝logistic(bias＋Σ 權重×特徵)；效果 a＝發起方對回應方、b＝回應方對發起方的三軸（記憶貢獻，W7 會再乘時間衰減）、mood＝念頭（數值、日數）；成功＝對方被激怒（不沉穩的人被挑釁容易失態，#574 第 3 節）"
+  }
+ ]
+}

@@ -1,0 +1,41 @@
+{
+  "_doc": "A4（#576 驗收 A1／A4／A5）的短腳本：五種干預各做一次（緣每天回 1 點，所以排在第 1、2、3、5、7 日），jest a4.test.ts 用。",
+  "scenario": "s1",
+  "steps": [
+    {
+      "day": 1,
+      "at": "08:00",
+      "kind": "guide",
+      "target": "a-qing",
+      "place": "plaza"
+    },
+    {
+      "day": 2,
+      "at": "09:00",
+      "kind": "intro",
+      "target": "a-niu",
+      "other": "lin-sao"
+    },
+    {
+      "day": 5,
+      "at": "10:00",
+      "kind": "feed",
+      "target": "lao-han"
+    },
+    {
+      "day": 7,
+      "at": "09:00",
+      "kind": "plead",
+      "target": "a-qing"
+    }
+  ],
+  "rules": [
+    {
+      "at": "20:00",
+      "kind": "whisper",
+      "pick": "freshRumor",
+      "fromDay": 3,
+      "everyDays": 9
+    }
+  ]
+}

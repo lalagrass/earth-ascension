@@ -1,0 +1,9 @@
+{
+  "_doc": "武俠小鎮 W7（#559）：門規（最小版，3 條）。只約束拜過師的弟子。違反時弟子記一筆「違規」（violated），師父記一筆「弟子違規」（disciple_violated，師父對弟子的敬重 −15，見 bonds.json）。",
+  "rules": [
+    {"id": "no-private-fight", "name": "不得私鬥", "text": "同門弟子切磋須在武館", "check": "sparOutsideDojo"},
+    {"id": "morning-drill", "name": "辰時練功", "text": "弟子每日辰時（07:00–09:00）須在武館練功", "check": "trainInWindow", "from": 420, "to": 540, "minMinutes": 30, "do": ["hit_dummy", "hit_sandbag"]},
+    {"id": "respect-master", "name": "尊師", "text": "師父邀請必接受", "check": "acceptMaster"}
+  ],
+  "rules_src": "量測：#559 三條例「不得私鬥（弟子間切磋需在武館）」「辰時練功」「尊師（師父邀請必接受）」。旋鈕：辰時練功「至少 30 遊戲分鐘」才算有練（扣掉走路）；入門後弟子日程加「辰時練功（門規）」時段（07:00–09:00，打樁或沙袋，排在原日程前面），沒去或去得太晚才算違規；尊師是硬規則——師父邀弟子聊天時弟子一定接受（WUXIA-PATCH(W7) agent.ts），只有弟子真的拒絕（例如以後的真人玩家）才記違規"
+}

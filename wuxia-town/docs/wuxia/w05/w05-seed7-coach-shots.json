@@ -1,0 +1,32 @@
+[
+  {
+    "file": "docs/wuxia/w05/w05-seed7-coach-d07-0930-1400x820.png",
+    "seed": 7,
+    "at": 8850,
+    "size": [
+      1400,
+      820
+    ],
+    "clock": "第 7 日 巳初",
+    "gameMinute": 8850,
+    "who": "周教頭",
+    "blind": false,
+    "hash": "816465193abb733008fc61fd4b05b14e1498d7a233a46fc301964b0640f09fa8",
+    "steps": 8851
+  },
+  {
+    "file": "docs/wuxia/w05/w05-seed7-coach-d07-0930-390w.png",
+    "seed": 7,
+    "at": 8850,
+    "size": [
+      390,
+      844
+    ],
+    "clock": "第 7 日 巳初",
+    "gameMinute": 8850,
+    "who": "周教頭",
+    "blind": false,
+    "hash": "816465193abb733008fc61fd4b05b14e1498d7a233a46fc301964b0640f09fa8",
+    "steps": 8851
+  }
+]

@@ -1,0 +1,114 @@
+{
+  "_doc": "武俠小鎮 W8（#560，元素 w08-jianghu）江湖事件導演、傳聞與編年。導演每遊戲日卯時（rollMinuteOfDay）抽一次：從 events 選出條件符合、冷卻已過的事件，用 game.rng() 先擲是否有事（chance），有事再依權重抽一個。#562 W8-12「來因」：俠客與山賊的權重由「傳出鎮外的傳聞」（行商帶出去的）決定，沒有來因權重就是 0。#562 W8-13「節奏」：大事件（big）結束後至少 quietDays 日平靜；連續 boostAfterDays 日無事則下一次機率 ×boost。每個數值旁的 *_src 標來源（#562 W4-8）：量測＝有出處（#560／#562）、推導＝由別的數算出、旋鈕＝設計決定。",
+  "director": {
+    "rollMinuteOfDay": 300,
+    "rollMinuteOfDay_src": "量測＋旋鈕：#560「每遊戲日卯時抽一次」；卯時 05:00–07:00，取卯初 05:00（旋鈕）",
+    "chance": 0.3,
+    "chance_src": "量測：#560「機率 30%（其他日子無事）」",
+    "quietDays": 5,
+    "quietDays_src": "量測：#562 W8-13「大事件後至少 5 日平靜」",
+    "boostAfterDays": 10,
+    "boostAfterDays_src": "量測：#562 W8-13「連續 10 日無事則下一次機率加倍」",
+    "boost": 2,
+    "boost_src": "量測：#562 W8-13「連續 10 日無事則下一次機率加倍」"
+  },
+  "events": {
+    "xiake": {"name": "外地俠客路過", "big": true, "weight": 1, "cooldownDays": 10,
+      "weight_src": "旋鈕：有來因時四種事件權重相同（#562 W8-12：沒有來因權重就是 0）",
+      "cause": {"out": "dojo"},
+      "cause_src": "量測：#562 W8-12「俠客路過 ← 有『武館／教頭厲害』的傳聞傳出去」",
+      "cooldown_src": "旋鈕：同一事件結束後 10 日內不再抽",
+      "stayDays": [2, 4], "stayDays_src": "量測：#560「住茶館 2–4 日」",
+      "skills": {"fist": [250, 450], "power": [200, 400], "stance": [200, 400], "stamina": [200, 400]},
+      "skills_src": "旋鈕：俠客比阿青強、比周教頭弱（周教頭拳腳 620），所以教頭在武館時俠客多半輸，阿青多半輸給俠客",
+      "names": ["方遠山", "柳行舟", "杜青崖", "秦晚舟", "韋石峰"],
+      "names_src": "旋鈕：自創名字，不用金庸等既有作品的角色名",
+      "arriveMinuteOfDay": 420, "challengeMinuteOfDay": 600, "leaveMinuteOfDay": 960,
+      "times_src": "旋鈕：辰初 07:00 從城門進鎮、每天巳正 10:00 去武館找人切磋、最後一天申正 16:00 離開",
+      "arriveMinuteOfDay_src": "旋鈕：辰初 07:00（同 times_src）", "challengeMinuteOfDay_src": "旋鈕：巳正 10:00（同 times_src）", "leaveMinuteOfDay_src": "旋鈕：申正 16:00（同 times_src）",
+      "challengeMinFist": 50,
+      "challengeMinFist_src": "旋鈕：武館裡拳腳 ≥ 50 的人才算『會武』、會被找上切磋（挑最高的那位）"
+    },
+    "bandit": {"name": "山賊擾鎮", "big": true, "weight": 1, "cooldownDays": 12,
+      "weight_src": "旋鈕：同 xiake.weight_src", "cooldownDays_src": "旋鈕：山賊結束後 12 日內不再抽",
+      "cause": {"out": "wealth", "noOut": "fighter"},
+      "cause_src": "量測：#562 W8-12「山賊 ← 有『鎮上有錢／藥鋪進貨』的傳聞，且沒有『鎮上有人能打』的傳聞」",
+      "count": [2, 3], "count_src": "量測：#560「2–3 名山賊」",
+      "skills": {"fist": [150, 250], "power": [150, 250], "stance": [100, 200], "stamina": [150, 250]},
+      "skills_src": "量測＋旋鈕：#560「山賊拳腳固定 150–250」是量測，其他三項是旋鈕",
+      "names": ["山賊甲", "山賊乙", "山賊丙"],
+      "arriveMinuteOfDay": 600, "arrive_src": "旋鈕：巳正 10:00 從北邊山路下來（大家醒著、在幹活）",
+      "stepUpFist": 100,
+      "stepUpFist_src": "旋鈕：拳腳 ≥ 100 才算『會武的人』、會上前（周教頭要武館已重開才上前：武館沒開時他還在茶館喝悶酒）",
+      "coachNeedsDojo": true,
+      "loot": [2, 5], "loot_src": "旋鈕：沒人上前時搶走幾箱藥材"
+    },
+    "xiaobi": {"name": "小比", "big": true, "weight": 1, "cooldownDays": 15,
+      "weight_src": "旋鈕：同 xiake.weight_src", "cooldownDays_src": "旋鈕：小比結束後 15 日內不再辦（跟「武館成立 ≥ 15 日」同一個節奏）",
+      "cause": {"dojoDays": 15},
+      "cause_src": "量測：#560「武館成立 ≥ 15 日後，教頭舉辦」",
+      "startMinuteOfDay": 840, "start_src": "旋鈕：未正 14:00 開始",
+      "gatherMinutes": 40, "gather_src": "旋鈕：鎮民走到武館的時間（遊戲分鐘），到期還沒到也開打"
+    },
+    "story": {"name": "說書新段子", "big": false, "weight": 1, "cooldownDays": 3,
+      "weight_src": "旋鈕：同 xiake.weight_src", "cooldownDays_src": "旋鈕：說完一段新段子 3 日內不再抽（小事件，比大事件短）",
+      "cause": {"tellerKnows": true},
+      "cause_src": "量測：#560「老韓開始說一段『最近的江湖事』，內容取自最近的事件（W8 傳聞）」：老韓要先聽過一則還沒說過的傳聞",
+      "teller": "lao-han",
+      "endMinuteOfDay": 1260, "end_src": "旋鈕：說到戌時結束（21:00），老韓那天沒說書就沒人聽到"
+    }
+  },
+  "logs": {
+    "rumorDays": 60,
+    "rumorDays_src": "旋鈕：A5（#577 補 A1 的 360 日體檢）傳聞 60 日後全鎮淡忘：從傳聞表、每人聽過的、傳遞軌跡、出鎮表一起拿掉（進行中的大事件那天不忘）；60 日＞W8 最長的 45 日對照，3 日與 30 分 hash 不變",
+    "historyMax": 60,
+    "historyMax_src": "旋鈕：A5 大事件紀錄只留最近 60 件（360 日自然局約 100 件；俠客「沒來過的優先」只看這 60 件）",
+    "rollsMax": 90,
+    "rollsMax_src": "旋鈕：A5 導演擲骰紀錄只留最近 90 次（每日一次＝90 日，報告工具最長跑 90 日）",
+    "chronicleDays": 60,
+    "chronicleDays_src": "旋鈕：A5 鎮誌條目與每日段落只留最近 60 日（同 rumorDays）"
+  },
+  "rumor": {
+    "distort": 0.2,
+    "distort_src": "量測：#560「每傳一手有 20% 機率走樣」",
+    "spreadBase": 0.35,
+    "spreadPerClose": 0.005,
+    "spreadMin": 0.05,
+    "spreadMax": 0.9,
+    "spread_src": "量測＋旋鈕：#560「兩人聊天時，依親近（W7）有機率把傳聞傳給對方」：機率 = 0.35 + 0.005 × A 對 B 的親近（−100～100），夾在 0.05～0.9（旋鈕）",
+    "perTalk": 2,
+    "perTalk_src": "旋鈕：一段對話每個人最多說出 2 則（最新的先說）",
+    "outDays": 20,
+    "outDays_src": "旋鈕：傳出鎮外的傳聞 20 日內有效（之後外人淡忘，不再算來因）"
+  },
+  "merchant": {
+    "everyDays": 5,
+    "everyDays_src": "量測：#562 W8-12「每 5 日有行商路過茶館」",
+    "arriveMinuteOfDay": 540, "leaveMinuteOfDay": 900,
+    "arriveMinuteOfDay_src": "旋鈕：巳初 09:00（同 stay_src）", "leaveMinuteOfDay_src": "旋鈕：申初 15:00（同 stay_src）",
+    "stay_src": "量測＋旋鈕：#562「停留半日」；巳初 09:00 到茶館、申初 15:00 離開（6 小時，旋鈕）",
+    "name": "行商",
+    "listenMinutes": 20,
+    "listenMinutes_src": "旋鈕：跟行商待滿 20 遊戲分鐘才算說得上話（同 tell_src）",
+    "tellChance": 0.6,
+    "tellChance_src": "旋鈕：每則傳聞 60% 說給行商聽（同 tell_src）",
+    "tell_src": "旋鈕：在茶館跟行商待滿 20 遊戲分鐘的人，自己知道的每一則傳聞各有 60% 機率說給行商聽（＝出鎮）"
+  },
+  "restock": {
+    "everyDays": 7, "offsetDay": 3, "minuteOfDay": 600,
+    "goods": [3, 6],
+    "everyDays_src": "旋鈕：每 7 日（同 restock_src）", "offsetDay_src": "旋鈕：第 3 日起（同 restock_src）", "minuteOfDay_src": "旋鈕：巳正 10:00（同 restock_src）",
+    "goods_src": "旋鈕：每次進貨 3–6 箱藥材",
+    "restock_src": "旋鈕：藥鋪每 7 日進一次貨（第 3、10、17… 日巳正），何郎中與當時在藥鋪的人知道『藥鋪進貨 N 箱』（『鎮上有錢』的傳聞來源）"
+  },
+  "chronicle": {
+    "llmMinuteOfDay": 1320,
+    "llm_src": "量測：#560「每遊戲日亥時用一個 operation 把當日事件改寫成 80 字內古風段落」；亥正 22:00",
+    "maxChars": 80,
+    "maxChars_src": "量測：#560「80 字內古風段落」"
+  },
+  "places_src": "量測：W1 地圖（48×36 格）上的 tile 座標：城門、北邊山路口、茶館門口、藥鋪門口、武館擂台兩端、圍觀處（跟 places.json 的地點對得上）",
+  "places": {
+    "gate": [23, 34], "mountain": [23, 1], "teahouse": [18, 17], "pharmacy": [26, 17], "dojoRing": [[38, 24], [40, 24]], "dojoCrowd": [39, 26]
+  }
+}

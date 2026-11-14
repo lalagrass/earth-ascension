@@ -1,0 +1,19 @@
+{
+  "_doc": "武俠小鎮 W3（#555）需求。四個需求 0–100：hunger 餓、fatigue 累、boredom 悶、chore 家事。perHour＝每遊戲小時固定增加的量（不分醒睡，睡覺／吃飯等活動完成時再依 objects.json 的 needs 扣回）。initial＝開局值，再加 game.rng() 的 ±jitter。talk＝一段對話結束時的變化。urgency：需求 > soft 時線性加分（soft→hard 從 0 加到 softMax），> hard 時改成 hardBase＋(v−hard)×hardSlope，一定壓過日程權重（3＋擾動）。stock：每戶物資的開局量與上限。W4（#562 W4-8）：每個數值旁的 *_src 標來源：量測＝有出處、推導＝由別的數算出、旋鈕＝設計決定。",
+  "needs": ["hunger", "fatigue", "boredom", "chore"],
+  "needs_src": "量測：#555「需求：hunger 餓、fatigue 累、boredom 悶」＋#562 W3「家事 chore」",
+  "perHour": {"hunger": 4, "fatigue": 3, "boredom": 3, "chore": 2},
+  "perHour_src": "旋鈕（W3 校準）：餓 4／累 3／悶 3／家事 2 每遊戲小時；讓一天三餐、睡 6–9 小時成立（W3.md「數值」，life-diff B 第 2、3 日全過）",
+  "initial": {"hunger": 30, "fatigue": 10, "boredom": 30, "chore": 30},
+  "initial_src": "旋鈕：開局都不急（< soft 70），加 ±jitter 讓每人起點不同",
+  "jitter": 10,
+  "jitter_src": "旋鈕：開局擾動 ±10（game.rng()）",
+  "talk": {"boredom": -15},
+  "talk_src": "旋鈕：一段對話結束悶 −15（聊天解悶，比喝茶 −25 少）",
+  "urgency": {"soft": 70, "hard": 90, "softMax": 3, "hardBase": 3.5, "hardSlope": 0.1},
+  "urgency_src": "推導＋旋鈕：soft 70／hard 90 是旋鈕；hardBase 3.5 推導自『> hard 一定壓過日程權重 3＋擾動 0.3』（3.5 > 3.3）；softMax 3＝日程權重；hardSlope 0.1 旋鈕",
+  "repeat": {"after": 3, "factor": 0.5, "exempt": ["sleep"]},
+  "repeat_src": "量測＋旋鈕：#564 第 8 項「同一活動連做超過 3 次時意願遞減」（after 3 是量測）；第 4 次起每多一次，該活動的日程權重 ×0.5（factor 是旋鈕；只降日程權重，需求急迫度不變，所以餓、累時照樣去吃、去睡）。exempt：睡覺是一小時一段接著睡，不算「重複」（旋鈕）",
+  "stock": {"initial": {"water": 2, "meal": 2, "wood": 2}, "max": {"water": 8, "meal": 8, "wood": 8}},
+  "stock_src": "量測＋旋鈕：#562 W3-4「每戶一份物資」是量測；開局 2、上限 8 是旋鈕（一戶一天吃 3 份飯，煮一次 4 份）"
+}

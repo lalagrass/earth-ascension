@@ -1,0 +1,34 @@
+{
+  "_doc": "武俠小鎮 W4（#556）練功與技能。每人 4 個技能值 fist 拳腳、power 力、stance 下盤、stamina 耐力，整數 0–max，畫面顯示 /display 取一位小數。練功時每遊戲分鐘：gain = base × weight[技能] × (1 − level/max)^exponent × 教頭加成 × 疲累係數；小數部分累積在 frac，滿 1 才進位到整數技能值。教頭加成：周教頭同時在武館（place=dojo、醒著）且不在對話中＝coachBonus，否則 1。疲累係數：fatigue > tiredAbove 時＝tiredFactor。每個數值旁的 *_src 標來源（#562 W4-8）：量測＝有出處、推導＝由別的數算出、旋鈕＝設計決定。",
+  "max": 1000,
+  "max_src": "量測：#556「每人 4 個數值（整數，0–1000）」",
+  "display": 10,
+  "display_src": "量測：#556「顯示時 /10 取一位小數」",
+  "exponent": 2,
+  "exponent_src": "量測：#556 增長公式 gain = base × (1 - level/1000)^2 × 教頭加成",
+  "coachBonus": 1.5,
+  "coachBonus_src": "量測：#556「教頭加成 = 1.5（周教頭同時在武館且不在對話中）否則 1.0」",
+  "tiredAbove": 80,
+  "tiredAbove_src": "量測：#556「累到 > 80 時練功效率減半」",
+  "tiredFactor": 0.5,
+  "tiredFactor_src": "量測：#556「效率減半」",
+  "base": 0.0335,
+  "base_src": "推導（再實測校準）：設計目標『天天練 2 小時，30 日從 0 到約 150』，阿青起始拳腳 15、練功時周教頭多半在場（×1.5）。解 dL/dt = b·1.5·(1−L/1000)^2：1/(1−L/1000) 從 1/(1−0.015)=1.0152 增到 1/(1−0.15)=1.1765，差 0.1612 = b·1.5·T/1000，T＝30 日累計打樁分鐘。理論 T=3600（120 分/日）時 b=0.0299；無頭模擬 30 日（seed 7）阿青實際平均每日打樁約 112 分（走路與準時開始吃掉一點），T≈3360 → b≈0.0320，再扣掉教頭不在場的分鐘（約 6%，×1.0）→ b 取 0.0335。實測：0.0284 時第 30 日拳腳 132，0.0335 時 151。推導、曲線與調整前後報告見 docs/wuxia/W4.md「時間尺度」。",
+  "activities": {
+    "hit_dummy": {"weight": {"fist": 1.0, "stamina": 0.25}},
+    "hit_sandbag": {"weight": {"fist": 0.6, "power": 0.6, "stamina": 0.25}},
+    "lift_stone": {"weight": {"power": 1.0, "stamina": 0.3}},
+    "stand_post": {"weight": {"stance": 1.0, "stamina": 0.4}},
+    "coach": {"weight": {}}
+  },
+  "activities_src": "旋鈕：每種練法主練一項（weight 1.0），耐力全部順帶小幅成長；指點（教頭自己）不加技能。打樁的拳腳 weight 1.0 就是上面推導 base 時用的",
+  "tiers": [
+    {"min": 0, "name": "未入門", "emoji": "🤛"},
+    {"min": 100, "name": "入門", "emoji": "👊"},
+    {"min": 400, "name": "熟練", "emoji": "💥"},
+    {"min": 600, "name": "精通", "emoji": "⚡"}
+  ],
+  "tiers_src": "旋鈕：#556 只給四階名稱與 emoji（🤛 → 👊 → 💥 → ⚡）、30 日約 150 是「入門」、1 年約 450 是「熟練」。門檻取 100／400／600：30 日（120–180）一定已入門，跟第 1 日（未入門）看得出差別；周教頭起始拳腳 620 是精通",
+  "strikes": {"base": 5, "per": 40},
+  "strikes_src": "量測：#556「每遊戲分鐘打樁數 = 5 + fist/40（取整）」"
+}

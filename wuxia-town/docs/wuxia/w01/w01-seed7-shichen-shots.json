@@ -1,0 +1,80 @@
+[
+  {
+    "file": "docs/wuxia/w01/w01-seed7-shichen-g0000-1400x820.png",
+    "seed": 7,
+    "at": 0,
+    "size": [
+      1400,
+      820
+    ],
+    "clock": "第 1 日 卯正",
+    "gameMinute": 0,
+    "hash": "ce7587377c5dec48cdb93f443678665614031489c3ce6a60b4139fc930aff290",
+    "steps": 1
+  },
+  {
+    "file": "docs/wuxia/w01/w01-seed7-shichen-g0000-390w.png",
+    "seed": 7,
+    "at": 0,
+    "size": [
+      390,
+      844
+    ],
+    "clock": "第 1 日 卯正",
+    "gameMinute": 0,
+    "hash": "ce7587377c5dec48cdb93f443678665614031489c3ce6a60b4139fc930aff290",
+    "steps": 1
+  },
+  {
+    "file": "docs/wuxia/w01/w01-seed7-shichen-g0360-1400x820.png",
+    "seed": 7,
+    "at": 360,
+    "size": [
+      1400,
+      820
+    ],
+    "clock": "第 1 日 午正",
+    "gameMinute": 360,
+    "hash": "ea3bc1d2b7874f4082b54ac63e2bb2bcab0daa4c14a9018425bc095f76749913",
+    "steps": 361
+  },
+  {
+    "file": "docs/wuxia/w01/w01-seed7-shichen-g0360-390w.png",
+    "seed": 7,
+    "at": 360,
+    "size": [
+      390,
+      844
+    ],
+    "clock": "第 1 日 午正",
+    "gameMinute": 360,
+    "hash": "ea3bc1d2b7874f4082b54ac63e2bb2bcab0daa4c14a9018425bc095f76749913",
+    "steps": 361
+  },
+  {
+    "file": "docs/wuxia/w01/w01-seed7-shichen-g0840-1400x820.png",
+    "seed": 7,
+    "at": 840,
+    "size": [
+      1400,
+      820
+    ],
+    "clock": "第 1 日 戌正",
+    "gameMinute": 840,
+    "hash": "f943e419a31bb7a4ef95373e3d88dca44d9834b938aa1460d92df05e1cff8481",
+    "steps": 841
+  },
+  {
+    "file": "docs/wuxia/w01/w01-seed7-shichen-g0840-390w.png",
+    "seed": 7,
+    "at": 840,
+    "size": [
+      390,
+      844
+    ],
+    "clock": "第 1 日 戌正",
+    "gameMinute": 840,
+    "hash": "f943e419a31bb7a4ef95373e3d88dca44d9834b938aa1460d92df05e1cff8481",
+    "steps": 841
+  }
+]

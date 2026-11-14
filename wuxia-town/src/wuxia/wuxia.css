@@ -1,0 +1,463 @@
+/* 武俠小鎮 W1：紙底、墨框、朱印（同本專案 STYLE-SCENE 的「水墨淡彩」介面方向）。
+   只在 <body class="wuxia-skin"> 時生效；w01-skin 關閉時維持上游樣式。不用任何圖檔。 */
+body.wuxia-skin {
+  --ink: #2b2119;
+  --ink-soft: #5a4a3c;
+  --paper: #efe6cf;
+  --paper-deep: #e2d5b4;
+  --seal: #b3342a;
+  color: var(--ink);
+  background: var(--paper);
+}
+body.wuxia-skin .font-display,
+body.wuxia-skin .font-body,
+body.wuxia-skin {
+  font-family: 'Noto Serif TC', 'Noto Serif CJK TC', 'Songti TC', 'PMingLiU', serif;
+}
+body.wuxia-skin .game-background {
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(120, 140, 120, 0.18), transparent 55%),
+    radial-gradient(ellipse at 90% 10%, rgba(90, 110, 120, 0.16), transparent 50%),
+    linear-gradient(180deg, #e9e0c8 0%, #efe6cf 40%, #e6dbbf 100%);
+  background-attachment: fixed;
+}
+body.wuxia-skin .game-title {
+  background: none;
+  -webkit-text-fill-color: var(--ink);
+  color: var(--ink);
+  filter: none;
+  letter-spacing: 0.2em;
+  font-weight: 900;
+  font-size: clamp(2.2rem, 5.5vw, 4.6rem);
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+}
+body.wuxia-skin .wuxia-title-seal {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 0.4em;
+  padding: 0.12em 0.18em;
+  font-size: 0.32em;
+  line-height: 1.05;
+  letter-spacing: 0;
+  color: #fbf3e2;
+  -webkit-text-fill-color: #fbf3e2;
+  background: var(--seal);
+  border-radius: 3px;
+  writing-mode: vertical-rl;
+}
+body.wuxia-skin .wuxia-subtitle {
+  color: var(--ink-soft);
+  text-shadow: none;
+  font-size: clamp(0.95rem, 1.6vw, 1.25rem);
+}
+body.wuxia-skin .game-frame {
+  border: 3px solid var(--ink);
+  border-image: none;
+  outline: 1px solid var(--ink);
+  outline-offset: 4px;
+  background: var(--paper-deep);
+  box-shadow: 0 6px 18px rgba(43, 33, 25, 0.25);
+}
+body.wuxia-skin .bg-brown-800,
+body.wuxia-skin .bg-brown-900 {
+  background-color: var(--paper);
+  color: var(--ink);
+}
+body.wuxia-skin .text-brown-100,
+body.wuxia-skin .text-white {
+  color: var(--ink);
+}
+body.wuxia-skin .border-brown-900 {
+  border-color: var(--ink);
+}
+body.wuxia-skin .box,
+body.wuxia-skin .desc,
+body.wuxia-skin .chats,
+body.wuxia-skin .bubble,
+body.wuxia-skin .login-prompt {
+  border: 2px solid var(--ink);
+  border-image: none;
+  background: #f7f0de;
+  border-radius: 2px;
+}
+body.wuxia-skin .desc,
+body.wuxia-skin .chats {
+  padding: 0.6rem 0.8rem;
+}
+body.wuxia-skin .bubble-mine {
+  background: #ece2c6;
+}
+body.wuxia-skin .bg-brown-700,
+body.wuxia-skin .bg-brown-200,
+body.wuxia-skin .bg-clay-700 {
+  background: transparent;
+  color: var(--ink);
+}
+body.wuxia-skin .shadow-solid {
+  text-shadow: none;
+}
+body.wuxia-skin .button {
+  border: 2px solid var(--ink);
+  border-image: none;
+  background: #f7f0de;
+  border-radius: 3px;
+  padding: 0.25rem 0.8rem;
+  box-shadow: 2px 2px 0 var(--ink);
+  color: var(--ink);
+}
+body.wuxia-skin .button span {
+  transform: none;
+}
+body.wuxia-skin .button:active {
+  border-image: none;
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+body.wuxia-skin .button img {
+  width: 22px;
+  height: 22px;
+}
+
+/* 時辰牌（疊在遊戲畫面左上） */
+.wuxia-clock {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.7rem 0.3rem 0.35rem;
+  background: rgba(247, 240, 222, 0.93);
+  border: 2px solid #2b2119;
+  outline: 1px solid #2b2119;
+  outline-offset: 2px;
+  color: #2b2119;
+  font-family: 'Noto Serif TC', 'Noto Serif CJK TC', serif;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.1;
+}
+.wuxia-clock small {
+  font-weight: 400;
+  font-size: 13px;
+  color: #5a4a3c;
+}
+.wuxia-clock-seal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: #b3342a;
+  color: #fbf3e2;
+  font-size: 20px;
+  border-radius: 3px;
+}
+@media (max-width: 640px) {
+  .wuxia-clock {
+    font-size: 14px;
+    top: 6px;
+    left: 6px;
+  }
+  .wuxia-clock-seal {
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+  }
+}
+
+/* 人物詳情 */
+.wuxia-place-hint {
+  margin: 0.6rem 0 0.2rem;
+  padding: 0.25rem 0.6rem;
+  display: inline-block;
+  border-left: 4px solid #b3342a;
+  background: rgba(179, 52, 42, 0.08);
+  font-weight: 700;
+}
+.wuxia-desc {
+  margin-top: 0.6rem;
+  line-height: 1.6;
+}
+.wuxia-about p {
+  margin: 0.5rem 0;
+  line-height: 1.7;
+}
+
+/* W3（#555）：生活面板、需求條、鎮況、頭上活動標籤 */
+.wuxia-life-panel { margin-top: 0.75rem; padding: 0.5rem 0.75rem; background: rgba(60, 40, 25, 0.55); border: 2px solid #8a6a43; font-size: 0.95rem; line-height: 1.35; }
+.wuxia-life-panel p { margin: 0.15rem 0; }
+.wuxia-life-next { opacity: 0.85; font-size: 0.85rem; }
+.wuxia-needs { margin-top: 0.4rem; display: grid; gap: 0.2rem; }
+.wuxia-need { display: grid; grid-template-columns: 2.4em 1fr 2em; align-items: center; gap: 0.4rem; font-size: 0.85rem; }
+.wuxia-need-bar { height: 0.55rem; background: rgba(255, 255, 255, 0.15); border: 1px solid #8a6a43; position: relative; }
+.wuxia-need-fill { position: absolute; left: 0; top: 0; bottom: 0; background: #7fa36b; }
+.wuxia-need-fill.warm { background: #d39b3a; }
+.wuxia-need-fill.hot { background: #b8432f; }
+.wuxia-need-value { text-align: right; opacity: 0.8; }
+.wuxia-life-done { margin-top: 0.4rem; font-size: 0.82rem; }
+.wuxia-life-done ol { margin: 0.2rem 0 0 1.2rem; list-style: decimal; columns: 2; column-gap: 1rem; }
+.wuxia-town-status { position: absolute; right: 0.5rem; top: 0.5rem; z-index: 10; max-width: 46%; background: rgba(245, 236, 214, 0.92); color: #3b2a1a; border: 2px solid #8a6a43; font-size: 0.8rem; line-height: 1.3; padding: 0.3rem 0.5rem; }
+.wuxia-town-status-title { font-weight: bold; cursor: pointer; pointer-events: auto; }
+.wuxia-town-status ul { margin-top: 0.15rem; }
+.wuxia-town-status li { margin: 0.1rem 0; }
+@media (max-width: 640px) { .wuxia-town-status { font-size: 0.7rem; max-width: 60%; } }
+/* W4（#556）：技能面板 */
+.wuxia-skill-panel { margin-top: 0.75rem; padding: 0.5rem 0.75rem; background: rgba(60, 40, 25, 0.55); border: 2px solid #8a6a43; font-size: 0.95rem; line-height: 1.35; }
+.wuxia-skill-panel p { margin: 0.15rem 0; }
+.wuxia-skill-strikes { opacity: 0.85; font-size: 0.85rem; }
+.wuxia-skills { display: grid; grid-template-columns: 1fr; gap: 0.2rem; margin-top: 0.3rem; }
+.wuxia-skill { display: grid; grid-template-columns: 2.6rem 1fr 2.6rem; align-items: center; gap: 0.4rem; font-size: 0.85rem; }
+.wuxia-skill-bar { height: 0.55rem; background: rgba(0, 0, 0, 0.35); border: 1px solid #8a6a43; position: relative; }
+.wuxia-skill-fill { position: absolute; left: 0; top: 0; bottom: 0; background: #c79a4a; }
+.wuxia-skill-value { text-align: right; font-variant-numeric: tabular-nums; }
+/* W5：心事 */
+.wuxia-mind-panel { margin-top: 0.75rem; padding: 0.5rem 0.75rem; background: rgba(50, 35, 45, 0.55); border: 2px solid #8a6a43; font-size: 0.95rem; line-height: 1.35; }
+.wuxia-mind-panel p { margin: 0.15rem 0; }
+.wuxia-mind-none { opacity: 0.75; font-size: 0.85rem; margin-left: 0.4rem; }
+.wuxia-thought { margin-top: 0.3rem; }
+.wuxia-thought-head { display: grid; grid-template-columns: 4.6rem 1fr 2rem; align-items: center; gap: 0.4rem; font-size: 0.9rem; }
+.wuxia-thought-bar { height: 0.55rem; background: rgba(0, 0, 0, 0.35); border: 1px solid #8a6a43; position: relative; }
+.wuxia-thought-fill { position: absolute; left: 0; top: 0; bottom: 0; background: #b5655a; }
+.wuxia-thought-value { text-align: right; font-variant-numeric: tabular-nums; }
+.wuxia-thought-why { font-size: 0.8rem; opacity: 0.9; margin-left: 0.2rem; }
+/* W7（#559）：「關係」分頁、武館面板 */
+.wuxia-tabs { margin-top: 0.75rem; }
+.wuxia-tab-bar { display: flex; gap: 0.3rem; }
+.wuxia-tab-bar button { pointer-events: auto; padding: 0.15rem 0.8rem; border: 2px solid #8a6a43; background: rgba(50, 35, 25, 0.5); color: #e9dcc0; font-size: 0.95rem; }
+.wuxia-tab-bar button.on { background: #8a6a43; color: #fff6e0; font-weight: bold; }
+.wuxia-bond-panel { margin-top: 0.5rem; padding: 0.5rem 0.75rem; background: rgba(35, 40, 50, 0.55); border: 2px solid #8a6a43; font-size: 0.9rem; line-height: 1.3; }
+.wuxia-bond-master { margin-bottom: 0.3rem; }
+.wuxia-bond-row { margin: 0.35rem 0 0.5rem; padding-bottom: 0.3rem; border-bottom: 1px dashed rgba(138, 106, 67, 0.6); }
+.wuxia-bond-name { font-weight: bold; margin-bottom: 0.1rem; }
+.wuxia-bond-title { margin-left: 0.4rem; padding: 0 0.3rem; font-size: 0.75rem; font-weight: normal; background: #b3342a; color: #fff6e0; border-radius: 2px; }
+.wuxia-bond-axis { display: grid; grid-template-columns: 2.4rem 1fr 2.2rem; align-items: center; gap: 0.35rem; font-size: 0.8rem; }
+.wuxia-bond-bar { height: 0.5rem; background: rgba(0, 0, 0, 0.35); border: 1px solid #8a6a43; position: relative; }
+.wuxia-bond-mid { position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: #e9dcc0; opacity: 0.6; }
+.wuxia-bond-fill { position: absolute; top: 0; bottom: 0; background: #b5655a; }
+.wuxia-bond-respect .wuxia-bond-fill { background: #c9a14a; }
+.wuxia-bond-rival .wuxia-bond-fill { background: #5f8fb0; }
+.wuxia-bond-fill.neg { background: #6b6b6b; }
+.wuxia-bond-value { text-align: right; font-variant-numeric: tabular-nums; }
+.wuxia-bond-why { font-size: 0.75rem; opacity: 0.9; margin-top: 0.1rem; }
+.wuxia-dojo-panel { position: absolute; right: 0.5rem; bottom: 0.5rem; z-index: 10; max-width: 46%; background: rgba(245, 236, 214, 0.92); color: #3b2a1a; border: 2px solid #8a6a43; font-size: 0.8rem; line-height: 1.3; padding: 0.3rem 0.5rem; }
+.wuxia-dojo-name { font-size: 1rem; font-weight: bold; color: #7a2a20; letter-spacing: 0.1em; }
+@media (max-width: 640px) { .wuxia-dojo-panel { font-size: 0.7rem; max-width: 60%; } }
+/* W8（#560）：山腳鎮誌面板（左下）＋外人圖層 */
+.wuxia-chronicle-panel { position: absolute; left: 0.5rem; bottom: 0.5rem; z-index: 10; max-width: 46%; max-height: 42%; overflow-y: auto; background: rgba(245, 236, 214, 0.94); color: #3b2a1a; border: 2px solid #8a6a43; font-size: 0.8rem; line-height: 1.35; padding: 0.3rem 0.5rem; pointer-events: auto; }
+.wuxia-chronicle-body p { margin: 0.2rem 0; }
+.wuxia-chronicle-now { color: #7a2a20; font-weight: bold; }
+@media (max-width: 640px) { .wuxia-chronicle-panel { font-size: 0.7rem; max-width: 60%; max-height: 35%; } }
+
+/* 武俠小鎮 W9（#561）：玩家面板、活動選單、對人操作。手機 390 寬時按鈕至少 40px 高，好點。 */
+.wuxia-player-panel {
+  margin-bottom: 0.9rem;
+  padding: 0.6rem 0.7rem;
+  border: 2px solid #2b2119;
+  background: #efe6cf;
+  color: #2b2119;
+  font-size: 0.95rem;
+}
+.wuxia-player-panel h3 {
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+.wuxia-player-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.wuxia-player-mode {
+  font-weight: 700;
+}
+.wuxia-player-paused {
+  color: #fbf3e2;
+  background: #b3342a;
+  padding: 0 0.4em;
+  border-radius: 3px;
+}
+.wuxia-player-tools {
+  margin-left: auto;
+  display: flex;
+  gap: 0.4rem;
+}
+.wuxia-player-roles,
+.wuxia-player-menu,
+.wuxia-person-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.5rem;
+}
+.wuxia-person-actions {
+  margin: 0.6rem 0;
+}
+.wuxia-player-menu-title {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  border-bottom: 1px solid #5a4a3c;
+}
+.wuxia-player-btn {
+  min-height: 40px;
+  padding: 0.35rem 0.75rem;
+  border: 2px solid #2b2119;
+  background: #fbf3e2;
+  color: #2b2119;
+  font-weight: 700;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  pointer-events: auto;
+}
+.wuxia-player-btn small {
+  font-weight: 400;
+  font-size: 0.75rem;
+  opacity: 0.75;
+}
+.wuxia-player-btn.small {
+  min-height: 32px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.85rem;
+}
+.wuxia-player-btn:active {
+  background: #e2d5b4;
+}
+.wuxia-player-x {
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0 0.4rem;
+}
+.wuxia-player-note {
+  margin-top: 0.4rem;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+.wuxia-player-ok,
+.wuxia-player-no {
+  width: 100%;
+  margin-top: 0.4rem;
+  font-size: 0.9rem;
+}
+.wuxia-player-no {
+  color: #b3342a;
+}
+.wuxia-player-log {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  border-top: 1px dashed #5a4a3c;
+  padding-top: 0.3rem;
+}
+.wuxia-player-log li.no {
+  color: #b3342a;
+}
+.wuxia-player-log span {
+  opacity: 0.7;
+  margin-right: 0.3em;
+}
+
+/* 武俠小鎮 A2（#575）：傳承面板、武學分頁、角落提示、顯示太極 */
+.wuxia-a2-lineage { color: #2b2119; font-size: 0.82rem; line-height: 1.35; }
+.wuxia-a2-note { color: #5a4630; margin: 0.2rem 0; }
+.wuxia-a2-curve { display: block; margin: 0.2rem 0; background: rgba(255, 255, 255, 0.35); border: 1px solid #c8b48d; }
+.wuxia-a2-finger { font-size: 0.75rem; color: #7a2a20; margin: 0.2rem 0 0.3rem; }
+.wuxia-a2-tree { list-style: none; margin: 0; padding: 0; max-height: 16rem; overflow-y: auto; }
+.wuxia-a2-tree li { margin: 0.05rem 0; white-space: nowrap; }
+.wuxia-a2-name { background: none; border: none; padding: 0; color: #2b2119; font-weight: bold; cursor: pointer; text-decoration: underline dotted; }
+.wuxia-a2-gen { color: #8a6a43; font-size: 0.7rem; margin: 0 0.3rem; }
+.wuxia-a2-edge { background: #e9f2ee; border: 1px solid #2f7d73; color: #1f5b53; font-size: 0.72rem; padding: 0 0.3rem; cursor: pointer; }
+.wuxia-a2-edge.flawed { background: #f6e6d8; border-color: #b0673a; border-style: dashed; color: #7a3f1f; }
+.wuxia-a2-trace { margin-top: 0.3rem; padding: 0.3rem 0.4rem; border: 1px dashed #8a6a43; background: rgba(255, 255, 255, 0.4); }
+.wuxia-a2-trace ol { margin: 0.2rem 0 0.2rem 1.1rem; padding: 0; list-style: decimal; }
+.wuxia-a2-art { font-size: 0.85rem; color: inherit; }
+.wuxia-a2-art .wuxia-a2-note { color: inherit; opacity: 0.75; }
+.wuxia-a2-artname { font-weight: bold; margin: 0.3rem 0 0.1rem; color: #e0a060; }
+.wuxia-a2-move { display: grid; grid-template-columns: 6.2rem 1fr; gap: 0 0.4rem; align-items: center; margin: 0.1rem 0; }
+.wuxia-a2-mname small { opacity: 0.7; font-size: 0.7rem; }
+.wuxia-a2-bar { position: relative; height: 0.5rem; background: rgba(255, 255, 255, 0.18); }
+.wuxia-a2-bar > span { position: absolute; left: 0; top: 0; bottom: 0; min-width: 2px; background: #4fb3a5; }
+.wuxia-a2-bar.flawed > span { background: repeating-linear-gradient(90deg, #e08a50 0 5px, #f6e6d8 5px 7px); }
+.wuxia-a2-bar > i { position: absolute; top: -2px; bottom: -2px; width: 2px; background: #f3e6c8; }
+.wuxia-a2-mval { grid-column: 2; font-size: 0.72rem; opacity: 0.8; }
+.wuxia-a2-hints { position: absolute; left: 0.5rem; top: 3rem; z-index: 18; display: flex; flex-direction: column; gap: 0.2rem; max-width: min(22rem, 70vw); pointer-events: auto; }
+.wuxia-a2-hint { text-align: left; background: rgba(247, 240, 222, 0.92); border: 1px solid #8a6a43; border-left: 4px solid #2f7d73; color: #2b2119; font-size: 0.78rem; padding: 0.15rem 0.45rem; cursor: pointer; }
+.wuxia-a2-hint.watch { border-left-color: #b0673a; }
+.wuxia-a2-hint.arrive, .wuxia-a2-hint.switch { border-left-color: #c9a227; }
+.wuxia-a2-hint.rival { border-left-color: #7a2a20; }
+.wuxia-a2-toggle { display: inline-flex; align-items: center; gap: 0.2rem; background: rgba(247, 240, 222, 0.94); border: 2px solid #2b2119; padding: 0.1rem 0.4rem; font-size: 0.85rem; color: #2b2119; cursor: pointer; }
+.wuxia-a2-corner { position: absolute; right: 0.5rem; top: 3.2rem; z-index: 12; display: flex; flex-wrap: wrap; gap: 0.3rem; justify-content: flex-end; max-width: min(24rem, 80%); }
+.wuxia-a2-corner > button { background: rgba(247, 240, 222, 0.94); border: 2px solid #2b2119; padding: 0.1rem 0.5rem; font-size: 0.85rem; color: #2b2119; }
+.wuxia-a2-corner > button.on { background: #2b2119; color: #f7f0de; }
+.wuxia-a2-corner > .wuxia-a2-lineage { flex-basis: 100%; background: rgba(247, 240, 222, 0.97); border: 2px solid #2b2119; padding: 0.3rem 0.5rem; max-height: 60vh; overflow-y: auto; }
+.wuxia-a2-corner > .wuxia-a2-hints { position: static; flex-basis: 100%; align-items: flex-end; }
+@media (max-width: 640px) { .wuxia-a2-hints { top: 2.6rem; font-size: 0.7rem; } .wuxia-a2-move { grid-template-columns: 5rem 1fr; } }
+/* A3（#574）：無言互動——鎮上動靜、互動選單、翻譯小窗 */
+.wuxia-a3-icon { display: inline-block; vertical-align: -3px; image-rendering: pixelated; flex: none; }
+.wuxia-a3-feed { display: flex; flex-direction: column; gap: 0.15rem; max-height: 60vh; overflow-y: auto; min-width: 16rem; }
+.wuxia-a3-line { text-align: left; background: none; border: none; border-bottom: 1px dotted #b9a98a; padding: 0.15rem 0.1rem; font-size: 0.85rem; color: #2b2119; display: flex; gap: 0.3rem; align-items: baseline; }
+.wuxia-a3-line .t { color: #7a6a52; font-size: 0.75rem; white-space: nowrap; }
+.wuxia-a3-line.fail { color: #6b5d4c; }
+.wuxia-a3-line:hover { background: rgba(43, 33, 25, 0.06); }
+.wuxia-a3-menu { margin: 0.4rem 0; }
+.wuxia-a3-opts { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.2rem; }
+.wuxia-a3-opts button { display: flex; align-items: center; gap: 0.25rem; border: 2px solid #2b2119; background: #faf4e4; padding: 0.1rem 0.4rem; font-size: 0.85rem; color: #2b2119; }
+.wuxia-a3-opts button small { font-size: 0.7rem; padding: 0 0.2rem; border-radius: 2px; color: #fff; background: #7a6a52; }
+.wuxia-a3-opts button.d-容易 small { background: #2f7d73; }
+.wuxia-a3-opts button.d-難 small { background: #b3342a; }
+.wuxia-a3-translate { position: absolute; left: 50%; bottom: 4.2rem; transform: translateX(-50%); z-index: 30; background: rgba(250, 244, 228, 0.98); border: 2px solid #2b2119; padding: 0.4rem 0.7rem; min-width: 16rem; max-width: min(28rem, 90vw); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25); }
+.wuxia-a3-translate .head { display: flex; align-items: center; gap: 0.3rem; font-size: 0.85rem; }
+.wuxia-a3-translate .head button.x { margin-left: auto; background: none; border: none; font-size: 1.1rem; }
+.wuxia-a3-translate .head button.who { background: none; border: none; border-bottom: 1px dotted #2b2119; padding: 0; color: #2b2119; font-size: 0.85rem; }
+.wuxia-a3-translate .say { margin: 0.3rem 0 0.1rem; font-size: 1rem; color: #2b2119; }
+.wuxia-a3-translate .src { margin: 0; font-size: 0.7rem; color: #7a6a52; }
+.wuxia-a3-corner { position: absolute; right: 0.5rem; top: 5.4rem; z-index: 12; display: flex; flex-direction: column; align-items: flex-end; gap: 0.3rem; }
+.wuxia-a3-corner > button { background: rgba(247, 240, 222, 0.94); border: 2px solid #2b2119; padding: 0.1rem 0.5rem; font-size: 0.85rem; color: #2b2119; }
+.wuxia-a3-corner > button.on { background: #2b2119; color: #f7f0de; }
+.wuxia-a3-corner > .wuxia-a3-feed { background: rgba(247, 240, 222, 0.97); border: 2px solid #2b2119; padding: 0.3rem 0.5rem; max-width: min(26rem, 80vw); }
+/* A4（#576）：緣、干預選單、目標、說書人、開場、結算 */
+.wuxia-a4-yuan { display: inline-flex; align-items: center; gap: 0.15rem; background: rgba(247, 240, 222, 0.94); border: 2px solid #2b2119; padding: 0 0.4rem; font-size: 0.85rem; color: #2b2119; }
+.wuxia-a4-yuan i { display: inline-block; width: 0.6rem; height: 0.6rem; border-radius: 50%; border: 1.5px solid #8a2f1e; }
+.wuxia-a4-yuan i.on { background: #b3342a; }
+.wuxia-a4-menu { margin: 0.4rem 0; padding: 0.3rem 0; border-top: 1px dotted #b9a98a; }
+.wuxia-a4-opts { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.25rem; }
+.wuxia-a4-opts button { border: 2px solid #2b2119; background: #faf4e4; padding: 0.1rem 0.45rem; font-size: 0.85rem; color: #2b2119; display: flex; gap: 0.2rem; align-items: center; }
+.wuxia-a4-opts button.on { background: #2b2119; color: #f7f0de; }
+.wuxia-a4-opts button:disabled { opacity: 0.45; }
+.wuxia-a4-opts small { color: #b3342a; font-size: 0.6rem; }
+.wuxia-a4-opts button.on small { color: #f2b8a8; }
+.wuxia-a4-pick { display: flex; flex-direction: column; gap: 0.25rem; margin-top: 0.3rem; }
+.wuxia-a4-pick .hint { margin: 0; font-size: 0.8rem; color: inherit; opacity: 0.85; }
+.wuxia-a4-pick select { font-size: 0.85rem; padding: 0.1rem; border: 1.5px solid #2b2119; background: #faf4e4; color: #2b2119; }
+.wuxia-a4-goals { min-width: 17rem; max-width: 24rem; display: flex; flex-direction: column; gap: 0.25rem; }
+.wuxia-a4-goals .tier { display: grid; grid-template-columns: 1.6rem 1fr auto; gap: 0.3rem; align-items: center; font-size: 0.85rem; color: #8a7a64; }
+.wuxia-a4-goals .tier.got { color: #2b2119; }
+.wuxia-a4-goals .medal { display: inline-flex; justify-content: center; width: 1.4rem; height: 1.4rem; border-radius: 50%; border: 2px solid currentColor; font-size: 0.75rem; align-items: center; }
+.wuxia-a4-goals .tier.bronze.got .medal { background: #b0703a; color: #fff; border-color: #b0703a; }
+.wuxia-a4-goals .tier.silver.got .medal { background: #9aa3ad; color: #fff; border-color: #9aa3ad; }
+.wuxia-a4-goals .tier.gold.got .medal { background: #d4a017; color: #fff; border-color: #d4a017; }
+.wuxia-a4-goals .v small { margin-left: 0.3rem; font-size: 0.75rem; }
+.wuxia-a4-tutorial { position: absolute; left: 50%; top: 0.6rem; transform: translateX(-50%); z-index: 25; display: flex; gap: 0.5rem; align-items: center; background: rgba(43, 33, 25, 0.88); color: #f7f0de; padding: 0.25rem 0.7rem; font-size: 0.9rem; border-radius: 2px; }
+.wuxia-a4-tutorial .who { color: #e8b04a; font-weight: 700; }
+.wuxia-a4-tutorial button { background: none; border: none; color: #f7f0de; font-size: 1rem; }
+.wuxia-a4-opening { position: absolute; left: 50%; bottom: 5rem; transform: translateX(-50%); z-index: 26; max-width: min(34rem, 90vw); background: rgba(250, 244, 228, 0.96); border: 2px solid #2b2119; padding: 0.6rem 1rem; text-align: center; cursor: pointer; }
+.wuxia-a4-opening p { margin: 0.3rem 0 0; font-size: 1rem; color: #2b2119; }
+.wuxia-a4-settle { position: absolute; inset: 0; z-index: 40; background: rgba(43, 33, 25, 0.6); display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 1rem; flex-wrap: wrap; }
+.wuxia-a4-settle .card { width: min(900px, 92vw); }
+.wuxia-a4-settle .card svg { width: 100%; height: auto; display: block; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); }
+.wuxia-a4-settle .side { background: rgba(250, 244, 228, 0.98); border: 2px solid #2b2119; padding: 0.6rem 0.8rem; max-width: 22rem; font-size: 0.85rem; }
+.wuxia-a4-settle .side ul { margin: 0.3rem 0; padding-left: 1rem; max-height: 14rem; overflow-y: auto; }
+.wuxia-a4-settle .side small { color: #6b5d4c; }
+.wuxia-a4-settle .actions { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.4rem; }
+.wuxia-a4-reopen { position: absolute; left: 50%; top: 0.6rem; transform: translateX(-50%); z-index: 25; background: #d4a017; border: 2px solid #2b2119; padding: 0.1rem 0.6rem; }
+.wuxia-a4-scenarios { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.6rem; }
+.wuxia-a4-scenarios button { display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
+.wuxia-a4-scenarios small { font-size: 0.75rem; color: #6b5d4c; }
+.wuxia-a4-corner { position: absolute; right: 0.5rem; top: 7.6rem; z-index: 12; display: flex; flex-direction: column; align-items: flex-end; gap: 0.3rem; }
+.wuxia-a4-corner > button { background: rgba(247, 240, 222, 0.94); border: 2px solid #2b2119; padding: 0.1rem 0.5rem; font-size: 0.85rem; color: #2b2119; }
+.wuxia-a4-corner > button.on { background: #2b2119; color: #f7f0de; }
+.wuxia-a4-corner > .pop { background: rgba(247, 240, 222, 0.97); border: 2px solid #2b2119; padding: 0.3rem 0.5rem; }

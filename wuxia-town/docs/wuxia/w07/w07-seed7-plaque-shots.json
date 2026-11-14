@@ -1,0 +1,32 @@
+[
+  {
+    "file": "docs/wuxia/w07/w07-seed7-plaque-d24-0635-1400x820.png",
+    "seed": 7,
+    "at": 33155,
+    "size": [
+      1400,
+      820
+    ],
+    "clock": "第 24 日 卯正",
+    "gameMinute": 33155,
+    "who": null,
+    "blind": false,
+    "hash": "15e02c653be0754d37481282f178826d51e17fb40bc817d57d67dd8be5f9b70b",
+    "steps": 33156
+  },
+  {
+    "file": "docs/wuxia/w07/w07-seed7-plaque-d24-0700-1400x820.png",
+    "seed": 7,
+    "at": 33180,
+    "size": [
+      1400,
+      820
+    ],
+    "clock": "第 24 日 辰初",
+    "gameMinute": 33180,
+    "who": null,
+    "blind": false,
+    "hash": "8ace61ab321ef598ed3db1dee6e7c9e68a842de118aa6374885a252dcf3a775e",
+    "steps": 33181
+  }
+]

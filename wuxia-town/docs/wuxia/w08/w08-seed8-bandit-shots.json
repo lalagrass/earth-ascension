@@ -1,0 +1,32 @@
+[
+  {
+    "file": "docs/wuxia/w08/w08-seed8-bandit-d08-1020-1400x820.png",
+    "seed": 8,
+    "at": 10340,
+    "size": [
+      1400,
+      820
+    ],
+    "clock": "第 8 日 巳正",
+    "gameMinute": 10340,
+    "who": null,
+    "blind": false,
+    "hash": "af13721f898470e5b33edc961db1024ce82de85da6b2f403646b7a4d1f6482bd",
+    "steps": 10341
+  },
+  {
+    "file": "docs/wuxia/w08/w08-seed8-bandit-d08-1020-390w.png",
+    "seed": 8,
+    "at": 10340,
+    "size": [
+      390,
+      844
+    ],
+    "clock": "第 8 日 巳正",
+    "gameMinute": 10340,
+    "who": null,
+    "blind": false,
+    "hash": "af13721f898470e5b33edc961db1024ce82de85da6b2f403646b7a4d1f6482bd",
+    "steps": 10341
+  }
+]

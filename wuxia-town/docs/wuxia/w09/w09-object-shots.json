@@ -1,0 +1,32 @@
+[
+  {
+    "file": "docs/wuxia/w09/w09-object-d01-0820-390w.png",
+    "seed": 7,
+    "at": 140,
+    "size": [
+      390,
+      844
+    ],
+    "clock": "第 1 日 辰正",
+    "gameMinute": 140,
+    "who": "外地少年",
+    "blind": false,
+    "hash": "363a070bc17ffe668816c54cacb68e2273ebfab2dbbc001d12d893114a298ba0",
+    "steps": 141
+  },
+  {
+    "file": "docs/wuxia/w09/w09-object-d01-0820-1400x820.png",
+    "seed": 7,
+    "at": 140,
+    "size": [
+      1400,
+      820
+    ],
+    "clock": "第 1 日 辰正",
+    "gameMinute": 140,
+    "who": "外地少年",
+    "blind": false,
+    "hash": "363a070bc17ffe668816c54cacb68e2273ebfab2dbbc001d12d893114a298ba0",
+    "steps": 141
+  }
+]

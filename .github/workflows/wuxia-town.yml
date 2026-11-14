@@ -1,0 +1,47 @@
+# 武俠小鎮（wuxia-town/）專用 CI（#549 第 1 節、#552）。不需要 Docker、不需要 LLM。
+# A1（#563 輕量驗收、#564 審查第 1 項）：每次 push／PR 只跑快速關卡 wuxia:check:quick（3 分鐘內）；
+# 完整檢查 wuxia:check:full（原 wuxia:check，10–19 分鐘）改成手動觸發：Actions → wuxia-town → Run workflow → suite=full。
+name: wuxia-town
+
+on:
+  push:
+    branches: [town/wuxia]
+    paths:
+      - 'wuxia-town/**'
+      - '.github/workflows/wuxia-town.yml'
+  pull_request:
+    paths:
+      - 'wuxia-town/**'
+      - '.github/workflows/wuxia-town.yml'
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: 'quick（快速關卡）或 full（完整 W0–W9 檢查）'
+        type: choice
+        options: [quick, full]
+        default: quick
+
+permissions:
+  contents: read
+
+jobs:
+  wuxia-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ github.event.inputs.suite == 'full' && 40 || 15 }}
+    defaults:
+      run:
+        working-directory: wuxia-town
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: wuxia-town/package-lock.json
+      - run: npm ci
+      - name: wuxia:check:quick
+        if: github.event.inputs.suite != 'full'
+        run: npm run wuxia:check:quick
+      - name: wuxia:check:full
+        if: github.event.inputs.suite == 'full'
+        run: npm run wuxia:check:full

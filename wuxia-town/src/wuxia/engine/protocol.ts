@@ -1,0 +1,27 @@
+// 武俠小鎮 A1：畫面 ↔ 單機引擎 Worker 的訊息格式。
+import type { CoreInit, CoreView, Speed } from './core';
+import type { KeyEvent } from './events';
+import type { SaveFile } from './save';
+
+export type ToWorker =
+  | { t: 'init'; init: CoreInit; id: number }
+  | { t: 'speed'; speed: Speed }
+  | { t: 'autoSlow'; on: boolean }
+  | { t: 'skip'; kind: 'morning' | 'next-event' }
+  | { t: 'cancelSkip' }
+  | { t: 'input'; name: string; args: any; id: number }
+  | { t: 'save'; label?: string; id: number }
+  | { t: 'hash'; id: number }
+  /** 測試用：暫停中直接跑 n 步，回傳 hash（wuxia:parity、dist-local 檢查） */
+  | { t: 'advance'; steps: number; id: number }
+  | { t: 'resend' }
+  /** A5 測試用：讓下一個 frame 丟例外（驗「引擎當掉時保留存檔並提示」） */
+  | { t: 'crashForTest' };
+
+export type FromWorker =
+  | { t: 'reply'; id: number; value: any }
+  | { t: 'view'; view: CoreView; events: KeyEvent[] }
+  | { t: 'newDay'; day: number }
+  | { t: 'error'; message: string };
+
+export type { SaveFile };

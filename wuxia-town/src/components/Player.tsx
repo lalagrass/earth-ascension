@@ -1,0 +1,116 @@
+import { Character } from './Character.tsx';
+import { orientationDegrees } from '../../convex/util/geometry.ts';
+// WUXIA-PATCH(W1): w01-skin 開啟時把上游人物換成古裝造型（public/wuxia/characters/folk.png）
+import { characterFor, skinEnabled } from '../wuxia/skin.ts';
+// WUXIA-PATCH(W4): 打樁時用動作圖
+import { poseFor } from '../wuxia/dojo.ts';
+// WUXIA-PATCH(W6): 切磋時攻方前衝、守方後退（位移只由回合時間算出）
+import { sparOffset } from '../wuxia/spar.ts';
+import { toast } from 'react-toastify';
+import { Player as ServerPlayer } from '../../convex/aiTown/player.ts';
+import { GameId } from '../../convex/aiTown/ids.ts';
+import { Id } from '../../convex/_generated/dataModel';
+import { Location, locationFields, playerLocation } from '../../convex/aiTown/location.ts';
+import { useHistoricalValue } from '../hooks/useHistoricalValue.ts';
+import { PlayerDescription } from '../../convex/aiTown/playerDescription.ts';
+import { WorldMap } from '../../convex/aiTown/worldMap.ts';
+import { ServerGame } from '../hooks/serverGame.ts';
+
+export type SelectElement = (element?: { kind: 'player'; id: GameId<'players'> }) => void;
+
+const logged = new Set<string>();
+
+export const Player = ({
+  game,
+  isViewer,
+  player,
+  onClick,
+  historicalTime,
+  wuxiaSelected,
+}: {
+  game: ServerGame;
+  isViewer: boolean;
+  player: ServerPlayer;
+
+  onClick: SelectElement;
+  historicalTime?: number;
+  // WUXIA-PATCH(A1): 選中的人才在頭上顯示活動文字（其餘只顯示圖示；#564 審查第 3 項）
+  wuxiaSelected?: boolean;
+}) => {
+  const playerCharacter = game.playerDescriptions.get(player.id)?.character;
+  if (!playerCharacter) {
+    throw new Error(`Player ${player.id} has no character`);
+  }
+  // WUXIA-PATCH(W1): 依 w01-skin 選人物圖
+  const character = characterFor(playerCharacter, skinEnabled(game.world));
+
+  const locationBuffer = game.world.historicalLocations?.get(player.id);
+  const historicalLocation = useHistoricalValue<Location>(
+    locationFields,
+    historicalTime,
+    playerLocation(player),
+    locationBuffer,
+  );
+  if (!character) {
+    if (!logged.has(playerCharacter)) {
+      logged.add(playerCharacter);
+      toast.error(`Unknown character ${playerCharacter}`);
+    }
+    return null;
+  }
+
+  if (!historicalLocation) {
+    return null;
+  }
+
+  const isSpeaking = !![...game.world.conversations.values()].find(
+    (c) => c.isTyping?.playerId === player.id,
+  );
+  const isThinking =
+    !isSpeaking &&
+    !![...game.world.agents.values()].find(
+      (a) => a.playerId === player.id && !!a.inProgressOperation,
+    );
+  const tileDim = game.worldMap.tileDim;
+  const historicalFacing = { dx: historicalLocation.dx, dy: historicalLocation.dy };
+  // WUXIA-PATCH(W6): w06-spar 開啟時加上切磋動作的位移（關閉時恆為 0）
+  const sparOff = sparOffset(game.world, player.id, historicalTime ?? Date.now(), tileDim, (id) =>
+    game.world.players.get(id as GameId<'players'>)?.position,
+  );
+  return (
+    <>
+      <Character
+        x={historicalLocation.x * tileDim + tileDim / 2 + sparOff.dx}
+        y={historicalLocation.y * tileDim + tileDim / 2 + sparOff.dy}
+        orientation={orientationDegrees(historicalFacing)}
+        isMoving={historicalLocation.speed > 0}
+        isThinking={isThinking}
+        isSpeaking={isSpeaking}
+        emoji={
+          player.activity && player.activity.until > (historicalTime ?? Date.now())
+            ? player.activity?.emoji
+            : undefined
+        }
+        // WUXIA-PATCH(W3): w03-life 開啟時頭上顯示活動標籤（活動名稱已是繁中）
+        // WUXIA-PATCH(A1): 只有選中的人顯示文字，其餘只有 emoji 圖示（不重疊）
+        label={
+          wuxiaSelected &&
+          game.world.wuxia?.enabled['w03-life'] &&
+          player.activity &&
+          player.activity.until > (historicalTime ?? Date.now())
+            ? player.activity.description
+            : undefined
+        }
+        // WUXIA-PATCH(W4): w04-dojo 開啟時，打樁的人用打樁動作圖
+        pose={skinEnabled(game.world) ? poseFor(game.world, player.id) : undefined}
+        isViewer={isViewer}
+        textureUrl={character.textureUrl}
+        spritesheetData={character.spritesheetData}
+        speed={character.speed}
+        onClick={() => {
+          onClick({ kind: 'player', id: player.id });
+        }}
+      />
+    </>
+  );
+};

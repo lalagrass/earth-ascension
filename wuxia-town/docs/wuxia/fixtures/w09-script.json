@@ -1,0 +1,22 @@
+{
+  "_doc": "W9（#561）player-script 的腳本：用 input 模擬一位玩家。day＝第幾日、at＝當日時刻（HH:MM）；到了就送 input，被規則拒絕時每 retryEvery 遊戲分鐘再試，直到 retry 遊戲分鐘用完。op：join（加入）、activity（點物件選活動，obj／act 是 data/wuxia/objects.json 的 id）、goto（走到地點，place 是 places.json 的 id）、talk（邀 target 聊天，玩家說 lines 句後離開）、ask（請教）、spar（切磋）、apprentice（拜師）、pause（單人暫停 steps 個引擎秒後繼續）。#561 驗收：第 1 日挑水、第 2 日去武館、第 5 日請教、第 10 日拜師；另加聊天兩人、暫停一次；第 10 日之後不按（閒置 30 實分鐘轉代管、照作息睡覺），第 12 日回來接手，進武館打木人樁、再向師父討教切磋（goto 走到地點的入口，武館入口在門外，所以切磋前先用練功走進武館）（對應 Docker 實跑的項目）。",
+  "role": "youth-m",
+  "name": "外地少年",
+  "token": "script-player",
+  "days": 12,
+  "retryEvery": 30,
+  "steps": [
+    { "day": 1, "at": "06:30", "op": "join" },
+    { "day": 1, "at": "08:00", "op": "activity", "obj": "well", "act": "draw_water", "retry": 240 },
+    { "day": 1, "at": "19:00", "op": "talk", "target": "lin-sao", "lines": 2, "retry": 120 },
+    { "day": 2, "at": "08:00", "op": "activity", "obj": "dummies", "act": "hit_dummy" },
+    { "day": 2, "at": "08:10", "op": "goto", "place": "dojo" },
+    { "day": 2, "at": "09:30", "op": "activity", "obj": "dojo-gate", "act": "gaze_dojo", "retry": 120 },
+    { "day": 3, "at": "12:00", "op": "pause", "steps": 600 },
+    { "day": 3, "at": "19:00", "op": "talk", "target": "lao-han", "lines": 2, "retry": 120 },
+    { "day": 5, "at": "09:00", "op": "ask", "target": "zhou-jiaotou", "retry": 600 },
+    { "day": 10, "at": "07:00", "op": "apprentice", "target": "zhou-jiaotou", "retry": 600 },
+    { "day": 12, "at": "07:30", "op": "activity", "obj": "dummies", "act": "hit_dummy", "retry": 240 },
+    { "day": 12, "at": "09:00", "op": "spar", "target": "zhou-jiaotou", "retry": 480 }
+  ]
+}

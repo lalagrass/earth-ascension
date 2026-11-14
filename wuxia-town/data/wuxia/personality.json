@@ -1,0 +1,152 @@
+{
+ "_doc": "武俠小鎮 A3（#574）人格四軸，各 −1～1：ext 外向、calm 沉穩、disc 自律、caut 謹慎。互動意願與成功率會用到（interactions.json 的 extA／calmB…）。原 6 人手訂；鎮民池 14 人與雲遊道人由 W2 的 traits（0–100）推導：calm＝(calm−50)/50、caut＝(50−brave)/50、ext＝(curious−50)/50×0.6＋(kind−50)/50×0.4、disc＝(calm−50)/50×0.5＋(kind−50)/50×0.3，四捨五入到 0.1。",
+ "people": {
+  "lin-sao": {
+   "ext": 0.7,
+   "calm": 0.2,
+   "disc": 0.3,
+   "caut": 0.1,
+   "_src": "旋鈕：依角色設定手訂（茶館老闆娘迎來送往、話多）"
+  },
+  "shi-hu": {
+   "ext": -0.3,
+   "calm": 0.4,
+   "disc": 0.6,
+   "caut": 0.0,
+   "_src": "旋鈕：依角色設定手訂（鐵匠埋頭打鐵、話少守規矩）"
+  },
+  "he-langzhong": {
+   "ext": -0.1,
+   "calm": 0.6,
+   "disc": 0.5,
+   "caut": 0.6,
+   "_src": "旋鈕：依角色設定手訂（郎中穩重小心）"
+  },
+  "lao-han": {
+   "ext": 0.8,
+   "calm": 0.3,
+   "disc": -0.1,
+   "caut": -0.2,
+   "_src": "旋鈕：依角色設定手訂（說書人愛講話、散漫）"
+  },
+  "a-qing": {
+   "ext": 0.2,
+   "calm": -0.4,
+   "disc": 0.2,
+   "caut": -0.3,
+   "_src": "旋鈕：依角色設定手訂（外地少年衝動好強）"
+  },
+  "zhou-jiaotou": {
+   "ext": 0.1,
+   "calm": -0.2,
+   "disc": 0.4,
+   "caut": -0.4,
+   "_src": "旋鈕：依角色設定手訂（破武館館主好面子、易被激）"
+  },
+  "tian-dashu": {
+   "ext": -0.2,
+   "calm": 0.2,
+   "disc": 0.2,
+   "caut": 0.2,
+   "_src": "推導：由 townsfolk.json traits 換算（公式見 _doc）"
+  },
+  "tian-xiaoman": {
+   "ext": 0.4,
+   "calm": -0.4,
+   "disc": -0.1,
+   "caut": -0.4,
+   "_src": "推導：由 townsfolk.json traits 換算（公式見 _doc）"
+  },
+  "lei-shan": {
+   "ext": -0.2,
+   "calm": 0.1,
+   "disc": 0.0,
+   "caut": -0.6,
+   "_src": "推導：由 townsfolk.json traits 換算（公式見 _doc）"
+  },
+  "qian-huolang": {
+   "ext": 0.5,
+   "calm": -0.1,
+   "disc": 0.0,
+   "caut": 0.3,
+   "_src": "推導：由 townsfolk.json traits 換算（公式見 _doc）"
+  },
+  "liu-sanniang": {
+   "ext": 0.0,
+   "calm": 0.4,
+   "disc": 0.3,
+   "caut": 0.4,
+   "_src": "推導：由 townsfolk.json traits 換算（公式見 _doc）"
+  },
+  "a-niu": {
+   "ext": 0.3,
+   "calm": -0.3,
+   "disc": -0.1,
+   "caut": -0.5,
+   "_src": "推導：由 townsfolk.json traits 換算（公式見 _doc）"
+  },
+  "xiao-dou": {
+   "ext": 0.5,
+   "calm": 0.0,
+   "disc": 0.1,
+   "caut": 0.1,
+   "_src": "推導：由 townsfolk.json traits 換算（公式見 _doc）"
+  },
+  "sun-qiao": {
+   "ext": -0.3,
+   "calm": 0.3,
+   "disc": 0.2,
+   "caut": 0.1,
+   "_src": "推導：由 townsfolk.json traits 換算（公式見 _doc）"
+  },
+  "jiang-wu": {
+   "ext": 0.0,
+   "calm": 0.0,
+   "disc": 0.0,
+   "caut": -0.2,
+   "_src": "推導：由 townsfolk.json traits 換算（公式見 _doc）"
+  },
+  "xu-doufu": {
+   "ext": 0.3,
+   "calm": 0.1,
+   "disc": 0.2,
+   "caut": 0.2,
+   "_src": "推導：由 townsfolk.json traits 換算（公式見 _doc）"
+  },
+  "shen-shusheng": {
+   "ext": 0.6,
+   "calm": 0.2,
+   "disc": 0.2,
+   "caut": 0.5,
+   "_src": "推導：由 townsfolk.json traits 換算（公式見 _doc）"
+  },
+  "ma-tuhu": {
+   "ext": -0.4,
+   "calm": -0.2,
+   "disc": -0.2,
+   "caut": -0.4,
+   "_src": "推導：由 townsfolk.json traits 換算（公式見 _doc）"
+  },
+  "xiao-lian": {
+   "ext": 0.5,
+   "calm": -0.1,
+   "disc": 0.1,
+   "caut": -0.1,
+   "_src": "推導：由 townsfolk.json traits 換算（公式見 _doc）"
+  },
+  "bao-laobing": {
+   "ext": -0.1,
+   "calm": 0.4,
+   "disc": 0.2,
+   "caut": -0.3,
+   "_src": "推導：由 townsfolk.json traits 換算（公式見 _doc）"
+  },
+  "zhang-sanfeng": {
+   "ext": 0.2,
+   "calm": 0.9,
+   "disc": 0.6,
+   "caut": -0.4,
+   "_src": "推導：由 townsfolk.json traits 換算（公式見 _doc）"
+  }
+ }
+}

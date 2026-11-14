@@ -1,0 +1,11 @@
+{
+  "id": "s1", "name": "高人入鎮", "policy": "open",
+  "seeds": [1, 999], "arriveDay": 1, "days": 90,
+  "_src": "量測＋旋鈕：#576 劇本一（教學關，open，90 日）；seed 範圍 1–999 與第 1 日進鎮是旋鈕",
+  "intro": "山腳小鎮來了一位白鬚老道，每天清早在廣場上慢慢打一套拳。他說，誰想學，就來看。",
+  "goals": {
+    "bronze": {"label": "三人學會一招", "all": [{"k": "knowers", "family": "taiji", "via": ["teach"], "min": 3}]},
+    "silver": {"label": "出現第二代傳人", "all": [{"k": "generation", "family": "taiji", "min": 2}]},
+    "gold": {"label": "半個鎮會至少一招，走樣的招不超過兩成", "all": [{"k": "townShare", "family": "taiji", "min": 0.5}, {"k": "flawedShare", "family": "taiji", "max": 0.2}]}
+  }
+}
