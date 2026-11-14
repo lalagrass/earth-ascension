@@ -49,6 +49,7 @@ export const wuxiaInputs = {
       other: v.optional(v.string()),
       place: v.optional(v.string()),
       rid: v.optional(v.number()),
+      tuition: v.optional(v.string()),
     },
     handler: (game, now, args) => intervene(game, now, args),
   }),

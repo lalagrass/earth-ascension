@@ -128,6 +128,7 @@
 | A4 | `package.json`（JSON 無法加註解） | `wuxia:card`、`wuxia:scenario-report`、`wuxia:a4-shots` | #576 工具 |
 | A5 | `tsconfig.json` | `exclude` 加 `dist-local`（建置產物的 JS 被 allowJs 當全域腳本，蓋掉 jest 的 `it`／`test` 型別） | #577；tsc 不必先刪 dist-local |
 | A5 | `package.json`（JSON 無法加註解） | `wuxia:e2e`、`wuxia:bundle-report`、`wuxia:soak`、`wuxia:a5-shots` | #577 工具 |
+| A7 | `package.json`（JSON 無法加註解） | `wuxia:a7-measure`、`wuxia:a7-econ`、`wuxia:a7-report` | #584 工具（A7 沒有改任何上游檔，其餘都在 `convex/wuxia/`、`src/wuxia/`、`data/wuxia/`） |
 
 ## 上游刻意保留不改的隨機／時間
 

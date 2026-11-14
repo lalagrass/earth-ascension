@@ -13,5 +13,7 @@
     "bronze": {"label": "有人偷學到皮毛", "all": [{"k": "knowers", "family": "taiji", "via": ["watch"], "min": 1}]},
     "silver": {"label": "大師收下第一個徒弟", "after": "bronze", "all": [{"k": "disciples", "master": "zhang-sanfeng", "min": 1}]},
     "gold": {"label": "那個徒弟再傳給第三人", "after": "silver", "all": [{"k": "discipleTaught", "master": "zhang-sanfeng", "family": "taiji", "min": 1}]}
-  }
+  },
+  "goalsA7_src": "量測：#584 第 5 節劇本二：金改成「有人正式學會三招以上」（取代「徒弟再傳」；bothArts 只列太極＝這個人正式（師父教）學會太極至少 3 招）。銅、銀同 A6",
+  "goalsA7": {"bronze": {"label": "有人偷學到皮毛", "all": [{"k": "knowers", "family": "taiji", "via": ["watch"], "min": 1}]}, "silver": {"label": "大師收下第一個徒弟", "after": "bronze", "all": [{"k": "disciples", "master": "zhang-sanfeng", "min": 1}]}, "gold": {"label": "有人正式學會三招以上", "after": "silver", "all": [{"k": "bothArts", "arts": ["taiji"], "min": 1, "moves": 3}]}}
 }

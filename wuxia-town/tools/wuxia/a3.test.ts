@@ -12,7 +12,7 @@ import { translateEntry } from '../../src/wuxia/a3';
 quietConsole(false);
 
 // 一局 9 遊戲日（預設設定，a3-silent 開）；大師第 1 日進鎮，請教／指點／教都會發生
-const run = runHeadless({ seed: 7, minutes: 1, untilGameMinute: 9 * 1440, arriveDay: 1 });
+const run = runHeadless({ seed: 7, minutes: 1, untilGameMinute: 14 * 1440, arriveDay: 1 }); // A7：要付束脩或做工才被教，第一筆教在第 10 日，9 日改 14 日（DEVIATIONS A7-13）
 const w = run.game.world.wuxia!;
 const st = w.elements['a3-silent'] as A3State;
 const mind = w.elements['w05-mind'] as MindState;

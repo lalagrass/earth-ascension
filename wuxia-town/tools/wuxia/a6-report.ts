@@ -135,7 +135,9 @@ async function main() {
   void ARTS;
 }
 
-main().catch((e) => {
-  process.stderr.write(String(e) + '\n');
-  process.exit(1);
-});
+// A7：a7-report 會 import snap；只有直接執行這支才跑 main
+if (process.argv[1]?.endsWith('a6-report.ts'))
+  main().catch((e) => {
+    process.stderr.write(String(e) + '\n');
+    process.exit(1);
+  });

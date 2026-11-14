@@ -11,6 +11,7 @@ import { A2_MASTER, MASTER_CID, MOVE_BY_ID } from '../a2_master/data';
 import type { A2State } from '../a2_master/data';
 import { formalGenerations, generations } from '../a2_master/lineage';
 import { a6On } from '../a6_spread/data';
+import { a7Of, a7On } from '../a7_tuition/data';
 import type { BondState } from '../w07_bond/data';
 import type { SparState } from '../w06_spar/data';
 
@@ -24,7 +25,7 @@ export const INTERVENTION_HINT: Record<InterventionKind, string> = {
   guide: '他明早會剛好路過那裡；去了會不會心動，看他自己',
   intro: '兩人今天會在茶館碰面，由他開口；說什麼、成不成，照規矩來',
   whisper: '那條傳聞會進他耳裡，之後可能走樣、傳開',
-  feed: '三天不必為吃飯操心，空出來的時間他自己決定怎麼用',
+  feed: '三天不必為吃飯操心，空出來的時間他自己決定怎麼用（束脩開著時也可以改成替他付這個月束脩，他就成了學生）',
   plead: '師父對他親近一些（同一對人只能一次）；收不收徒還是師父的事',
 };
 
@@ -52,7 +53,9 @@ export type Cond =
   | { k: 'disciples'; master: string; min: number }
   | { k: 'discipleTaught'; master: string; family: string; min: number }
   | { k: 'crossSpar'; a: string; b: string; min: number }
-  | { k: 'bothArts'; arts: string[]; min: number; moves?: number };
+  | { k: 'bothArts'; arts: string[]; min: number; moves?: number }
+  /** A7（#584）：有人靠以工代學正式學會（師父教）這門的一招，並把那一招練到 prof ≥ prof（小成 120）；min 人 */
+  | { k: 'workLearned'; family: string; prof: number; min: number };
 export type Tier = 'bronze' | 'silver' | 'gold';
 export const TIERS: Tier[] = ['bronze', 'silver', 'gold'];
 export const TIER_LABEL: Record<Tier, string> = { bronze: '銅', silver: '銀', gold: '金' };
@@ -69,10 +72,13 @@ export type Scenario = {
   goals: Record<Tier, Goal>;
   /** A6（#581）：a6-spread 開著時用的目標（依序、靠正式傳承） */
   goalsA6?: Record<Tier, Goal>;
+  /** A7（#584）：a7-tuition 開著時用的目標（不用代數；沒寫的劇本沿用 goalsA6） */
+  goalsA7?: Record<Tier, Goal>;
 };
 
 /** 這個世界此刻用的三級目標（a6 開著用 goalsA6，否則 A5 的 goals） */
 export function goalsOf(w: WuxiaState | undefined, scenario: Scenario): Record<Tier, Goal> {
+  if (a7On(w) && scenario.goalsA7) return scenario.goalsA7;
   return a6On(w) && scenario.goalsA6 ? scenario.goalsA6 : scenario.goals;
 }
 export const SCENARIOS: Scenario[] = [s1, s2, s3] as unknown as Scenario[];
@@ -253,6 +259,13 @@ export function evalCond(w: WuxiaState, c: Cond): { ok: boolean; value: number; 
           ((da.has(r.a) && db.has(r.b)) || (db.has(r.a) && da.has(r.b))) &&
           rival(r.a, r.b) < PLAY.rivalMax &&
           rival(r.b, r.a) < PLAY.rivalMax,
+      ).length;
+      return { ok: n >= c.min, value: n, need: c.min };
+    }
+    case 'workLearned': {
+      const st = a7Of(w);
+      const n = Object.keys(v.a2?.know ?? {}).filter((cid) =>
+        knownMoves(v, cid, c.family).some((m) => m.via === 'teach' && st?.learned[`${cid}|${m.id}`] === 'work' && m.prof >= c.prof),
       ).length;
       return { ok: n >= c.min, value: n, need: c.min };
     }

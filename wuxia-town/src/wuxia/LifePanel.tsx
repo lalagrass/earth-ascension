@@ -5,6 +5,8 @@ import type { ClockReading } from '../../convex/wuxia/clock';
 import { NEED_KEYS, NEED_LABELS, describeCurrent, describeNext, todayDone } from './life';
 import { lifeSchedCtx, schedCtx } from '../../convex/wuxia/w03_life/data';
 import type { WuxiaState } from '../../convex/wuxia/state';
+import { a7Of, choreMinutesToday, paidTeachers, studentKind, TEACHERS, A7 } from '../../convex/wuxia/a7_tuition/data';
+import { cidName } from './a2';
 
 export function LifePanel(props: {
   life?: LifeState;
@@ -26,6 +28,7 @@ export function LifePanel(props: {
         <b>正在</b> {describeCurrent(person)}
       </p>
       <p className="wuxia-life-next">{describeNext(person, clock.minuteOfDay, props.wuxia ? lifeSchedCtx(props.wuxia, clock.day) : schedCtx(props.enabled, clock.day))}</p>
+      <PurseLine wuxia={props.wuxia} cid={person.cid} day={clock.day} />
       <div className="wuxia-needs">
         {NEED_KEYS.map((k) => {
           const v = Math.round(person.needs[k]);
@@ -54,5 +57,25 @@ export function LifePanel(props: {
         </div>
       )}
     </div>
+  );
+}
+
+/** A7（#584）：人物詳情的錢袋與「學生（付束脩／以工代學）」。a7-tuition 關閉或這人不在經濟裡（玩家）時不顯示。 */
+export function PurseLine(props: { wuxia?: WuxiaState; cid: string; day: number }) {
+  const st = a7Of(props.wuxia);
+  if (!st || st.purse[props.cid] === undefined) return null;
+  const { cid, day } = props;
+  const kind = studentKind(st, cid, day);
+  const paid = paidTeachers(st, cid, day);
+  const chore = choreMinutesToday(st, cid, day);
+  const teacher = TEACHERS.includes(cid);
+  return (
+    <p className="wuxia-purse" data-testid="wuxia-purse">
+      <b>錢袋</b> {st.purse[cid]} 文
+      {!teacher && kind === 'paid' && <span className="wuxia-student paid">・學生（付束脩：{paid.map(cidName).join('、')}，到第 {Math.max(...paid.map((t) => st.paidUntil[cid][t]))} 日）</span>}
+      {!teacher && kind === 'work' && <span className="wuxia-student work">・學生（以工代學：今天替武館做滿了雜務）</span>}
+      {!teacher && !kind && chore > 0 && <span className="wuxia-student">・今天替武館做了 {chore}／{A7.chore.minutes} 分鐘雜務</span>}
+      {!teacher && !kind && chore === 0 && <span className="wuxia-student none">・不是學生（只能看）</span>}
+    </p>
   );
 }

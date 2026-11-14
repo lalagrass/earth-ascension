@@ -21,6 +21,7 @@ import { hear, knows } from '../w08_jianghu/common';
 import { A2_MASTER, COACH_CID, MASTER_CID, MOVE_BY_ID } from '../a2_master/data';
 import type { A2State } from '../a2_master/data';
 import { introSocial } from '../a3_silent';
+import { aidTuition } from '../a7_tuition';
 import { profileById } from '../w02_folk';
 import {
   A4_PLAY,
@@ -226,7 +227,8 @@ function scan(w: WuxiaState, st: A4State, gm: number, day: number) {
   void day;
 }
 
-export type InterveneArgs = { kind: string; target: string; other?: string; place?: string; rid?: number };
+/** tuition（A7，#584）：接濟時選「替他付這個月束脩」，值是師父 id（zhang-sanfeng／zhou-jiaotou）；沒給＝照舊給三天的飯 */
+export type InterveneArgs = { kind: string; target: string; other?: string; place?: string; rid?: number; tuition?: string };
 
 /** wuxiaIntervene input：花緣做一個干預。回傳 { ok, reason, id? }（不夠緣、條件不合時 ok=false，不扣緣、狀態不變）。 */
 export function intervene(game: Game, now: number, args: InterveneArgs): { ok: boolean; reason: string; id?: number } {
@@ -295,6 +297,14 @@ export function intervene(game: Game, now: number, args: InterveneArgs): { ok: b
       break;
     }
     case 'feed': {
+      if (args.tuition) {
+        const r = aidTuition(w, args.target, args.tuition, gm);
+        if (!r.ok) return { ok: false, reason: r.reason };
+        iv.other = args.tuition;
+        memWhat = { other: args.tuition };
+        text = `有人替${nameOf(args.target)}付了${nameOf(args.tuition)}這個月的束脩`;
+        break;
+      }
       st.fed[args.target] = Math.max(st.fed[args.target] ?? 0, gm + PLAY.feed.days * 1440);
       text = `有人接濟了${nameOf(args.target)}三天的飯`;
       break;

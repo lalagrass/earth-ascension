@@ -30,6 +30,7 @@ import { LifePanel } from '../LifePanel';
 import { TownStatus } from '../TownStatus';
 import { lifeOf } from '../life';
 import { DojoLayer } from '../DojoLayer';
+import { A2Layer } from '../A2Layer';
 import { SkillPanel } from '../SkillPanel';
 import { MindPanel } from '../MindPanel';
 import { dojoOf, dojoOpened } from '../dojo';
@@ -118,6 +119,7 @@ function Scene(props: { game: ServerGame; width: number; height: number; time: n
         />
       ))}
       {skin && <JianghuLayer world={props.game.world} tileDim={tileDim} time={props.time} />}
+      {skin && <A2Layer wuxia={props.game.world.wuxia} tileDim={tileDim} showTaiji={false} pos={(id) => props.game.world.players.get(id as any)?.position} />}
       {skin && (
         <SparLayer
           world={props.game.world}

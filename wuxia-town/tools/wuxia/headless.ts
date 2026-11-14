@@ -85,7 +85,7 @@ export type HeadlessOptions = {
 };
 
 /** A5：W0–W9 的回歸檢查（check:full 第 7–17 項）在 W9 設定下跑：環境變數 WUXIA_ELEMENTS_OFF＝要預設關掉的元素（呼叫端明寫的 elements 優先） */
-export const A_PHASE_ELEMENTS = ['a1-base', 'a2-master', 'a3-silent', 'a4-play', 'a5-robust', 'a6-spread'];
+export const A_PHASE_ELEMENTS = ['a1-base', 'a2-master', 'a3-silent', 'a4-play', 'a5-robust', 'a6-spread', 'a7-tuition'];
 function phaseOff(): Record<string, boolean> {
   const ids = (process.env.WUXIA_ELEMENTS_OFF ?? '').split(',').filter(Boolean);
   return Object.fromEntries(ids.map((id) => [id, false]));

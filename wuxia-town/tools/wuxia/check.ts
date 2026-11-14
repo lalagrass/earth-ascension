@@ -231,8 +231,10 @@ const playerRuns = GROUP('player') ? [playerChild('a'), playerChild('b')] : [];
 // 30 分 affde96b… → bd608abf…、3 日 14abe2fc… → bdb2107b…（--off a5-robust 時仍是 A4 的值，見 check:quick q3）
 // A6（#581，docs/wuxia/A6.md）：元素 a6-spread（看／教／練／目標依序）預設開，再刻意改變一次：
 // 30 分 bd608abf… → 25dcf883…、3 日 bdb2107b… → 7a495042…（--off a6-spread 時仍是 A5 的值，見 check:quick q3）
-const W8_HASH_SEED7_30M = '25dcf8837bb83dd34b21c335ac24cf80ce87d32055c031ba8d77db6b5ab6d111';
-const W8_HASH_SEED7_3D_PREFIX = '7a49504208e1cbe4';
+// A7（#584，docs/wuxia/A7.md）：元素 a7-tuition（錢、束脩、以工代學）預設開，再刻意改變一次：
+// 30 分 25dcf883… → 6f45b2ff…、3 日 7a495042… → c65e10e1…（--off a7-tuition 時仍是 A6 的值，見 check:quick q3）
+const W8_HASH_SEED7_30M = '6f45b2ff293005616cd2198c9080fe415ccd163c653e7e6d5f67a68a4a643d54';
+const W8_HASH_SEED7_3D_PREFIX = 'c65e10e1b55be1f0';
 
 let failures = 0;
 const ok = (msg: string) => process.stdout.write(`ok   ${msg}\n`);

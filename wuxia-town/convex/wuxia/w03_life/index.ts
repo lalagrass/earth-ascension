@@ -128,6 +128,11 @@ export type LifeState = {
   log: LifeEvent[];
   /** 兩人上一次開始對話的遊戲分鐘，鍵 "a|b"（排序後） */
   pairs: Record<string, number>;
+  /**
+   * A7（#584）：a7-tuition 開著時才有的「開始／做完」事件佇列（每個 tick 由 a7 排空），收入（做完本業）、飯錢（開始吃飯）、
+   * 雜務（做完武館挑水砍柴）都靠它，不必改這裡的規則。[人物 id, 's'開始|'f'結束, 活動 id, 遊戲分鐘, 實際做了幾分鐘]。關閉時沒有這個欄位，狀態與 A6 逐位元組相同。
+   */
+  ev?: Array<[string, 's' | 'f', string, number, number]>;
 };
 
 /**
@@ -346,6 +351,7 @@ function startDoing(game: Game, now: number, gm: number, state: LifeState, playe
     until: now + act.minutes * msPerGameMinute(game),
   };
   pushLog(state, { t: gm, who: person.cid, act: cur.act, obj: cur.obj });
+  state.ev?.push([person.cid, 's', cur.act, gm, 0]); // A7（#584）：事件佇列（只有 a7-tuition 開著才有 state.ev）
   // A1（a1-base 開啟時才記；關閉時 person 沒有 streak，repeatFactor＝1，跟 W9 相同）
   if (a1On(game.world.wuxia))
     person.streak = person.streak && person.streak[0] === cur.act ? [cur.act, person.streak[1] + 1] : [cur.act, 1];
@@ -355,6 +361,7 @@ function finish(state: LifeState, playerId: string, person: Person, gm: number, 
   const cur = person.cur!;
   const act = ACTIVITY_BY_ID[cur.act];
   applyNeeds(person, act.needs, fraction);
+  state.ev?.push([person.cid, 'f', act.id, gm, Math.round(Math.max(0, Math.min(1, fraction)) * act.minutes)]); // A7（#584）：事件佇列
   if (fraction >= 1) {
     const stock = stockOf(state, person.home);
     for (const r of RESOURCES) {

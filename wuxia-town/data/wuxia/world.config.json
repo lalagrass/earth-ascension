@@ -1,5 +1,5 @@
 {
-  "elements": { "w01-skin": true, "w02-folk": true, "w03-life": true, "w04-dojo": true, "w05-mind": true, "w06-spar": true, "w07-bond": true, "w08-jianghu": true, "w09-player": true, "a1-base": true, "a2-master": true, "a3-silent": true, "a4-play": true, "a5-robust": true, "a6-spread": true },
+  "elements": { "w01-skin": true, "w02-folk": true, "w03-life": true, "w04-dojo": true, "w05-mind": true, "w06-spar": true, "w07-bond": true, "w08-jianghu": true, "w09-player": true, "a1-base": true, "a2-master": true, "a3-silent": true, "a4-play": true, "a5-robust": true, "a6-spread": true, "a7-tuition": true },
   "seed": 7,
   "seed_src": "旋鈕：預設 seed 7（W1 起各週固定 hash 與報告都用 seed 7）",
   "timeScale": 60,
