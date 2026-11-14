@@ -27,6 +27,8 @@ import { PlayerPanel } from '../wuxia/PlayerPanel.tsx';
 import { myRec, playerStateOfWorld, rolesOffered } from '../wuxia/player.ts';
 import { exportJournalFile } from '../wuxia/exportJournal.ts';
 import { OBJECT_BY_ID } from '../../convex/wuxia/w03_life/data.ts';
+// WUXIA-PATCH(A2): 傳承面板、顯示太極、角落提示
+import { A2Corner } from '../wuxia/A2Panels.tsx';
 import { useMutation } from 'convex/react';
 import { useSendInput, waitForInput } from '../hooks/sendInput.ts';
 import { toastOnError } from '../toasts.ts';
@@ -40,6 +42,8 @@ export default function Game() {
     id: GameId<'players'>;
   }>();
   const [gameWrapperRef, { width, height }] = useElementSize();
+  // WUXIA-PATCH(A2): 「顯示太極」開關（地圖圈圈）
+  const [wuxiaTaiji, setWuxiaTaiji] = useState(false);
 
   const worldStatus = useQuery(api.world.defaultWorldStatus);
   const worldId = worldStatus?.worldId;
@@ -133,6 +137,13 @@ export default function Game() {
           <DojoPanel wuxia={game.world.wuxia} />
           {/* WUXIA-PATCH(W8): 山腳鎮誌面板（w08-jianghu 開啟時） */}
           <ChroniclePanel world={game.world} />
+          {/* WUXIA-PATCH(A2): 傳承面板、顯示太極、角落提示（a2-master 開啟時；點提示＝選中那人） */}
+          <A2Corner
+            wuxia={game.world.wuxia}
+            taiji={wuxiaTaiji}
+            onTaiji={setWuxiaTaiji}
+            onPick={(pid) => setSelectedElement({ kind: 'player', id: pid as GameId<'players'> })}
+          />
           <div className="absolute inset-0">
             <div className="container">
               {/* WUXIA-PATCH(W1): 換皮時底色改紙色 */}
@@ -150,6 +161,8 @@ https://github.com/michalochman/react-pixi-fiber/issues/145#issuecomment-5315492
                     setSelectedElement={setSelectedElement}
                     // WUXIA-PATCH(A1): 只有選中的人頭上顯示名字與活動文字
                     wuxiaSelectedId={selectedElement?.id}
+                    // WUXIA-PATCH(A2): 顯示太極
+                    wuxiaTaiji={wuxiaTaiji}
                     onWuxiaObject={(id) => {
                       setWuxiaObject(id);
                       setWuxiaResult(undefined);

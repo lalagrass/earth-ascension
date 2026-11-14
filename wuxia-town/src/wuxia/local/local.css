@@ -61,3 +61,5 @@ body.wuxia-skin { background: #e2d5b4; color: #2b2119; font-family: "Noto Serif 
   .wuxia-a1-home-title { font-size: 2.4rem; }
   .wuxia-a1-detail { top: auto; bottom: 4.6rem; max-height: 45%; }
 }
+/* A2（#575）：角落提示放在印章下面 */
+.wuxia-a1-game > .wuxia-a2-hints { top: 6.4rem; }

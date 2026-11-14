@@ -2,7 +2,7 @@
 // （該人對那人絕對值最大的那一軸，貢獻最大的 2 筆記憶），師徒、師兄弟加稱呼。PlayerDetails 與截圖頁共用；w07-bond 關閉時不顯示。
 import type { WuxiaState } from '../../convex/wuxia/state';
 import { describeMemory, mindOf } from '../../convex/wuxia/w05_mind/data';
-import { FOLK_CHARACTERS } from '../../convex/wuxia/w02_folk';
+import { profileById } from '../../convex/wuxia/w02_folk';
 import { placeName } from '../../convex/wuxia/w03_life/data';
 import {
   AXES,
@@ -14,7 +14,8 @@ import {
 } from '../../convex/wuxia/w07_bond/data';
 import { bondStateOf } from './bond';
 
-const nameOf = (cid: string) => FOLK_CHARACTERS.find((c) => c.id === cid)?.name ?? cid;
+// A2：名字查全部人物（原 6 位＋候選池＋大師）
+const nameOf = (cid: string) => profileById(cid)?.name ?? cid;
 
 function Bar(props: { v: number; axis: string }) {
   const v = Math.max(-100, Math.min(100, props.v));
@@ -87,26 +88,38 @@ export function BondPanel(props: { wuxia?: WuxiaState; playerId?: string; gm?: n
   );
 }
 
-/** 人物詳情的分頁：「概況」（生活、技能、心事）與「關係」。w07-bond 關閉時只顯示概況、不顯示分頁鈕。 */
+/** 人物詳情的分頁：「概況」（生活、技能、心事）、「關係」（w07-bond）、「武學」（A2 #575，a2-master 開啟時）。都關閉時只顯示概況、不顯示分頁鈕。 */
+export type DetailTab = 'main' | 'bond' | 'art';
 export function DetailTabs(props: {
   wuxia?: WuxiaState;
-  tab: 'main' | 'bond';
-  onTab: (t: 'main' | 'bond') => void;
+  tab: DetailTab;
+  onTab: (t: DetailTab) => void;
   main: React.ReactNode;
   bond: React.ReactNode;
+  art?: React.ReactNode;
 }) {
-  if (!bondStateOf({ wuxia: props.wuxia })) return <>{props.main}</>;
+  const hasBond = !!bondStateOf({ wuxia: props.wuxia });
+  const hasArt = !!props.art && !!props.wuxia?.enabled['a2-master'];
+  if (!hasBond && !hasArt) return <>{props.main}</>;
+  const tab = (props.tab === 'bond' && !hasBond) || (props.tab === 'art' && !hasArt) ? 'main' : props.tab;
   return (
     <div className="wuxia-tabs">
       <div className="wuxia-tab-bar" role="tablist">
-        <button role="tab" className={props.tab === 'main' ? 'on' : ''} onClick={() => props.onTab('main')}>
+        <button role="tab" className={tab === 'main' ? 'on' : ''} onClick={() => props.onTab('main')}>
           概況
         </button>
-        <button role="tab" className={props.tab === 'bond' ? 'on' : ''} onClick={() => props.onTab('bond')} data-testid="wuxia-tab-bond">
-          關係
-        </button>
+        {hasBond && (
+          <button role="tab" className={tab === 'bond' ? 'on' : ''} onClick={() => props.onTab('bond')} data-testid="wuxia-tab-bond">
+            關係
+          </button>
+        )}
+        {hasArt && (
+          <button role="tab" className={tab === 'art' ? 'on' : ''} onClick={() => props.onTab('art')} data-testid="wuxia-tab-art">
+            武學
+          </button>
+        )}
       </div>
-      {props.tab === 'main' ? props.main : props.bond}
+      {tab === 'main' ? props.main : tab === 'bond' ? props.bond : props.art}
     </div>
   );
 }

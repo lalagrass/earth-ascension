@@ -2,12 +2,13 @@
 // w07-bond 關閉或武館還沒開時不顯示；還沒收徒時顯示「尚無弟子」。
 import { useState } from 'react';
 import type { WuxiaState } from '../../convex/wuxia/state';
-import { FOLK_CHARACTERS } from '../../convex/wuxia/w02_folk';
+import { profileById } from '../../convex/wuxia/w02_folk';
 import { COACH_ID } from '../../convex/wuxia/w04_dojo/data';
 import { disciplesOf } from '../../convex/wuxia/w07_bond/data';
 import { bondStateOf } from './bond';
 
-const nameOf = (cid: string) => FOLK_CHARACTERS.find((c) => c.id === cid)?.name ?? cid;
+// A2：名字查全部人物（原 6 位＋候選池＋大師）
+const nameOf = (cid: string) => profileById(cid)?.name ?? cid;
 
 export function DojoPanel(props: { wuxia?: WuxiaState; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(props.defaultOpen ?? true);

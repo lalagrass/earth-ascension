@@ -33,7 +33,10 @@ import { SkillPanel } from '../SkillPanel';
 import { MindPanel } from '../MindPanel';
 import { dojoOf, dojoOpened } from '../dojo';
 import { SparLayer } from '../SparLayer';
-import { BondPanel, DetailTabs } from '../BondPanel';
+import { BondPanel, DetailTab, DetailTabs } from '../BondPanel';
+import { A2Hints, ArtPanel, LineagePanel, TaijiToggle } from '../A2Panels';
+import { A2Layer } from '../A2Layer';
+import { a2StateOf } from '../a2';
 import { DojoPanel } from '../DojoPanel';
 import { plaqueName } from '../bond';
 import { ChroniclePanel } from '../ChroniclePanel';
@@ -189,6 +192,7 @@ function Scene(props: {
   time: number;
   selected?: string;
   focus?: Focus;
+  showTaiji: boolean;
   onSelect: (id: string) => void;
   onTile: (x: number, y: number) => void;
 }) {
@@ -242,6 +246,9 @@ function Scene(props: {
           wuxiaSelected={p.id === props.selected}
         />
       ))}
+      {skin && (
+        <A2Layer wuxia={props.game.world.wuxia} tileDim={tileDim} showTaiji={props.showTaiji} pos={(id) => props.game.world.players.get(id as any)?.position} />
+      )}
       {skin && <JianghuLayer world={props.game.world} tileDim={tileDim} time={props.time} />}
       {skin && (
         <SparLayer
@@ -264,8 +271,9 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
   const [toast, setToast] = useState<string>();
   const [selected, setSelected] = useState<string>();
   const [detailOpen, setDetailOpen] = useState(true);
-  const [panel, setPanel] = useState<'status' | 'chronicle' | 'dojo' | 'me' | 'save'>();
-  const [tab, setTab] = useState<'main' | 'bond'>('main');
+  const [panel, setPanel] = useState<'status' | 'chronicle' | 'dojo' | 'lineage' | 'me' | 'save'>();
+  const [tab, setTab] = useState<DetailTab>('main');
+  const [taiji, setTaiji] = useState(false);
   const [obj, setObj] = useState<string>();
   const [result, setResult] = useState<{ ok: boolean; reason: string }>();
   const [autoSlow, setAutoSlow] = useState(true);
@@ -315,6 +323,13 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
       setResult(res);
       if (res.ok) setObj(undefined);
     });
+  // A2：點提示／譜系裡的名字＝選中那人並把鏡頭移過去
+  const pickPerson = (pid: string) => {
+    setSelected(pid);
+    setDetailOpen(true);
+    const p = game.world.players.get(pid as any);
+    if (p) setFocus((f) => ({ x: p.position.x, y: p.position.y, n: (f?.n ?? 0) + 1 }));
+  };
   const togglePanel = (p: typeof panel) => setPanel((x) => (x === p ? undefined : p));
   const manualSave = async () => {
     const s = await engine.save('手動存檔');
@@ -333,6 +348,7 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
               time={view.engineTime}
               selected={selected}
               focus={focus}
+              showTaiji={taiji}
               onSelect={(id) => {
                 setSelected(id);
                 setDetailOpen(true);
@@ -370,6 +386,12 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
         <button className={panel === 'dojo' ? 'on' : ''} onClick={() => togglePanel('dojo')} data-testid="wuxia-btn-dojo">
           武館
         </button>
+        {a2StateOf(game.world) && (
+          <button className={panel === 'lineage' ? 'on' : ''} onClick={() => togglePanel('lineage')} data-testid="wuxia-btn-lineage">
+            傳承
+          </button>
+        )}
+        {a2StateOf(game.world) && <TaijiToggle on={taiji} onChange={setTaiji} />}
         {rolesOffered() && (
           <button className={panel === 'me' ? 'on' : ''} onClick={() => togglePanel('me')} data-testid="wuxia-btn-me">
             {me ? '我' : '進鎮'}
@@ -385,6 +407,7 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
             <TownStatus life={lifeOf(game.world)} players={players} nameOf={(id) => game.playerDescriptions.get(id as any)?.name ?? id} />
           )}
           {panel === 'chronicle' && <ChroniclePanel world={game.world} />}
+          {panel === 'lineage' && <LineagePanel wuxia={game.world.wuxia} onPick={pickPerson} />}
           {panel === 'dojo' && (dojoOpened(game.world) ? <DojoPanel wuxia={game.world.wuxia} /> : <p className="wuxia-a1-note">武館還沒重開。</p>)}
           {panel === 'me' && (
             <PlayerPanel
@@ -455,6 +478,7 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
                 tab={tab}
                 onTab={setTab}
                 bond={<BondPanel wuxia={game.world.wuxia} playerId={sel.id} />}
+                art={<ArtPanel wuxia={game.world.wuxia} playerId={sel.id} />}
                 main={
                   <>
                     <LifePanel life={lifeOf(game.world)} playerId={sel.id} clock={clock} enabled={game.world.wuxia?.enabled} wuxia={game.world.wuxia} />
@@ -493,6 +517,7 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
           大事自動慢下來
         </label>
       </div>
+      <A2Hints wuxia={game.world.wuxia} onPick={pickPerson} />
       {toast && <div className="wuxia-a1-toast">{toast}</div>}
       {props.error && <div className="wuxia-a1-error floating">{props.error}</div>}
     </div>

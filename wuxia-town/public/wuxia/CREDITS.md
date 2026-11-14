@@ -13,6 +13,7 @@
 | `ui/join.svg` | W1 手寫 SVG（進鎮／離開：人形） | earth-ascension 專案（Grok） | 本專案自製 |
 | `ui/pause.svg` | W1 手寫 SVG（暫停／繼續） | earth-ascension 專案（Grok） | 本專案自製 |
 | `ui/music.svg` | W1 手寫 SVG（音樂鈕，只在關掉換皮時出現） | earth-ascension 專案（Grok） | 本專案自製 |
+| `a2/qishi.png` | A2 程式繪製：`tools/wuxia/bake-qishi.py`（太極「起勢」2 格動畫：墨線小人，第 1 格雙手垂下、第 2 格雙臂平舉微屈膝；每格 32×40；畫面上大師示範、跟練的人慢半拍） | earth-ascension 專案（Grok） | 本專案自製（純程式產生，無外部素材） |
 
 ## `tools/wuxia/art-src/`（烘焙的輸入，不直接給前端用）
 
@@ -30,3 +31,5 @@
 W4 的練功器具（`src/wuxia/DojoLayer.tsx`）與 W6 的切磋畫面（`src/wuxia/SparLayer.tsx`：勢點、擊中白光、「中！」、旁白框）都是 Pixi Graphics 程式畫的，沒有新增素材檔。W6 的 GIF 編碼用 devDependencies `gifenc`、`pngjs`（MIT，只在截圖工具裡用，不進前端）。
 
 W7 的武館匾額（`src/wuxia/DojoLayer.tsx` 的 `drawPlaque`：木框、金邊、深底）是 Pixi Graphics 程式畫的，匾上的字用畫面字型即時排出；名號從 `data/wuxia/dojo-names.json`（自擬的 8 個名字）依 seed 選。關係分頁與武館面板只用 CSS，沒有新增素材檔。
+
+A2 的傳承面板、武學分頁、角落提示只用 CSS／SVG；「顯示太極」的圈是 Pixi Graphics 程式畫的（`src/wuxia/A2Layer.tsx`）。新鎮民與張三丰沿用 `characters/folk.png` 既有的 8 個古裝人物圖（w1–w8），沒有新增人物圖。

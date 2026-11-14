@@ -30,6 +30,8 @@ import { skinEnabled, worldClock } from '../wuxia/skin.ts';
 import { useViewportZoom, wholeMapScale } from '../wuxia/viewport.ts';
 // WUXIA-PATCH(W9): 玩家點物件選活動（#561）
 import { myRec, objectAtTile } from '../wuxia/player.ts';
+// WUXIA-PATCH(A2): 太極圖層（顯示太極的圈、起勢動畫）
+import { A2Layer } from '../wuxia/A2Layer.tsx';
 
 export const PixiGame = (props: {
   worldId: Id<'worlds'>;
@@ -43,6 +45,8 @@ export const PixiGame = (props: {
   onWuxiaObject?: (objId: string) => void;
   // WUXIA-PATCH(A1): 選中的人（頭上才顯示活動文字）
   wuxiaSelectedId?: string;
+  // WUXIA-PATCH(A2): 「顯示太極」
+  wuxiaTaiji?: boolean;
 }) => {
   // PIXI setup.
   const pixiApp = useApp();
@@ -163,6 +167,15 @@ export const PixiGame = (props: {
           wuxiaSelected={p.id === props.wuxiaSelectedId}
         />
       ))}
+      {/* WUXIA-PATCH(A2): 太極圖層疊在人物上面（a2-master 關閉時不畫） */}
+      {skin && (
+        <A2Layer
+          wuxia={props.game.world.wuxia}
+          tileDim={tileDim}
+          showTaiji={!!props.wuxiaTaiji}
+          pos={(id) => props.game.world.players.get(id as any)?.position}
+        />
+      )}
       {/* WUXIA-PATCH(W8): 外人畫在人物旁（w08-jianghu 關閉或沒有外人時不畫） */}
       {skin && <JianghuLayer world={props.game.world} tileDim={tileDim} time={props.historicalTime ?? Date.now()} />}
       {/* WUXIA-PATCH(W6): 切磋畫面層疊在人物上面（w06-spar 關閉時不畫） */}

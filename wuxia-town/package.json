@@ -49,6 +49,7 @@
     "wuxia:lineage": "tsx tools/wuxia/lineage.ts",
     "wuxia:diffusion": "tsx tools/wuxia/diffusion.ts",
     "wuxia:art-trace": "tsx tools/wuxia/art-trace.ts",
+    "wuxia:a2-shots": "tsx tools/wuxia/a2-shots.ts",
     "wuxia:check": "npm run wuxia:check:full",
     "build:local": "vite build --config vite.local.config.ts",
     "dev:local": "vite --config vite.local.config.ts",

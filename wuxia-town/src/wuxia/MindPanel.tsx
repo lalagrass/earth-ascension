@@ -2,10 +2,11 @@
 // PlayerDetails 與截圖頁共用；w05-mind 關閉或沒有心念時不顯示。
 import type { WuxiaState } from '../../convex/wuxia/state';
 import { THOUGHT_BY_ID, describeMemory, mindOf } from '../../convex/wuxia/w05_mind/data';
-import { FOLK_CHARACTERS } from '../../convex/wuxia/w02_folk';
+import { profileById } from '../../convex/wuxia/w02_folk';
 import { placeName } from '../../convex/wuxia/w03_life/data';
 
-const nameOf = (cid: string) => FOLK_CHARACTERS.find((c) => c.id === cid)?.name ?? cid;
+// A2：名字查全部人物（原 6 位＋候選池＋大師）
+const nameOf = (cid: string) => profileById(cid)?.name ?? cid;
 
 export function MindPanel(props: { wuxia?: WuxiaState; playerId?: string }) {
   const m = mindOf(props.wuxia);

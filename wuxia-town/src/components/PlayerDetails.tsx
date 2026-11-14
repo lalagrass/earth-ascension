@@ -12,7 +12,9 @@ import { SkillPanel } from '../wuxia/SkillPanel';
 // WUXIA-PATCH(W5): w05-mind 的心事欄
 import { MindPanel } from '../wuxia/MindPanel';
 // WUXIA-PATCH(W7): 「關係」分頁
-import { BondPanel, DetailTabs } from '../wuxia/BondPanel';
+import { BondPanel, DetailTab, DetailTabs } from '../wuxia/BondPanel';
+// WUXIA-PATCH(A2): 人物詳情「武學」分頁
+import { ArtPanel } from '../wuxia/A2Panels';
 import { useState as useWuxiaState } from 'react';
 // WUXIA-PATCH(W9): 對人「請教／切磋／拜師」（#561）
 import { PersonActions } from '../wuxia/PlayerPanel';
@@ -47,7 +49,8 @@ export default function PlayerDetails({
 }) {
   const humanTokenIdentifier = useQuery(api.world.userStatus, { worldId });
   // WUXIA-PATCH(W7): 人物詳情的分頁（概況／關係）
-  const [wuxiaTab, setWuxiaTab] = useWuxiaState<'main' | 'bond'>('main');
+  // WUXIA-PATCH(A2): 分頁多一個「武學」
+  const [wuxiaTab, setWuxiaTab] = useWuxiaState<DetailTab>('main');
 
   const players = [...game.world.players.values()];
   const humanPlayer = players.find((p) => p.human === humanTokenIdentifier);
@@ -194,6 +197,8 @@ export default function PlayerDetails({
         tab={wuxiaTab}
         onTab={setWuxiaTab}
         bond={<BondPanel wuxia={game.world.wuxia} playerId={player.id} />}
+        // WUXIA-PATCH(A2): 「武學」分頁（a2-master 開啟時才有分頁鈕）
+        art={<ArtPanel wuxia={game.world.wuxia} playerId={player.id} />}
         main={
           <>
             {/* WUXIA-PATCH(W3): w03-life 的生活面板 */}
