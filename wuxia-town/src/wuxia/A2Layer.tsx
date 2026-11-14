@@ -27,7 +27,19 @@ function Ring(props: { x: number; y: number; r: number; kind: 'master' | 'ok' | 
       g.clear();
       const color = props.kind === 'master' ? 0xc9a227 : props.kind === 'flawed' ? 0xb0673a : 0x2f7d73;
       g.lineStyle(2.5, color, 0.9);
-      g.drawEllipse(props.x, props.y, props.r, props.r * 0.45);
+      if (props.kind === 'flawed') {
+        // A5（#577 第 3 節，色盲友善）：走樣不只靠橘色，另畫成虛線圈
+        const n = 16;
+        for (let i = 0; i < n; i += 1) {
+          const a0 = (i / n) * Math.PI * 2;
+          const a1 = a0 + (Math.PI * 2) / n / 2;
+          g.moveTo(props.x + props.r * Math.cos(a0), props.y + props.r * 0.45 * Math.sin(a0));
+          for (let k = 1; k <= 4; k++) {
+            const a = a0 + ((a1 - a0) * k) / 4;
+            g.lineTo(props.x + props.r * Math.cos(a), props.y + props.r * 0.45 * Math.sin(a));
+          }
+        }
+      } else g.drawEllipse(props.x, props.y, props.r, props.r * 0.45);
       if (props.kind === 'master') {
         g.lineStyle(1.5, color, 0.7);
         g.drawEllipse(props.x, props.y, props.r + 5, (props.r + 5) * 0.45);

@@ -371,7 +371,7 @@ body.wuxia-skin .button img {
 .wuxia-a2-name { background: none; border: none; padding: 0; color: #2b2119; font-weight: bold; cursor: pointer; text-decoration: underline dotted; }
 .wuxia-a2-gen { color: #8a6a43; font-size: 0.7rem; margin: 0 0.3rem; }
 .wuxia-a2-edge { background: #e9f2ee; border: 1px solid #2f7d73; color: #1f5b53; font-size: 0.72rem; padding: 0 0.3rem; cursor: pointer; }
-.wuxia-a2-edge.flawed { background: #f6e6d8; border-color: #b0673a; color: #7a3f1f; }
+.wuxia-a2-edge.flawed { background: #f6e6d8; border-color: #b0673a; border-style: dashed; color: #7a3f1f; }
 .wuxia-a2-trace { margin-top: 0.3rem; padding: 0.3rem 0.4rem; border: 1px dashed #8a6a43; background: rgba(255, 255, 255, 0.4); }
 .wuxia-a2-trace ol { margin: 0.2rem 0 0.2rem 1.1rem; padding: 0; list-style: decimal; }
 .wuxia-a2-art { font-size: 0.85rem; color: inherit; }
@@ -381,7 +381,7 @@ body.wuxia-skin .button img {
 .wuxia-a2-mname small { opacity: 0.7; font-size: 0.7rem; }
 .wuxia-a2-bar { position: relative; height: 0.5rem; background: rgba(255, 255, 255, 0.18); }
 .wuxia-a2-bar > span { position: absolute; left: 0; top: 0; bottom: 0; min-width: 2px; background: #4fb3a5; }
-.wuxia-a2-bar.flawed > span { background: #e08a50; }
+.wuxia-a2-bar.flawed > span { background: repeating-linear-gradient(90deg, #e08a50 0 5px, #f6e6d8 5px 7px); }
 .wuxia-a2-bar > i { position: absolute; top: -2px; bottom: -2px; width: 2px; background: #f3e6c8; }
 .wuxia-a2-mval { grid-column: 2; font-size: 0.72rem; opacity: 0.8; }
 .wuxia-a2-hints { position: absolute; left: 0.5rem; top: 3rem; z-index: 18; display: flex; flex-direction: column; gap: 0.2rem; max-width: min(22rem, 70vw); pointer-events: auto; }

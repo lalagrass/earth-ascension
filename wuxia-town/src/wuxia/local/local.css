@@ -63,3 +63,34 @@ body.wuxia-skin { background: #e2d5b4; color: #2b2119; font-family: "Noto Serif 
 }
 /* A2（#575）：角落提示放在印章下面 */
 .wuxia-a1-game > .wuxia-a2-hints { top: 6.4rem; }
+
+/* A5（#577）：設定、圖示說明、授權頁、出錯提示、390 寬 */
+.wuxia-a5-home-links { display: flex; gap: 1rem; justify-content: center; margin-top: 0.8rem; }
+.wuxia-a5-home-links button { font-size: 0.9rem; text-decoration: underline; }
+.wuxia-a5-settings { display: flex; flex-direction: column; gap: 0.45rem; text-align: left; margin-top: 0.6rem; font-size: 0.9rem; }
+.wuxia-a5-settings label { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+.wuxia-a5-settings select { background: #faf4e4; color: #2b2119; border: 1.5px solid #2b2119; }
+.wuxia-a5-hint { position: absolute; left: 50%; bottom: 3.6rem; transform: translateX(-50%); z-index: 22; max-width: min(34rem, 94vw); background: #fbf3e2; color: #2b2119; border: 2px dashed #8a6a43; padding: 0.3rem 0.7rem; font-size: 0.85rem; cursor: pointer; }
+.wuxia-a5-credits, .wuxia-a5-crash { position: fixed; inset: 0; z-index: 60; background: rgba(43, 33, 25, 0.45); display: flex; align-items: center; justify-content: center; padding: 0.6rem; }
+.wuxia-a5-credits .card, .wuxia-a5-crash .card { position: relative; background: #f7f0de; color: #2b2119; border: 3px solid #2b2119; max-width: 40rem; width: 100%; max-height: 92vh; overflow-y: auto; padding: 1rem 1.2rem; text-align: left; }
+.wuxia-a5-credits pre { white-space: pre-wrap; font-size: 0.72rem; background: #efe6cf; padding: 0.5rem; max-height: 30vh; overflow-y: auto; }
+.wuxia-a5-credits .close { position: absolute; top: 0.4rem; right: 0.6rem; }
+.wuxia-a5-crash .row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+@media (max-width: 480px) {
+  .wuxia-a1-home-title { font-size: 2.4rem; }
+  .wuxia-a1-home-card { padding: 1rem; }
+  .wuxia-a1-btn.big { font-size: 1.1rem; padding: 0.4rem 1rem; }
+  /* 上排：印章＋時辰在左上，右上按鈕改到第二排，不重疊 */
+  .wuxia-a1-corner { top: 3.4rem; left: 0.4rem; right: 0.4rem; flex-wrap: wrap; justify-content: flex-end; }
+  .wuxia-a1-corner button { padding: 0.1rem 0.3rem; font-size: 0.75rem; }
+  .wuxia-a1-popover { top: auto; bottom: 3.4rem; left: 0.3rem; right: 0.3rem; width: auto; max-height: 55vh; }
+  /* 選中的人：改成下方抽屜 */
+  .wuxia-a1-detail { left: 0.3rem; right: 0.3rem; top: auto; bottom: 3.4rem; width: auto; max-height: 55vh; }
+  .wuxia-a1-detail.closed { max-height: none; }
+  .wuxia-a1-timebar { bottom: 0.3rem; padding: 0.15rem 0.25rem; gap: 0.15rem; }
+  .wuxia-a1-timebar button { min-width: 1.8rem; padding: 0.05rem 0.25rem; font-size: 0.72rem; }
+  .wuxia-a1-auto { font-size: 0.7rem; }
+  .wuxia-a1-toast { top: 6.2rem; font-size: 0.85rem; max-width: 92vw; }
+  .wuxia-a4-opening, .wuxia-a4-tutorial { max-width: 94vw; font-size: 0.8rem; }
+  .wuxia-a5-hint { bottom: 3rem; font-size: 0.78rem; }
+}

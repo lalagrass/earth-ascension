@@ -10,7 +10,8 @@ import { cpSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
 const OUT = resolve(__dirname, 'dist-local');
 
 export default defineConfig({
-  base: '/ai-town/',
+  // A5：GitHub Pages 之類放在子路徑時用 WUXIA_BASE=/<repo>/ai-town/ 建置（素材網址由 src/wuxia/local/basePath.ts 轉換）
+  base: process.env.WUXIA_BASE ?? '/ai-town/',
   root: resolve(__dirname, 'src/wuxia/local'),
   plugins: [
     react(),

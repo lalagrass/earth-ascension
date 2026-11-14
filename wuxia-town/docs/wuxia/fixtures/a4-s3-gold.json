@@ -1,0 +1,8 @@
+{
+  "_doc": "A5（#577 C 類，只報告）劇本三的腳本玩家：跟劇本一同一套規則（每天 08:00 給太極招數最少的人指路去小廣場；第 3 日起每三天替大師最親近、還沒說情過的人說情）。只是玩家策略，沒有改任何常數。",
+  "scenario": "s3",
+  "rules": [
+    {"at": "08:00", "kind": "guide", "pick": "fewestMoves", "family": "taiji", "place": "plaza"},
+    {"at": "20:00", "kind": "plead", "pick": "closestToMaster", "fromDay": 3, "everyDays": 3}
+  ]
+}

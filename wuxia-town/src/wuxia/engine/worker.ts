@@ -5,6 +5,7 @@ import type { FromWorker, ToWorker } from './protocol';
 
 const core = new LocalCore();
 let ready = false;
+let crashNext = false;
 let last = performance.now(); // 只在計時用（倍速），不進引擎
 const post = (m: FromWorker) => (self as unknown as Worker).postMessage(m);
 
@@ -14,6 +15,10 @@ function loop() {
   last = t;
   if (ready) {
     try {
+      if (crashNext) {
+        crashNext = false;
+        throw new Error('測試用：引擎在這一格當掉');
+      }
       const out = core.frame(dt);
       for (const r of out.inputResults) post({ t: 'reply', id: r.token, value: r.value });
       if (out.view) post({ t: 'view', view: out.view, events: out.events });
@@ -65,6 +70,9 @@ self.onmessage = (e: MessageEvent<ToWorker>) => {
       }
       case 'resend':
         core.resendDescriptions();
+        break;
+      case 'crashForTest':
+        crashNext = true;
         break;
     }
   } catch (err) {

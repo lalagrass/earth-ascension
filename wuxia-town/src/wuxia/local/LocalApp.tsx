@@ -55,6 +55,7 @@ import { SaveSlot, listSlots, putSlot, slotOf, deleteSlot } from '../engine/idb'
 import { FateMenu, GoalPanel, Opening, ScenarioPicker, SettleScreen, Tutorial, YuanBadge, a4StateOf, useGoalSound } from '../A4Panels';
 import { PLAY, SCENARIO_BY_ID } from '../../../convex/wuxia/a4_play/data';
 import { MASTER_CID } from '../../../convex/wuxia/a2_master/data';
+import { CreditsPage, CrashNotice, ErrorBoundary, FirstHints, Label, SettingsPanel, makeReport, useSettings } from '../A5';
 
 const LOCAL_TOKEN = 'local-player';
 const SPEED_LABEL: Record<number, string> = { 0: '⏸', 1: '1×', 4: '4×', 16: '16×', 64: '64×' };
@@ -98,13 +99,15 @@ export function LocalApp() {
   }, []);
   if (!engine)
     return <Home onStart={start} error={error} />;
+  const home = () => {
+    engine.dispose();
+    setEngine(undefined);
+  };
   return (
+    <ErrorBoundary onHome={home}>
     <GameScreen
       engine={engine}
-      onHome={() => {
-        engine.dispose();
-        setEngine(undefined);
-      }}
+      onHome={home}
       onAgain={(play, seed) => {
         engine.dispose();
         setEngine(undefined);
@@ -112,6 +115,7 @@ export function LocalApp() {
       }}
       error={error}
     />
+    </ErrorBoundary>
   );
 }
 
@@ -121,6 +125,7 @@ function Home(props: { onStart: (i: StartInit) => void; error?: string }) {
   const [slots, setSlots] = useState<SaveSlot[]>();
   const [loading, setLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [page, setPage] = useState<'settings' | 'credits'>();
   const seed = Number(new URLSearchParams(location.search).get('seed') ?? defaultWuxiaConfig.seed);
   return (
     <main className="wuxia-a1-home" data-testid="wuxia-home">
@@ -194,6 +199,16 @@ function Home(props: { onStart: (i: StartInit) => void; error?: string }) {
             {props.error}
           </p>
         )}
+        <div className="wuxia-a5-home-links">
+          <button className="wuxia-a1-x" onClick={() => setPage(page === 'settings' ? undefined : 'settings')} data-testid="wuxia-home-settings">
+            設定
+          </button>
+          <button className="wuxia-a1-x" onClick={() => setPage('credits')} data-testid="wuxia-home-credits">
+            授權與署名
+          </button>
+        </div>
+        {page === 'settings' && <SettingsPanel />}
+        {page === 'credits' && <CreditsPage onClose={() => setPage(undefined)} />}
         <p className="wuxia-a1-home-foot">單機版：整個小鎮在你的瀏覽器裡跑，不需要伺服器，也不連任何語言模型。基於 AI Town（MIT）。</p>
       </div>
     </main>
@@ -299,7 +314,11 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; onAgain: (
   const [toast, setToast] = useState<string>();
   const [selected, setSelected] = useState<string>();
   const [detailOpen, setDetailOpen] = useState(true);
-  const [panel, setPanel] = useState<'status' | 'chronicle' | 'dojo' | 'lineage' | 'social' | 'me' | 'save' | 'goals'>();
+  const [panel, setPanel] = useState<'status' | 'chronicle' | 'dojo' | 'lineage' | 'social' | 'me' | 'save' | 'goals' | 'settings'>();
+  const [settings] = useSettings();
+  const settingsRef = useRef(settings);
+  settingsRef.current = settings;
+  const [crash, setCrash] = useState<string>();
   const [fateResult, setFateResult] = useState<{ ok: boolean; reason: string }>();
   const [picked, setPicked] = useState(false);
   const gameRef = useRef<ServerGame>();
@@ -321,7 +340,7 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; onAgain: (
       setView(v);
       for (const e of events) {
         showToast(e.label);
-        if (e.at) setFocus((f) => ({ x: e.at!.x, y: e.at!.y, n: (f?.n ?? 0) + 1 }));
+        if (e.at && settingsRef.current.autoFocus) setFocus((f) => ({ x: e.at!.x, y: e.at!.y, n: (f?.n ?? 0) + 1 }));
       }
     });
     const offDay = engine.onNewDay((day) => {
@@ -329,6 +348,13 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; onAgain: (
       void engine.save(`第 ${day} 日自動存檔`).then((s) => putSlot(slotOf(s, 'auto', new Date().toISOString())));
     });
     engine.setSpeed(1);
+    // A5：引擎（Worker）出錯 → 先把出錯前的狀態另存一格，再顯示提示（不白屏、不丟存檔）
+    const prevOnError = engine.onError;
+    engine.onError = (m) => {
+      prevOnError?.(m);
+      setCrash(m.split('\n')[0]);
+      void Promise.race([engine.save('出錯前').then((s) => putSlot(slotOf(s, 'manual', new Date().toISOString()))), new Promise((r) => setTimeout(r, 2000))]).catch(() => undefined);
+    };
     return () => {
       off();
       offDay();
@@ -344,6 +370,7 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; onAgain: (
     if (!scenario) return;
     engine.setSpeed(PLAY.defaultSpeed as Speed);
     setLastSpeed(PLAY.defaultSpeed as Speed);
+    if (!settingsRef.current.autoFocus) return;
     const until = performance.now() + 20000;
     const t: ReturnType<typeof setInterval> = setInterval(() => {
       if (performance.now() > until) return clearInterval(t);
@@ -356,6 +383,8 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; onAgain: (
     return () => clearInterval(t);
   }, [scenario]);
   if (!view || !game) return <div className="wuxia-a1-loading">小鎮準備中…</div>;
+  // A5 走查／掛機工具用：最新的世界狀態（唯讀參考，不複製）
+  (window as any).__WUXIA_WORLD__ = game.world.wuxia;
   const skin = skinEnabled(game.world);
   const clock = skin ? worldClock(game.world, view.engineTime) : null;
   const players = [...game.world.players.values()];
@@ -364,6 +393,17 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; onAgain: (
   const sel = players.find((p) => p.id === selected);
   const desc = sel ? game.playerDescriptions.get(sel.id) : undefined;
   const speed = view.speed;
+  const speeds = SPEEDS.filter((s) => s <= settings.maxSpeed);
+  if (speed > settings.maxSpeed) engine.setSpeed(settings.maxSpeed as Speed);
+  const exportSave = () => void engine.save('匯出').then((s) => download(`shanjiao-day${Math.floor(Math.max(0, s.gameMinute) / 1440) + 1}.json`, s));
+  // A5 第 7 節：回報＝存檔＋最近 200 筆事件，下載成一個檔（不上傳）
+  const exportReport = (error?: string) =>
+    void Promise.race([engine.save('回報'), new Promise((r) => setTimeout(() => r(undefined), 2000))]).then(async (s: any) => {
+      const save = s ?? (await listSlots().then((xs) => xs.find((x) => x.kind === 'auto')?.save).catch(() => undefined));
+      const day = save ? Math.floor(Math.max(0, save.gameMinute) / 1440) + 1 : 0;
+      download(`shanjiao-report-day${day}.json`, makeReport(save, game.world.wuxia, { error }));
+    });
+  const L = (t: string) => <Label text={t} mode={settings.labels} />;
   const setSpeed = (s: Speed) => {
     if (s > 0) setLastSpeed(s);
     engine.setSpeed(s);
@@ -378,6 +418,7 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; onAgain: (
   // A2：點提示／譜系裡的名字＝選中那人並把鏡頭移過去
   const pickPerson = (pid: string) => {
     setSelected(pid);
+    setPicked(true);
     setDetailOpen(true);
     const p = game.world.players.get(pid as any);
     if (p) setFocus((f) => ({ x: p.position.x, y: p.position.y, n: (f?.n ?? 0) + 1 }));
@@ -452,37 +493,40 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; onAgain: (
       {/* 右上：三個小鈕＋進鎮、存檔 */}
       <div className="wuxia-a1-corner">
         <button className={panel === 'status' ? 'on' : ''} onClick={() => togglePanel('status')} data-testid="wuxia-btn-status">
-          鎮況
+          {L('鎮況')}
         </button>
         <button className={panel === 'chronicle' ? 'on' : ''} onClick={() => togglePanel('chronicle')} data-testid="wuxia-btn-chronicle">
-          鎮誌
+          {L('鎮誌')}
         </button>
         <button className={panel === 'dojo' ? 'on' : ''} onClick={() => togglePanel('dojo')} data-testid="wuxia-btn-dojo">
-          武館
+          {L('武館')}
         </button>
         {a2StateOf(game.world) && (
           <button className={panel === 'lineage' ? 'on' : ''} onClick={() => togglePanel('lineage')} data-testid="wuxia-btn-lineage">
-            傳承
+            {L('傳承')}
           </button>
         )}
         {a3StateOf(game.world) && (
           <button className={panel === 'social' ? 'on' : ''} onClick={() => togglePanel('social')} data-testid="wuxia-btn-social">
-            動靜
+            {L('動靜')}
           </button>
         )}
         {a4 && (
           <button className={panel === 'goals' ? 'on' : ''} onClick={() => togglePanel('goals')} data-testid="wuxia-btn-goals">
-            目標
+            {L('目標')}
           </button>
         )}
         {a2StateOf(game.world) && <TaijiToggle on={taiji} onChange={setTaiji} />}
         {rolesOffered() && (
           <button className={panel === 'me' ? 'on' : ''} onClick={() => togglePanel('me')} data-testid="wuxia-btn-me">
-            {me ? '我' : '進鎮'}
+            {L(me ? '我' : '進鎮')}
           </button>
         )}
+        <button className={panel === 'settings' ? 'on' : ''} onClick={() => togglePanel('settings')} data-testid="wuxia-btn-settings">
+          {L('設定')}
+        </button>
         <button className={panel === 'save' ? 'on' : ''} onClick={() => togglePanel('save')} data-testid="wuxia-btn-save">
-          存檔
+          {L('存檔')}
         </button>
       </div>
       {panel && (
@@ -493,6 +537,7 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; onAgain: (
           {panel === 'chronicle' && <ChroniclePanel world={game.world} />}
           {panel === 'lineage' && <LineagePanel wuxia={game.world.wuxia} onPick={pickPerson} />}
           {panel === 'goals' && <GoalPanel wuxia={game.world.wuxia} />}
+          {panel === 'settings' && <SettingsPanel />}
           {panel === 'social' && <SocialFeed wuxia={game.world.wuxia} nameOf={nameOfCid} onPick={pickSocial} />}
           {panel === 'dojo' && (dojoOpened(game.world) ? <DojoPanel wuxia={game.world.wuxia} /> : <p className="wuxia-a1-note">武館還沒重開。</p>)}
           {panel === 'me' && (
@@ -533,6 +578,9 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; onAgain: (
               >
                 匯出存檔檔案
               </button>
+              <button className="wuxia-a1-btn" data-testid="wuxia-report" onClick={() => exportReport()}>
+                回報（存檔＋最近 200 筆事件，存成一個檔）
+              </button>
               <button className="wuxia-a1-btn" onClick={props.onHome}>
                 回首頁（讀取其他存檔）
               </button>
@@ -549,7 +597,7 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; onAgain: (
               {detailOpen ? '▸' : '◂'}
             </button>
             <b>{desc?.name}</b>
-            <button onClick={() => setSelected(undefined)} aria-label="關閉">
+            <button onClick={() => setSelected(undefined)} aria-label="關閉" data-testid="wuxia-a1-detail-close">
               ×
             </button>
           </div>
@@ -592,7 +640,7 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; onAgain: (
       )}
       {/* 下方：時間控制列 */}
       <div className="wuxia-a1-timebar" data-testid="wuxia-timebar">
-        {SPEEDS.map((s) => (
+        {speeds.map((s) => (
           <button key={s} className={speed === s && !view.skipping ? 'on' : ''} onClick={() => setSpeed(s)} data-testid={`wuxia-speed-${s}`}>
             {SPEED_LABEL[s]}
           </button>
@@ -632,6 +680,8 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; onAgain: (
           if (pid) pickPerson(pid);
         }}
       />
+      <FirstHints wuxia={game.world.wuxia} taiji={taiji} />
+      {crash && <CrashNotice message={crash} onExport={exportSave} onReport={() => exportReport(crash)} onHome={props.onHome} />}
       {toast && <div className="wuxia-a1-toast">{toast}</div>}
       {props.error && <div className="wuxia-a1-error floating">{props.error}</div>}
     </div>

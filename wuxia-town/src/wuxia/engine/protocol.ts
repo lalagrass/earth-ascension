@@ -14,7 +14,9 @@ export type ToWorker =
   | { t: 'hash'; id: number }
   /** 測試用：暫停中直接跑 n 步，回傳 hash（wuxia:parity、dist-local 檢查） */
   | { t: 'advance'; steps: number; id: number }
-  | { t: 'resend' };
+  | { t: 'resend' }
+  /** A5 測試用：讓下一個 frame 丟例外（驗「引擎當掉時保留存檔並提示」） */
+  | { t: 'crashForTest' };
 
 export type FromWorker =
   | { t: 'reply'; id: number; value: any }

@@ -26,7 +26,7 @@ export function A3Icon(props: { k: string; size?: number }) {
       style={{
         width: s,
         height: s,
-        backgroundImage: 'url(/ai-town/wuxia/a3/icons.png)',
+        backgroundImage: `url(${import.meta.env.BASE_URL}wuxia/a3/icons.png)`,
         backgroundSize: `${12 * s}px ${3 * s}px`,
         backgroundPosition: `-${at[0] * s}px -${at[1] * s}px`,
       }}

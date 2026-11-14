@@ -1,6 +1,11 @@
 // 武俠小鎮 A4（#576 第 5 節，選配）：短音效用 WebAudio 當場合成（沒有音檔、不用外部素材）。瀏覽器不支援或使用者關掉就不響。
 let ctx: AudioContext | undefined;
 let muted = false;
+let volume = 1;
+/** A5 設定頁的音量（0＝靜音） */
+export function setVolume(v: number) {
+  volume = Math.max(0, Math.min(1, v));
+}
 export function setMuted(m: boolean) {
   muted = m;
 }
@@ -9,7 +14,8 @@ export function isMuted() {
 }
 /** 依序響幾個音（頻率 Hz，每個 ms 毫秒），像敲木魚／磬 */
 export function chime(freqs: number[], ms = 180, gain = 0.08) {
-  if (muted || typeof window === 'undefined') return;
+  if (muted || volume === 0 || typeof window === 'undefined') return;
+  gain *= volume;
   try {
     const AC = (window as any).AudioContext ?? (window as any).webkitAudioContext;
     if (!AC) return;
