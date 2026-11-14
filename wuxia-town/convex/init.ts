@@ -33,9 +33,9 @@ const init = mutation({
     );
     if (shouldCreate) {
       // WUXIA-PATCH(W2): 跟 createAgent 用同一份人物表
-      const Descriptions = descriptionsFor(
-        isEnabled(initWuxiaState(defaultWuxiaConfig), W02_FOLK),
-      );
+      // WUXIA-PATCH(A2): a2-master 開啟時人物表多 seed 抽出的 6 位（#575 審查補充）
+      const wuxiaInit = initWuxiaState(defaultWuxiaConfig);
+      const Descriptions = descriptionsFor(isEnabled(wuxiaInit, W02_FOLK), wuxiaInit);
       const toCreate = args.numAgents !== undefined ? args.numAgents : Descriptions.length;
       for (let i = 0; i < toCreate; i++) {
         await insertInput(ctx, worldStatus.worldId, 'createAgent', {

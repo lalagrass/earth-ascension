@@ -3,6 +3,7 @@ import objectsJson from '../../../data/wuxia/objects.json';
 import needsJson from '../../../data/wuxia/needs.json';
 import schedulesJson from '../../../data/wuxia/schedules.json';
 import placesJson from '../../../data/wuxia/places.json';
+import townsfolkJson from '../../../data/wuxia/townsfolk.json';
 import type { WuxiaState } from '../state';
 import { closedOverlays, mindBlocks, mindOf } from '../w05_mind/data';
 
@@ -84,7 +85,12 @@ export const NEEDS_CONFIG = needsJson as {
 export const NEED_KEYS: Need[] = NEEDS_CONFIG.needs;
 export const RESOURCES: Resource[] = ['water', 'meal', 'wood'];
 
-export const SCHEDULES = (schedulesJson as any).schedules as Record<string, Schedule>;
+export const SCHEDULES = {
+  ...(schedulesJson as any).schedules,
+  // A2（#575）：候選池與大師的日程（新的人物 id，不影響原本 6 位）
+  ...Object.fromEntries((townsfolkJson as any).pool.map((p: any) => [p.id, p.schedule])),
+  [(townsfolkJson as any).master.id]: (townsfolkJson as any).master.schedule,
+} as Record<string, Schedule>;
 /**
  * W4：元素開啟時替換某些人的日程（schedules.json 的 overlays，鍵是元素 id）。
  * 例如 w04-dojo 開啟時周教頭改成「辰–午 武館」。元素關閉時完全用 W3 的日程。
@@ -131,6 +137,15 @@ export function lifeSchedCtx(w: WuxiaState | undefined, day?: number): SchedCtx 
   if (master && Object.keys(master).length) {
     const blocks: Record<string, ScheduleBlock[]> = { ...(ctx.blocks ?? {}) };
     for (const cid of Object.keys(master)) blocks[cid] = [...master[cid], ...(blocks[cid] ?? [])];
+    ctx.blocks = blocks;
+  }
+  // A2（#575）：看晨練／跟著練／傍晚請教的時段（a2-master 每日算好放在元素狀態裡；排在最前面）。關閉時不動
+  const a2 = w.enabled['a2-master']
+    ? (w.elements['a2-master'] as { blocks?: Record<string, ScheduleBlock[]> } | undefined)?.blocks
+    : undefined;
+  if (a2 && Object.keys(a2).length) {
+    const blocks: Record<string, ScheduleBlock[]> = { ...(ctx.blocks ?? {}) };
+    for (const cid of Object.keys(a2)) blocks[cid] = [...a2[cid], ...(blocks[cid] ?? [])];
     ctx.blocks = blocks;
   }
   return ctx;
@@ -223,8 +238,10 @@ export function blankMinutesPerDay(cid: string, ctx?: SchedCtx): number {
 const PLACES_BY_AREA = [...PLACES].sort(
   (a, b) => a.rect[2] * a.rect[3] - b.rect[2] * b.rect[3],
 );
+// A2：a2-master 的物件不參與「站在座位上→地點」的判定（元素關閉時地點判定跟 A1 相同；這些座位都在所屬地點範圍內或旁邊）
+const PLACE_OBJECTS = OBJECTS.filter((o) => o.element !== 'a2-master');
 export function placeAt(x: number, y: number): string {
-  for (const o of OBJECTS) {
+  for (const o of PLACE_OBJECTS) {
     for (const [sx, sy] of o.slots) {
       if (Math.abs(sx - x) < 0.5 && Math.abs(sy - y) < 0.5) return o.place;
     }

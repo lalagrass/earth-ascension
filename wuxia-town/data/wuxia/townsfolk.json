@@ -1,0 +1,1390 @@
+{
+ "_doc": "武俠小鎮 A2（#575 與 2026-11-14 審查補充第 1 項）新鎮民候選池與大師。a2-master 開啟時，原本 6 位不變，另外依 seed 從 pool 抽 6 位（不耗 game.rng()，見 convex/wuxia/a2_master/folk.ts）。名字全部原創；張三丰用歷史人物名。haowu＝好武 0–1，影響「看到大師晨練」加多少敬重與興趣；traits＝性格四軸占位值（calm 沉穩、brave 膽量、curious 好奇、kind 和善，0–100）；skills＝起始技能值（同 characters.json）；schedule＝日程（同 schedules.json 的格式）。",
+ "haowu_src": "旋鈕：#575 審查補充「每個人有一個 0–1 的『好武』值（_src: 旋鈕）」",
+ "skills_src": "旋鈕：起始技能值（0–1000）；農夫、獵戶、樵夫、屠戶、漁夫身體較好（150–320），少年與婦人 30–120；大師下盤 900、耐力 800、力 600（#575「身體數值高」）",
+ "traits_src": "旋鈕：性格四軸占位值（#575「各有職業與性格四軸占位值」）；目前只用 calm（周教頭沉穩與否見 master.json）",
+ "draw": 6,
+ "draw_src": "量測：#575 審查補充「從 12–16 人的候選池依 seed 抽 6 位」",
+ "baseHaowu": {
+  "lin-sao": 0.15,
+  "shi-hu": 0.6,
+  "he-langzhong": 0.1,
+  "lao-han": 0.4,
+  "a-qing": 0.85,
+  "zhou-jiaotou": 1.0
+ },
+ "baseHaowu_src": "旋鈕：原本 6 位的好武（characters.json 是 W2 的檔，不改；寫在這裡）。阿青 0.85、周教頭 1.0、石虎 0.6、老韓 0.4、林嫂 0.15、何郎中 0.1",
+ "baseCalm": {
+  "zhou-jiaotou": 60
+ },
+ "baseCalm_src": "旋鈕：周教頭的沉穩（性格 calm）60；14 日內輸過切磋或徒弟改投就不算沉穩（master.json coach）",
+ "pool": [
+  {
+   "id": "tian-dashu",
+   "name": "田大叔",
+   "sprite": "w1",
+   "role": "農夫",
+   "home": "home-east",
+   "workplace": "home-east",
+   "age": 46,
+   "haowu": 0.3,
+   "skills": {
+    "fist": 20,
+    "power": 220,
+    "stance": 150,
+    "stamina": 240
+   },
+   "traits": {
+    "calm": 60,
+    "brave": 40,
+    "curious": 30,
+    "kind": 60
+   },
+   "identity": "田大叔在鎮東種了半輩子的地，手上全是老繭。他信的是老天爺和自家的鋤頭，對打打殺殺的事向來不感興趣。",
+   "plan": "你想打聽今年的雨水和米價。",
+   "voice": "樸實，話慢，常說「俺」「咱莊稼人」。",
+   "taboo": "前年那場旱災賠掉的田。",
+   "schedule": {
+    "worker": true,
+    "blocks": [
+     {
+      "from": 300,
+      "to": 360,
+      "label": "起床吃飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 420,
+      "to": 720,
+      "label": "下田",
+      "do": [
+       "farm"
+      ]
+     },
+     {
+      "from": 720,
+      "to": 780,
+      "label": "午飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 780,
+      "to": 1020,
+      "label": "下田",
+      "do": [
+       "farm"
+      ]
+     },
+     {
+      "from": 1020,
+      "to": 1080,
+      "label": "晚飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 1080,
+      "to": 1200,
+      "label": "茶館",
+      "do": [
+       "drink_tea",
+       "listen_story"
+      ]
+     },
+     {
+      "from": 1260,
+      "to": 300,
+      "label": "睡覺",
+      "do": [
+       "sleep"
+      ]
+     }
+    ]
+   },
+   "age_src": "旋鈕：人物設定"
+  },
+  {
+   "id": "tian-xiaoman",
+   "name": "田小滿",
+   "sprite": "w5",
+   "role": "農家少年",
+   "home": "home-east",
+   "workplace": "home-east",
+   "age": 14,
+   "haowu": 0.9,
+   "skills": {
+    "fist": 10,
+    "power": 60,
+    "stance": 50,
+    "stamina": 90
+   },
+   "traits": {
+    "calm": 30,
+    "brave": 70,
+    "curious": 80,
+    "kind": 60
+   },
+   "identity": "田小滿是田大叔的小兒子，十四歲，坐不住，聽到什麼新鮮事都要湊過去看。他最愛蹲在茶館門口聽說書，夢想有一天也能闖蕩江湖。",
+   "plan": "你想聽對方講江湖上的事。",
+   "voice": "急、愛問，常說「真的假的」「然後呢」。",
+   "taboo": "被他爹打屁股的事。",
+   "schedule": {
+    "worker": false,
+    "blocks": [
+     {
+      "from": 300,
+      "to": 360,
+      "label": "起床吃飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 420,
+      "to": 600,
+      "label": "幫家裡幹活",
+      "do": [
+       "draw_water",
+       "chop_bamboo"
+      ]
+     },
+     {
+      "from": 720,
+      "to": 780,
+      "label": "午飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 840,
+      "to": 960,
+      "label": "幫家裡幹活",
+      "do": [
+       "wash_clothes",
+       "draw_water"
+      ]
+     },
+     {
+      "from": 1020,
+      "to": 1080,
+      "label": "晚飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 1080,
+      "to": 1200,
+      "label": "茶館聽書",
+      "do": [
+       "listen_story",
+       "drink_tea"
+      ]
+     },
+     {
+      "from": 1260,
+      "to": 300,
+      "label": "睡覺",
+      "do": [
+       "sleep"
+      ]
+     }
+    ]
+   },
+   "age_src": "旋鈕：人物設定"
+  },
+  {
+   "id": "lei-shan",
+   "name": "雷山",
+   "sprite": "w2",
+   "role": "獵戶",
+   "home": "home-west-1",
+   "workplace": "home-west-1",
+   "age": 32,
+   "haowu": 0.7,
+   "skills": {
+    "fist": 80,
+    "power": 260,
+    "stance": 220,
+    "stamina": 300
+   },
+   "traits": {
+    "calm": 55,
+    "brave": 80,
+    "curious": 40,
+    "kind": 40
+   },
+   "identity": "雷山是住在鎮西的獵戶，常年在山腳小路一帶下套子、追獐子。他腳程快、眼睛利，對力氣大的人格外佩服。",
+   "plan": "你想知道山裡最近有沒有怪事。",
+   "voice": "簡短、帶點山野氣，常說「嘿」「這不難」。",
+   "taboo": "他爹在山裡失蹤的事。",
+   "schedule": {
+    "worker": true,
+    "blocks": [
+     {
+      "from": 300,
+      "to": 360,
+      "label": "起床吃飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 420,
+      "to": 720,
+      "label": "上山打獵",
+      "do": [
+       "hunt"
+      ]
+     },
+     {
+      "from": 720,
+      "to": 780,
+      "label": "午飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 780,
+      "to": 1020,
+      "label": "上山打獵",
+      "do": [
+       "hunt"
+      ]
+     },
+     {
+      "from": 1020,
+      "to": 1080,
+      "label": "晚飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 1080,
+      "to": 1200,
+      "label": "茶館",
+      "do": [
+       "drink_tea",
+       "listen_story"
+      ]
+     },
+     {
+      "from": 1260,
+      "to": 300,
+      "label": "睡覺",
+      "do": [
+       "sleep"
+      ]
+     }
+    ]
+   },
+   "age_src": "旋鈕：人物設定"
+  },
+  {
+   "id": "qian-huolang",
+   "name": "錢貨郎",
+   "sprite": "w6",
+   "role": "貨郎",
+   "home": "home-west-2",
+   "workplace": "home-west-2",
+   "age": 28,
+   "haowu": 0.4,
+   "skills": {
+    "fist": 15,
+    "power": 90,
+    "stance": 70,
+    "stamina": 180
+   },
+   "traits": {
+    "calm": 45,
+    "brave": 35,
+    "curious": 90,
+    "kind": 50
+   },
+   "identity": "錢貨郎挑著擔子在主街擺攤，針線、糖人、胭脂什麼都賣。他走過不少地方，嘴甜，最懂得看人臉色。",
+   "plan": "你想做成一筆生意，順便打聽誰家有喜事。",
+   "voice": "圓滑、熱絡，常說「客官」「包您滿意」。",
+   "taboo": "他欠下的一筆賭債。",
+   "schedule": {
+    "worker": true,
+    "blocks": [
+     {
+      "from": 300,
+      "to": 360,
+      "label": "起床吃飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 420,
+      "to": 720,
+      "label": "擺攤",
+      "do": [
+       "peddle"
+      ]
+     },
+     {
+      "from": 720,
+      "to": 780,
+      "label": "午飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 780,
+      "to": 1020,
+      "label": "擺攤",
+      "do": [
+       "peddle"
+      ]
+     },
+     {
+      "from": 1020,
+      "to": 1080,
+      "label": "晚飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 1080,
+      "to": 1200,
+      "label": "茶館",
+      "do": [
+       "drink_tea",
+       "listen_story"
+      ]
+     },
+     {
+      "from": 1260,
+      "to": 300,
+      "label": "睡覺",
+      "do": [
+       "sleep"
+      ]
+     }
+    ]
+   },
+   "age_src": "旋鈕：人物設定"
+  },
+  {
+   "id": "liu-sanniang",
+   "name": "柳三娘",
+   "sprite": "w3",
+   "role": "寡婦（織布）",
+   "home": "home-east",
+   "workplace": "home-east",
+   "age": 38,
+   "haowu": 0.2,
+   "skills": {
+    "fist": 5,
+    "power": 40,
+    "stance": 30,
+    "stamina": 80
+   },
+   "traits": {
+    "calm": 70,
+    "brave": 30,
+    "curious": 40,
+    "kind": 70
+   },
+   "identity": "柳三娘丈夫早逝，靠織布養活自己。她性子溫和，做事細心，不太愛出門湊熱鬧。",
+   "plan": "你想託對方幫忙帶點東西。",
+   "voice": "輕聲細語，常說「勞駕」「不打緊」。",
+   "taboo": "她丈夫的死因。",
+   "schedule": {
+    "worker": true,
+    "blocks": [
+     {
+      "from": 300,
+      "to": 360,
+      "label": "起床吃飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 420,
+      "to": 720,
+      "label": "織布",
+      "do": [
+       "weave"
+      ]
+     },
+     {
+      "from": 720,
+      "to": 780,
+      "label": "午飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 780,
+      "to": 1020,
+      "label": "織布",
+      "do": [
+       "weave"
+      ]
+     },
+     {
+      "from": 1020,
+      "to": 1080,
+      "label": "晚飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 1080,
+      "to": 1200,
+      "label": "茶館",
+      "do": [
+       "drink_tea",
+       "listen_story"
+      ]
+     },
+     {
+      "from": 1260,
+      "to": 300,
+      "label": "睡覺",
+      "do": [
+       "sleep"
+      ]
+     }
+    ]
+   },
+   "age_src": "旋鈕：人物設定"
+  },
+  {
+   "id": "a-niu",
+   "name": "阿牛",
+   "sprite": "w5",
+   "role": "放牛少年",
+   "home": "home-west-1",
+   "workplace": "home-west-1",
+   "age": 13,
+   "haowu": 0.8,
+   "skills": {
+    "fist": 15,
+    "power": 80,
+    "stance": 60,
+    "stamina": 100
+   },
+   "traits": {
+    "calm": 35,
+    "brave": 75,
+    "curious": 70,
+    "kind": 55
+   },
+   "identity": "阿牛是鎮西的放牛娃，十三歲，力氣比同齡人大，整天在河邊和竹林裡跑。他聽說武館重開了，總想偷偷溜進去看。",
+   "plan": "你想跟對方比誰力氣大。",
+   "voice": "直來直往，常說「看我的」「才不怕」。",
+   "taboo": "他把人家的牛弄丟過一次。",
+   "schedule": {
+    "worker": false,
+    "blocks": [
+     {
+      "from": 300,
+      "to": 360,
+      "label": "起床吃飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 420,
+      "to": 600,
+      "label": "幫家裡幹活",
+      "do": [
+       "draw_water",
+       "chop_bamboo"
+      ]
+     },
+     {
+      "from": 720,
+      "to": 780,
+      "label": "午飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 840,
+      "to": 960,
+      "label": "幫家裡幹活",
+      "do": [
+       "wash_clothes",
+       "draw_water"
+      ]
+     },
+     {
+      "from": 1020,
+      "to": 1080,
+      "label": "晚飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 1080,
+      "to": 1200,
+      "label": "茶館聽書",
+      "do": [
+       "listen_story",
+       "drink_tea"
+      ]
+     },
+     {
+      "from": 1260,
+      "to": 300,
+      "label": "睡覺",
+      "do": [
+       "sleep"
+      ]
+     }
+    ]
+   },
+   "age_src": "旋鈕：人物設定"
+  },
+  {
+   "id": "xiao-dou",
+   "name": "小豆",
+   "sprite": "w5",
+   "role": "茶館跑堂少年",
+   "home": "home-west-2",
+   "workplace": "home-west-2",
+   "age": 12,
+   "haowu": 0.6,
+   "skills": {
+    "fist": 5,
+    "power": 30,
+    "stance": 40,
+    "stamina": 70
+   },
+   "traits": {
+    "calm": 50,
+    "brave": 45,
+    "curious": 85,
+    "kind": 65
+   },
+   "identity": "小豆十二歲，在茶館幫忙端茶倒水換口飯吃。他記性好，客人說過的話他都記得。",
+   "plan": "你想討幾個銅板的賞錢。",
+   "voice": "機靈、快嘴，常說「得嘞」「您慢走」。",
+   "taboo": "他沒見過自己的爹娘。",
+   "schedule": {
+    "worker": false,
+    "blocks": [
+     {
+      "from": 300,
+      "to": 360,
+      "label": "起床吃飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 420,
+      "to": 600,
+      "label": "幫家裡幹活",
+      "do": [
+       "draw_water",
+       "chop_bamboo"
+      ]
+     },
+     {
+      "from": 720,
+      "to": 780,
+      "label": "午飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 840,
+      "to": 960,
+      "label": "幫家裡幹活",
+      "do": [
+       "wash_clothes",
+       "draw_water"
+      ]
+     },
+     {
+      "from": 1020,
+      "to": 1080,
+      "label": "晚飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 1080,
+      "to": 1200,
+      "label": "茶館聽書",
+      "do": [
+       "listen_story",
+       "drink_tea"
+      ]
+     },
+     {
+      "from": 1260,
+      "to": 300,
+      "label": "睡覺",
+      "do": [
+       "sleep"
+      ]
+     }
+    ]
+   },
+   "age_src": "旋鈕：人物設定"
+  },
+  {
+   "id": "sun-qiao",
+   "name": "孫樵夫",
+   "sprite": "w1",
+   "role": "樵夫",
+   "home": "home-west-2",
+   "workplace": "home-west-2",
+   "age": 51,
+   "haowu": 0.35,
+   "skills": {
+    "fist": 30,
+    "power": 240,
+    "stance": 160,
+    "stamina": 260
+   },
+   "traits": {
+    "calm": 65,
+    "brave": 45,
+    "curious": 25,
+    "kind": 55
+   },
+   "identity": "孫樵夫每天上竹林砍竹打柴，挑到鎮上賣。他話不多，最喜歡坐在河邊石頭上抽一袋菸。",
+   "plan": "你只想說兩句閒話就走。",
+   "voice": "粗啞、慢吞吞，常說「唔」「也是」。",
+   "taboo": "他年輕時跟人打架傷了腿。",
+   "schedule": {
+    "worker": true,
+    "blocks": [
+     {
+      "from": 300,
+      "to": 360,
+      "label": "起床吃飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 420,
+      "to": 720,
+      "label": "砍竹打柴",
+      "do": [
+       "chop_bamboo"
+      ]
+     },
+     {
+      "from": 720,
+      "to": 780,
+      "label": "午飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 780,
+      "to": 1020,
+      "label": "砍竹打柴",
+      "do": [
+       "chop_bamboo"
+      ]
+     },
+     {
+      "from": 1020,
+      "to": 1080,
+      "label": "晚飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 1080,
+      "to": 1200,
+      "label": "茶館",
+      "do": [
+       "drink_tea",
+       "listen_story"
+      ]
+     },
+     {
+      "from": 1260,
+      "to": 300,
+      "label": "睡覺",
+      "do": [
+       "sleep"
+      ]
+     }
+    ]
+   },
+   "age_src": "旋鈕：人物設定"
+  },
+  {
+   "id": "jiang-wu",
+   "name": "江五",
+   "sprite": "w2",
+   "role": "漁夫",
+   "home": "home-east",
+   "workplace": "home-east",
+   "age": 35,
+   "haowu": 0.5,
+   "skills": {
+    "fist": 40,
+    "power": 180,
+    "stance": 200,
+    "stamina": 220
+   },
+   "traits": {
+    "calm": 50,
+    "brave": 60,
+    "curious": 50,
+    "kind": 50
+   },
+   "identity": "江五在石橋下撐船打魚，什麼天氣都在水上。他水性好，下盤穩，說話帶著水鄉口音。",
+   "plan": "你想把今天的魚賣出去。",
+   "voice": "爽朗，常說「好說」「這水深著呢」。",
+   "taboo": "他跟河對岸那家的過節。",
+   "schedule": {
+    "worker": true,
+    "blocks": [
+     {
+      "from": 300,
+      "to": 360,
+      "label": "起床吃飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 420,
+      "to": 720,
+      "label": "打魚",
+      "do": [
+       "fish"
+      ]
+     },
+     {
+      "from": 720,
+      "to": 780,
+      "label": "午飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 780,
+      "to": 1020,
+      "label": "打魚",
+      "do": [
+       "fish"
+      ]
+     },
+     {
+      "from": 1020,
+      "to": 1080,
+      "label": "晚飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 1080,
+      "to": 1200,
+      "label": "茶館",
+      "do": [
+       "drink_tea",
+       "listen_story"
+      ]
+     },
+     {
+      "from": 1260,
+      "to": 300,
+      "label": "睡覺",
+      "do": [
+       "sleep"
+      ]
+     }
+    ]
+   },
+   "age_src": "旋鈕：人物設定"
+  },
+  {
+   "id": "xu-doufu",
+   "name": "許豆腐",
+   "sprite": "w3",
+   "role": "賣豆腐的婦人",
+   "home": "home-west-1",
+   "workplace": "home-west-1",
+   "age": 30,
+   "haowu": 0.25,
+   "skills": {
+    "fist": 5,
+    "power": 70,
+    "stance": 40,
+    "stamina": 120
+   },
+   "traits": {
+    "calm": 55,
+    "brave": 40,
+    "curious": 60,
+    "kind": 75
+   },
+   "identity": "許豆腐天不亮就起來磨豆子，豆腐做得又白又嫩，在主街擺攤賣。她嗓門大，人緣好。",
+   "plan": "你想多賣出兩塊豆腐。",
+   "voice": "嗓門大、爽快，常說「來來來」「今兒的新鮮」。",
+   "taboo": "她跑掉的男人。",
+   "schedule": {
+    "worker": true,
+    "blocks": [
+     {
+      "from": 300,
+      "to": 360,
+      "label": "起床吃飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 420,
+      "to": 720,
+      "label": "賣豆腐",
+      "do": [
+       "peddle"
+      ]
+     },
+     {
+      "from": 720,
+      "to": 780,
+      "label": "午飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 780,
+      "to": 1020,
+      "label": "賣豆腐",
+      "do": [
+       "peddle"
+      ]
+     },
+     {
+      "from": 1020,
+      "to": 1080,
+      "label": "晚飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 1080,
+      "to": 1200,
+      "label": "茶館",
+      "do": [
+       "drink_tea",
+       "listen_story"
+      ]
+     },
+     {
+      "from": 1260,
+      "to": 300,
+      "label": "睡覺",
+      "do": [
+       "sleep"
+      ]
+     }
+    ]
+   },
+   "age_src": "旋鈕：人物設定"
+  },
+  {
+   "id": "shen-shusheng",
+   "name": "沈書生",
+   "sprite": "w6",
+   "role": "落第書生",
+   "home": "home-east",
+   "workplace": "home-east",
+   "age": 24,
+   "haowu": 0.45,
+   "skills": {
+    "fist": 5,
+    "power": 20,
+    "stance": 20,
+    "stamina": 60
+   },
+   "traits": {
+    "calm": 60,
+    "brave": 25,
+    "curious": 90,
+    "kind": 60
+   },
+   "identity": "沈書生進京趕考落了榜，回鎮上替人寫信、教孩子認字。他手無縛雞之力，卻愛讀遊俠列傳。",
+   "plan": "你想跟對方談論書上的道理。",
+   "voice": "文縐縐，常說「子曰」「依在下看」。",
+   "taboo": "落榜那年家裡為他賣掉的田。",
+   "schedule": {
+    "worker": true,
+    "blocks": [
+     {
+      "from": 300,
+      "to": 360,
+      "label": "起床吃飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 420,
+      "to": 720,
+      "label": "擺攤寫字",
+      "do": [
+       "peddle"
+      ]
+     },
+     {
+      "from": 720,
+      "to": 780,
+      "label": "午飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 780,
+      "to": 1020,
+      "label": "擺攤寫字",
+      "do": [
+       "peddle"
+      ]
+     },
+     {
+      "from": 1020,
+      "to": 1080,
+      "label": "晚飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 1080,
+      "to": 1200,
+      "label": "茶館",
+      "do": [
+       "drink_tea",
+       "listen_story"
+      ]
+     },
+     {
+      "from": 1260,
+      "to": 300,
+      "label": "睡覺",
+      "do": [
+       "sleep"
+      ]
+     }
+    ]
+   },
+   "age_src": "旋鈕：人物設定"
+  },
+  {
+   "id": "ma-tuhu",
+   "name": "馬屠戶",
+   "sprite": "w2",
+   "role": "屠戶",
+   "home": "home-west-2",
+   "workplace": "home-west-2",
+   "age": 40,
+   "haowu": 0.55,
+   "skills": {
+    "fist": 60,
+    "power": 320,
+    "stance": 140,
+    "stamina": 200
+   },
+   "traits": {
+    "calm": 40,
+    "brave": 70,
+    "curious": 30,
+    "kind": 35
+   },
+   "identity": "馬屠戶在主街殺豬賣肉，一把殺豬刀使得飛快。他脾氣急，看不慣光說不練的人。",
+   "plan": "你想跟對方比劃比劃，看看誰是真本事。",
+   "voice": "粗聲大氣，常說「少囉嗦」「來真的」。",
+   "taboo": "他當年打傷人吃過官司。",
+   "schedule": {
+    "worker": true,
+    "blocks": [
+     {
+      "from": 300,
+      "to": 360,
+      "label": "起床吃飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 420,
+      "to": 720,
+      "label": "賣肉",
+      "do": [
+       "peddle"
+      ]
+     },
+     {
+      "from": 720,
+      "to": 780,
+      "label": "午飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 780,
+      "to": 1020,
+      "label": "賣肉",
+      "do": [
+       "peddle"
+      ]
+     },
+     {
+      "from": 1020,
+      "to": 1080,
+      "label": "晚飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 1080,
+      "to": 1200,
+      "label": "茶館",
+      "do": [
+       "drink_tea",
+       "listen_story"
+      ]
+     },
+     {
+      "from": 1260,
+      "to": 300,
+      "label": "睡覺",
+      "do": [
+       "sleep"
+      ]
+     }
+    ]
+   },
+   "age_src": "旋鈕：人物設定"
+  },
+  {
+   "id": "xiao-lian",
+   "name": "小蓮",
+   "sprite": "w3",
+   "role": "織布少女",
+   "home": "home-west-1",
+   "workplace": "home-west-1",
+   "age": 15,
+   "haowu": 0.65,
+   "skills": {
+    "fist": 5,
+    "power": 30,
+    "stance": 50,
+    "stamina": 70
+   },
+   "traits": {
+    "calm": 45,
+    "brave": 55,
+    "curious": 75,
+    "kind": 70
+   },
+   "identity": "小蓮十五歲，跟柳三娘學織布。她手巧，腦子轉得快，偷偷羨慕那些能飛簷走壁的俠女。",
+   "plan": "你想打聽外面的世界是什麼樣子。",
+   "voice": "清脆、好奇，常說「欸」「真好看」。",
+   "taboo": "她偷偷攢錢想離開小鎮。",
+   "schedule": {
+    "worker": true,
+    "blocks": [
+     {
+      "from": 300,
+      "to": 360,
+      "label": "起床吃飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 420,
+      "to": 720,
+      "label": "織布",
+      "do": [
+       "weave"
+      ]
+     },
+     {
+      "from": 720,
+      "to": 780,
+      "label": "午飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 780,
+      "to": 1020,
+      "label": "織布",
+      "do": [
+       "weave"
+      ]
+     },
+     {
+      "from": 1020,
+      "to": 1080,
+      "label": "晚飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 1080,
+      "to": 1200,
+      "label": "茶館",
+      "do": [
+       "drink_tea",
+       "listen_story"
+      ]
+     },
+     {
+      "from": 1260,
+      "to": 300,
+      "label": "睡覺",
+      "do": [
+       "sleep"
+      ]
+     }
+    ]
+   },
+   "age_src": "旋鈕：人物設定"
+  },
+  {
+   "id": "bao-laobing",
+   "name": "包老兵",
+   "sprite": "w1",
+   "role": "退伍老兵",
+   "home": "home-east",
+   "workplace": "home-east",
+   "age": 58,
+   "haowu": 0.75,
+   "skills": {
+    "fist": 150,
+    "power": 180,
+    "stance": 250,
+    "stamina": 160
+   },
+   "traits": {
+    "calm": 70,
+    "brave": 65,
+    "curious": 40,
+    "kind": 50
+   },
+   "identity": "包老兵年輕時在邊關當過兵，腿上還留著箭傷。他一輩子見過不少真功夫，最佩服有真本事的人。",
+   "plan": "你想講講當年在邊關的事。",
+   "voice": "沙啞、愛講古，常說「想當年」「這算什麼」。",
+   "taboo": "他在邊關丟下的兄弟。",
+   "schedule": {
+    "worker": false,
+    "blocks": [
+     {
+      "from": 300,
+      "to": 360,
+      "label": "起床吃飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 420,
+      "to": 600,
+      "label": "幫家裡幹活",
+      "do": [
+       "draw_water",
+       "chop_bamboo"
+      ]
+     },
+     {
+      "from": 720,
+      "to": 780,
+      "label": "午飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 840,
+      "to": 960,
+      "label": "幫家裡幹活",
+      "do": [
+       "wash_clothes",
+       "draw_water"
+      ]
+     },
+     {
+      "from": 1020,
+      "to": 1080,
+      "label": "晚飯",
+      "do": [
+       "eat"
+      ]
+     },
+     {
+      "from": 1080,
+      "to": 1200,
+      "label": "茶館聽書",
+      "do": [
+       "listen_story",
+       "drink_tea"
+      ]
+     },
+     {
+      "from": 1260,
+      "to": 300,
+      "label": "睡覺",
+      "do": [
+       "sleep"
+      ]
+     }
+    ]
+   },
+   "age_src": "旋鈕：人物設定"
+  }
+ ],
+ "master": {
+  "id": "zhang-sanfeng",
+  "name": "張三丰",
+  "sprite": "w4",
+  "role": "雲遊道人",
+  "home": "teahouse",
+  "workplace": "plaza",
+  "age": 0,
+  "haowu": 1.0,
+  "skills": {
+   "fist": 0,
+   "power": 600,
+   "stance": 900,
+   "stamina": 800
+  },
+  "traits": {
+   "calm": 95,
+   "brave": 70,
+   "curious": 50,
+   "kind": 80
+  },
+  "identity": "張三丰是一位雲遊四方的老道人，鬚髮皆白，步履輕健。他在茶館後院租了一間小屋住下，每天清晨在小廣場慢慢打一趟拳，看起來就像在跟空氣推手。",
+  "plan": "你想看看對方是個什麼樣的人。",
+  "voice": "平和、不急，常說「莫急」「慢慢來」，愛用比喻。",
+  "taboo": "他到底幾歲、從哪裡來。",
+  "schedule": {
+   "worker": false,
+   "blocks": [
+    {
+     "from": 300,
+     "to": 360,
+     "label": "起床吃飯",
+     "do": [
+      "eat"
+     ]
+    },
+    {
+     "from": 360,
+     "to": 420,
+     "label": "小廣場晨練",
+     "do": [
+      "taiji_form"
+     ]
+    },
+    {
+     "from": 420,
+     "to": 660,
+     "label": "茶館喝茶",
+     "do": [
+      "drink_tea"
+     ]
+    },
+    {
+     "from": 660,
+     "to": 720,
+     "label": "河邊散步",
+     "do": [
+      "daydream"
+     ]
+    },
+    {
+     "from": 720,
+     "to": 780,
+     "label": "午飯",
+     "do": [
+      "eat"
+     ]
+    },
+    {
+     "from": 780,
+     "to": 1020,
+     "label": "散步喝茶",
+     "do": [
+      "daydream",
+      "drink_tea"
+     ]
+    },
+    {
+     "from": 1020,
+     "to": 1110,
+     "label": "小廣場指點",
+     "do": [
+      "instruct"
+     ]
+    },
+    {
+     "from": 1110,
+     "to": 1170,
+     "label": "晚飯",
+     "do": [
+      "eat"
+     ]
+    },
+    {
+     "from": 1170,
+     "to": 1290,
+     "label": "後院靜坐",
+     "do": [
+      "meditate"
+     ]
+    },
+    {
+     "from": 1290,
+     "to": 300,
+     "label": "睡覺",
+     "do": [
+      "sleep"
+     ]
+    }
+   ]
+  },
+  "age_src": "旋鈕：人物設定"
+ }
+}

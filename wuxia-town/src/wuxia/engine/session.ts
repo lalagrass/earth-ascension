@@ -23,6 +23,8 @@ import { gameMinutes } from '../../../convex/wuxia/clock';
 import { W05_MIND } from '../../../convex/wuxia/w05_mind/data';
 import { W08_JIANGHU, JianghuState, EventKind } from '../../../convex/wuxia/w08_jianghu/data';
 import type { Game } from '../../../convex/aiTown/game';
+import { A2_MASTER, A2State } from '../../../convex/wuxia/a2_master/data';
+import { applyScenario } from '../../../convex/wuxia/a2_master';
 import {
   JournalInput,
   Snapshot,
@@ -48,6 +50,10 @@ export type WorldOptions = {
   forceEvent?: { kind: EventKind; day: number };
   /** W8：行商聽到的傳聞不算出鎮（#562 W8-12 驗收 --no-rumor-out） */
   noRumorOut?: boolean;
+  /** A2：劇本 master-open／master-selective／master-hidden／no-master（不給就是 master.json 的預設，不寫欄位） */
+  scenario?: string;
+  /** A2：大師第幾日進鎮（對照實驗；不給就是 master.json 的預設） */
+  arriveDay?: number;
 };
 
 export function initialSnapshot(opts: WorldOptions & Record<string, unknown>): Snapshot {
@@ -64,6 +70,10 @@ export function initialSnapshot(opts: WorldOptions & Record<string, unknown>): S
   const jh = wuxia.elements[W08_JIANGHU] as JianghuState | undefined;
   if (jh && opts.forceEvent) jh.force = { ...opts.forceEvent };
   if (jh && opts.noRumorOut) jh.noRumorOut = true;
+  // A2：劇本與進鎮日（a2-master 關閉時沒有這個狀態，不寫）
+  const a2 = wuxia.elements[A2_MASTER] as A2State | undefined;
+  if (a2 && opts.scenario) applyScenario(a2, opts.scenario);
+  if (a2 && opts.arriveDay !== undefined) a2.arriveDay = opts.arriveDay;
   const worldMap =
     opts.map === undefined
       ? serializedMapFor(wuxia.enabled)
@@ -206,7 +216,7 @@ export class Session {
       spars: undefined,
       chronicles: undefined,
     };
-    const descriptions = descriptionsFor(this.folkOn);
+    const descriptions = descriptionsFor(this.folkOn, snapshot.gameState.world.wuxia);
     const agents = opts.agents ?? descriptions.length;
     // 跟 init.ts 一樣：世界建好後送 createAgent。
     for (let i = 0; i < agents; i++) {

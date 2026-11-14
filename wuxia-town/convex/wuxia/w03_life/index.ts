@@ -40,6 +40,7 @@ import {
 } from './data';
 
 export const W03_LIFE = 'w03-life';
+const A2_OPEN_ACTS = new Set(['hit_dummy', 'hit_sandbag', 'stand_post', 'lift_stone']);
 export { lifeSchedCtx } from './data';
 
 /** 規則常數（遊戲分鐘）。數值調整寫在 docs/wuxia/W3.md。 */
@@ -195,7 +196,13 @@ export function allowed(
   ctx?: SchedCtx,
 ): boolean {
   // W9：玩家角色能做的活動列在 data/wuxia/player.json 的 acts；客床 owner '@player'＝玩家專用
-  if (!act.roles.includes('*') && !act.roles.includes(person.cid) && !(person.player && PLAYER_ACTS.has(act.id)))
+  // A2（#575「W4 的打樁／沙袋改成『練某一招』」）：a2-master 開啟時（世界裡有廣場空地）武館練功誰都能練（仍要日程排到）
+  if (
+    !act.roles.includes('*') &&
+    !act.roles.includes(person.cid) &&
+    !(person.player && PLAYER_ACTS.has(act.id)) &&
+    !(state.res['plaza-ground'] && A2_OPEN_ACTS.has(act.id))
+  )
     return false;
   if (obj.owner && obj.owner !== person.cid && !(obj.owner === PLAYER_OWNER && person.player)) return false;
   if (obj.household && obj.household !== person.home) return false;
@@ -601,9 +608,17 @@ export function personPlace(person: Person, player: Player): string {
   return placeAt(player.position.x, player.position.y);
 }
 
-const LEISURE_PLACES = new Set(
-  OBJECTS.filter((o) => o.activities.some((a) => a.leisure)).map((o) => o.place),
-);
+// A2：只算「這個世界有的」物件（state.res 有座位的）；元素關閉時跟上一步相同（鎮東民居的灶只在 a2-master 開啟時才算）
+const LEISURE_PLACES_ALL = OBJECTS.filter((o) => o.activities.some((a) => a.leisure));
+const leisureCache = new WeakMap<object, Set<string>>();
+function leisurePlaces(state: LifeState): Set<string> {
+  let s = leisureCache.get(state.res);
+  if (!s) {
+    s = new Set(LEISURE_PLACES_ALL.filter((o) => !o.element || state.res[o.id]).map((o) => o.place));
+    leisureCache.set(state.res, s);
+  }
+  return s;
+}
 
 function canChat(game: Game, gm: number, pid: string, person: Person, ctx: SchedCtx): boolean {
   // 該睡覺的時段不邀人聊天
@@ -646,7 +661,7 @@ function inviteToTalk(game: Game, now: number, gm: number, state: LifeState) {
     const playerA = game.world.players.get(a as any)!;
     const placeA = personPlace(pa, playerA);
     // 只在有閒暇物件的地點（茶館、河邊、各家飯桌）開口；走在街上不攀談
-    if (!LEISURE_PLACES.has(placeA)) continue;
+    if (!leisurePlaces(state).has(placeA)) continue;
     const preferNew = !!fresh && fresh.size > 0 && prefersNewcomer(mind, a);
     let best: { id: string; d: number; fresh: boolean } | undefined;
     for (const b of ids) {

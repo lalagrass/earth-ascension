@@ -45,7 +45,18 @@ export type MemoryKind =
   | 'robbed'
   // W9（#561）：玩家向人請教（請教的人記 asked，other＝被請教的人；被請教的人記 taught，other＝玩家）
   | 'asked'
-  | 'taught';
+  | 'taught'
+  // A2（#575）：看到大師晨練（other＝大師，n＝好武×100，影響敬重的倍率）、看到會太極的人切磋贏了（other＝贏家，what＝武學 id）、
+  // 學到一招（other＝教的人或被看的人，what＝招名，n＝1 教／0 看）、教了一招（other＝學的人，what＝招名）、
+  // 改投（弟子記，other＝新師父，what＝舊師父）、徒弟改投（舊師父記，other＝新師父，what＝弟子）、
+  // 跟大師較勁（周教頭記，other＝大師）
+  | 'saw_form'
+  | 'saw_art_win'
+  | 'learned_move'
+  | 'taught_move'
+  | 'switched_master'
+  | 'disciple_left'
+  | 'rival_master';
 
 /** #557：`{t, kind, other?, place?, weight}`；另加 id（全世界唯一、遞增，給 --drop-memory 用）與 n（數量，例如練功分鐘）。 */
 export type Memory = {
@@ -356,7 +367,7 @@ export function thoughtsLine(w: WuxiaState | undefined, pid: string): string | u
 }
 
 /** W8：傳聞類別的說明（記憶「聽說…」） */
-const RUMOR_LABEL: Record<string, string> = { dojo: '武館的事', wealth: '藥鋪進貨', bandit: '山賊的事', xiake: '外地俠客的事' };
+const RUMOR_LABEL: Record<string, string> = { dojo: '武館的事', wealth: '藥鋪進貨', bandit: '山賊的事', xiake: '外地俠客的事', master: '鎮上來了高人' };
 
 const KIND_TEXT: Record<MemoryKind, string> = {
   listen: '聽書{times}',
@@ -384,6 +395,13 @@ const KIND_TEXT: Record<MemoryKind, string> = {
   robbed: '藥鋪被山賊搶走 {n} 箱{what}',
   asked: '向{other}請教',
   taught: '指點了{other}',
+  saw_form: '看到{other}晨練打拳',
+  saw_art_win: '看到會{what}的{other}切磋贏了',
+  learned_move: '跟{other}學到「{what}」',
+  taught_move: '教{other}「{what}」',
+  switched_master: '改投{other}門下（原本跟{what}）',
+  disciple_left: '徒弟{what}改投{other}門下',
+  rival_master: '暗暗跟{other}較勁',
 };
 
 /** 記憶的說明文字（畫面「因為…」與報告共用）。names：cid → 名字；places：地點 id → 名字。 */

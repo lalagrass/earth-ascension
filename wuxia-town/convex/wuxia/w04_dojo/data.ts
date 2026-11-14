@@ -1,7 +1,7 @@
 // 武俠小鎮 W4（#556）：練功與技能的資料（data/wuxia/training.json、characters.json 的 skills）與純函式。
 // 引擎、前端、工具共用；不碰世界狀態。
 import trainingJson from '../../../data/wuxia/training.json';
-import { FOLK_CHARACTERS } from '../w02_folk';
+import { profileById } from '../w02_folk';
 
 export const SKILL_KEYS = ['fist', 'power', 'stance', 'stamina'] as const;
 export type SkillKey = (typeof SKILL_KEYS)[number];
@@ -36,7 +36,7 @@ export const COACH_ACT = 'coach';
 
 /** 起始技能值（characters.json 的 skills；沒寫的算 0）。 */
 export function initialSkills(cid: string): Skills {
-  const s = (FOLK_CHARACTERS.find((c) => c.id === cid) as any)?.skills ?? {};
+  const s = (profileById(cid) as any)?.skills ?? {};
   const out = {} as Skills;
   for (const k of SKILL_KEYS) out[k] = Math.max(0, Math.min(TRAINING.max, Math.trunc(s[k] ?? 0)));
   return out;

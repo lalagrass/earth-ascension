@@ -9,6 +9,7 @@
 //   5. 師父日程的「指點徒弟」時段（弟子練功的時候師父去武館指點）：心念評估或收徒後重算，w03-life 的日程讀它。
 // 只用規則與 tick 的 now，不耗 game.rng()、不等 LLM。狀態存在 world.wuxia.elements['w07-bond']。
 import { a1On } from '../a1_base';
+import { a2BowVerdict, a2DrillDo, a2Practising } from '../a2_master/hooks';
 import type { Game } from '../../aiTown/game';
 import type { Player } from '../../aiTown/player';
 import type { WuxiaElement } from '../registry';
@@ -203,7 +204,8 @@ function checkRules(
   for (const cid of Object.keys(state.disciples).sort()) {
     const pid = pidOf[cid];
     if (!pid) continue;
-    if (mod >= drill.from! && mod < drill.to! && trainingAct(life.people[pid])) {
+    // A2：a2-master 開啟時在廣場空地練拳也算練功（大師的徒弟在廣場練）
+    if (mod >= drill.from! && mod < drill.to! && (trainingAct(life.people[pid]) || a2Practising(w, life.people[pid]))) {
       const d = state.drill[cid];
       state.drill[cid] = d && d[0] === day ? [day, d[1] + 1] : [day, 1];
     }
@@ -334,7 +336,12 @@ function stepBow(game: Game, now: number, gm: number, state: BondState, life: Li
   const count = disciplesOf(state, ev.cb).length;
   let accepted: boolean;
   let reason: string;
-  if (ev.cb === COACH_ID && count === 0) {
+  // A2（#575）：大師的三種授徒態度（open 照 W7、selective 親近 ≥ 20 且無惡行且最多 2 人、hidden 不收）；a2-master 關閉時 undefined
+  const a2v = a2BowVerdict(w, mind, ev.ca, ev.cb, close, count);
+  if (a2v) {
+    accepted = a2v.accepted;
+    reason = a2v.reason;
+  } else if (ev.cb === COACH_ID && count === 0) {
     accepted = true;
     reason = '周教頭第一個徒弟必收';
   } else if (count >= BONDS.maxDisciples) {
@@ -388,7 +395,7 @@ export function computeBondBlocks(w: WuxiaState, state: BondState, day: number):
   if (drill?.from !== undefined && drill.to !== undefined) {
     const blocks: Record<string, ScheduleBlock[]> = { ...(ctx.blocks ?? {}) };
     for (const d of disciples) {
-      const b = { from: drill.from, to: drill.to, label: `${drill.name}（門規）`, do: [...(drill.do ?? [])] };
+      const b = { from: drill.from, to: drill.to, label: `${drill.name}（門規）`, do: a2DrillDo(w, state.disciples[d].master) ?? [...(drill.do ?? [])] };
       out[d] = [b];
       blocks[d] = [b, ...(blocks[d] ?? [])];
     }

@@ -1,0 +1,14 @@
+{
+  "_doc": "武俠小鎮 A2（#575）第二門武學：老槐拳，周教頭家傳（原創，招名原創）。6 式，difficulty 1–3，讓鎮上原本就有一門粗淺的武功可以對照。originProf＝周教頭起始熟練度；推導拳腳＝體能分＋Σ(prof×難度權重) 時約等於 W4 起始拳腳 620（見 data/wuxia/master.json fist）。",
+  "id": "laohuai",
+  "name": "老槐拳",
+  "origin": "zhou-jiaotou",
+  "moves": [
+    {"id": "laohuai-genbu", "name": "槐根步", "difficulty": 1, "difficulty_src": "旋鈕", "prereq": [], "bodyNeed": {}, "originProf": 900, "originProf_src": "推導：周教頭家傳練了幾十年；6 式 Σ(prof×權重) ≈ 490，加體能分 128 ≈ W4 拳腳 620"},
+    {"id": "laohuai-hengsao", "name": "老枝橫掃", "difficulty": 1, "difficulty_src": "旋鈕", "prereq": [], "bodyNeed": {}, "originProf": 900, "originProf_src": "推導：同上"},
+    {"id": "laohuai-panzhou", "name": "盤根肘", "difficulty": 2, "difficulty_src": "旋鈕", "prereq": ["laohuai-genbu"], "bodyNeed": {}, "originProf": 900, "originProf_src": "推導：同上"},
+    {"id": "laohuai-luoye", "name": "落葉掌", "difficulty": 2, "difficulty_src": "旋鈕", "prereq": ["laohuai-hengsao"], "bodyNeed": {}, "originProf": 900, "originProf_src": "推導：同上"},
+    {"id": "laohuai-pichai", "name": "劈柴拳", "difficulty": 3, "difficulty_src": "旋鈕", "prereq": ["laohuai-panzhou"], "bodyNeed": {"power": 100}, "bodyNeed_src": "旋鈕：力 100", "originProf": 900, "originProf_src": "推導：同上"},
+    {"id": "laohuai-tuishan", "name": "樹倒推山", "difficulty": 3, "difficulty_src": "旋鈕", "prereq": ["laohuai-pichai", "laohuai-luoye"], "bodyNeed": {"stance": 120}, "bodyNeed_src": "旋鈕：下盤 120", "originProf": 900, "originProf_src": "推導：同上"}
+  ]
+}

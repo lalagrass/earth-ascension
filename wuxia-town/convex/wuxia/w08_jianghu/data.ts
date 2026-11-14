@@ -2,6 +2,7 @@
 // 引擎、前端、工具共用；不碰世界狀態以外的東西。傳聞的文字與走樣全由規則決定（LLM 不參與）。
 import eventsJson from '../../../data/wuxia/events.json';
 import charactersJson from '../../../data/wuxia/characters.json';
+import townsfolkJson from '../../../data/wuxia/townsfolk.json';
 import type { WuxiaState } from '../state';
 import type { Fighter, Bout } from '../w06_spar/duel';
 import { zhNumber } from '../w06_spar/narration';
@@ -10,7 +11,7 @@ export const W08_JIANGHU = 'w08-jianghu';
 
 export type EventKind = 'xiake' | 'bandit' | 'xiaobi' | 'story';
 export const EVENT_KINDS: EventKind[] = ['xiake', 'bandit', 'xiaobi', 'story'];
-export type RumorAbout = 'dojo' | 'wealth' | 'bandit' | 'xiake';
+export type RumorAbout = 'dojo' | 'wealth' | 'bandit' | 'xiake' | 'master';
 
 type Range = [number, number];
 type Cause = { out?: RumorAbout; noOut?: 'fighter'; dojoDays?: number; tellerKnows?: boolean };
@@ -56,7 +57,12 @@ export const JIANGHU = eventsJson as unknown as {
 };
 
 const CHAR_NAMES: Record<string, string> = Object.fromEntries(
-  ((charactersJson as any).characters ?? charactersJson).map((c: any) => [c.id, c.name]),
+  [
+    ...((charactersJson as any).characters ?? charactersJson),
+    // A2（#575）：候選池與大師
+    ...(townsfolkJson as any).pool,
+    (townsfolkJson as any).master,
+  ].map((c: any) => [c.id, c.name]),
 );
 /** 人物 id → 名字（鎮民用 characters.json；外人與行商的「id」本身就是名字）。 */
 export function cidName(cid: string | undefined): string {
@@ -70,6 +76,9 @@ export type Facts = {
   /** dojo：reopen／plaque／xiaobi */
   feat?: string;
   coach?: string;
+  /** A2：大師人物 id、傳說中的歲數（往大裡說） */
+  master?: string;
+  age?: number;
   disciples?: number;
   dojoName?: string;
   winner?: string;
@@ -134,6 +143,10 @@ export function rumorText(about: RumorAbout, f: Facts): string {
       if (f.outcome === 'fled')
         return `${n(f.count)}個山賊下山搶藥鋪，被${(f.heroes ?? []).map(cidName).join('、') || '鎮上的人'}打跑了`;
       return `${n(f.count)}個山賊下山搶走藥鋪${n(f.loot)}箱藥材，沒人敢攔`;
+    case 'master':
+      // A2（#575）：「鎮上來了高人」（feat arrive）／徒弟改投（feat switch，winner＝弟子，coach＝舊師父）
+      if (f.feat === 'switch') return `${cidName(f.winner)}離開${cidName(f.coach)}，改投${cidName(f.master)}門下`;
+      return `鎮上來了一位高人${cidName(f.master)}${(f.age ?? 0) > 0 ? `，聽說已經${zhCount(f.age!)}歲了` : ''}，每天清早在小廣場打拳`;
     case 'xiake': {
       const who = `外地俠客${f.name ?? ''}`;
       if (f.result === 'town') return `${who}到武館討教，鬥了${n(f.rounds)}回合敗給${cidName(f.opp)}`;
@@ -161,6 +174,9 @@ export function distortFacts(about: RumorAbout, f: Facts): Facts {
       break;
     case 'dojo':
       g.disciples = (g.disciples ?? 0) + 2;
+      break;
+    case 'master':
+      g.age = (g.age ?? 70) + 30;
       break;
     case 'xiake':
       g.rounds = (g.rounds ?? 1) * 2;

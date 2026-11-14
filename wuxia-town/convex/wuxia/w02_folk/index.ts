@@ -13,6 +13,8 @@ import defaultTemplates from '../../../data/wuxia/templates/default.json';
 import { Descriptions } from '../../../data/characters';
 import type { WuxiaElement } from '../registry';
 import { PROMPTS } from './prompts.gen';
+import townsfolkJson from '../../../data/wuxia/townsfolk.json';
+import { drawFolk } from '../a2_master/folk';
 
 export const W02_FOLK = 'w02-folk';
 
@@ -32,6 +34,13 @@ export type FolkCharacter = {
 };
 
 export const FOLK_CHARACTERS: FolkCharacter[] = (charactersJson as any).characters;
+/** A2（#575）：候選池與大師（data/wuxia/townsfolk.json）；只有出現在世界裡的人才會被查到，所以 a2-master 關閉時不影響。 */
+export const ALL_PROFILES: FolkCharacter[] = [
+  ...FOLK_CHARACTERS,
+  ...(townsfolkJson as any).pool,
+  (townsfolkJson as any).master,
+];
+const A2_ID = 'a2-master';
 
 export type Stage = 'start' | 'continue' | 'leave';
 export type TemplateSet = Record<Stage, string[]>;
@@ -50,18 +59,29 @@ export const TEMPLATES: Record<string, TemplateSet> = {
 export type Description = { name: string; character: string; identity: string; plan: string };
 
 /** w02-folk 開：6 位鎮民；關：上游 data/characters.ts。enabled 要用「有效」開關（requires 已檢查）。 */
-export function descriptionsFor(folkOn: boolean): Description[] {
+export function descriptionsFor(
+  folkOn: boolean,
+  w?: { seed: number; enabled: Record<string, boolean> },
+): Description[] {
   if (!folkOn) return Descriptions;
-  return FOLK_CHARACTERS.map((c) => ({
+  const toDesc = (c: { name: string; sprite: string; identity: string; plan: string }) => ({
     name: c.name,
     character: c.sprite,
     identity: c.identity,
     plan: c.plan,
-  }));
+  });
+  const out = FOLK_CHARACTERS.map(toDesc);
+  // A2（#575 審查補充）：a2-master 開啟時（建世界時已凍結、requires 已檢查），原本 6 位之後加 seed 抽出的 6 位
+  if (w?.enabled[A2_ID]) for (const c of drawFolk(w.seed)) out.push(toDesc(c));
+  return out;
 }
 
 export function profileByName(name: string): FolkCharacter | undefined {
-  return FOLK_CHARACTERS.find((c) => c.name === name);
+  return ALL_PROFILES.find((c) => c.name === name);
+}
+
+export function profileById(cid: string): FolkCharacter | undefined {
+  return ALL_PROFILES.find((c) => c.id === cid);
 }
 
 export function templatesFor(name: string): TemplateSet {

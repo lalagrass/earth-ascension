@@ -125,7 +125,8 @@ export const agentInputs = {
     handler: (game, now, args) => {
       // WUXIA-PATCH(W2): 開關凍結在 world.wuxia.enabled（重播不讀設定檔）
       const folkOn = !!game.world.wuxia && isEnabled(game.world.wuxia, W02_FOLK);
-      const description = descriptionsFor(folkOn)[args.descriptionIndex];
+      // WUXIA-PATCH(A2): a2-master 開啟時人物表多 seed 抽出的 6 位（#575 審查補充）
+      const description = descriptionsFor(folkOn, game.world.wuxia)[args.descriptionIndex];
       const playerId = Player.join(
         game,
         now,

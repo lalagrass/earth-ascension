@@ -4,6 +4,7 @@
 //        [--off w01-skin] [--on id,id]（覆寫 world.config.json 的元素開關）[--map town|gentle]（只給對照實驗用）
 //        [--state out.json]（W1：匯出最後狀態給 wuxia:shot 用）
 //        [--drop-memory id,id]（W5：這些 id 的事件記憶不寫入，mind-trace 的因果對照用）
+//        [--scenario master-open|master-selective|master-hidden|no-master] [--arrive-day N]（A2）
 //        [--force-event bandit --day 5]（W8：第 5 日卯時強制開始某事件）[--no-rumor-out]（W8：行商聽到的傳聞不算出鎮）
 // 從 data/wuxia/ 與上游預設地圖建初始世界 → 每 step 呼叫 simulateStep、餵 inputs、跑 ticks →
 // 把 pendingOperations 交給「規則替身」立即產生回應 input（漫遊用 rng、對話用模板句、不打 LLM）。
@@ -20,7 +21,7 @@ import {
 import { distance } from '../../convex/util/geometry';
 import { initWuxiaState, defaultWuxiaConfig } from '../../convex/wuxia/state';
 import { initElements, isEnabled } from '../../convex/wuxia/registry';
-import { descriptionsFor, folkTemplate, W02_FOLK } from '../../convex/wuxia/w02_folk';
+import { descriptionsFor, folkTemplate, profileByName, W02_FOLK } from '../../convex/wuxia/w02_folk';
 import { serializedMapFor } from '../../convex/wuxia/w01_skin';
 import { makeRng } from '../../convex/wuxia/rng';
 import { W06_SPAR, SparState } from '../../convex/wuxia/w06_spar/data';
@@ -61,6 +62,10 @@ export type HeadlessOptions = {
   forceEvent?: { kind: EventKind; day: number };
   /** W8：行商聽到的傳聞不算出鎮（#562 W8-12 驗收 --no-rumor-out） */
   noRumorOut?: boolean;
+  /** A2：劇本 master-open／master-selective／master-hidden／no-master */
+  scenario?: string;
+  /** A2：大師第幾日進鎮 */
+  arriveDay?: number;
   /** W9：每一步開始前呼叫，回傳要在這一步送進引擎的 input（wuxia:player-script 模擬玩家）。不給時行為與 hash 不變 */
   inject?: (game: ReturnType<typeof createGame>, now: number) => Array<{ name: string; args: any }>;
   /** W9：每個 input 處理完的結果（wuxia:player-script 讀上游 input 的回傳值／錯誤） */
@@ -79,7 +84,7 @@ export function runHeadless(opts: HeadlessOptions) {
   const session = new Session(snapshot, { seed: opts.seed, agents: opts.agents });
   const game = session.game;
   const folkOn = isEnabled(snapshot.gameState.world.wuxia, W02_FOLK);
-  const agents = opts.agents ?? descriptionsFor(folkOn).length;
+  const agents = opts.agents ?? descriptionsFor(folkOn, snapshot.gameState.world.wuxia).length;
   const queue = session.queue;
   const messages = session.messages;
   const stats = session.stats;
@@ -226,6 +231,8 @@ export function runHeadless(opts: HeadlessOptions) {
     bond: bondTracer?.trace.on ? bondTracer.trace : undefined,
     // W8：江湖事件、傳聞與鎮誌（--days 或 trace 且 w08-jianghu 開時才有）
     jianghu: opts.trace ? jianghuSummary(game) : undefined,
+    // A2：大師與傳承（a2-master 開時才有；wuxia:lineage／diffusion／art-trace 讀這份）
+    a2: game.world.wuxia?.enabled['a2-master'] ? a2Summary(game) : undefined,
   };
   return summary;
   }
@@ -238,6 +245,21 @@ function sparSummary(game: any) {
   const st = w.elements[W06_SPAR] as SparState | undefined;
   if (!st) return undefined;
   return { on: true, history: st.history, active: st.active.length };
+}
+
+/** A2：整份 a2-master 狀態＋人物 id → 名字、每人推導拳腳、師徒。 */
+function a2Summary(game: ReturnType<typeof createGame>) {
+  const w = game.world.wuxia!;
+  const st = w.elements['a2-master'] as any;
+  if (!st) return undefined;
+  const names: Record<string, string> = {};
+  for (const p of game.playerDescriptions.values()) {
+    const prof = profileByName(p.name);
+    if (prof) names[prof.id] = p.name;
+  }
+  const dojo = w.elements['w04-dojo'] as any;
+  const bond = w.elements['w07-bond'] as any;
+  return { ...structuredClone(st), names, fist: Object.fromEntries(Object.entries(dojo?.skills ?? {}).map(([c, s]: any) => [c, s.fist])), disciples: structuredClone(bond?.disciples ?? {}), bowEvents: structuredClone(bond?.events ?? []) };
 }
 
 /** W8：整份 w08-jianghu 狀態（事件、導演擲骰、傳聞、路徑、出鎮、鎮誌）＋人物 id → 名字。 */
@@ -376,6 +398,8 @@ function main() {
         ? undefined
         : { kind: String(args['force-event']) as EventKind, day: Number(args.day ?? 1) },
     noRumorOut: !!args['no-rumor-out'],
+    scenario: args.scenario === undefined ? undefined : String(args.scenario),
+    arriveDay: args['arrive-day'] === undefined ? undefined : Number(args['arrive-day']),
     dropMemories:
       args['drop-memory'] === undefined
         ? undefined

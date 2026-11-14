@@ -215,7 +215,9 @@ export function contributions(
     if (!eff) continue;
     const f = Math.pow(BONDS.decayPerDay, (gm - m.t) / 1440);
     const delta: Partial<Bond> = {};
-    for (const a of AXES) if (eff[a]) delta[a] = round4(eff[a]! * f);
+    // A2（#575）：看到大師晨練加的敬重依好武縮放（記憶的 n＝好武×100）
+    const scale = m.kind === 'saw_form' ? (m.n ?? 100) / 100 : 1;
+    for (const a of AXES) if (eff[a]) delta[a] = round4(eff[a]! * f * scale);
     if (Object.keys(delta).length) out.push({ memory: m, delta });
   }
   if (won > 0 && lost > 0) out.push({ label: `切磋互有勝負（贏 ${won} 輸 ${lost}）`, delta: { rival: BONDS.mixedRival * Math.min(won, lost) } });

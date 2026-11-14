@@ -1,0 +1,20 @@
+{
+  "_doc": "武俠小鎮 A2（#575）第一門武學：太極拳。式名取傳統太極拳公開流傳的式名（不用任何小說獨有的武功名）。一門武學＝有順序的招；difficulty 1–5；prereq＝要先會的招；bodyNeed＝身體門檻（w04 技能值 stance 下盤、power 力，0–1000）；originProf＝大師（張三丰，歷史人物）起始熟練度 900–1000。",
+  "id": "taiji",
+  "name": "太極拳",
+  "origin": "zhang-sanfeng",
+  "moves": [
+    {"id": "taiji-qishi", "name": "起勢", "difficulty": 1, "difficulty_src": "旋鈕：開門第一式，最簡單", "prereq": [], "bodyNeed": {}, "originProf": 1000, "originProf_src": "旋鈕：#575 大師起始 900–1000"},
+    {"id": "taiji-lanquewei", "name": "攬雀尾", "difficulty": 2, "difficulty_src": "旋鈕", "prereq": ["taiji-qishi"], "bodyNeed": {}, "originProf": 980, "originProf_src": "旋鈕：#575 900–1000"},
+    {"id": "taiji-danbian", "name": "單鞭", "difficulty": 2, "difficulty_src": "旋鈕", "prereq": ["taiji-lanquewei"], "bodyNeed": {"stance": 60}, "bodyNeed_src": "旋鈕：下盤 60（新來的人多半 0–80，有人要先站樁）", "originProf": 970, "originProf_src": "旋鈕：#575 900–1000"},
+    {"id": "taiji-tishou", "name": "提手上勢", "difficulty": 2, "difficulty_src": "旋鈕", "prereq": ["taiji-qishi"], "bodyNeed": {}, "originProf": 960, "originProf_src": "旋鈕：#575 900–1000"},
+    {"id": "taiji-baihe", "name": "白鶴亮翅", "difficulty": 2, "difficulty_src": "旋鈕", "prereq": ["taiji-tishou"], "bodyNeed": {"stance": 80}, "bodyNeed_src": "旋鈕：單腳虛步，下盤 80", "originProf": 950, "originProf_src": "旋鈕：#575 900–1000"},
+    {"id": "taiji-louxi", "name": "摟膝拗步", "difficulty": 2, "difficulty_src": "旋鈕", "prereq": ["taiji-qishi"], "bodyNeed": {}, "originProf": 960, "originProf_src": "旋鈕：#575 900–1000"},
+    {"id": "taiji-pipa", "name": "手揮琵琶", "difficulty": 3, "difficulty_src": "旋鈕", "prereq": ["taiji-baihe"], "bodyNeed": {"stance": 120}, "bodyNeed_src": "旋鈕：下盤 120", "originProf": 940, "originProf_src": "旋鈕：#575 900–1000"},
+    {"id": "taiji-banlanchui", "name": "搬攔捶", "difficulty": 3, "difficulty_src": "旋鈕", "prereq": ["taiji-louxi"], "bodyNeed": {"power": 100}, "bodyNeed_src": "旋鈕：力 100（出捶要有力）", "originProf": 940, "originProf_src": "旋鈕：#575 900–1000"},
+    {"id": "taiji-rufeng", "name": "如封似閉", "difficulty": 3, "difficulty_src": "旋鈕", "prereq": ["taiji-banlanchui"], "bodyNeed": {}, "originProf": 930, "originProf_src": "旋鈕：#575 900–1000"},
+    {"id": "taiji-shizishou", "name": "十字手", "difficulty": 4, "difficulty_src": "旋鈕", "prereq": ["taiji-rufeng"], "bodyNeed": {"stance": 150}, "bodyNeed_src": "旋鈕：下盤 150", "originProf": 920, "originProf_src": "旋鈕：#575 900–1000"},
+    {"id": "taiji-yunshou", "name": "雲手", "difficulty": 5, "difficulty_src": "旋鈕：整套最難（腰胯手眼同時走）", "prereq": ["taiji-danbian", "taiji-pipa"], "bodyNeed": {"stance": 200, "power": 80}, "bodyNeed_src": "旋鈕：下盤 200、力 80", "originProf": 910, "originProf_src": "旋鈕：#575 900–1000"},
+    {"id": "taiji-shoushi", "name": "收勢", "difficulty": 1, "difficulty_src": "旋鈕：收式簡單，但要整套走過才學", "prereq": ["taiji-shizishou"], "bodyNeed": {}, "originProf": 1000, "originProf_src": "旋鈕：#575 900–1000"}
+  ]
+}
