@@ -31,6 +31,8 @@ import { OBJECT_BY_ID } from '../../convex/wuxia/w03_life/data.ts';
 import { A2Corner } from '../wuxia/A2Panels.tsx';
 // WUXIA-PATCH(A3): 鎮上動靜、翻成一句話
 import { A3Corner, pidOfCid } from '../wuxia/A3Panels.tsx';
+// WUXIA-PATCH(A4): 緣、目標面板、結算畫面
+import { A4Corner } from '../wuxia/A4Panels.tsx';
 import type { SocialEntry } from '../../convex/wuxia/a3_silent/data.ts';
 import { useMutation } from 'convex/react';
 import { useSendInput, waitForInput } from '../hooks/sendInput.ts';
@@ -159,6 +161,8 @@ export default function Game() {
               if (pid) setSelectedElement({ kind: 'player', id: pid as GameId<'players'> });
             }}
           />
+          {/* WUXIA-PATCH(A4): 緣、目標面板、結算畫面（a4-play 開啟時） */}
+          <A4Corner wuxia={game.world.wuxia} />
           <div className="absolute inset-0">
             <div className="container">
               {/* WUXIA-PATCH(W1): 換皮時底色改紙色 */}

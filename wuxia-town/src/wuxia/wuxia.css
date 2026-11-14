@@ -419,3 +419,45 @@ body.wuxia-skin .button img {
 .wuxia-a3-corner > button { background: rgba(247, 240, 222, 0.94); border: 2px solid #2b2119; padding: 0.1rem 0.5rem; font-size: 0.85rem; color: #2b2119; }
 .wuxia-a3-corner > button.on { background: #2b2119; color: #f7f0de; }
 .wuxia-a3-corner > .wuxia-a3-feed { background: rgba(247, 240, 222, 0.97); border: 2px solid #2b2119; padding: 0.3rem 0.5rem; max-width: min(26rem, 80vw); }
+/* A4（#576）：緣、干預選單、目標、說書人、開場、結算 */
+.wuxia-a4-yuan { display: inline-flex; align-items: center; gap: 0.15rem; background: rgba(247, 240, 222, 0.94); border: 2px solid #2b2119; padding: 0 0.4rem; font-size: 0.85rem; color: #2b2119; }
+.wuxia-a4-yuan i { display: inline-block; width: 0.6rem; height: 0.6rem; border-radius: 50%; border: 1.5px solid #8a2f1e; }
+.wuxia-a4-yuan i.on { background: #b3342a; }
+.wuxia-a4-menu { margin: 0.4rem 0; padding: 0.3rem 0; border-top: 1px dotted #b9a98a; }
+.wuxia-a4-opts { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.25rem; }
+.wuxia-a4-opts button { border: 2px solid #2b2119; background: #faf4e4; padding: 0.1rem 0.45rem; font-size: 0.85rem; color: #2b2119; display: flex; gap: 0.2rem; align-items: center; }
+.wuxia-a4-opts button.on { background: #2b2119; color: #f7f0de; }
+.wuxia-a4-opts button:disabled { opacity: 0.45; }
+.wuxia-a4-opts small { color: #b3342a; font-size: 0.6rem; }
+.wuxia-a4-opts button.on small { color: #f2b8a8; }
+.wuxia-a4-pick { display: flex; flex-direction: column; gap: 0.25rem; margin-top: 0.3rem; }
+.wuxia-a4-pick .hint { margin: 0; font-size: 0.8rem; color: inherit; opacity: 0.85; }
+.wuxia-a4-pick select { font-size: 0.85rem; padding: 0.1rem; border: 1.5px solid #2b2119; background: #faf4e4; color: #2b2119; }
+.wuxia-a4-goals { min-width: 17rem; max-width: 24rem; display: flex; flex-direction: column; gap: 0.25rem; }
+.wuxia-a4-goals .tier { display: grid; grid-template-columns: 1.6rem 1fr auto; gap: 0.3rem; align-items: center; font-size: 0.85rem; color: #8a7a64; }
+.wuxia-a4-goals .tier.got { color: #2b2119; }
+.wuxia-a4-goals .medal { display: inline-flex; justify-content: center; width: 1.4rem; height: 1.4rem; border-radius: 50%; border: 2px solid currentColor; font-size: 0.75rem; align-items: center; }
+.wuxia-a4-goals .tier.bronze.got .medal { background: #b0703a; color: #fff; border-color: #b0703a; }
+.wuxia-a4-goals .tier.silver.got .medal { background: #9aa3ad; color: #fff; border-color: #9aa3ad; }
+.wuxia-a4-goals .tier.gold.got .medal { background: #d4a017; color: #fff; border-color: #d4a017; }
+.wuxia-a4-goals .v small { margin-left: 0.3rem; font-size: 0.75rem; }
+.wuxia-a4-tutorial { position: absolute; left: 50%; top: 0.6rem; transform: translateX(-50%); z-index: 25; display: flex; gap: 0.5rem; align-items: center; background: rgba(43, 33, 25, 0.88); color: #f7f0de; padding: 0.25rem 0.7rem; font-size: 0.9rem; border-radius: 2px; }
+.wuxia-a4-tutorial .who { color: #e8b04a; font-weight: 700; }
+.wuxia-a4-tutorial button { background: none; border: none; color: #f7f0de; font-size: 1rem; }
+.wuxia-a4-opening { position: absolute; left: 50%; bottom: 5rem; transform: translateX(-50%); z-index: 26; max-width: min(34rem, 90vw); background: rgba(250, 244, 228, 0.96); border: 2px solid #2b2119; padding: 0.6rem 1rem; text-align: center; cursor: pointer; }
+.wuxia-a4-opening p { margin: 0.3rem 0 0; font-size: 1rem; color: #2b2119; }
+.wuxia-a4-settle { position: absolute; inset: 0; z-index: 40; background: rgba(43, 33, 25, 0.6); display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 1rem; flex-wrap: wrap; }
+.wuxia-a4-settle .card { width: min(900px, 92vw); }
+.wuxia-a4-settle .card svg { width: 100%; height: auto; display: block; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); }
+.wuxia-a4-settle .side { background: rgba(250, 244, 228, 0.98); border: 2px solid #2b2119; padding: 0.6rem 0.8rem; max-width: 22rem; font-size: 0.85rem; }
+.wuxia-a4-settle .side ul { margin: 0.3rem 0; padding-left: 1rem; max-height: 14rem; overflow-y: auto; }
+.wuxia-a4-settle .side small { color: #6b5d4c; }
+.wuxia-a4-settle .actions { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.4rem; }
+.wuxia-a4-reopen { position: absolute; left: 50%; top: 0.6rem; transform: translateX(-50%); z-index: 25; background: #d4a017; border: 2px solid #2b2119; padding: 0.1rem 0.6rem; }
+.wuxia-a4-scenarios { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.6rem; }
+.wuxia-a4-scenarios button { display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
+.wuxia-a4-scenarios small { font-size: 0.75rem; color: #6b5d4c; }
+.wuxia-a4-corner { position: absolute; right: 0.5rem; top: 7.6rem; z-index: 12; display: flex; flex-direction: column; align-items: flex-end; gap: 0.3rem; }
+.wuxia-a4-corner > button { background: rgba(247, 240, 222, 0.94); border: 2px solid #2b2119; padding: 0.1rem 0.5rem; font-size: 0.85rem; color: #2b2119; }
+.wuxia-a4-corner > button.on { background: #2b2119; color: #f7f0de; }
+.wuxia-a4-corner > .pop { background: rgba(247, 240, 222, 0.97); border: 2px solid #2b2119; padding: 0.3rem 0.5rem; }

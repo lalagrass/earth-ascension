@@ -55,6 +55,15 @@ export default PixiComponent('Viewport', {
       viewport.setZoom(wuxiaFocus.scale, true);
       viewport.moveCenter(wuxiaFocus.x, wuxiaFocus.y);
     }
+    // WUXIA-PATCH(A4): 回首頁／再玩一次時 Stage 先拆掉 renderer.events，Viewport.destroy 再去 removeEventListener 會丟 TypeError；吞掉這一個
+    const destroy = viewport.destroy.bind(viewport);
+    viewport.destroy = (opts?: Parameters<Viewport['destroy']>[0]) => {
+      try {
+        destroy(opts);
+      } catch (e) {
+        if (!(e instanceof TypeError)) throw e;
+      }
+    };
     return viewport;
   },
   applyProps(viewport, oldProps: any, newProps: any) {

@@ -51,6 +51,10 @@ import { LocalEngine } from '../engine/local';
 import type { EngineView, KeyEvent, SaveFile, Speed } from '../engine';
 import { SPEEDS, RULE_VERSION } from '../engine/constants';
 import { SaveSlot, listSlots, putSlot, slotOf, deleteSlot } from '../engine/idb';
+// A4（#576）：緣分點、干預、劇本目標、說書人、結算
+import { FateMenu, GoalPanel, Opening, ScenarioPicker, SettleScreen, Tutorial, YuanBadge, a4StateOf, useGoalSound } from '../A4Panels';
+import { PLAY, SCENARIO_BY_ID } from '../../../convex/wuxia/a4_play/data';
+import { MASTER_CID } from '../../../convex/wuxia/a2_master/data';
 
 const LOCAL_TOKEN = 'local-player';
 const SPEED_LABEL: Record<number, string> = { 0: '⏸', 1: '1×', 4: '4×', 16: '16×', 64: '64×' };
@@ -78,10 +82,10 @@ function download(name: string, data: unknown) {
 export function LocalApp() {
   const [engine, setEngine] = useState<LocalEngine>();
   const [error, setError] = useState<string>();
-  const start = useCallback(async (init: { kind: 'new'; seed: number } | { kind: 'load'; save: SaveFile }) => {
+  const start = useCallback(async (init: StartInit) => {
     const e = new LocalEngine();
     e.onError = (m) => setError(m.split('\n')[0]);
-    const r = await e.init(init.kind === 'new' ? { kind: 'new', world: { seed: init.seed } } : init);
+    const r = await e.init(init.kind === 'new' ? { kind: 'new', world: { seed: init.seed, ...(init.play ? { play: init.play } : {}) } } : init);
     if (!r.ok) {
       e.dispose();
       setError(r.reason);
@@ -101,12 +105,19 @@ export function LocalApp() {
         engine.dispose();
         setEngine(undefined);
       }}
+      onAgain={(play, seed) => {
+        engine.dispose();
+        setEngine(undefined);
+        void start({ kind: 'new', seed, play });
+      }}
       error={error}
     />
   );
 }
 
-function Home(props: { onStart: (i: { kind: 'new'; seed: number } | { kind: 'load'; save: SaveFile }) => void; error?: string }) {
+type StartInit = { kind: 'new'; seed: number; play?: string } | { kind: 'load'; save: SaveFile };
+
+function Home(props: { onStart: (i: StartInit) => void; error?: string }) {
   const [slots, setSlots] = useState<SaveSlot[]>();
   const [loading, setLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -122,7 +133,7 @@ function Home(props: { onStart: (i: { kind: 'new'; seed: number } | { kind: 'loa
         </p>
         <div className="wuxia-a1-home-actions">
           <button className="wuxia-a1-btn big" data-testid="wuxia-start" onClick={() => props.onStart({ kind: 'new', seed })}>
-            開始
+            開始（自由玩）
           </button>
           <button
             className="wuxia-a1-btn big"
@@ -138,6 +149,8 @@ function Home(props: { onStart: (i: { kind: 'new'; seed: number } | { kind: 'loa
             讀取存檔
           </button>
         </div>
+        {/* A4：選劇本（有目標與結算卡） */}
+        <ScenarioPicker onPick={(play) => props.onStart({ kind: 'new', seed, play })} />
         {loading && <p>讀取中…</p>}
         {slots && (
           <div className="wuxia-a1-slots" data-testid="wuxia-slots">
@@ -188,6 +201,13 @@ function Home(props: { onStart: (i: { kind: 'new'; seed: number } | { kind: 'loa
 }
 
 type Focus = { x: number; y: number; n: number };
+
+/** 再來一局：同劇本換下一個 seed（在劇本的 seed 範圍內循環） */
+function nextSeed(seed: number, play?: string): number {
+  const r = play ? SCENARIO_BY_ID[play]?.seeds : undefined;
+  if (!r) return seed + 1;
+  return seed + 1 > r[1] ? r[0] : Math.max(r[0], seed + 1);
+}
 
 function Scene(props: {
   game: ServerGame;
@@ -273,13 +293,16 @@ function Scene(props: {
   );
 }
 
-function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: string }) {
+function GameScreen(props: { engine: LocalEngine; onHome: () => void; onAgain: (play: string | undefined, seed: number) => void; error?: string }) {
   const { engine } = props;
   const [view, setView] = useState<EngineView>();
   const [toast, setToast] = useState<string>();
   const [selected, setSelected] = useState<string>();
   const [detailOpen, setDetailOpen] = useState(true);
-  const [panel, setPanel] = useState<'status' | 'chronicle' | 'dojo' | 'lineage' | 'social' | 'me' | 'save'>();
+  const [panel, setPanel] = useState<'status' | 'chronicle' | 'dojo' | 'lineage' | 'social' | 'me' | 'save' | 'goals'>();
+  const [fateResult, setFateResult] = useState<{ ok: boolean; reason: string }>();
+  const [picked, setPicked] = useState(false);
+  const gameRef = useRef<ServerGame>();
   const [social, setSocial] = useState<SocialEntry>();
   const [tab, setTab] = useState<DetailTab>('main');
   const [taiji, setTaiji] = useState(false);
@@ -312,6 +335,26 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
     };
   }, [engine]);
   const game = useMemo(() => (view ? toGame(view) : undefined), [view]);
+  gameRef.current = game;
+  const a4 = a4StateOf(game?.world.wuxia);
+  const scenario = a4?.scenario;
+  useGoalSound(game?.world.wuxia);
+  // A4 第 4 節：選了劇本時預設 4×；開場 20 秒鏡頭跟著大師（大師還沒進鎮就看城門那頭）
+  useEffect(() => {
+    if (!scenario) return;
+    engine.setSpeed(PLAY.defaultSpeed as Speed);
+    setLastSpeed(PLAY.defaultSpeed as Speed);
+    const until = performance.now() + 20000;
+    const t: ReturnType<typeof setInterval> = setInterval(() => {
+      if (performance.now() > until) return clearInterval(t);
+      const g = gameRef.current;
+      const people = lifeOf(g?.world)?.people ?? {};
+      const pid = Object.keys(people).find((k) => people[k].cid === MASTER_CID);
+      const p = pid ? g?.world.players.get(pid as any) : undefined;
+      if (p) setFocus((f) => ({ x: p.position.x, y: p.position.y, n: (f?.n ?? 0) + 1 }));
+    }, 1500);
+    return () => clearInterval(t);
+  }, [scenario]);
   if (!view || !game) return <div className="wuxia-a1-loading">小鎮準備中…</div>;
   const skin = skinEnabled(game.world);
   const clock = skin ? worldClock(game.world, view.engineTime) : null;
@@ -352,6 +395,12 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
     if (p) setFocus((f) => ({ x: p.position.x, y: p.position.y, n: (f?.n ?? 0) + 1 }));
   };
   const togglePanel = (p: typeof panel) => setPanel((x) => (x === p ? undefined : p));
+  // A4：花緣做干預
+  const intervene = (args: any) =>
+    void engine.sendInput('wuxiaIntervene', args).then((r: any) => {
+      const v = r?.kind === 'ok' ? r.value : r;
+      setFateResult(v && typeof v === 'object' && 'ok' in v ? v : { ok: false, reason: r?.message ?? '沒送出' });
+    });
   const manualSave = async () => {
     const s = await engine.save('手動存檔');
     await putSlot(slotOf(s, 'manual', new Date().toISOString()));
@@ -373,6 +422,8 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
               onSelect={(id) => {
                 setSelected(id);
                 setDetailOpen(true);
+                setPicked(true);
+                setFateResult(undefined);
               }}
               onSocial={setSocial}
               onTile={(x, y) => {
@@ -396,6 +447,7 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
           山腳鎮
         </button>
         {clock && <ClockBadge clock={clock} phase={dayTint(clock.minuteOfDay).phase} />}
+        <YuanBadge wuxia={game.world.wuxia} />
       </div>
       {/* 右上：三個小鈕＋進鎮、存檔 */}
       <div className="wuxia-a1-corner">
@@ -418,6 +470,11 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
             動靜
           </button>
         )}
+        {a4 && (
+          <button className={panel === 'goals' ? 'on' : ''} onClick={() => togglePanel('goals')} data-testid="wuxia-btn-goals">
+            目標
+          </button>
+        )}
         {a2StateOf(game.world) && <TaijiToggle on={taiji} onChange={setTaiji} />}
         {rolesOffered() && (
           <button className={panel === 'me' ? 'on' : ''} onClick={() => togglePanel('me')} data-testid="wuxia-btn-me">
@@ -435,6 +492,7 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
           )}
           {panel === 'chronicle' && <ChroniclePanel world={game.world} />}
           {panel === 'lineage' && <LineagePanel wuxia={game.world.wuxia} onPick={pickPerson} />}
+          {panel === 'goals' && <GoalPanel wuxia={game.world.wuxia} />}
           {panel === 'social' && <SocialFeed wuxia={game.world.wuxia} nameOf={nameOfCid} onPick={pickSocial} />}
           {panel === 'dojo' && (dojoOpened(game.world) ? <DojoPanel wuxia={game.world.wuxia} /> : <p className="wuxia-a1-note">武館還沒重開。</p>)}
           {panel === 'me' && (
@@ -509,6 +567,10 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
                   onAct={(kind) => act({ kind: 'social', act: kind, target: sel.id })}
                 />
               )}
+              {/* A4：對這個人推一把（玩家自己的化身不算） */}
+              {sel.id !== me?.id && (
+                <FateMenu wuxia={game.world.wuxia} target={cidOfPid(game.world.wuxia, sel.id)} onAct={intervene} lastResult={fateResult} />
+              )}
               <DetailTabs
                 wuxia={game.world.wuxia}
                 tab={tab}
@@ -554,6 +616,12 @@ function GameScreen(props: { engine: LocalEngine; onHome: () => void; error?: st
         </label>
       </div>
       <A2Hints wuxia={game.world.wuxia} onPick={pickPerson} />
+      <Tutorial wuxia={game.world.wuxia} picked={picked} taiji={taiji} />
+      <Opening wuxia={game.world.wuxia} />
+      <SettleScreen
+        wuxia={game.world.wuxia}
+        onAgain={(same) => props.onAgain(scenario, same ? game.world.wuxia!.seed : nextSeed(game.world.wuxia!.seed, scenario))}
+      />
       <TranslatePop
         entry={social}
         wuxia={game.world.wuxia}

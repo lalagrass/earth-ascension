@@ -19,7 +19,7 @@ import {
 import { profileById } from '../../convex/wuxia/w02_folk';
 
 const nameOf = (cid: string) => profileById(cid)?.name ?? cid;
-export const TOWN_NAME = '槐蔭鎮';
+export const TOWN_NAME = '山腳鎮'; // 與首頁、鎮誌同名
 
 export type Card = {
   town: string;
@@ -111,13 +111,14 @@ export function cardSvg(c: Card): string {
     const y = 140 + i * 40;
     const got = x.day !== undefined;
     t.push(`<circle cx="74" cy="${y - 9}" r="13" fill="${got ? MEDAL[x.tier] : 'none'}" stroke="${MEDAL[x.tier]}" stroke-width="3"/>`);
-    text(98, y, `${TIER_LABEL[x.tier]}　${x.label}`, 22, got ? '#2b2118' : '#9a8a74');
-    if (got) text(560, y, `第 ${x.day} 日`, 20, '#6b4a2b', 400, 'end');
+    const label = wrap(x.label, 19)[0] + (wrap(x.label, 19).length > 1 ? '…' : '');
+    text(98, y, `${TIER_LABEL[x.tier]}　${label}`, 20, got ? '#2b2118' : '#9a8a74');
+    if (got) text(590, y, `第 ${x.day} 日`, 18, '#6b4a2b', 400, 'end');
   });
   // 師承樹（左）
   text(60, 290, '師承', 24, '#3a2514', 700);
   t.push(`<line x1="60" y1="300" x2="560" y2="300" stroke="#7a5a3a" stroke-width="1"/>`);
-  const rows = c.tree.slice(0, 11);
+  const rows = c.tree.slice(0, 9);
   rows.forEach((l, i) => {
     const y = 330 + i * 24;
     const x = 66 + Math.min(l.depth, 6) * 34;
@@ -128,9 +129,9 @@ export function cardSvg(c: Card): string {
   if (!c.tree.length) text(66, 330, '（這一局沒有人學到）', 19, '#8a7a64');
   // 總結與故事（右）
   t.push(`<line x1="610" y1="120" x2="610" y2="580" stroke="#c9b28c" stroke-width="1"/>`);
-  wrap(c.summary, 24).slice(0, 2).forEach((s, i) => text(640, 150 + i * 32, s, 25, '#7a2e1a', 700));
-  text(640, 232, '這一局的故事', 22, '#3a2514', 700);
-  wrap(c.storyText, 26).slice(0, 12).forEach((s, i) => text(640, 266 + i * 27, s, 19));
+  wrap(c.summary, 19).slice(0, 3).forEach((s, i) => text(640, 146 + i * 30, s, 24, '#7a2e1a', 700));
+  text(640, 252, '這一局的故事', 22, '#3a2514', 700);
+  wrap(c.storyText, 26).slice(0, 11).forEach((s, i) => text(640, 284 + i * 27, s, 19));
   text(60, 592, `seed ${c.seed}・同一個 seed 再玩一次，換一種牽法`, 17, '#6b4a2b');
   text(1140, 592, '武俠小鎮', 17, '#6b4a2b', 700, 'end');
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" font-family="${esc(FONT)}">${t.join('')}</svg>`;

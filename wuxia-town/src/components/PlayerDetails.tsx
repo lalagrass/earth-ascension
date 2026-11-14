@@ -20,6 +20,8 @@ import { useState as useWuxiaState } from 'react';
 import { PersonActions } from '../wuxia/PlayerPanel';
 // WUXIA-PATCH(A3): 無言互動選單（同一套規則、標難度）
 import { SocialMenu, cidOfPid } from '../wuxia/A3Panels';
+// WUXIA-PATCH(A4): 對人推一把（緣分干預）
+import { FateMenu } from '../wuxia/A4Panels';
 import { myRec } from '../wuxia/player';
 import { dojoOf } from '../wuxia/dojo';
 import { lifeOf } from '../wuxia/life';
@@ -82,6 +84,9 @@ export default function PlayerDetails({
   // WUXIA-PATCH(W9): 玩家對人的操作（走 W6／W7 的同意規則，結果顯示在按鈕下）
   const wuxiaAct = useSendInput(engineId, 'wuxiaPlayerAct');
   const [wuxiaResult, setWuxiaResult] = useWuxiaState<{ ok: boolean; reason: string }>();
+  // WUXIA-PATCH(A4): 干預 input
+  const wuxiaIntervene = useSendInput(engineId, 'wuxiaIntervene');
+  const [fateResult, setFateResult] = useWuxiaState<{ ok: boolean; reason: string }>();
 
   if (!playerId) {
     return (
@@ -205,6 +210,15 @@ export default function PlayerDetails({
               wuxiaAct({ playerId: humanPlayer.id, kind: 'social', act: kind, target: player.id }).then((r: any) => setWuxiaResult(r)),
             )
           }
+        />
+      )}
+      {/* WUXIA-PATCH(A4): 對這個人推一把（a4-play 開啟時；真人玩家自己不算） */}
+      {!isMe && !player.human && (
+        <FateMenu
+          wuxia={game.world.wuxia}
+          target={cidOfPid(game.world.wuxia, player.id)}
+          lastResult={fateResult}
+          onAct={(a) => void toastOnError(wuxiaIntervene(a as any).then((r: any) => setFateResult(r)))}
         />
       )}
       {/* WUXIA-PATCH(W7): 分頁「概況」（W3–W5 的面板）／「關係」（w07-bond 開啟時才有分頁鈕） */}

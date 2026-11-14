@@ -1,4 +1,4 @@
-// 武俠小鎮 A4（#576）`npm run wuxia:card -- /tmp/g.json --out docs/wuxia/a4/card.png`
+// 武俠小鎮 A4（#576）`npm run wuxia:card -- /tmp/g.json --out docs/wuxia/a04/card.png`
 // 讀 wuxia:player-script（劇本腳本）輸出的 card 欄位，畫成 1200×630 PNG（Playwright 開 SVG 截圖）。檔案 > 1 MB 就失敗。
 import { readFileSync, writeFileSync, mkdirSync, statSync, existsSync } from 'node:fs';
 import { dirname } from 'node:path';
@@ -25,7 +25,7 @@ export async function renderCard(card: Card, out: string): Promise<number> {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const input = String(args._?.[0] ?? args.in ?? '/tmp/g.json');
-  const out = String(args.out ?? 'docs/wuxia/a4/card.png');
+  const out = String(args.out ?? 'docs/wuxia/a04/card.png');
   const j = JSON.parse(readFileSync(input, 'utf8'));
   const card: Card | undefined = j.card ?? j;
   if (!card?.scenario) throw new Error(`${input}: 沒有 card 欄位（要用劇本腳本跑 wuxia:player-script）`);
