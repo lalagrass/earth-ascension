@@ -123,7 +123,8 @@ export function runHeadless(opts: HeadlessOptions) {
       // A1：hash 只在需要的步驟算（世界在下一步之前不變，值跟每步都算時相同）
       const need =
         opts.stepHashes ||
-        opts.onStep ||
+        // A3：onStep 沒有用到第三個參數 hash 時不必每步都算（長跑每步算 hash 是 O(狀態大小)，60 日要很久）；停下的那一步下面補算
+        (opts.onStep && opts.onStep.length >= 3) ||
         k % 60 === 0 ||
         k === totalSteps ||
         (opts.untilGameMinute !== undefined && clockReached()) ||
@@ -146,6 +147,7 @@ export function runHeadless(opts: HeadlessOptions) {
       traces.set(p.id, t);
     }
     const stop = opts.onStep?.(game, now, result.step.hash) === true;
+    if (stop && !result.step.hash) result.step.hash = game.wuxiaHash();
     const done = stop || (opts.untilGameMinute !== undefined && clockReached());
     if (k % 60 === 0 || k === totalSteps || done) {
       checkpoints.push({ step: k, t: now, hash: result.step.hash });
