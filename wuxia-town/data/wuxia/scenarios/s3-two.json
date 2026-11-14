@@ -1,0 +1,11 @@
+{
+  "id": "s3", "name": "兩個師父", "policy": "selective",
+  "seeds": [1, 999], "arriveDay": 1, "days": 150,
+  "_src": "量測＋旋鈕：#576 劇本三（selective 大師＋周教頭，150 日）；seed 範圍與第 1 日進鎮是旋鈕",
+  "intro": "武館的周教頭教了鎮上十年拳，如今廣場上又多了一位老道。兩個師父，一條街。",
+  "goals": {
+    "bronze": {"label": "兩門各有兩個徒弟", "all": [{"k": "disciples", "master": "zhang-sanfeng", "min": 2}, {"k": "disciples", "master": "zhou-jiaotou", "min": 2}]},
+    "silver": {"label": "兩門弟子切磋一場，沒人結仇", "all": [{"k": "crossSpar", "a": "zhang-sanfeng", "b": "zhou-jiaotou", "min": 1}]},
+    "gold": {"label": "有人兩門都學", "all": [{"k": "bothArts", "arts": ["taiji", "laohuai"], "min": 1}]}
+  }
+}

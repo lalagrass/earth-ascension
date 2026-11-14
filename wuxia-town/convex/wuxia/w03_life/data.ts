@@ -6,6 +6,7 @@ import placesJson from '../../../data/wuxia/places.json';
 import townsfolkJson from '../../../data/wuxia/townsfolk.json';
 import type { WuxiaState } from '../state';
 import { closedOverlays, mindBlocks, mindOf } from '../w05_mind/data';
+import { a4Blocks } from '../a4_play/data';
 
 export type Need = 'hunger' | 'fatigue' | 'boredom' | 'chore';
 export type Resource = 'water' | 'meal' | 'wood';
@@ -146,6 +147,13 @@ export function lifeSchedCtx(w: WuxiaState | undefined, day?: number): SchedCtx 
   if (a2 && Object.keys(a2).length) {
     const blocks: Record<string, ScheduleBlock[]> = { ...(ctx.blocks ?? {}) };
     for (const cid of Object.keys(a2)) blocks[cid] = [...a2[cid], ...(blocks[cid] ?? [])];
+    ctx.blocks = blocks;
+  }
+  // A4（#576）：玩家「指路」「引薦」排的時段（a4-play 狀態裡；排在最前面，需求急的時候照樣先去吃、去睡）。關閉時不動
+  const a4 = a4Blocks(w, day);
+  if (a4) {
+    const blocks: Record<string, ScheduleBlock[]> = { ...(ctx.blocks ?? {}) };
+    for (const cid of Object.keys(a4)) blocks[cid] = [...a4[cid], ...(blocks[cid] ?? [])];
     ctx.blocks = blocks;
   }
   return ctx;

@@ -1,0 +1,24 @@
+{
+  "_doc": "武俠小鎮 A4（#576，元素 a4-play）玩家的位置：緣分點、五個干預、劇本目標、結算卡的故事挑選。干預都是 input（wuxiaIntervene），只改處境、不改人的決定。每個數值旁的 *_src 標來源：量測＝#576 原文、推導＝由別的數算出、旋鈕＝設計決定。",
+  "yuan": {"start": 1, "perDay": 1, "max": 3},
+  "yuan_src": "量測＋旋鈕：#576「每遊戲日回復 1 點，最多存 3 點」（perDay、max 量測）；開局給 1 點（start 旋鈕，第一天就能試一次指路）",
+  "costs": {"guide": 1, "intro": 1, "whisper": 1, "feed": 2, "plead": 2},
+  "costs_src": "量測：#576 干預表的花費（指路 1、引薦 1、傳話 1、接濟 2、說情 2）",
+  "guide": {
+    "from": 360, "to": 420,
+    "places": {"plaza": ["watch_form"], "teahouse": ["drink_tea"], "dojo-gate": ["gaze_dojo"]},
+    "_src": "量測＋旋鈕：#576「讓某人明早剛好路過某地（例如廣場晨練）」；明早 06:00–07:00＝大師晨練時段（同 master.json blocks.form，推導）；可指的三處與在那裡做的事是旋鈕（廣場邊看晨練、茶館喝茶、武館門口張望）"
+  },
+  "intro": {"minutes": 60, "latest": 1170, "nextMorning": 480, "_src": "旋鈕：引薦＝兩人在下一個整點起 60 分鐘都排「茶館喝茶」，從那段開始到當天結束，兩人第一次同處且都有空時由 A 發起一次互動（種類照 A3 規則）；已過 19:30（latest）就排到明天 08:00（nextMorning）"},
+  "feed": {"days": 3, "hunger": 40, "_src": "量測＋旋鈕：#576「給某人三天的飯」（days 量測）；這三天他的餓不超過 40（旋鈕，低於 W3 需求 soft 70，不必為吃飯排時間）"},
+  "plead": {"perPair": 1, "_src": "量測：#576「同一對人只能一次」；親近 +10 在 bonds.json effects.pleaded"},
+  "hiddenException": {"close": 60, "max": 1, "_src": "量測：#576 劇本二「hidden 在親近 ≥ 60 時會破例收一人」"},
+  "endGrace": 0, "endGrace_src": "旋鈕：到期（天數上限）或達成金級的當天結算，不多等",
+  "eventsSize": 300, "eventsSize_src": "旋鈕：a4 自己的關鍵事件環（結算卡的故事從這裡挑），保留最近 300 筆",
+  "story": {"min": 5, "max": 8, "weights": {"goal": 9, "disciple": 7, "generation": 7, "arrive": 6, "switch": 6, "spar": 4, "event": 4, "learn": 3, "fate": 2}, "caps": {"goal": 3, "disciple": 2, "generation": 1, "arrive": 1, "switch": 1, "spar": 1, "event": 1, "learn": 2, "fate": 1}},
+  "story_src": "量測＋旋鈕：#576「從鎮誌挑 5–8 條最關鍵的事件」（min、max 量測）；各類事件的權重是旋鈕（目標達成 > 收徒／再傳 > 大師進鎮、改投 > 切磋、鎮上事件 > 第一次學會 > 干預）；caps＝每類最多幾條（旋鈕，故事不會整段都是同一類，例如一局用了 60 次緣也只列 1 條干預，干預另列在「後果鏈」）",
+  "consequenceDays": 7, "consequenceDays_src": "旋鈕：結算卡「干預的後果鏈」列干預後 7 日內跟那個人有關的關鍵事件",
+  "rivalMax": 30, "rivalMax_src": "旋鈕：劇本三銀級「沒人因此結仇」＝切磋的兩人彼此競爭都 < 30（W7 rival 軸）",
+  "tutorial": ["點一個人，看他在想什麼", "打開「顯示太極」圈", "用一次「指路」"],
+  "defaultSpeed": 4, "defaultSpeed_src": "量測：#576「預設速度 4×」"
+}

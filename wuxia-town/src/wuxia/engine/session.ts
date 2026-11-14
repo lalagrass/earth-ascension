@@ -27,6 +27,7 @@ import { A2_MASTER, A2State } from '../../../convex/wuxia/a2_master/data';
 import { applyScenario } from '../../../convex/wuxia/a2_master';
 import { A3_SILENT, traitsOf } from '../../../convex/wuxia/a3_silent/data';
 import type { A3State, Traits } from '../../../convex/wuxia/a3_silent/data';
+import { applyPlay } from '../../../convex/wuxia/a4_play';
 import {
   JournalInput,
   Snapshot,
@@ -58,6 +59,9 @@ export type WorldOptions = {
   arriveDay?: number;
   /** A3：覆寫人格（例 { 'lin-sao': { ext: -1 } }，#574 驗收 C）；不給就不寫，hash 不變 */
   traits?: Record<string, Partial<Traits>>;
+  /** A4：劇本 s1／s2／s3（大師態度、進鎮日、天數上限、三級目標）；playDays 覆寫天數上限（測試用）。不給就是自由玩，不寫欄位 */
+  play?: string;
+  playDays?: number;
 };
 
 export function initialSnapshot(opts: WorldOptions & Record<string, unknown>): Snapshot {
@@ -80,6 +84,8 @@ export function initialSnapshot(opts: WorldOptions & Record<string, unknown>): S
   if (a2 && opts.arriveDay !== undefined) a2.arriveDay = opts.arriveDay;
   const a3 = wuxia.elements[A3_SILENT] as A3State | undefined;
   if (a3 && opts.traits) for (const [cid, t] of Object.entries(opts.traits)) a3.traits[cid] = { ...traitsOf(a3, cid), ...t };
+  // A4：劇本（a4-play 關閉時沒有這個狀態，不寫）
+  if (opts.play) applyPlay(wuxia, opts.play, { days: opts.playDays });
   const worldMap =
     opts.map === undefined
       ? serializedMapFor(wuxia.enabled)

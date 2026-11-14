@@ -5,6 +5,7 @@
 //        [--state out.json]（W1：匯出最後狀態給 wuxia:shot 用）
 //        [--drop-memory id,id]（W5：這些 id 的事件記憶不寫入，mind-trace 的因果對照用）
 //        [--scenario master-open|master-selective|master-hidden|no-master] [--arrive-day N]（A2）
+//        [--play s1|s2|s3] [--play-days N]（A4：劇本與天數上限）
 //        [--force-event bandit --day 5]（W8：第 5 日卯時強制開始某事件）[--no-rumor-out]（W8：行商聽到的傳聞不算出鎮）
 // 從 data/wuxia/ 與上游預設地圖建初始世界 → 每 step 呼叫 simulateStep、餵 inputs、跑 ticks →
 // 把 pendingOperations 交給「規則替身」立即產生回應 input（漫遊用 rng、對話用模板句、不打 LLM）。
@@ -68,6 +69,9 @@ export type HeadlessOptions = {
   arriveDay?: number;
   /** A3：覆寫人格（--trait lin-sao.ext=-1） */
   traits?: Record<string, Record<string, number>>;
+  /** A4：劇本 s1／s2／s3（--play s1 [--play-days N]） */
+  play?: string;
+  playDays?: number;
   /** W9：每一步開始前呼叫，回傳要在這一步送進引擎的 input（wuxia:player-script 模擬玩家）。不給時行為與 hash 不變 */
   inject?: (game: ReturnType<typeof createGame>, now: number) => Array<{ name: string; args: any }>;
   /** W9：每個 input 處理完的結果（wuxia:player-script 讀上游 input 的回傳值／錯誤） */
@@ -407,6 +411,8 @@ function main() {
     scenario: args.scenario === undefined ? undefined : String(args.scenario),
     arriveDay: args['arrive-day'] === undefined ? undefined : Number(args['arrive-day']),
     traits: parseTraits(args.trait),
+    play: args.play === undefined ? undefined : String(args.play),
+    playDays: args['play-days'] === undefined ? undefined : Number(args['play-days']),
     dropMemories:
       args['drop-memory'] === undefined
         ? undefined

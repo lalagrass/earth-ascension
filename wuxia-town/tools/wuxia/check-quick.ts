@@ -3,12 +3,12 @@
 // 項目：
 //   q1 型別檢查 tsc --noEmit
 //   q2 單元測試 npm test（jest，含各步 A 類規則測試）
-//   q3 headless seed 7 跑 3 遊戲日兩次（兩個子行程）hash 相同；seed 8 不同；seed 7 的 3 日 hash 等於釘住的值；--off a3-silent 等於 A2 的值；--off a2-master,a3-silent 等於 A1 的值；--off a1-base,a2-master,a3-silent 等於 W9 的值
+//   q3 headless seed 7 跑 3 遊戲日兩次（兩個子行程）hash 相同；seed 8 不同；seed 7 的 3 日 hash 等於釘住的值；--off a4-play 等於 A3 的值；--off a3-silent,a4-play 等於 A2 的值；--off a2-master,a3-silent,a4-play 等於 A1 的值；--off a1-base,a2-master,a3-silent,a4-play 等於 W9 的值
 //   q4 引擎內不得用 Math.random／randomUUID／Date.now（convex/aiTown、convex/engine 只容許 action 檔；convex/wuxia、src/wuxia/engine 全禁）
 //   q5 git 追蹤的 public/assets 為空（上游美術不進 repo）；public/wuxia/ 每個檔都登記在 CREDITS.md
 //   q6 docs/wuxia/ 單檔 ≤1 MB、GIF ≤3 MB
 //   q7 convex/ 路徑只用英數、底線、句點；prompts.gen.ts 同步
-//   q8 wuxia:parity seed 7 1 遊戲日：headless ＝ LocalCore（Worker 同一份程式）直接跑、1×、4×、16×、64×（A1 #564）；A2 加一組大師第 1 日進鎮 7 日（A3 起含無言互動）
+//   q8 wuxia:parity seed 7 1 遊戲日：headless ＝ LocalCore（Worker 同一份程式）直接跑、1×、4×、16×、64×（A1 #564）；A2 加一組大師第 1 日進鎮 7 日（A3 起含無言互動）；A4 加一組劇本三（兩個師父）3 日
 //   q9 wuxia:const-audit：data/wuxia/**/*.json 每個數值都有 _src（A1 #564；A2 起含 arts/ 等子資料夾）
 //   （之後的 commit 再加：單機 Worker 與無頭 hash 相同、常數盤點）
 import { spawn, execFileSync } from 'node:child_process';
@@ -21,10 +21,13 @@ const ROOT = new URL('../..', import.meta.url).pathname;
 // seed 7、預設設定、3 遊戲日的 hash（W8／W9 起不變；W8.md「hash 與報告變化」）。引擎刻意改變 hash 時更新這裡並在 An.md 記一行
 // A2（#575）刻意改變：a2-master 預設開（多 6 位鎮民＋大師），新值見 docs/wuxia/A2.md；A1 的值改由 --off a2-master 守住
 // A3（#574）刻意改變：a3-silent 預設開（無言互動取代 AI 對話），新值見 docs/wuxia/A3.md；A2 的值改由 --off a3-silent 守住
-export const QUICK_HASH_SEED7_3D = 'a1762e45d80e3901ef32545e31c03142805306001ee4bb6738342b43d42129c0';
-/** A2 的 seed 7 3 日 hash：--off a3-silent 必須還是這個值（a3-silent 關掉跟 A2 逐位元組相同） */
+// A4（#576）刻意改變：a4-play 預設開（緣分點、事件掃描進狀態），新值見 docs/wuxia/A4.md；A3 的值改由 --off a4-play 守住
+export const QUICK_HASH_SEED7_3D = '14abe2fcb0292a6f97b2351c3aa9cd7c688513927cfc29ff73b1ab2b8e7cec30';
+/** A3 的 seed 7 3 日 hash：--off a4-play 必須還是這個值（a4-play 關掉跟 A3 逐位元組相同） */
+export const A3_HASH_SEED7_3D = 'a1762e45d80e3901ef32545e31c03142805306001ee4bb6738342b43d42129c0';
+/** A2 的 seed 7 3 日 hash：--off a3-silent,a4-play 必須還是這個值（a3-silent 關掉跟 A2 逐位元組相同） */
 export const A2_HASH_SEED7_3D = '7699618bb488d27ce00552c469c332b6837bd9d4b51bd124b4d808fc87cc29b1';
-/** A1 的 seed 7 3 日 hash：--off a2-master,a3-silent 必須還是這個值（a2-master 關掉跟 A1 逐位元組相同） */
+/** A1 的 seed 7 3 日 hash：--off a2-master,a3-silent,a4-play 必須還是這個值（a2-master 關掉跟 A1 逐位元組相同） */
 export const A1_HASH_SEED7_3D = '51df021fb6ee5c7835266bc814bea47e65162226e730ae51e9e0fcc4d7b5325a';
 
 let failures = 0;
@@ -49,7 +52,7 @@ function run(cmd: string, args: string[]): Promise<{ code: number | null; out: s
 }
 const tsx = join(ROOT, 'node_modules/.bin/tsx');
 const headless = (seed: number, ...extra: string[]) => run(tsx, [join(ROOT, 'tools/wuxia/headless.ts'), '--seed', String(seed), '--days', '3', ...extra]);
-/** W9 的 seed 7 3 日 hash（A1 之前）：--off a1-base,a2-master,a3-silent 必須還是這個值（A1–A3 都關掉跟 W9 逐位元組相同） */
+/** W9 的 seed 7 3 日 hash（A1 之前）：--off a1-base,a2-master,a3-silent,a4-play 必須還是這個值（A1–A4 都關掉跟 W9 逐位元組相同） */
 export const W9_HASH_SEED7_3D = '4bc77029e423be2d377d12a2cab10ed5fc06ebcb28185258cf3ec07c5075d644';
 const hashOf = (out: string) => out.match(/^hash ([0-9a-f]{64})$/m)?.[1];
 
@@ -136,7 +139,7 @@ export function staticChecks(): void {
 async function main() {
   const t0 = performance.now();
   // 重的子行程同時起跑
-  const [tsc, jest, h7a, h7b, h8, par, audit, h7off, h7offA2, parA2, h7offA3] = await Promise.all([
+  const [tsc, jest, h7a, h7b, h8, par, audit, h7off, h7offA2, parA2, h7offA3, h7offA4, parA4] = await Promise.all([
     run(join(ROOT, 'node_modules/.bin/tsc'), ['--noEmit', '-p', '.']),
     run('npm', ['test', '--', '--silent']),
     headless(7),
@@ -144,10 +147,12 @@ async function main() {
     headless(8),
     run(tsx, ['tools/wuxia/parity.ts', '--seed', '7', '--days', '1']),
     run(tsx, ['tools/wuxia/const-audit.ts']),
-    headless(7, '--off', 'a1-base,a2-master,a3-silent'),
-    headless(7, '--off', 'a2-master,a3-silent'),
+    headless(7, '--off', 'a1-base,a2-master,a3-silent,a4-play'),
+    headless(7, '--off', 'a2-master,a3-silent,a4-play'),
     run(tsx, ['tools/wuxia/parity.ts', '--seed', '7', '--days', '7', '--arrive-day', '1', '--scenario', 'master-open']),
-    headless(7, '--off', 'a3-silent'),
+    headless(7, '--off', 'a3-silent,a4-play'),
+    headless(7, '--off', 'a4-play'),
+    run(tsx, ['tools/wuxia/parity.ts', '--seed', '7', '--days', '3', '--play', 's3']),
   ]);
   staticChecks();
   // q1
@@ -168,19 +173,24 @@ async function main() {
   if (a === QUICK_HASH_SEED7_3D) ok('q3 seed 7 3 日 hash 等於釘住的值（tools/wuxia/check-quick.ts QUICK_HASH_SEED7_3D）');
   else fail(`q3 seed 7 3 日 hash ${a} ≠ 釘住的 ${QUICK_HASH_SEED7_3D}（刻意改變請更新並在 An.md 記錄）`);
   const off = hashOf(h7off.out);
-  if (off === W9_HASH_SEED7_3D) ok(`q3 --off a1-base,a2-master,a3-silent seed 7 3 日 hash ＝ W9 的 ${W9_HASH_SEED7_3D.slice(0, 16)}…（A1 修補可關）`);
-  else fail(`q3 --off a1-base,a2-master,a3-silent seed 7 3 日 hash ${off} ≠ W9 的 ${W9_HASH_SEED7_3D}`);
+  if (off === W9_HASH_SEED7_3D) ok(`q3 --off a1-base,a2-master,a3-silent,a4-play seed 7 3 日 hash ＝ W9 的 ${W9_HASH_SEED7_3D.slice(0, 16)}…（A1 修補可關）`);
+  else fail(`q3 --off a1-base,a2-master,a3-silent,a4-play seed 7 3 日 hash ${off} ≠ W9 的 ${W9_HASH_SEED7_3D}`);
   const offA2 = hashOf(h7offA2.out);
-  if (offA2 === A1_HASH_SEED7_3D) ok(`q3 --off a2-master,a3-silent seed 7 3 日 hash ＝ A1 的 ${A1_HASH_SEED7_3D.slice(0, 16)}…（大師元素可關）`);
-  else fail(`q3 --off a2-master,a3-silent seed 7 3 日 hash ${offA2} ≠ A1 的 ${A1_HASH_SEED7_3D}`);
+  if (offA2 === A1_HASH_SEED7_3D) ok(`q3 --off a2-master,a3-silent,a4-play seed 7 3 日 hash ＝ A1 的 ${A1_HASH_SEED7_3D.slice(0, 16)}…（大師元素可關）`);
+  else fail(`q3 --off a2-master,a3-silent,a4-play seed 7 3 日 hash ${offA2} ≠ A1 的 ${A1_HASH_SEED7_3D}`);
   const offA3 = hashOf(h7offA3.out);
-  if (offA3 === A2_HASH_SEED7_3D) ok(`q3 --off a3-silent seed 7 3 日 hash ＝ A2 的 ${A2_HASH_SEED7_3D.slice(0, 16)}…（無言互動可關）`);
-  else fail(`q3 --off a3-silent seed 7 3 日 hash ${offA3} ≠ A2 的 ${A2_HASH_SEED7_3D}`);
+  if (offA3 === A2_HASH_SEED7_3D) ok(`q3 --off a3-silent,a4-play seed 7 3 日 hash ＝ A2 的 ${A2_HASH_SEED7_3D.slice(0, 16)}…（無言互動可關）`);
+  else fail(`q3 --off a3-silent,a4-play seed 7 3 日 hash ${offA3} ≠ A2 的 ${A2_HASH_SEED7_3D}`);
+  const offA4 = hashOf(h7offA4.out);
+  if (offA4 === A3_HASH_SEED7_3D) ok(`q3 --off a4-play seed 7 3 日 hash ＝ A3 的 ${A3_HASH_SEED7_3D.slice(0, 16)}…（玩家干預可關）`);
+  else fail(`q3 --off a4-play seed 7 3 日 hash ${offA4} ≠ A3 的 ${A3_HASH_SEED7_3D}`);
   // q8
   if (par.code === 0 && /parity OK/.test(par.out)) ok(`q8 wuxia:parity seed 7 1 日 headless ＝ local 直接跑／1×／4×／16×／64×（${(par.ms / 1000).toFixed(1)} 秒）`);
   else fail(`q8 wuxia:parity 不一致或沒跑完\n${par.out.slice(-2000)}`);
   if (parA2.code === 0 && /parity OK/.test(parA2.out)) ok(`q8 wuxia:parity seed 7 7 日、大師第 1 日進鎮（看、教都發生）headless ＝ local（${(parA2.ms / 1000).toFixed(1)} 秒）`);
   else fail(`q8 wuxia:parity（大師第 1 日進鎮 7 日）不一致或沒跑完\n${parA2.out.slice(-2000)}`);
+  if (parA4.code === 0 && /parity OK/.test(parA4.out)) ok(`q8 wuxia:parity seed 7 3 日、劇本三（兩個師父）headless ＝ local（${(parA4.ms / 1000).toFixed(1)} 秒）`);
+  else fail(`q8 wuxia:parity（劇本三 3 日）不一致或沒跑完\n${parA4.out.slice(-2000)}`);
   // q9
   if (audit.code === 0) ok(`q9 ${audit.out.trim().split('\n').pop()}`);
   else fail(`q9 wuxia:const-audit 失敗\n${audit.out.slice(-3000)}`);

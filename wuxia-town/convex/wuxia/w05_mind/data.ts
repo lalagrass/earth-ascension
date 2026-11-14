@@ -58,7 +58,10 @@ export type MemoryKind =
   | 'disciple_left'
   | 'rival_master'
   // A3（#574）：無言互動（other＝對方，what＝互動.ok|fail.a|b（a＝發起方），n＝wuxia.social.log 的紀錄 id；三軸效果見 interactions.json）
-  | 'social';
+  | 'social'
+  // A4（#576）：玩家的干預（what＝guide|intro|whisper|feed|plead）、有人替某人說情（記在師父身上，other＝那人）
+  | 'fate'
+  | 'pleaded';
 
 /** #557：`{t, kind, other?, place?, weight}`；另加 id（全世界唯一、遞增，給 --drop-memory 用）與 n（數量，例如練功分鐘）。 */
 export type Memory = {
@@ -408,6 +411,8 @@ const KIND_TEXT: Record<MemoryKind, string> = {
   disciple_left: '徒弟{what}改投{other}門下',
   rival_master: '暗暗跟{other}較勁',
   social: '{social}',
+  fate: '{fate}',
+  pleaded: '有人替{other}說情',
 };
 
 /** 記憶的說明文字（畫面「因為…」與報告共用）。names：cid → 名字；places：地點 id → 名字。 */
@@ -428,9 +433,16 @@ export function describeMemory(
     .replace('{rumor}', m.kind === 'rumor' ? `${m.other ? `聽${names(m.other)}說` : '親眼看到'}${RUMOR_LABEL[m.what ?? ''] ?? '一件事'}` : '')
     .replace('{won}', m.kind === 'fought_outsider' ? (m.n === 1 ? '，贏了' : m.n === -1 ? '，輸了' : '，打平') : '')
     .replace('{social}', m.kind === 'social' ? socialText(m, names) : '')
+    .replace('{fate}', m.kind === 'fate' ? fateText(m, names) : '')
     .replace('{times}', m.kind === 'listen' && (m.n ?? 1) > 1 ? ` ${m.n} 場` : '');
   const where = m.place && m.kind !== 'first_visit' ? `（${places(m.place)}）` : '';
   return `第 ${day} 日 ${body}${where}`;
+}
+
+/** A4 fate 記憶的說明：「有人指了路」 */
+function fateText(m: Memory, names: (cid: string) => string): string {
+  const o = m.other ? names(m.other) : '某人';
+  return ({ guide: '有人指了路', intro: `有人引薦，要去見${o}`, whisper: '有人在耳邊說了一件事', feed: '有人接濟了三天的飯', plead: `有人替他向${o}說情` } as Record<string, string>)[m.what ?? ''] ?? '有人推了一把';
 }
 
 /** A3 social 記憶的說明：「向某人請教（成）」 */

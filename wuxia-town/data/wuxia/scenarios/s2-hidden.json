@@ -1,0 +1,11 @@
+{
+  "id": "s2", "name": "不傳之秘", "policy": "hidden",
+  "seeds": [1, 999], "arriveDay": 1, "days": 120,
+  "_src": "量測＋旋鈕：#576 劇本二（hidden，120 日）；seed 範圍與第 1 日進鎮是旋鈕",
+  "intro": "老道住進了茶館後院，拳只打給自己看。鎮上的人遠遠望著，誰也不敢開口。",
+  "goals": {
+    "bronze": {"label": "有人偷學到皮毛", "all": [{"k": "knowers", "family": "taiji", "via": ["watch"], "min": 1}]},
+    "silver": {"label": "大師收下第一個徒弟", "all": [{"k": "disciples", "master": "zhang-sanfeng", "min": 1}]},
+    "gold": {"label": "那個徒弟再傳給第三人", "all": [{"k": "discipleTaught", "master": "zhang-sanfeng", "family": "taiji", "min": 1}]}
+  }
+}

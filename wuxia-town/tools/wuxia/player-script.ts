@@ -21,6 +21,8 @@ import { describeMemory } from '../../convex/wuxia/w05_mind/data';
 import type { BondState } from '../../convex/wuxia/w07_bond/data';
 import { FOLK_CHARACTERS } from '../../convex/wuxia/w02_folk';
 import { runLocalScript } from './local-script';
+import { runPlay, PlayScript } from './a4-play';
+import { buildCard } from '../../src/wuxia/a4card';
 
 export type ScriptStep = {
   day: number;
@@ -341,6 +343,33 @@ function main() {
     }
     process.stdout.write(`${r.ok ? 'OK  ' : 'FAIL'} 最後 hash ＝ 無頭不中斷跑到第 ${r.steps} 步 ${r.reference.slice(0, 16)}…\nhash ${r.finalHash}\n`);
     if (!r.ok) process.exit(1);
+    return;
+  }
+  // A4（#576）：劇本腳本（有 "scenario" 欄位）——花緣做干預，報告三級目標達成日與結算卡（wuxia:card 讀 card 欄位）
+  if ((script as any).scenario) {
+    const seed = Number(args.seed ?? defaultWuxiaConfig.seed);
+    const { run, report } = runPlay(script as unknown as PlayScript, seed, {
+      days: args.days === undefined ? undefined : Number(args.days),
+      policy: args.policy === 'none' ? 'none' : 'script',
+      stepHashes: !!args.journal,
+    });
+    const card = buildCard(run.game.world.wuxia!);
+    if (args.out) {
+      mkdirSync(dirname(String(args.out)), { recursive: true });
+      writeFileSync(String(args.out), JSON.stringify({ ...report, card }, null, 2) + '\n');
+    }
+    if (args.journal) {
+      mkdirSync(dirname(String(args.journal)), { recursive: true });
+      const lines = journalLines(run.snapshot, run.queue, run.steps, run.finalHash, { source: 'player-script-a4', seed, scenario: report.scenario, days: report.days }, run.messages);
+      writeFileSync(String(args.journal), lines.join('\n') + '\n');
+    }
+    const ok = report.outcomes.filter((o) => o.ok).length;
+    process.stdout.write(`${report.name}（${report.scenario}）seed ${seed}、${report.days} 日、policy ${report.policy}：干預 ${ok}/${report.outcomes.length} 成\n`);
+    for (const t of ['bronze', 'silver', 'gold'] as const)
+      process.stdout.write(`  ${t}：${report.goals[t] === undefined ? '未達成' : `第 ${report.goals[t]} 日`}（此刻 ${report.now[t]}）\n`);
+    process.stdout.write(`  結算：${report.ended ? `第 ${report.ended.day} 日（${report.ended.reason}）` : '未結算'}\n`);
+    for (const s of report.story) process.stdout.write(`  #${s.id} 第 ${s.day} 日 ${s.text}\n`);
+    process.stdout.write(`hash ${report.hash}\n`);
     return;
   }
   const seed = Number(args.seed ?? defaultWuxiaConfig.seed);

@@ -1,0 +1,8 @@
+{
+  "_doc": "A4（#576）劇本一的腳本玩家：每天 08:00 給「太極招數最少的人」指路去小廣場看大師晨練（1 點緣）；第 3 日起每三天替大師最親近、還沒說情過的人說情（2 點緣，緣不夠那天就跳過）。只讀世界狀態挑人，不用亂數。",
+  "scenario": "s1",
+  "rules": [
+    {"at": "08:00", "kind": "guide", "pick": "fewestMoves", "family": "taiji", "place": "plaza"},
+    {"at": "20:00", "kind": "plead", "pick": "closestToMaster", "fromDay": 3, "everyDays": 3}
+  ]
+}

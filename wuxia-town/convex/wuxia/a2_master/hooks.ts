@@ -2,6 +2,7 @@
 import type { WuxiaState } from '../state';
 import type { MindState } from '../w05_mind/data';
 import { A2_MASTER, A2State, MASTER, MASTER_CID } from './data';
+import { hiddenException } from '../a4_play/data';
 
 function st(w: WuxiaState | undefined): A2State | undefined {
   return w?.enabled[A2_MASTER] ? (w.elements[A2_MASTER] as A2State | undefined) : undefined;
@@ -25,7 +26,11 @@ export function a2BowVerdict(
 ): { accepted: boolean; reason: string } | undefined {
   const s = st(w);
   if (!s || master !== MASTER_CID) return undefined;
-  if (s.policy === 'hidden') return { accepted: false, reason: '大師不傳（hidden）' };
+  if (s.policy === 'hidden') {
+    // A4（#576 劇本二）：a4-play 開著時，親近 ≥ 60 破例收一人；關閉時照舊不收
+    if (hiddenException(w, close, count)) return { accepted: true, reason: `不傳之秘：親近 ${close} ≥ 60，破例收一人` };
+    return { accepted: false, reason: '大師不傳（hidden）' };
+  }
   if (s.policy === 'selective') {
     const S = MASTER.selective;
     if (count >= S.maxDisciples) return { accepted: false, reason: `擇徒：已帶 ${S.maxDisciples} 個徒弟` };

@@ -5,7 +5,7 @@ import { quietConsole } from './sim';
 
 quietConsole(false);
 
-const { seed, steps, speed, frameMs, world } = workerData as { seed: number; steps: number; speed: Speed; frameMs: number; world?: { arriveDay?: number; scenario?: string } };
+const { seed, steps, speed, frameMs, world } = workerData as { seed: number; steps: number; speed: Speed; frameMs: number; world?: { arriveDay?: number; scenario?: string; play?: string } };
 const core = new LocalCore();
 core.init({ kind: 'new', world: { seed, ...(world ?? {}) } }); // A2：arriveDay／scenario
 core.autoSlow = false;

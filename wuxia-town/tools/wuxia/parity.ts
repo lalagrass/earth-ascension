@@ -3,13 +3,13 @@
 //   local（Node worker_threads 裡跑瀏覽器 Worker 同一個 LocalCore；倍速 1×、4×、16×、64× 與直接跑各一次）
 // 的狀態 hash 必須全部相同（倍速不改變結果）。瀏覽器裡的 Web Worker 那一方由 wuxia:local-check 比（同一個 hash）。
 // 有 Convex 環境時的第三方：見 docs/wuxia/A1.md（平時不比，#563 輕量驗收）。
-// 用法：npm run wuxia:parity -- --seed 7 --days 10 [--speeds 0,1,4,16,64] [--arrive-day 1 --scenario master-open]（A2）
+// 用法：npm run wuxia:parity -- --seed 7 --days 10 [--speeds 0,1,4,16,64] [--arrive-day 1 --scenario master-open]（A2）[--play s3]（A4 劇本）
 import { Worker } from 'node:worker_threads';
 import { runHeadless } from './headless';
 import { parseArgs, quietConsole } from './sim';
 
 // A2（#575）：world 可帶 arriveDay／scenario（大師提早進鎮），兩邊用同一份世界選項
-export async function parity(seed: number, steps: number, speeds: number[], world: { arriveDay?: number; scenario?: string } = {}) {
+export async function parity(seed: number, steps: number, speeds: number[], world: { arriveDay?: number; scenario?: string; play?: string } = {}) {
   const headless = runHeadless({ seed, minutes: steps / 60, ...world }).finalHash;
   const local = await Promise.all(
     speeds.map(
@@ -37,6 +37,7 @@ async function main() {
   const world = {
     arriveDay: args['arrive-day'] === undefined ? undefined : Number(args['arrive-day']),
     scenario: args.scenario === undefined ? undefined : String(args.scenario),
+    play: args.play === undefined ? undefined : String(args.play),
   };
   const r = await parity(seed, steps, speeds, world);
   process.stdout.write(`seed ${seed} steps ${steps}（${(steps / 1440).toFixed(2)} 遊戲日）\n`);

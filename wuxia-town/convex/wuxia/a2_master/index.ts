@@ -61,6 +61,7 @@ import {
 import { hasMisdeed } from './hooks';
 import { a3Of, inSession } from '../a3_silent/data';
 import { a2HintText } from '../a3_silent/grammar';
+import { a4Of } from '../a4_play/data';
 
 export { A2_MASTER } from './data';
 
@@ -141,7 +142,8 @@ export function coachCalm(mind: MindState | undefined, gm: number): boolean {
 export function willing(w: WuxiaState, st: A2State, mind: MindState | undefined, teacher: string, student: string, m: MoveDef): boolean {
   const disc = masterOfCid(w, student) === teacher;
   if (teacher === MASTER_CID) {
-    if (st.policy === 'hidden') return false;
+    // A4（#576 劇本二）：破例收下的那一個徒弟（只有 a4-play 開著才可能有）教；其他人照舊不教
+    if (st.policy === 'hidden') return disc && !!a4Of(w);
     if (st.policy === 'selective') return disc || (closeOf(w, teacher, student) >= MASTER.selective.close && !hasMisdeed(mind, student));
     return disc || m.difficulty <= 2;
   }

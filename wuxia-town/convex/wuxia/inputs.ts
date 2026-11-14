@@ -5,6 +5,7 @@ import { inputHandler } from '../aiTown/inputHandler';
 import { applyNarration, W06_SPAR } from './w06_spar';
 import { applyChronicleText, W08_JIANGHU } from './w08_jianghu';
 import { playerAct, setPaused } from './w09_player';
+import { intervene } from './a4_play';
 
 export const wuxiaInputs = {
   /** W6：LLM 寫好的切磋旁白（convex/wuxia/w06_spar/narrate.ts） */
@@ -39,5 +40,16 @@ export const wuxiaInputs = {
   wuxiaPlayerPause: inputHandler({
     args: { playerId: v.optional(v.string()), human: v.optional(v.string()), paused: v.boolean() },
     handler: (game, now, args) => setPaused(game, now, args),
+  }),
+  /** A4（#576）：玩家花緣做一個干預（指路／引薦／傳話／接濟／說情）。回傳 { ok, reason, id } */
+  wuxiaIntervene: inputHandler({
+    args: {
+      kind: v.string(),
+      target: v.string(),
+      other: v.optional(v.string()),
+      place: v.optional(v.string()),
+      rid: v.optional(v.number()),
+    },
+    handler: (game, now, args) => intervene(game, now, args),
   }),
 };

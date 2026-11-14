@@ -466,3 +466,37 @@ export function moodNow(w: WuxiaState | undefined, gm: number, cid: string): num
   const v = w && viewOf(w, gm);
   return v ? moodOf(v, cid) : undefined;
 }
+
+/**
+ * A4（#576「引薦」）：讓 a 此刻對 b 發起一次互動（種類照本元素的規則挑：起意分數最高＋擾動，成敗照公式）。
+ * 不看起意機率與冷卻（引薦就是「讓他今天去找 B」），其他條件跟 AI 發起一樣：兩人都有空、同處、在旁邊。
+ * 條件不合回 undefined（a4-play 下一分鐘再試）。只有 a4-play 呼叫，a4-play 關閉時本元素行為不變。
+ */
+export function introSocial(game: Game, now: number, aCid: string, bCid: string): SocialEntry | undefined {
+  const w = game.world.wuxia;
+  if (!w || w.clockEpoch === undefined) return undefined;
+  const gm = gameMinutes(now, w.clockEpoch, w.timeScale);
+  const v = viewOf(w, gm);
+  if (!v) return undefined;
+  const one = (cid: string) => {
+    const pid = v.pidOf[cid];
+    const person = pid ? v.life.people[pid] : undefined;
+    const player = pid ? game.world.players.get(pid as any) : undefined;
+    if (!person || !player || person.player) return undefined;
+    const free = person.cur?.phase === 'do' && FREE_ACTS.has(person.cur.act) && (v.st.busy[cid] ?? -1) <= gm;
+    return free ? { pid, x: player.position.x, y: player.position.y, place: personPlace(person, player) } : undefined;
+  };
+  const A = one(aCid);
+  const B = one(bCid);
+  if (!A || !B || A.place !== B.place || Math.hypot(A.x - B.x, A.y - B.y) > RADIUS) return undefined;
+  for (const c of game.world.conversations.values()) if (c.participants.has(A.pid as any) || c.participants.has(B.pid as any)) return undefined;
+  const f = features(v, aCid, bCid);
+  let best: { def: InteractionDef; s: number } | undefined;
+  for (const def of INTERACTIONS) {
+    if (!feasible(v, def, aCid, bCid, f)) continue;
+    const s = linear(def.will, f) + RULES.noise * game.rng();
+    if (!best || s > best.s) best = { def, s };
+  }
+  if (!best) return undefined;
+  return perform(game, v, jhCtx(game, now, v), aCid, bCid, best.def, { place: A.place, others: [] });
+}
