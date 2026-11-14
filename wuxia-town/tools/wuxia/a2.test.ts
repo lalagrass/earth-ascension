@@ -38,8 +38,8 @@ function world(close: Record<string, Record<string, number>> = {}, disciples: Re
   } as any;
 }
 
-// 引擎跑：大師第 1 日進鎮的 open 劇本 9 日（教、看、練都會發生），與沒有大師的劇本
-const ARRIVE1 = runHeadless({ seed: 7, minutes: 1, untilGameMinute: 9 * 1440, arriveDay: 1, scenario: 'master-open' }).summary.a2 as any;
+// 引擎跑：大師第 1 日進鎮的 open 劇本 14 日（教、看、練都會發生；A7 起要付束脩或做工才被教，第一筆教在第 10 日，見 DEVIATIONS A7-13；A6 以前 9 日），與沒有大師的劇本
+const ARRIVE1 = runHeadless({ seed: 7, minutes: 1, untilGameMinute: 14 * 1440, arriveDay: 1, scenario: 'master-open' }).summary.a2 as any;
 const NONE = [7, 23].map((seed) => runHeadless({ seed, minutes: 1, untilGameMinute: 8 * 1440, scenario: 'no-master' }).summary.a2 as any);
 
 describe('A2 大師入鎮與四條傳承管道（#575）', () => {

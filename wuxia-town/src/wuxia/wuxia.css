@@ -190,6 +190,11 @@ body.wuxia-skin .button img {
 .wuxia-life-panel { margin-top: 0.75rem; padding: 0.5rem 0.75rem; background: rgba(60, 40, 25, 0.55); border: 2px solid #8a6a43; font-size: 0.95rem; line-height: 1.35; }
 .wuxia-life-panel p { margin: 0.15rem 0; }
 .wuxia-life-next { opacity: 0.85; font-size: 0.85rem; }
+/* A7（#584）：錢袋與學生身分 */
+.wuxia-purse { font-size: 0.85rem; }
+.wuxia-student.paid { color: #c9e7a8; }
+.wuxia-student.work { color: #f0d9a0; }
+.wuxia-student.none { opacity: 0.7; }
 .wuxia-needs { margin-top: 0.4rem; display: grid; gap: 0.2rem; }
 .wuxia-need { display: grid; grid-template-columns: 2.4em 1fr 2em; align-items: center; gap: 0.4rem; font-size: 0.85rem; }
 .wuxia-need-bar { height: 0.55rem; background: rgba(255, 255, 255, 0.15); border: 1px solid #8a6a43; position: relative; }
@@ -371,6 +376,11 @@ body.wuxia-skin .button img {
 .wuxia-a2-name { background: none; border: none; padding: 0; color: #2b2119; font-weight: bold; cursor: pointer; text-decoration: underline dotted; }
 .wuxia-a2-gen { color: #8a6a43; font-size: 0.7rem; margin: 0 0.3rem; }
 .wuxia-a2-edge { background: #e9f2ee; border: 1px solid #2f7d73; color: #1f5b53; font-size: 0.72rem; padding: 0 0.3rem; cursor: pointer; }
+.wuxia-a2-rank { font-size: 0.68rem; padding: 0 0.25rem; margin-right: 0.3rem; border: 1px solid #8a6a43; color: #5a4630; }
+.wuxia-a2-rank.小成 { background: #e9f2ee; border-color: #2f7d73; color: #1f5b53; }
+.wuxia-a2-rank.大成 { background: #f4e7b8; border-color: #c9a227; color: #6b5300; }
+.wuxia-a2-hint.skill { border-left-color: #6b8e23; }
+.wuxia-a2-edge.watch { border-style: dashed; }
 .wuxia-a2-edge.flawed { background: #f6e6d8; border-color: #b0673a; border-style: dashed; color: #7a3f1f; }
 .wuxia-a2-trace { margin-top: 0.3rem; padding: 0.3rem 0.4rem; border: 1px dashed #8a6a43; background: rgba(255, 255, 255, 0.4); }
 .wuxia-a2-trace ol { margin: 0.2rem 0 0.2rem 1.1rem; padding: 0; list-style: decimal; }

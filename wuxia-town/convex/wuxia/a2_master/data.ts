@@ -6,6 +6,7 @@ import masterJson from '../../../data/wuxia/master.json';
 import townsfolkJson from '../../../data/wuxia/townsfolk.json';
 import type { WuxiaState } from '../state';
 import type { ScheduleBlock } from '../w03_life/data';
+import { A6, a6On, minTeacherProf } from '../a6_spread/data';
 
 export const A2_MASTER = 'a2-master';
 
@@ -129,7 +130,7 @@ export type TeachRecord = {
   prereqOk: boolean;
   bodyOk: boolean;
 };
-export type Hint = { id: number; gm: number; kind: 'teach' | 'watch' | 'arrive' | 'switch' | 'bow' | 'rival' | 'ask'; text: string; who?: string; record?: number };
+export type Hint = { id: number; gm: number; kind: 'teach' | 'watch' | 'arrive' | 'switch' | 'bow' | 'rival' | 'ask' | 'skill'; text: string; who?: string; record?: number };
 export type DailyCount = { day: number; learners: Record<string, number> };
 export type SwitchRecord = { day: number; gm: number; disciple: string; fromMaster: string; toMaster: string; respectNew: number; respectOld: number };
 
@@ -287,13 +288,13 @@ export function applyWatch(
   return { day, gm, from: performer, to: watcher, move: moveId, via: 'watch', fromProf: know[performer]?.[moveId]?.prof ?? 0, cap: W.cap, flawed: true, prereqOk: true, bodyOk: true };
 }
 
-/** W4 曲線的練招成長（每遊戲分鐘）：base × 權重 × (1 − prof/1000)^2 × 加成，到 cap 為止。回傳新 prof。 */
-export function practiceGain(k: Know, actWeight: number, bonus: number, minutes: number): number {
+/** 練招成長（每遊戲分鐘；A6 開著時 base 換成 a6.json 的 practice.base，見該檔推導）：base × 權重 × (1 − prof/1000)^2 × 加成，到 cap 為止。回傳新 prof。 */
+export function practiceGain(k: Know, actWeight: number, bonus: number, minutes: number, base?: number): number {
   const P = MASTER.practice;
   const cap = capOf(k);
   if (k.prof >= cap) return k.prof;
   const room = Math.max(0, 1 - k.prof / MASTER.fist.max);
-  const g = P.base * actWeight * Math.pow(room, P.exponent) * bonus * minutes;
+  const g = (base ?? P.base) * actWeight * Math.pow(room, P.exponent) * bonus * minutes;
   return Math.min(cap, Math.round((k.prof + g) * 1e4) / 1e4);
 }
 
@@ -317,4 +318,13 @@ export function learnersOf(st: A2State, art: string): string[] {
 export function formMove(art: ArtDef, since: number, gm: number): MoveDef {
   const seg = Math.floor((gm - since) / MASTER.watch.segmentMinutes);
   return art.moves[((seg % art.moves.length) + art.moves.length) % art.moves.length];
+}
+
+/** 教的人要多熟才能教這一招：a6 開著＝120＋70×(難度−1)（#581），關閉＝master.json 的 400（A2）。 */
+export function teachThreshold(w: WuxiaState | undefined, m: MoveDef): number {
+  return a6On(w) ? minTeacherProf(m.difficulty) : MASTER.teach.minTeacherProf;
+}
+/** 練招的 base：a6 開著時用自己的曲線（#581），關閉時沿用 master.json（A2）。 */
+export function practiceBase(w: WuxiaState | undefined): number {
+  return a6On(w) ? A6.practice.base : MASTER.practice.base;
 }

@@ -17,8 +17,8 @@ import type { MindState } from '../../convex/wuxia/w05_mind/data';
 quietConsole(false);
 
 const script = JSON.parse(readFileSync('docs/wuxia/fixtures/a4-a1.json', 'utf8')) as PlayScript;
-// 劇本一，7 日，五種干預各一次（指路、引薦、接濟、說情、傳話）
-const A = runPlay(script, 7, { days: 7 });
+// 劇本一，14 日（A5 以前 7 日；A6 的教學較慢、銅級要到第 8 日，見 DEVIATIONS A6-7；A7 要付束脩或做工才被教，第一筆教在第 10 日、銅級第 12 日，見 DEVIATIONS A7-13），五種干預各一次（指路、引薦、接濟、說情、傳話）
+const A = runPlay(script, 7, { days: 14 });
 const wA = A.run.game.world.wuxia!;
 const stA = wA.elements[A4_PLAY] as A4State;
 
@@ -28,7 +28,7 @@ describe('A4 玩家的位置（#576）', () => {
     expect(A.run.queue.filter((i) => i.name === 'wuxiaIntervene').length).toBe(A.report.outcomes.length);
     // 引薦真的促成了一次 A3 互動（由 A 發起）
     expect(stA.used.find((u) => u.kind === 'intro')?.social).toBeDefined();
-    const B = runPlay(script, 7, { days: 7 });
+    const B = runPlay(script, 7, { days: 14 });
     expect(B.run.finalHash).toBe(A.run.finalHash);
     // 重播：只用快照＋journal 裡的 input（JSON 來回一次，跟寫檔一樣），checkpoint 逐一比對；每次換日用同一個純函式重算目標
     const j = JSON.parse(JSON.stringify({ snapshot: A.run.snapshot, inputs: A.run.queue, steps: A.run.steps }));
@@ -51,8 +51,8 @@ describe('A4 玩家的位置（#576）', () => {
       if (w.clockEpoch === undefined) continue;
       const d = readClock(gameMinutes(game.engine.currentTime!, w.clockEpoch, w.timeScale)).day;
       if (d !== day) {
-        if (day > 0 && day <= 7) {
-          const g = evalGoals(w, sc);
+        if (day > 0 && day <= 14) {
+          const g = evalGoals(w, sc, recomputed);
           for (const t of TIERS) if (g[t].ok && recomputed[t] === undefined) recomputed[t] = day;
         }
         day = d;

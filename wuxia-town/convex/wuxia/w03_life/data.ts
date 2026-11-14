@@ -7,6 +7,7 @@ import townsfolkJson from '../../../data/wuxia/townsfolk.json';
 import type { WuxiaState } from '../state';
 import { closedOverlays, mindBlocks, mindOf } from '../w05_mind/data';
 import { a4Blocks } from '../a4_play/data';
+import { a7Blocks } from '../a7_tuition/data';
 
 export type Need = 'hunger' | 'fatigue' | 'boredom' | 'chore';
 export type Resource = 'water' | 'meal' | 'wood';
@@ -156,6 +157,13 @@ export function lifeSchedCtx(w: WuxiaState | undefined, day?: number): SchedCtx 
     for (const cid of Object.keys(a4)) blocks[cid] = [...a4[cid], ...(blocks[cid] ?? [])];
     ctx.blocks = blocks;
   }
+  // A7（#584）：沒付束脩的人要替武館做的雜務時段（a7-tuition 每日算好放在元素狀態裡；排在最前面，需求急的時候照樣先去吃、去睡）。關閉時不動
+  const a7 = a7Blocks(w, day);
+  if (a7) {
+    const blocks: Record<string, ScheduleBlock[]> = { ...(ctx.blocks ?? {}) };
+    for (const cid of Object.keys(a7)) blocks[cid] = [...a7[cid], ...(blocks[cid] ?? [])];
+    ctx.blocks = blocks;
+  }
   return ctx;
 }
 
@@ -247,7 +255,7 @@ const PLACES_BY_AREA = [...PLACES].sort(
   (a, b) => a.rect[2] * a.rect[3] - b.rect[2] * b.rect[3],
 );
 // A2：a2-master 的物件不參與「站在座位上→地點」的判定（元素關閉時地點判定跟 A1 相同；這些座位都在所屬地點範圍內或旁邊）
-const PLACE_OBJECTS = OBJECTS.filter((o) => o.element !== 'a2-master');
+const PLACE_OBJECTS = OBJECTS.filter((o) => o.element !== 'a2-master' && o.element !== 'a7-tuition'); // A7：水缸、柴堆也不參與（座位在武館範圍內，a7 關閉時判定與 A6 相同）
 export function placeAt(x: number, y: number): string {
   for (const o of PLACE_OBJECTS) {
     for (const [sx, sy] of o.slots) {

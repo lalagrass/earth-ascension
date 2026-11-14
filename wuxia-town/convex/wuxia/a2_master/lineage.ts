@@ -59,6 +59,24 @@ export function generations(st: A2State, art: string): Record<string, number> {
   return out;
 }
 
+/**
+ * 正式傳承的代數（A6，#581）：只算「大師→甲→乙」每一環都是正式教（via teach）、一路回到開山的人（via origin）的招；
+ * 中間有一環是看來的就不算。回傳每人（不含開山）在這門武學最深的正式代數（開山＝0）。
+ */
+export function formalGenerations(st: A2State, art: string): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const cid of Object.keys(st.know).sort())
+    for (const id of Object.keys(st.know[cid])) {
+      if (MOVE_BY_ID[id]?.family !== art) continue;
+      const chain = chainOf(st.know, cid, id);
+      const root = st.know[chain[chain.length - 1]]?.[id];
+      if (!root || root.via !== 'origin') continue;
+      if (!chain.slice(0, -1).every((c) => st.know[c][id].via === 'teach')) continue;
+      out[cid] = Math.max(out[cid] ?? 0, chain.length - 1);
+    }
+  return out;
+}
+
 export type TreeLine = { depth: number; cid: string; edge?: LineageEdge };
 /** 譜系樹：開山的人為根，依邊往下（同一人有多位來源時，每位來源底下各列一次；不重複展開已列過的子樹） */
 export function lineageTree(st: A2State, art: string): TreeLine[] {

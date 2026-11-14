@@ -7,5 +7,11 @@
     "bronze": {"label": "兩門各有兩個徒弟", "all": [{"k": "disciples", "master": "zhang-sanfeng", "min": 2}, {"k": "disciples", "master": "zhou-jiaotou", "min": 2}]},
     "silver": {"label": "兩門弟子切磋一場，沒人結仇", "all": [{"k": "crossSpar", "a": "zhang-sanfeng", "b": "zhou-jiaotou", "min": 1}]},
     "gold": {"label": "有人兩門都學", "all": [{"k": "bothArts", "arts": ["taiji", "laohuai"], "min": 1}]}
+  },
+  "goalsA6_src": "量測：#581 第 4 節（A6 開著時用這組；a6 關閉時用上面的 goals＝A5）。after＝銅沒達成前銀不算、銀沒達成前金不算",
+  "goalsA6": {
+    "bronze": {"label": "兩門各有兩個徒弟", "all": [{"k": "disciples", "master": "zhang-sanfeng", "min": 2}, {"k": "disciples", "master": "zhou-jiaotou", "min": 2}]},
+    "silver": {"label": "兩門弟子切磋一場，沒人結仇", "after": "bronze", "all": [{"k": "crossSpar", "a": "zhang-sanfeng", "b": "zhou-jiaotou", "min": 1}]},
+    "gold": {"label": "有人兩門都正式學會各 2 招以上", "after": "silver", "all": [{"k": "bothArts", "arts": ["taiji", "laohuai"], "min": 1, "moves": 2}]}
   }
 }

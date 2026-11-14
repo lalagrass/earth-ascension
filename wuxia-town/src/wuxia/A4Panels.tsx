@@ -14,8 +14,11 @@ import {
   TIERS,
   TIER_LABEL,
   evalGoals,
+  goalsOf,
 } from '../../convex/wuxia/a4_play/data';
 import { COACH_CID, MASTER_CID } from '../../convex/wuxia/a2_master/data';
+import { a7Of } from '../../convex/wuxia/a7_tuition/data';
+import { TUITION_PRICE } from '../../convex/wuxia/a7_tuition/econ';
 import { placeName } from '../../convex/wuxia/w03_life/data';
 import type { JianghuState } from '../../convex/wuxia/w08_jianghu/data';
 import { buildCard, cardSvg } from './a4card';
@@ -41,7 +44,7 @@ export function YuanBadge(props: { wuxia?: WuxiaState }) {
   );
 }
 
-export type InterveneArgs = { kind: InterventionKind; target: string; other?: string; place?: string; rid?: number };
+export type InterveneArgs = { kind: InterventionKind; target: string; other?: string; place?: string; rid?: number; tuition?: string };
 
 /** 點人 → 干預選單：花費、「可能的結果」（不保證）、要選的對象 */
 export function FateMenu(props: { wuxia?: WuxiaState; target?: string; onAct: (a: InterveneArgs) => void; lastResult?: { ok: boolean; reason: string } }) {
@@ -50,6 +53,7 @@ export function FateMenu(props: { wuxia?: WuxiaState; target?: string; onAct: (a
   const [other, setOther] = useState<string>('');
   const [place, setPlace] = useState('plaza');
   const [rid, setRid] = useState<number>();
+  const [tuition, setTuition] = useState('');
   if (!st || !props.target) return null;
   const t = props.target;
   const people = Object.values(lifePeople(props.wuxia))
@@ -67,6 +71,7 @@ export function FateMenu(props: { wuxia?: WuxiaState; target?: string; onAct: (a
     if (kind === 'intro') a.other = other || people[0];
     if (kind === 'whisper') a.rid = rid ?? rumors[0]?.id;
     if (kind === 'plead') a.other = other && masters.includes(other) ? other : masters[0];
+    if (kind === 'feed' && tuition) a.tuition = tuition;
     props.onAct(a);
     SOUND.fate();
   };
@@ -124,6 +129,16 @@ export function FateMenu(props: { wuxia?: WuxiaState; target?: string; onAct: (a
             ) : (
               <p className="wuxia-a1-note">鎮上的傳聞他都聽過了。</p>
             ))}
+          {kind === 'feed' && a7Of(props.wuxia) && (
+            <select value={tuition} onChange={(e) => setTuition(e.target.value)} data-testid="wuxia-fate-tuition">
+              <option value="">給他三天的飯</option>
+              {[MASTER_CID, COACH_CID].filter((m) => m !== t).map((m) => (
+                <option key={m} value={m}>
+                  替他付{cidName(m)}這個月束脩（{TUITION_PRICE} 文）
+                </option>
+              ))}
+            </select>
+          )}
           {kind === 'plead' && (
             <select value={other || masters[0]} onChange={(e) => setOther(e.target.value)} data-testid="wuxia-fate-master">
               {masters.map((m) => (
@@ -149,7 +164,8 @@ export function GoalPanel(props: { wuxia?: WuxiaState }) {
   if (!st) return null;
   if (!st.scenario) return <p className="wuxia-a1-note">自由玩：沒有目標，緣照樣可以用。回首頁選一個劇本就有目標與結算。</p>;
   const sc = SCENARIO_BY_ID[st.scenario];
-  const g = evalGoals(props.wuxia!, sc);
+  const g = evalGoals(props.wuxia!, sc, st.goals);
+  const goals = goalsOf(props.wuxia, sc);
   return (
     <div className="wuxia-a4-goals" data-testid="wuxia-a4-goals">
       <b>
@@ -159,11 +175,11 @@ export function GoalPanel(props: { wuxia?: WuxiaState }) {
       {TIERS.map((t) => (
         <div key={t} className={`tier ${t} ${st.goals[t] !== undefined ? 'got' : ''}`}>
           <span className="medal">{TIER_LABEL[t]}</span>
-          <span className="label">{sc.goals[t].label}</span>
+          <span className="label">{goals[t].label}</span>
           <span className="v">
             {st.goals[t] !== undefined
               ? `第 ${st.goals[t]} 日達成`
-              : g[t].conds.map((c, i) => <small key={i}>{fmtCond(sc.goals[t].all[i].k, c.value, c.need)}</small>)}
+              : g[t].conds.map((c, i) => <small key={i}>{fmtCond(goals[t].all[i].k, c.value, c.need)}</small>)}
           </span>
         </div>
       ))}
@@ -305,7 +321,7 @@ export function ScenarioPicker(props: { onPick: (id: string) => void }) {
         <button key={s.id} className="wuxia-a1-btn" onClick={() => props.onPick(s.id)} data-testid={`wuxia-play-${s.id}`}>
           <b>{s.name}</b>
           <small>
-            {s.days} 日・金：{s.goals.gold.label}
+            {s.days} 日・金：{(s.goalsA7 ?? s.goalsA6 ?? s.goals).gold.label}
           </small>
         </button>
       ))}

@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { WuxiaState } from '../../convex/wuxia/state';
 import { MASTER_CID, MOVE_BY_ID } from '../../convex/wuxia/a2_master/data';
 import { a2StateOf, lifePeople } from './a2';
+import { A7Layer } from './A7Layer';
 
 const SHEET = '/ai-town/wuxia/a2/qishi.png';
 const BEAT_MS = 700;
@@ -79,6 +80,7 @@ export function A2Layer(props: { wuxia?: WuxiaState; tileDim: number; showTaiji:
     }
   return (
     <Container>
+      <A7Layer wuxia={props.wuxia} tileDim={T} pos={props.pos} />
       {rings.map((r) => {
         const p = props.pos(r.pid);
         if (!p) return null;

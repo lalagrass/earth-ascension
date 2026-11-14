@@ -3,8 +3,11 @@
 import { useState } from 'react';
 import type { WuxiaState } from '../../convex/wuxia/state';
 import { ARTS, ART_BY_ID, MOVE_BY_ID } from '../../convex/wuxia/a2_master/data';
+import type { A2State } from '../../convex/wuxia/a2_master/data';
+import { rankOf } from '../../convex/wuxia/a6_spread/data';
 import { artTrace, diffusion, generations, lineageTree } from '../../convex/wuxia/a2_master/lineage';
 import { a2StateOf, cidName, pidOfCid } from './a2';
+import { a7Of } from '../../convex/wuxia/a7_tuition/data';
 
 function Curve(props: { points: Array<[number, number]>; max: number }) {
   const W = 220;
@@ -27,6 +30,18 @@ function Curve(props: { points: Array<[number, number]>; max: number }) {
   );
 }
 
+/** A7（#584）：這條邊上正式教的招是付束脩（束脩）還是以工代學（以工）學來的；兩種都有寫「束脩＋以工」，師父不收束脩的再傳寫「免」 */
+function edgeFee(learned: Record<string, 'paid' | 'work'>, cid: string, moves: string[]): string {
+  const kinds = new Set(moves.map((m) => learned[`${cid}|${m}`]).filter(Boolean));
+  if (kinds.size === 0) return '免';
+  return [...kinds].map((k) => (k === 'paid' ? '束脩' : '以工')).join('＋');
+}
+
+/** 這人這門武學最高的熟練度（段位用） */
+function bestProf(st: A2State, cid: string, art: string): number {
+  return Math.max(0, ...Object.entries(st.know[cid] ?? {}).filter(([id]) => MOVE_BY_ID[id]?.family === art).map(([, k]) => k.prof));
+}
+
 /** 傳承面板：每門武學一棵樹；點名字＝選中那人；點「←」那條邊＝看那條邊第一招的追溯 */
 export function LineagePanel(props: { wuxia?: WuxiaState; onPick?: (pid: string) => void }) {
   const st = a2StateOf({ wuxia: props.wuxia });
@@ -41,6 +56,7 @@ export function LineagePanel(props: { wuxia?: WuxiaState; onPick?: (pid: string)
     const pid = pidOfCid(props.wuxia, cid);
     if (pid) props.onPick?.(pid);
   };
+  const a7 = a7Of(props.wuxia);
   const t = trace ? artTrace(st, trace.cid, trace.move) : undefined;
   return (
     <div className="wuxia-a2-lineage" data-testid="wuxia-a2-lineage">
@@ -64,15 +80,23 @@ export function LineagePanel(props: { wuxia?: WuxiaState; onPick?: (pid: string)
             <button className="wuxia-a2-name" onClick={() => pick(l.cid)}>
               {cidName(l.cid)}
             </button>
-            <span className="wuxia-a2-gen">{gens[l.cid] ? `${gens[l.cid]} 代` : '開山'}</span>
+            {/* A7（#584）：束脩元素開著時不強調代數（owner：傳承分出幾代沒有價值），邊標「束脩／以工」 */}
+            {!a7 && <span className="wuxia-a2-gen">{gens[l.cid] ? `${gens[l.cid]} 代` : '開山'}</span>}
+            {a7 && !gens[l.cid] && <span className="wuxia-a2-gen">開山</span>}
+            {!!gens[l.cid] && (
+              <span className={`wuxia-a2-rank ${rankOf(bestProf(st, l.cid, art))}`} title="熟練段位：入門＜120、小成 120–400、大成 ≥400（小成起就能教起勢）">
+                {rankOf(bestProf(st, l.cid, art))}
+              </span>
+            )}
             {l.edge && (
               <button
-                className={`wuxia-a2-edge${l.edge.flawed ? ' flawed' : ''}`}
+                className={`wuxia-a2-edge${l.edge.flawed ? ' flawed' : ''}${l.edge.watch && !l.edge.teach ? ' watch' : ''}`}
                 data-testid="wuxia-a2-edge"
                 title="看這條傳承"
                 onClick={() => setTrace({ cid: l.cid, move: l.edge!.moves[0] })}
               >
                 ← {l.edge.teach && l.edge.watch ? '教＋看' : l.edge.teach ? '教' : '看'}
+                {a7 && l.edge.teach ? `・${edgeFee(a7.learned, l.cid, l.edge.moves)}` : ''}
                 {l.edge.reteach ? '・再傳' : ''} {l.edge.moves.length} 招{l.edge.flawed ? `（走樣 ${l.edge.flawed}）` : ''}
               </button>
             )}

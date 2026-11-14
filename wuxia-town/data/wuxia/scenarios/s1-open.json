@@ -7,5 +7,17 @@
     "bronze": {"label": "三人學會一招", "all": [{"k": "knowers", "family": "taiji", "via": ["teach"], "min": 3}]},
     "silver": {"label": "出現第二代傳人", "all": [{"k": "generation", "family": "taiji", "min": 2}]},
     "gold": {"label": "半個鎮會至少一招，走樣的招不超過兩成", "all": [{"k": "townShare", "family": "taiji", "min": 0.5}, {"k": "flawedShare", "family": "taiji", "max": 0.2}]}
+  },
+  "goalsA6_src": "量測：#581 第 4 節（A6 開著時用這組；a6 關閉時用上面的 goals＝A5）。after＝銅沒達成前銀不算、銀沒達成前金不算",
+  "goalsA6": {
+    "bronze": {"label": "三人正式學會一招", "all": [{"k": "knowers", "family": "taiji", "via": ["teach"], "min": 3}]},
+    "silver": {"label": "出現第 3 代正式傳人", "after": "bronze", "all": [{"k": "generation", "family": "taiji", "min": 2, "formal": true}]},
+    "gold": {"label": "半個鎮至少正式會一招，走樣的招不超過兩成", "after": "silver", "all": [{"k": "townShare", "family": "taiji", "min": 0.5, "formal": true}, {"k": "flawedShare", "family": "taiji", "max": 0.2}]}
+  },
+  "goalsA7_src": "量測：#584 第 5 節（a7-tuition 開著時用這組；不用代數）。劇本一：銅三人正式學會一招；銀有人靠以工代學把一招練到小成（熟練 ≥ 120＝教的門檻 minTeacherProf 難度 1，a6.json rank.small）；金半鎮正式會至少一招、走樣的招 ≤ 兩成。after 依序保留",
+  "goalsA7": {
+    "bronze": {"label": "三人正式學會一招", "all": [{"k": "knowers", "family": "taiji", "via": ["teach"], "min": 3}]},
+    "silver": {"label": "有人靠以工代學把一招練到小成", "after": "bronze", "all": [{"k": "workLearned", "family": "taiji", "prof": 120, "min": 1}]},
+    "gold": {"label": "半鎮正式會至少一招，走樣的招不超過兩成", "after": "silver", "all": [{"k": "townShare", "family": "taiji", "min": 0.5, "formal": true}, {"k": "flawedShare", "family": "taiji", "max": 0.2}]}
   }
 }

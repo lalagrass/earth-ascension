@@ -1,6 +1,6 @@
 {
   "_doc": "武俠小鎮 W3（#555）日程。blocks 的 from/to 是當日分鐘（[from,to)，可跨午夜），do 是這個時段有日程權重 3 的活動。once 裡的活動在同一個時段完成一次後就不再加權（例如吃飯不會一直吃）。沒有被 blocks 蓋到的時間就是留白（#562 W3-5：每人每天至少 2 小時），由需求與擾動決定。worker＝有固定工作（day-report 檢查是否 4 小時以上在 workplace）。",
-  "once": ["eat", "cook"],
+  "once": ["eat", "cook", "dojo_haul", "dojo_chop"],
   "schedules_src": "量測＋旋鈕：誰在什麼時段做什麼照 #555 的鎮民設定（量測）；from／to 的當日分鐘是旋鈕，條件是每人每天留白 ≥ 2 小時（#562 W3-5，量測）",
   "overlays_src": "量測＋旋鈕：W4（#556）「辰–午 武館」等時段（量測），分鐘與石虎 everyDays 2（每兩天）是旋鈕，見 overlays.w04-dojo._doc",
   "schedules": {
