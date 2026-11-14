@@ -1,0 +1,59 @@
+# 武俠小鎮 A5（#577 第 1 節）：靜態發佈。只在 town/wuxia 手動觸發（Actions → wuxia-pages → Run workflow）。
+# 預設只產生 artifact（wuxia-town-site，下載解壓後 npx serve 就能開）；勾選 deploy 才部署到 GitHub Pages（是否公開由 owner 決定）。
+# 網站放在 https://<owner>.github.io/<repo>/：用 WUXIA_BASE=/<repo>/ai-town/ 建置，素材網址由 src/wuxia/local/basePath.ts 轉換。
+name: wuxia-pages
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: '部署到 GitHub Pages（公開）；預設不部署，只產生 artifact'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/town/wuxia'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: wuxia-town
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: wuxia-town/package-lock.json
+      - run: npm ci
+      - name: build:local（base /<repo>/ai-town/）
+        run: WUXIA_BASE="/${GITHUB_REPOSITORY#*/}/ai-town/" npm run build:local
+      - name: bundle-report（首次載入 ≤ 5 MB、沒有上游美術、CREDITS 齊）
+        run: npm run wuxia:bundle-report -- --base "/${GITHUB_REPOSITORY#*/}/ai-town/"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wuxia-town-site
+          path: wuxia-town/dist-local
+          retention-days: 30
+      - if: ${{ inputs.deploy }}
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: wuxia-town/dist-local
+
+  deploy:
+    needs: build
+    if: ${{ inputs.deploy }}
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
